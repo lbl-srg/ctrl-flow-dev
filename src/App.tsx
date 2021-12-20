@@ -1,14 +1,22 @@
-/** @jsxImportSource @emotion/react */
-import React from "react";
+/** @jsxRuntime classic */
+/** @jsx jsx */
 import { jsx, css } from "@emotion/react/macro";
 
-import Button from "./components/button";
+import Button from "./components/Button";
 
 function App() {
   return (
     <div
       css={css`
         padding: 2rem;
+        max-width: 80rem;
+        margin-left: auto;
+        margin-right: auto;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+          "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+          "Helvetica Neue", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       `}
     >
       <header>
