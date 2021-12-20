@@ -10,8 +10,15 @@ ReactDOM.render(
   <React.StrictMode>
     <Global
       styles={css`
+        html,
         body {
           margin: 0;
+          width: 100%;
+          height: 100%;
+        }
+        #root {
+          width: 100%;
+          height: 100%;
         }
       `}
     />

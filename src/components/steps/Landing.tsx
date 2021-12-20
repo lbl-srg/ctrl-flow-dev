@@ -1,13 +1,19 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react/macro";
-import { Fragment } from "react";
 
 import Button, { ButtonProps } from "../Button";
 
 // step 0
 const Landing = () => (
-  <Fragment>
+  <section
+    css={css`
+      padding: 2rem;
+      max-width: 80rem;
+      margin-left: auto;
+      margin-right: auto;
+    `}
+  >
     <header>
       <h1>Welcome to Lawrence Berkley National Labs</h1>
       <h2>HVAC Controls Design Tool</h2>
@@ -55,7 +61,7 @@ const Landing = () => (
       <LandingButton>Create New Project</LandingButton>
       <LandingButton>Upload Existing Project</LandingButton>
     </div>
-  </Fragment>
+  </section>
 );
 
 const LandingButton = (props: ButtonProps) => (

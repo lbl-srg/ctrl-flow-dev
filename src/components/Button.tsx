@@ -2,7 +2,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react/macro";
 import styled from "@emotion/styled";
-import React, { AnchorHTMLAttributes } from "react";
+import { ReactNode, AnchorHTMLAttributes } from "react";
 
 import colors from "../colors";
 
@@ -29,7 +29,7 @@ const variantStyles = {
 };
 
 export interface ButtonProps extends AnchorHTMLAttributes<any> {
-  children: React.ReactNode;
+  children: ReactNode;
   type?: "filled" | "outline" | "link";
 }
 

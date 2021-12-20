@@ -7,10 +7,7 @@ function App() {
   return (
     <div
       css={css`
-        padding: 2rem;
-        max-width: 80rem;
-        margin-left: auto;
-        margin-right: auto;
+        height: 100%;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
           "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
           "Helvetica Neue", sans-serif;
