@@ -1,6 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react/macro";
+import { useStore } from "../../store/store";
 
 import Button, { ButtonProps } from "../Button";
 
@@ -56,24 +57,42 @@ const Landing = () => (
     <div
       css={css`
         display: flex;
+        gap: 2rem;
+        margin-top: 5rem;
       `}
     >
-      <LandingButton>Create New Project</LandingButton>
-      <LandingButton>Upload Existing Project</LandingButton>
+      <CreateNewButton />
+      <UploadButton />
     </div>
   </section>
 );
 
-const LandingButton = (props: ButtonProps) => (
+const BaseButton = (props: ButtonProps) => (
   <Button
     css={css`
       flex-grow: 1;
-      font-size: 1.1rem;
       line-height: 3rem;
     `}
     type="outline"
     {...props}
   />
 );
+
+/**
+ * TODO: the following two functions currently have the same onClick. They are seperated out like this because eventually,
+ * they need to do different things before incrementing a step
+ */
+
+const CreateNewButton = () => {
+  const incrementStep = useStore((state) => state.incementStep);
+  return <BaseButton onClick={incrementStep}>Create New Project</BaseButton>;
+};
+
+const UploadButton = () => {
+  const incrementStep = useStore((state) => state.incementStep);
+  return (
+    <BaseButton onClick={incrementStep}>Upload Existing Project</BaseButton>
+  );
+};
 
 export default Landing;

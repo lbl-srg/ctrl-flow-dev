@@ -9,10 +9,16 @@ import colors from "../colors";
 const BaseButton = styled.button`
   display: inline-block;
   border-radius: 9999rem;
-  padding: 1rem;
-  margin: 1rem 1rem 1rem 0;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
   font-weight: bold;
   text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+
+  &:hover {
+    filter: brightness(0.75);
+  }
 `;
 
 const variantStyles = {
@@ -25,10 +31,13 @@ const variantStyles = {
     background: transparent;
     border: 1px solid ${colors.mediumBlue};
   `,
-  link: css``,
+  link: css`
+    color: ${colors.mediumBlue};
+    background: transparent;
+  `,
 };
 
-export interface ButtonProps extends AnchorHTMLAttributes<any> {
+export interface ButtonProps extends AnchorHTMLAttributes<unknown> {
   children: ReactNode;
   type?: "filled" | "outline" | "link";
 }

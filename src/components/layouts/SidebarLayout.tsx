@@ -4,6 +4,7 @@ import { jsx, css } from "@emotion/react/macro";
 import styled from "@emotion/styled/macro";
 import { ReactNode } from "react";
 import colors from "../../colors";
+import StepNavigation, { FOOTER_NAV_HEIGHT } from "../StepNavigation";
 
 export interface SidebarLayoutProps {
   heading: string;
@@ -16,7 +17,11 @@ const Sidebarlayout = ({
   contentLeft,
   contentRight,
 }: SidebarLayoutProps) => (
-  <section>
+  <section
+    css={css`
+      height: calc(100% - ${FOOTER_NAV_HEIGHT});
+    `}
+  >
     <ColumnsWrapper>
       <LeftColumn>
         <ColumnHeader
@@ -55,6 +60,7 @@ const Sidebarlayout = ({
         <div>{contentRight}</div>
       </RightColumn>
     </ColumnsWrapper>
+    <StepNavigation />
   </section>
 );
 
