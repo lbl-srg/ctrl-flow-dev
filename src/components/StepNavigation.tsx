@@ -2,7 +2,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react/macro";
 import styled from "@emotion/styled/macro";
-import colors from "../colors";
+import { colors, dropShadow } from "../styleHelpers";
 import { useStore } from "../store/store";
 import Button from "./Button";
 
@@ -152,13 +152,12 @@ const Circle = styled.div`
 const NavContainer = styled.nav`
   width: 100%;
   height: ${FOOTER_NAV_HEIGHT};
-  box-shadow: 0px 0px 15px 5px rgba(0, 0, 0, 0.1),
-    0px 0px 10px -5px rgba(0, 0, 0, 0.4);
   position: relative;
   z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  ${dropShadow}
 `;
 
 const NavItemContainer = styled.div`

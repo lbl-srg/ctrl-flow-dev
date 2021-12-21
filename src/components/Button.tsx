@@ -4,7 +4,7 @@ import { jsx, css } from "@emotion/react/macro";
 import styled from "@emotion/styled";
 import { ReactNode, AnchorHTMLAttributes } from "react";
 
-import colors from "../colors";
+import { colors } from "../styleHelpers";
 
 const BaseButton = styled.button`
   display: inline-block;

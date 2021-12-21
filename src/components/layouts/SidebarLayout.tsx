@@ -3,7 +3,7 @@
 import { jsx, css } from "@emotion/react/macro";
 import styled from "@emotion/styled/macro";
 import { ReactNode } from "react";
-import colors from "../../colors";
+import { colors } from "../../styleHelpers";
 import StepNavigation, { FOOTER_NAV_HEIGHT } from "../StepNavigation";
 
 export interface SidebarLayoutProps {
