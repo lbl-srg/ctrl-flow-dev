@@ -23,8 +23,9 @@ const ContentRight = () => {
     <Fragment>
       <h2>{projectDetails.name}</h2>
       <EditDetailsModal
-        submitText="Save Project Details"
+        initialState={projectDetails}
         modalTitle="Edit Project Details"
+        submitText="Save Project Details"
         variant="outline"
         css={css`
           position: absolute;

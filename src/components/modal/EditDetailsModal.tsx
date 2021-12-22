@@ -9,20 +9,22 @@ import Button, { ButtonProps } from "../Button";
 import { BaseModal, ModalOpenContext } from "./BaseModal";
 
 interface EditDetailsModalProps {
+  afterSubmit?: () => void;
+  children: ReactNode;
+  initialState?: Partial<ProjectDetails>;
   modalTitle: string;
   submitText: string;
-  children: ReactNode;
-  afterSubmit?: () => void;
 }
 
 const EditDetailsModal = ({
+  afterSubmit,
+  children,
+  initialState = {},
   modalTitle,
   submitText,
-  children,
-  afterSubmit,
   ...props
 }: EditDetailsModalProps & ButtonProps) => {
-  const { projectDetails, saveProjectDetails } = useStore((state) => ({
+  const { saveProjectDetails } = useStore((state) => ({
     projectDetails: state.projectDetails,
     saveProjectDetails: state.saveProjectDetails,
     incrementStep: state.incrementStep,
@@ -38,7 +40,7 @@ const EditDetailsModal = ({
         <BaseModal closeAction={() => setOpen(false)}>
           <h1>{modalTitle}</h1>
           <Formik
-            initialValues={projectDetails}
+            initialValues={initialState}
             onSubmit={(values: Partial<ProjectDetails>) => {
               saveProjectDetails(values);
               setOpen(false);
