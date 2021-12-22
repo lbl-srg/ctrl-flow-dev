@@ -33,9 +33,9 @@ const StepNavigation = () => {
       <NavItemContainer>
         <BackButton currentStep={currentStep} action={decrementStep} />
       </NavItemContainer>
-      <NavItemContainer>
-        <JumpNav currentStep={currentStep} action={jumpToStep} />
-      </NavItemContainer>
+
+      <JumpNav currentStep={currentStep} action={jumpToStep} />
+
       <NavItemContainer
         css={css`
           text-align: right;
@@ -85,7 +85,11 @@ interface JumpNavProps {
 const JumpNav = ({ currentStep, action }: JumpNavProps) => {
   const displaySteps = steps.slice(1);
   return (
-    <div>
+    <NavItemContainer
+      css={css`
+        width: ${displaySteps.length * 7}rem;
+      `}
+    >
       <JumpNavContainer>
         {displaySteps.map((stepName) => {
           const stepIndex = steps.indexOf(stepName);
@@ -118,7 +122,7 @@ const JumpNav = ({ currentStep, action }: JumpNavProps) => {
         })}
       </JumpNavContainer>
       <CircleConnector />
-    </div>
+    </NavItemContainer>
   );
 };
 
@@ -161,8 +165,7 @@ const NavContainer = styled.nav`
 `;
 
 const NavItemContainer = styled.div`
-  margin: 0 2rem;
-  width: calc(33% - 4rem);
+  padding: 0 2rem;
 `;
 
 export default StepNavigation;

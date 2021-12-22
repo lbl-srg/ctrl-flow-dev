@@ -83,6 +83,7 @@ const LeftColumn = styled.div`
   width: 28rem;
   height: 100%;
   background: ${colors.lightGrey};
+  flex-shrink: 0;
 `;
 
 const RightColumn = styled.div`
