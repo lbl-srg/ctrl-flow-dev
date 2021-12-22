@@ -3,6 +3,7 @@
 import { jsx, css } from "@emotion/react/macro";
 import styled from "@emotion/styled/macro";
 import { ReactNode } from "react";
+import { useStore } from "../../store/store";
 import { colors } from "../../styleHelpers";
 import StepNavigation, { FOOTER_NAV_HEIGHT } from "../StepNavigation";
 
@@ -16,53 +17,56 @@ const Sidebarlayout = ({
   heading,
   contentLeft,
   contentRight,
-}: SidebarLayoutProps) => (
-  <section
-    css={css`
-      height: calc(100% - ${FOOTER_NAV_HEIGHT});
-    `}
-  >
-    <ColumnsWrapper>
-      <LeftColumn>
-        <ColumnHeader
-          css={css`
-            background: ${colors.darkBlue};
-            color: ${colors.white};
-            padding: 0 2rem;
-          `}
-        >
-          All Projects{" >"} <strong>Foo Bar</strong>
-        </ColumnHeader>
-        {/* TODO: replace Foo Bar with a user input project name */}
-        <div
-          css={css`
-            padding: 0 2rem;
-          `}
-        >
-          {contentLeft}
-        </div>
-      </LeftColumn>
-      <RightColumn>
-        <ColumnHeader
-          css={css`
-            border-bottom: 1px solid ${colors.mediumGrey};
-          `}
-        >
-          <h1
+}: SidebarLayoutProps) => {
+  const projectName = useStore((state) => state.projectDetails.name);
+
+  return (
+    <section
+      css={css`
+        height: calc(100% - ${FOOTER_NAV_HEIGHT});
+      `}
+    >
+      <ColumnsWrapper>
+        <LeftColumn>
+          <ColumnHeader
             css={css`
-              color: ${colors.darkGrey};
-              margin: 0;
+              background: ${colors.darkBlue};
+              color: ${colors.white};
+              padding: 0 2rem;
             `}
           >
-            {heading}
-          </h1>
-        </ColumnHeader>
-        <div>{contentRight}</div>
-      </RightColumn>
-    </ColumnsWrapper>
-    <StepNavigation />
-  </section>
-);
+            All Projects{" >"} <strong>{projectName}</strong>
+          </ColumnHeader>
+          <div
+            css={css`
+              padding: 0 2rem;
+            `}
+          >
+            {contentLeft}
+          </div>
+        </LeftColumn>
+        <RightColumn>
+          <ColumnHeader
+            css={css`
+              border-bottom: 1px solid ${colors.mediumGrey};
+            `}
+          >
+            <h1
+              css={css`
+                color: ${colors.darkGrey};
+                margin: 0;
+              `}
+            >
+              {heading}
+            </h1>
+          </ColumnHeader>
+          <div>{contentRight}</div>
+        </RightColumn>
+      </ColumnsWrapper>
+      <StepNavigation />
+    </section>
+  );
+};
 
 const ColumnsWrapper = styled.div`
   display: flex;

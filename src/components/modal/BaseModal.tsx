@@ -46,10 +46,10 @@ export const BaseModal = ({ closeAction, children }: BaseModalProps) => (
 const StyledModal = styled(Modal)`
   position: fixed;
   z-index: 1000;
-  width: 60rem;
-  margin-left: -32rem;
-  height: 40rem;
-  margin-top: -22rem;
+  width: 52rem; // displayed width is 60rem. width + left and right padding
+  margin-left: -30rem; // half of height
+  height: 36rem; // displayed height is 40rem. width + top and bottom padding
+  margin-top: -20rem; // half of width
   top: 50%;
   left: 50%;
   padding: 2rem 4rem;

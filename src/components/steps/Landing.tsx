@@ -75,10 +75,11 @@ const buttonCss = css`
 `;
 
 const CreateNewButton = () => {
-  // const incrementStep = useStore((state) => state.incementStep);
+  // const incrementStep = useStore((state) => state.incrementStep);
   return (
     <EditDetailsModal
       modalTitle="Create New Project"
+      submitText="Create Project"
       variant="outline"
       css={buttonCss}
     />
@@ -86,7 +87,7 @@ const CreateNewButton = () => {
 };
 
 const UploadButton = () => {
-  // const incrementStep = useStore((state) => state.incementStep);
+  // const incrementStep = useStore((state) => state.incrementStep);
   return (
     <Button
       variant="outline"

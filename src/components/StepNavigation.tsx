@@ -22,7 +22,7 @@ const StepNavigation = () => {
   const { currentStep, incrementStep, decrementStep, jumpToStep } = useStore(
     (state) => ({
       currentStep: state.currentStep,
-      incrementStep: state.incementStep,
+      incrementStep: state.incrementStep,
       decrementStep: state.decrementStep,
       jumpToStep: state.jumpToStep,
     }),

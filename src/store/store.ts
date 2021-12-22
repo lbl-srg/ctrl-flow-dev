@@ -13,18 +13,19 @@ export interface ProjectDetails {
 
 interface State {
   currentStep: number;
-  incementStep: () => void;
+  incrementStep: () => void;
   decrementStep: () => void;
   jumpToStep: (step: number) => void;
 
   projectDetails: Partial<ProjectDetails>;
+  saveProjectDetails: (projectDetails: Partial<ProjectDetails>) => void;
 }
 
 export const useStore = create<State>(
   persist(
     (set, get) => ({
       currentStep: 0,
-      incementStep: () =>
+      incrementStep: () =>
         set(() => ({
           currentStep: sanatizeStep(get().currentStep + 1),
         })),
@@ -33,7 +34,7 @@ export const useStore = create<State>(
       jumpToStep: (step: number) => set({ currentStep: sanatizeStep(step) }),
 
       projectDetails: {},
-      saveProjectDetails: (projectDetails: ProjectDetails) =>
+      saveProjectDetails: (projectDetails: Partial<ProjectDetails>) =>
         set(() => ({ projectDetails })),
     }),
     {
