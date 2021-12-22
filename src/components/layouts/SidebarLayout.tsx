@@ -60,7 +60,13 @@ const Sidebarlayout = ({
               {heading}
             </h1>
           </ColumnHeader>
-          <div>{contentRight}</div>
+          <div
+            css={css`
+              position: relative;
+            `}
+          >
+            {contentRight}
+          </div>
         </RightColumn>
       </ColumnsWrapper>
       <StepNavigation />

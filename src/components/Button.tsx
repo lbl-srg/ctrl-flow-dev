@@ -2,7 +2,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react/macro";
 import styled from "@emotion/styled";
-import { ReactNode, AnchorHTMLAttributes, ButtonHTMLAttributes } from "react";
+import { ReactNode, ButtonHTMLAttributes } from "react";
 
 import { colors } from "../styleHelpers";
 

@@ -3,8 +3,7 @@
 import { jsx, css } from "@emotion/react/macro";
 import { useStore } from "../../store/store";
 
-import Button, { ButtonProps } from "../Button";
-import { BaseModal, ModalOpenContext } from "../modal/BaseModal";
+import Button from "../Button";
 import EditDetailsModal from "../modal/EditDetailsModal";
 
 // step 0
@@ -75,14 +74,17 @@ const buttonCss = css`
 `;
 
 const CreateNewButton = () => {
-  // const incrementStep = useStore((state) => state.incrementStep);
+  const incrementStep = useStore((state) => state.incrementStep);
   return (
     <EditDetailsModal
       modalTitle="Create New Project"
       submitText="Create Project"
+      afterSubmit={incrementStep}
       variant="outline"
       css={buttonCss}
-    />
+    >
+      Create New Project
+    </EditDetailsModal>
   );
 };
 

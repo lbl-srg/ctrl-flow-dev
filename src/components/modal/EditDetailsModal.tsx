@@ -3,7 +3,7 @@
 import { css, jsx } from "@emotion/react/macro";
 import styled from "@emotion/styled";
 import { Field, Form, Formik } from "formik";
-import { Fragment, useState } from "react";
+import { Fragment, ReactNode, useState } from "react";
 import { ProjectDetails, useStore } from "../../store/store";
 import Button, { ButtonProps } from "../Button";
 import { BaseModal, ModalOpenContext } from "./BaseModal";
@@ -11,27 +11,29 @@ import { BaseModal, ModalOpenContext } from "./BaseModal";
 interface EditDetailsModalProps {
   modalTitle: string;
   submitText: string;
+  children: ReactNode;
+  afterSubmit?: () => void;
 }
 
 const EditDetailsModal = ({
   modalTitle,
   submitText,
+  children,
+  afterSubmit,
   ...props
 }: EditDetailsModalProps & ButtonProps) => {
-  const { projectDetails, saveProjectDetails, incrementStep } = useStore(
-    (state) => ({
-      projectDetails: state.projectDetails,
-      saveProjectDetails: state.saveProjectDetails,
-      incrementStep: state.incrementStep,
-    }),
-  );
+  const { projectDetails, saveProjectDetails } = useStore((state) => ({
+    projectDetails: state.projectDetails,
+    saveProjectDetails: state.saveProjectDetails,
+    incrementStep: state.incrementStep,
+  }));
   const [isOpen, setOpen] = useState(false);
 
   return (
     <ModalOpenContext.Provider value={isOpen}>
       <Fragment>
         <Button onClick={() => setOpen(true)} {...props}>
-          Create New Project
+          {children}
         </Button>
         <BaseModal closeAction={() => setOpen(false)}>
           <h1>{modalTitle}</h1>
@@ -40,7 +42,7 @@ const EditDetailsModal = ({
             onSubmit={(values: Partial<ProjectDetails>) => {
               saveProjectDetails(values);
               setOpen(false);
-              incrementStep();
+              afterSubmit && afterSubmit();
             }}
           >
             <Form

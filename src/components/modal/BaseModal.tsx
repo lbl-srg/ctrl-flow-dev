@@ -3,7 +3,7 @@
 import { css, jsx } from "@emotion/react/macro";
 import styled from "@emotion/styled";
 import { createContext, Fragment, ReactNode } from "react";
-import Modal, { ModalProps } from "react-overlays/Modal";
+import Modal from "react-overlays/Modal";
 import { colors, dropShadow, fonts } from "../../styleHelpers";
 import Button from "../Button";
 
