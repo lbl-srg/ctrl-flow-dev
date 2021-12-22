@@ -16,3 +16,11 @@ export const dropShadow = css`
   box-shadow: 0px 0px 15px 5px rgba(0, 0, 0, 0.1),
     0px 0px 10px -5px rgba(0, 0, 0, 0.4);
 `;
+
+export const fonts = css`
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+`;

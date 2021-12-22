@@ -2,7 +2,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react/macro";
 import styled from "@emotion/styled";
-import { ReactNode, AnchorHTMLAttributes } from "react";
+import { ReactNode, AnchorHTMLAttributes, ButtonHTMLAttributes } from "react";
 
 import { colors } from "../styleHelpers";
 
@@ -37,13 +37,13 @@ const variantStyles = {
   `,
 };
 
-export interface ButtonProps extends AnchorHTMLAttributes<unknown> {
-  children: ReactNode;
-  type?: "filled" | "outline" | "link";
+export interface ButtonProps extends ButtonHTMLAttributes<unknown> {
+  children?: ReactNode;
+  variant?: "filled" | "outline" | "link";
 }
 
-const Button = ({ type = "filled", ...props }: ButtonProps) => (
-  <BaseButton css={variantStyles[type]} {...props} />
+const Button = ({ variant = "filled", ...props }: ButtonProps) => (
+  <BaseButton css={variantStyles[variant]} {...props} />
 );
 
 export default Button;

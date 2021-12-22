@@ -4,6 +4,8 @@ import { jsx, css } from "@emotion/react/macro";
 import { useStore } from "../../store/store";
 
 import Button, { ButtonProps } from "../Button";
+import { BaseModal, ModalOpenContext } from "../modal/BaseModal";
+import EditDetailsModal from "../modal/EditDetailsModal";
 
 // step 0
 const Landing = () => (
@@ -67,31 +69,32 @@ const Landing = () => (
   </section>
 );
 
-const BaseButton = (props: ButtonProps) => (
-  <Button
-    css={css`
-      flex-grow: 1;
-      line-height: 3rem;
-    `}
-    type="outline"
-    {...props}
-  />
-);
-
-/**
- * TODO: the following two functions currently have the same onClick. They are seperated out like this because eventually,
- * they need to do different things before incrementing a step
- */
+const buttonCss = css`
+  flex: 1 1 0;
+  line-height: 3rem;
+`;
 
 const CreateNewButton = () => {
-  const incrementStep = useStore((state) => state.incementStep);
-  return <BaseButton onClick={incrementStep}>Create New Project</BaseButton>;
+  // const incrementStep = useStore((state) => state.incementStep);
+  return (
+    <EditDetailsModal
+      modalTitle="Create New Project"
+      variant="outline"
+      css={buttonCss}
+    />
+  );
 };
 
 const UploadButton = () => {
-  const incrementStep = useStore((state) => state.incementStep);
+  // const incrementStep = useStore((state) => state.incementStep);
   return (
-    <BaseButton onClick={incrementStep}>Upload Existing Project</BaseButton>
+    <Button
+      variant="outline"
+      css={buttonCss}
+      onClick={() => alert("an upload dialogue should appear.")}
+    >
+      Upload Existing Project
+    </Button>
   );
 };
 

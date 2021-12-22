@@ -53,7 +53,7 @@ interface NavButtonProps {
 }
 
 const BackButton = ({ currentStep, action }: NavButtonProps) => (
-  <Button type="link" onClick={action}>
+  <Button variant="link" onClick={action}>
     ← Back {currentStep - 1 > 0 && `to ${steps[currentStep - 1]}`}
   </Button>
 );
@@ -62,7 +62,7 @@ const NextButton = ({ currentStep, action }: NavButtonProps) => {
   if (currentStep + 1 > 6) {
     return (
       <Button
-        type="filled"
+        variant="filled"
         onClick={() => alert("A download modal should pop up.")}
       >
         Download full project
@@ -71,7 +71,7 @@ const NextButton = ({ currentStep, action }: NavButtonProps) => {
   }
 
   return (
-    <Button type="filled" onClick={action}>
+    <Button variant="filled" onClick={action}>
       Next Step: {steps[currentStep + 1]}
     </Button>
   );

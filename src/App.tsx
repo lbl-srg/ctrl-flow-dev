@@ -10,6 +10,7 @@ import Results from "./components/steps/Results";
 import Schedules from "./components/steps/Schedules";
 import Systems from "./components/steps/Systems";
 import { useStore } from "./store/store";
+import { fonts } from "./styleHelpers";
 
 const App = () => {
   const step = useStore((state) => state.currentStep);
@@ -17,11 +18,7 @@ const App = () => {
     <div
       css={css`
         height: 100%;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-          "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-          "Helvetica Neue", sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
+        ${fonts}
       `}
     >
       {getStepComponent(step)}
