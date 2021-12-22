@@ -16,10 +16,20 @@ interface EditDetailsModalProps {
   submitText: string;
 }
 
+const defaultState = {
+  name: "",
+  address: "",
+  type: "multi-story office",
+  size: "",
+  units: "ip",
+  code: "ashrae 90.1 20201",
+  notes: "",
+} as unknown as ProjectDetails;
+
 const EditDetailsModal = ({
   afterSubmit,
   children,
-  initialState = {},
+  initialState = defaultState,
   modalTitle,
   submitText,
   ...props
@@ -59,7 +69,7 @@ const EditDetailsModal = ({
               <Field id="address" name="address" />
 
               <Label htmlFor="type">Type</Label>
-              <Field as="select" name="type">
+              <Field as="select" name="type" data-testid="type-input">
                 <option value="multi-story office">Multi-Story Office</option>
                 <option value="warehouse">Warehouse</option>
                 <option value="something else">Something Else</option>
@@ -69,18 +79,18 @@ const EditDetailsModal = ({
               <Field id="size" type="number" name="size" />
 
               <Label htmlFor="units">Units</Label>
-              <Field as="select" name="units">
+              <Field as="select" name="units" data-testid="units-input">
                 <option value="ip">IP</option>
                 <option value="something">Something</option>
               </Field>
 
               <Label htmlFor="code">Energy Code</Label>
-              <Field as="select" name="code">
+              <Field as="select" name="code" data-testid="code-input">
                 <option value="ashrae 90.1 20201">ASHRAE 90.1 20201</option>
                 <option value="a different one">A Different One</option>
               </Field>
 
-              <Label htmlFor="address">Notes:</Label>
+              <Label htmlFor="notes">Notes:</Label>
               <Field as="textarea" id="notes" name="notes" />
 
               <Button
