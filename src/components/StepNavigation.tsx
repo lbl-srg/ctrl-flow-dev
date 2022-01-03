@@ -87,7 +87,7 @@ const JumpNav = ({ currentStep, action }: JumpNavProps) => {
   return (
     <NavItemContainer
       css={css`
-        width: ${displaySteps.length * 7}rem;
+        min-width: ${displaySteps.length * 7}rem;
       `}
     >
       <JumpNavContainer>
@@ -165,6 +165,7 @@ const NavContainer = styled.nav`
 `;
 
 const NavItemContainer = styled.div`
+  max-width: 33%;
   padding: 0 2rem;
 `;
 
