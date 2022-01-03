@@ -11,7 +11,7 @@ export interface ProjectDetails {
   notes: string;
 }
 
-interface State {
+export interface State {
   currentStep: number;
   incrementStep: () => void;
   decrementStep: () => void;
@@ -43,4 +43,4 @@ export const useStore = create<State>(
   ),
 );
 
-const sanatizeStep = (step: number) => (step > 6 || step < 0 ? 0 : step);
+export const sanatizeStep = (step: number) => (step > 6 || step < 0 ? 0 : step);
