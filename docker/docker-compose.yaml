@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  linkage-widget:
+    build:
+      context: ./
+      dockerfile: image/Dockerfile
+    command: /bin/sh
+    container_name: linkage-widget
+    environment:
+      - MODELICAPATH=/app/ModelicaStandardLibrary:/app/modelica-buildings
+    ports:
+      - 3000:3000
+    volumes:
+      - ../:/app
