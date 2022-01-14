@@ -2,7 +2,6 @@ import express from 'express';
 import bodyParser from 'body-parser';
 
 // import parser from "../../dependencies/modelica-json/lib/parser"
-import parser from "./parser"
 
 const app = express();
 const PORT = 3000; // TODO: move to ENV file to share with docker-compose
