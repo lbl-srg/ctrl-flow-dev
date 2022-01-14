@@ -13,3 +13,5 @@ services:
       - 3000:3000
     volumes:
       - ../:/app
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
