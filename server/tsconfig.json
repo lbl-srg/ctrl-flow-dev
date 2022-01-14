@@ -5,7 +5,9 @@
       "target": "es6",
       "rootDir": "./",
       "outDir": "./build",
-      "strict": true
+      "strict": true,
+      "paths": {
+        "@modelica-json": ["./dependencies/modelica-json/lib/*"]
+      }
     }
   }
-  

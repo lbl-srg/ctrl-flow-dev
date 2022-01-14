@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 
-// import parser from "../../dependencies/modelica-json/lib/parser"
+import parser from "@modelica-json/parser";
 
 const app = express();
 const PORT = 3000; // TODO: move to ENV file to share with docker-compose
@@ -15,6 +15,9 @@ app.get('/', (req, res) => {
 
 app.post('/api/jsontomodelica', async (req, res) => {
     const jsonToConvert = req.body;
+
+    // TODO: a better place to store converted modelica needs to be found.
+    const modelica = parser.convertToModelica(jsonToConvert, "./modelica");
     // TODO call parser directly
 });
 
