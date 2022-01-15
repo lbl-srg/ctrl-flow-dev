@@ -3,15 +3,15 @@ version: "3.8"
 services:
   linkage-widget:
     build:
-      context: ./
-      dockerfile: image/Dockerfile
-    command: /bin/sh
+      context: ../
+      dockerfile: docker/image/Dockerfile
+    command: npm run start
     container_name: linkage-widget
     environment:
       - MODELICAPATH=/dependencies/ModelicaStandardLibrary:/dependencies/modelica-buildings
     ports:
       - 3000:3000
     volumes:
-      - ../../:/app
-    stdin_open: true # docker run -i
-    tty: true        # docker run -t
+      - ../src:/app/src:ro
+      - ../tsconfig.json:/app/tsconfig.json:ro
+      - ../package.json:/app/package.json:ro
