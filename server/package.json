@@ -15,9 +15,7 @@
     "build": "tsc",
     "start": "nodemon src/index.ts",
     "install-modelica-deps": "./bin/install-modelica-dependencies.sh",
-    "docker:start": "docker-compose -f docker/docker-compose.yaml up -d",
-    "docker:logs": "docker-compose -f docker/docker-compose.yaml logs -f",
-    "docker:rebuild": "docker-compose -f docker/docker-compose.yaml build --pull --no-cache",
-    "docker:stop": "docker-compose -f docker/docker-compose.yaml down"
+    "docker:start": "docker-compose -f docker/docker-compose.yaml up",
+    "docker:rebuild": "docker-compose -f docker/docker-compose.yaml build --pull --no-cache"
   }
 }
