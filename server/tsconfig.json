@@ -3,11 +3,8 @@
       "module": "commonjs",
       "esModuleInterop": true,
       "target": "es6",
-      "rootDir": "./",
       "outDir": "./build",
       "strict": true,
-      "paths": {
-        "@modelica-json": ["./dependencies/modelica-json/lib/*"]
-      }
+      "allowJs": true
     }
   }

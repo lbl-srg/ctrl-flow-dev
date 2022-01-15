@@ -13,6 +13,6 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "nodemon index.ts"
+    "start": "nodemon src/index.ts"
   }
 }
