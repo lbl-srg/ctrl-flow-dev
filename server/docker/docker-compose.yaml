@@ -8,7 +8,7 @@ services:
     command: npm run start
     container_name: linkage-widget
     environment:
-      - MODELICAPATH=/dependencies/ModelicaStandardLibrary:/dependencies/modelica-buildings
+      - MODELICAPATH=/app/dependencies/ModelicaStandardLibrary:/app/dependencies/modelica-buildings
     ports:
       - 3000:3000
     volumes:
