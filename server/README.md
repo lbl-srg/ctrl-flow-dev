@@ -13,4 +13,13 @@ When running the docker container, you can use `npm run docker:shell` to get a c
 ### Without a container
 1. Run `npm install` to install npm dependencies
 1. Run `npm run install-modelica-deps` to install the modelica-json library, and modelica templates
+1. Ensure the `MODELICAPATH` environmental variable points to the correct location.
+
+   e.g.
+
+   ```
+   export MODELICAPATH=/path/to/lbl-linkage-widget-v2/server/dependencies/ModelicaStandardLibrary
+   export MODELICAPATH=$MODELICAPATH:/path/to/lbl-linkage-widget-v2/server/dependencies/modelica-buildings
+   ```
+
 1. Run `npm run start` to start the development server
