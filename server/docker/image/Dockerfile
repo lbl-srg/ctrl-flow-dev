@@ -8,7 +8,6 @@ COPY . .
 FROM base as dependencies
 
 RUN apk update && apk --no-cache add make curl git
-RUN npm install
 RUN npm run install-modelica-deps
 
 
