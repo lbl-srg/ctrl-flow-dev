@@ -5,10 +5,11 @@
 ### With a container
 1. make sure docker is installed on your computer
 1. Run `npm install` to install npm dependencies
-1. Run `npm run docker:start` to start the container. Modelica dependencies will installed in the container automatically.
-
-#### note:
-When running the docker container, you can use `npm run docker:shell` to get a command prompt for the docker container.
+1. Run `npm run docker:start` to start the container.
+   - This will also install the modelica dependencies in the container
+   - The container starts in detached mode. Run `npm run docker:logs` to see server logs
+   - You can run `npm run docker:shell` to get a command prompt for the docker container.
+   - Run `npm run docker:stop` to stop the container
 
 ### Without a container
 1. Run `npm install` to install npm dependencies

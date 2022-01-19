@@ -12,7 +12,4 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ../src:/app/src:ro
-      - ../node_modules:/app/node_modules:ro
-      - ../tsconfig.json:/app/tsconfig.json:ro
-      - ../package.json:/app/package.json:ro
+      - ../:/app

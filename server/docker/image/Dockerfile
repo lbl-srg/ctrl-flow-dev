@@ -1,8 +1,10 @@
 FROM node:16-alpine as base
 
 RUN apk update && apk --no-cache add openjdk13
+RUN mkdir dependencies
 WORKDIR /app
-COPY . .
+COPY bin/ bin/
+COPY package* .
 
 
 FROM base as dependencies
@@ -13,5 +15,4 @@ RUN npm run install-modelica-deps
 
 FROM base as dev-server
 
-COPY --from=dependencies /app/node_modules /app/node_modules
-COPY --from=dependencies /app/dependencies /app/dependencies
+COPY --from=dependencies /dependencies /dependencies
