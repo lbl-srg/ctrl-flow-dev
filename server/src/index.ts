@@ -5,19 +5,19 @@ import morgan from "morgan";
 import * as parser from "../../dependencies/modelica-json/lib/parser";
 import { json } from "stream/consumers";
 
+import config from "./config";
+
 const app = express();
-const PORT = 3000; // TODO: move to ENV file to share with docker-compose
 
 // Ensure all requests are logged
-app.use(morgan("dev"));
+const logMode = config.NODE_ENV == "development" ? "dev" : "combined";
+app.use(morgan(logMode));
 
 app.use(bodyParser.json());
 
 // accept json in body, hand off to service
 app.get("/", (req, res) => {
-  res.send(
-    "<pre>" + JSON.stringify(process.env.NODE_ENV, null, "  ") + "</pre>",
-  );
+  res.send("Hello world");
 });
 
 app.post("/api/jsontomodelica", async (req, res) => {
@@ -33,6 +33,6 @@ app.post("/api/modelicatojson", async (req, res) => {
   res.send("TODO: convert modelica to JSON");
 });
 
-app.listen(PORT, () => {
-  console.log(`Listenting on port ${PORT}`);
+app.listen(config.PORT, () => {
+  console.log(`Listenting on port ${config.PORT}`);
 });

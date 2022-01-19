@@ -1,6 +1,11 @@
 node_modules
 build
 
+# env files
+.env*
+!.env.example
+
+
 # Dependencies
 dependencies/*
 !dependencies/.gitkeep
