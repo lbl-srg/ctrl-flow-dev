@@ -38,5 +38,5 @@ app.post("/api/modelicatojson", async (req, res) => {
 });
 
 app.listen(config.PORT, () => {
-  console.log(`Listenting on port ${config.PORT}`);
+  console.log(`Listening on port ${config.PORT}`);
 });
