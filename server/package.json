@@ -8,6 +8,7 @@
     "@types/node": "^17.0.8",
     "@types/tmp": "^0.2.3",
     "nodemon": "^2.0.15",
+    "prettier": "^2.5.1",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.4"
   },
@@ -19,6 +20,7 @@
     "docker:stop": "docker-compose -f docker/docker-compose.yaml down",
     "docker:logs": "docker-compose -f docker/docker-compose.yaml logs -f",
     "docker:rebuild": "docker-compose -f docker/docker-compose.yaml build --pull --no-cache",
-    "docker:shell": "docker exec -it linkage-widget /bin/sh"
+    "docker:shell": "docker exec -it linkage-widget /bin/sh",
+    "format": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --write ."
   }
 }
