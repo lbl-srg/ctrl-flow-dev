@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 
-import * as parser from "./../dependencies/modelica-json/lib/parser";
+import * as parser from "../../dependencies/modelica-json/lib/parser";
 import { json } from 'stream/consumers';
 
 const app = express();
