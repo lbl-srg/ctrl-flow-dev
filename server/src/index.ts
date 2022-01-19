@@ -1,5 +1,7 @@
-import express from "express";
 import bodyParser from "body-parser";
+import compression from "compression";
+import express from "express";
+import helmet from "helmet";
 import morgan from "morgan";
 
 import * as parser from "../../dependencies/modelica-json/lib/parser";
@@ -9,11 +11,13 @@ import config from "./config";
 
 const app = express();
 
-// Ensure all requests are logged
+// Apply global middleware
+app.use(helmet());
+app.use(compression());
+app.use(bodyParser.json());
+
 const logMode = config.NODE_ENV == "development" ? "dev" : "combined";
 app.use(morgan(logMode));
-
-app.use(bodyParser.json());
 
 // accept json in body, hand off to service
 app.get("/", (req, res) => {
