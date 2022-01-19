@@ -1,13 +1,20 @@
 {
   "dependencies": {
+    "compression": "^1.7.4",
+    "dotenv": "^14.2.0",
     "express": "^4.17.2",
+    "helmet": "^5.0.1",
+    "morgan": "^1.10.0",
     "tmp": "^0.2.1"
   },
   "devDependencies": {
+    "@types/compression": "^1.7.2",
     "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.3",
     "@types/node": "^17.0.8",
     "@types/tmp": "^0.2.3",
     "nodemon": "^2.0.15",
+    "prettier": "^2.5.1",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.4"
   },
@@ -15,10 +22,11 @@
     "build": "tsc",
     "start": "nodemon src/index.ts",
     "install-modelica-deps": "./bin/install-modelica-dependencies.sh",
-    "docker:start": "docker-compose -f docker/docker-compose.yaml up -d",
+    "docker:start": "docker-compose -f docker/docker-compose.yaml --env-file ./.env up -d",
     "docker:stop": "docker-compose -f docker/docker-compose.yaml down",
     "docker:logs": "docker-compose -f docker/docker-compose.yaml logs -f",
     "docker:rebuild": "docker-compose -f docker/docker-compose.yaml build --pull --no-cache",
-    "docker:shell": "docker exec -it linkage-widget /bin/sh"
+    "docker:shell": "docker exec -it linkage-widget /bin/sh",
+    "format": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --write ."
   }
 }
