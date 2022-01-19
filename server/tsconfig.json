@@ -1,10 +1,10 @@
 {
-    "compilerOptions": {
-      "module": "commonjs",
-      "esModuleInterop": true,
-      "target": "es6",
-      "outDir": "./build",
-      "strict": true,
-      "allowJs": true
-    }
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es6",
+    "outDir": "./build",
+    "strict": true,
+    "allowJs": true
   }
+}
