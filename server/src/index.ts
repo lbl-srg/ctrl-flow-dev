@@ -4,10 +4,11 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 
-import * as parser from "../../dependencies/modelica-json/lib/parser";
-import { json } from "stream/consumers";
+import fs from "fs";
+import tmp from "tmp";
 
 import config from "./config";
+import * as parser from "../../dependencies/modelica-json/lib/parser";
 
 const app = express();
 
@@ -19,17 +20,26 @@ app.use(bodyParser.json());
 const logMode = config.NODE_ENV == "development" ? "dev" : "combined";
 app.use(morgan(logMode));
 
+// TODO: Investigate if 'tmp.dirSync' can be used to create the directory
+// I haven't found the correct way to clean up on app exit/restart
+const tempDirPath = "/tmp/tmp-linkage-widget";
+if (!fs.existsSync(tempDirPath)) {
+  fs.mkdirSync(tempDirPath);
+}
+
 // accept json in body, hand off to service
 app.get("/", (req, res) => {
   res.send("Hello world");
 });
 
 app.post("/api/jsontomodelica", async (req, res) => {
-  // const jsonToConvert = req.body;
-  // // TODO: a better place to store converted modelica needs to be found.
-  // const modelica = parser.convertToModelica(jsonToConvert, "./modelica");
+  const jsonToConvert = req.body;
+  const tmpFile = tmp.fileSync();
 
-  res.send("TODO: convert json to modelica");
+  fs.writeSync(tmpFile.fd, JSON.stringify(jsonToConvert));
+  const modelica = parser.convertToModelica(tmpFile.name, tempDirPath);
+
+  res.send(modelica);
 });
 
 app.post("/api/modelicatojson", async (req, res) => {
