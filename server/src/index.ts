@@ -23,6 +23,13 @@ app.use(bodyParser.json());
 const logMode = config.NODE_ENV == "development" ? "dev" : "combined";
 app.use(morgan(logMode));
 
+// TODO: Investigate if 'tmp.dirSync' can be used to create the directory
+// I haven't found the correct way to clean up on app exit/restart
+const tempDirPath = '/tmp/tmp-linkage-widget'
+if (!fs.existsSync(tempDirPath)){
+  fs.mkdirSync(tempDirPath);
+}
+
 // accept json in body, hand off to service
 app.get("/", (req, res) => {
   res.send("Hello world");
@@ -30,12 +37,10 @@ app.get("/", (req, res) => {
 
 app.post('/api/jsontomodelica', async (req, res) => {
     const jsonToConvert = req.body;
-    // 'tmp' module takes care of file cleanup
     const tmpFile = tmp.fileSync();
-    fs.writeSync(tmpFile.fd, JSON.stringify(jsonToConvert));
 
-    // TODO: a better place to store converted modelica needs to be found.
-    const modelica = parser.convertToModelica(tmpFile.name, "./modelica");
+    fs.writeSync(tmpFile.fd, JSON.stringify(jsonToConvert));
+    const modelica = parser.convertToModelica(tmpFile.name, tempDirPath);
 
     res.send(modelica);
 });
