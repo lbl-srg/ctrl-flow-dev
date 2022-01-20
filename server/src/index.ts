@@ -3,15 +3,12 @@ import compression from "compression";
 import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
-import { json } from "stream/consumers";
 
-import fs from 'fs';
-import tmp from 'tmp';
+import fs from "fs";
+import tmp from "tmp";
 
 import config from "./config";
 import * as parser from "../../dependencies/modelica-json/lib/parser";
-
-
 
 const app = express();
 
@@ -25,8 +22,8 @@ app.use(morgan(logMode));
 
 // TODO: Investigate if 'tmp.dirSync' can be used to create the directory
 // I haven't found the correct way to clean up on app exit/restart
-const tempDirPath = '/tmp/tmp-linkage-widget'
-if (!fs.existsSync(tempDirPath)){
+const tempDirPath = "/tmp/tmp-linkage-widget";
+if (!fs.existsSync(tempDirPath)) {
   fs.mkdirSync(tempDirPath);
 }
 
@@ -35,14 +32,14 @@ app.get("/", (req, res) => {
   res.send("Hello world");
 });
 
-app.post('/api/jsontomodelica', async (req, res) => {
-    const jsonToConvert = req.body;
-    const tmpFile = tmp.fileSync();
+app.post("/api/jsontomodelica", async (req, res) => {
+  const jsonToConvert = req.body;
+  const tmpFile = tmp.fileSync();
 
-    fs.writeSync(tmpFile.fd, JSON.stringify(jsonToConvert));
-    const modelica = parser.convertToModelica(tmpFile.name, tempDirPath);
+  fs.writeSync(tmpFile.fd, JSON.stringify(jsonToConvert));
+  const modelica = parser.convertToModelica(tmpFile.name, tempDirPath);
 
-    res.send(modelica);
+  res.send(modelica);
 });
 
 app.post("/api/modelicatojson", async (req, res) => {
