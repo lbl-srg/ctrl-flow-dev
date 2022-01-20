@@ -1,6 +1,6 @@
 import request from "supertest";
 
-import { BUS_JSON, BUS_MODELICA } from './staticData';
+import { BUS_JSON, BUS_MODELICA } from '../static-data/modelica';
 
 const PORT = process.env.PORT ? process.env.port : 3000;
 
