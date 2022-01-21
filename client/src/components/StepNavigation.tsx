@@ -118,6 +118,11 @@ const JumpNav = () => {
   );
 };
 
+/**
+ * Accepts a step number and returns a correspoding URL
+ * @param step the step number you are on. This will match an index in the `steps` constant
+ * @returns the path that will take you to the correct step
+ */
 const getStepPath = (step: number) => {
   if (step > 0 && step <= 6) {
     return `/${steps[step].toLowerCase()}`;
@@ -126,6 +131,10 @@ const getStepPath = (step: number) => {
   return "/";
 };
 
+/**
+ * Custom hook that checks the current path and returns the corresponding step number
+ * @returns the step number you are on. This will match an index in the `steps` constant
+ */
 const useCurrentStep = () => {
   for (const key in steps) {
     if (useMatch(steps[key])) {
