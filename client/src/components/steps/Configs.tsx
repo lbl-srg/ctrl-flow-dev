@@ -1,11 +1,18 @@
+import { Fragment } from "react";
 import Sidebarlayout from "../layouts/SidebarLayout";
+import SlideOut from "../modal/SlideOut";
 
 // step 3
 const Configs = () => (
   <Sidebarlayout
     heading="Configurations"
     contentLeft={<p>hello</p>}
-    contentRight={<p>world</p>}
+    contentRight={
+      <Fragment>
+        <p>world</p>
+        <SlideOut />
+      </Fragment>
+    }
   />
 );
 
