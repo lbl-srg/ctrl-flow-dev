@@ -35,9 +35,7 @@ const EditDetailsModal = ({
   ...props
 }: EditDetailsModalProps & ButtonProps) => {
   const { saveProjectDetails } = useStore((state) => ({
-    projectDetails: state.projectDetails,
     saveProjectDetails: state.saveProjectDetails,
-    incrementStep: state.incrementStep,
   }));
   const [isOpen, setOpen] = useState(false);
 

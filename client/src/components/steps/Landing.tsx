@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react/macro";
-import { useStore } from "../../store/store";
+import { useNavigate } from "react-router-dom";
 
 import Button from "../Button";
 import EditDetailsModal from "../modal/EditDetailsModal";
@@ -74,12 +74,15 @@ const buttonCss = css`
 `;
 
 const CreateNewButton = () => {
-  const incrementStep = useStore((state) => state.incrementStep);
+  const navigate = useNavigate();
+
   return (
     <EditDetailsModal
       modalTitle="Create New Project"
       submitText="Create Project"
-      afterSubmit={incrementStep}
+      afterSubmit={() => {
+        navigate("/details");
+      }}
       variant="outline"
       css={buttonCss}
     >
@@ -89,7 +92,6 @@ const CreateNewButton = () => {
 };
 
 const UploadButton = () => {
-  // const incrementStep = useStore((state) => state.incrementStep);
   return (
     <Button
       variant="outline"
