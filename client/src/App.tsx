@@ -1,7 +1,8 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react/macro";
-import { ReactNode } from "react";
+import { Routes, Route } from "react-router-dom";
+
 import Configs from "./components/steps/Configs";
 import Details from "./components/steps/Details";
 import Landing from "./components/steps/Landing";
@@ -9,11 +10,9 @@ import Quantities from "./components/steps/Quantities";
 import Results from "./components/steps/Results";
 import Schedules from "./components/steps/Schedules";
 import Systems from "./components/steps/Systems";
-import { useStore } from "./store/store";
 import { fonts } from "./styleHelpers";
 
 const App = () => {
-  const step = useStore((state) => state.currentStep);
   return (
     <div
       css={css`
@@ -21,46 +20,17 @@ const App = () => {
         ${fonts}
       `}
     >
-      {getStepComponent(step)}
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/details" element={<Details />} />
+        <Route path="/systems" element={<Systems />} />
+        <Route path="/configs" element={<Configs />} />
+        <Route path="/quantities" element={<Quantities />} />
+        <Route path="/schedules" element={<Schedules />} />
+        <Route path="/results" element={<Results />} />
+      </Routes>
     </div>
   );
-};
-
-const getStepComponent = (step: number) => {
-  let component: ReactNode;
-
-  switch (step) {
-    case 1:
-      component = <Details />;
-      break;
-
-    case 2:
-      component = <Systems />;
-      break;
-
-    case 3:
-      component = <Configs />;
-      break;
-
-    case 4:
-      component = <Quantities />;
-      break;
-
-    case 5:
-      component = <Schedules />;
-      break;
-
-    case 6:
-      component = <Results />;
-      break;
-
-    case 0:
-    default:
-      component = <Landing />;
-      break;
-  }
-
-  return component;
 };
 
 export default App;

@@ -5,10 +5,11 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 
 import App from "./App";
 
-beforeEach(() => render(<App />));
+beforeEach(() => render(<App />, { wrapper: MemoryRouter }));
 
 afterEach(() => cleanup());
 

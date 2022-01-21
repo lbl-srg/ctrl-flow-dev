@@ -2,9 +2,10 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react/macro";
 import styled from "@emotion/styled/macro";
+import { Link, useMatch } from "react-router-dom";
+
 import { colors, dropShadow } from "../styleHelpers";
-import { useStore } from "../store/store";
-import Button from "./Button";
+import Button, { LinkButton } from "./Button";
 
 export const FOOTER_NAV_HEIGHT = "5rem";
 
@@ -19,46 +20,38 @@ const steps = [
 ];
 
 const StepNavigation = () => {
-  const { currentStep, incrementStep, decrementStep, jumpToStep } = useStore(
-    (state) => ({
-      currentStep: state.currentStep,
-      incrementStep: state.incrementStep,
-      decrementStep: state.decrementStep,
-      jumpToStep: state.jumpToStep,
-    }),
-  );
-
   return (
     <NavContainer>
       <NavItemContainer>
-        <BackButton currentStep={currentStep} action={decrementStep} />
+        <BackButton />
       </NavItemContainer>
 
-      <JumpNav currentStep={currentStep} action={jumpToStep} />
+      <JumpNav />
 
       <NavItemContainer
         css={css`
           text-align: right;
         `}
       >
-        <NextButton currentStep={currentStep} action={incrementStep} />
+        <NextButton />
       </NavItemContainer>
     </NavContainer>
   );
 };
 
-interface NavButtonProps {
-  currentStep: number;
-  action: () => void;
-}
+const BackButton = () => {
+  const currentStep = useCurrentStep();
 
-const BackButton = ({ currentStep, action }: NavButtonProps) => (
-  <Button variant="link" onClick={action}>
-    ← Back {currentStep - 1 > 0 && `to ${steps[currentStep - 1]}`}
-  </Button>
-);
+  return (
+    <LinkButton variant="link" to={getStepPath(currentStep - 1)}>
+      ← Back {currentStep - 1 > 0 && `to ${steps[currentStep - 1]}`}
+    </LinkButton>
+  );
+};
 
-const NextButton = ({ currentStep, action }: NavButtonProps) => {
+const NextButton = () => {
+  const currentStep = useCurrentStep();
+
   if (currentStep + 1 > 6) {
     return (
       <Button
@@ -71,19 +64,16 @@ const NextButton = ({ currentStep, action }: NavButtonProps) => {
   }
 
   return (
-    <Button variant="filled" onClick={action}>
+    <LinkButton to={getStepPath(currentStep + 1)} variant="filled">
       Next Step: {steps[currentStep + 1]}
-    </Button>
+    </LinkButton>
   );
 };
 
-interface JumpNavProps {
-  currentStep: number;
-  action: (step: number) => void;
-}
-
-const JumpNav = ({ currentStep, action }: JumpNavProps) => {
+const JumpNav = () => {
+  const currentStep = useCurrentStep();
   const displaySteps = steps.slice(1);
+
   return (
     <NavItemContainer
       css={css`
@@ -94,17 +84,19 @@ const JumpNav = ({ currentStep, action }: JumpNavProps) => {
         {displaySteps.map((stepName) => {
           const stepIndex = steps.indexOf(stepName);
           return (
-            <a
+            <Link
               css={css`
                 display: inline-block;
                 text-align: center;
                 width: 7rem;
                 height: 3.5rem;
-                cursor: pointer;
                 flex-shrink: 0;
+                color: ${colors.black};
+                font-weight: bold;
+                text-decoration: none;
               `}
               key={stepName}
-              onClick={() => action(stepIndex)}
+              to={getStepPath(stepIndex)}
             >
               <Circle
                 css={
@@ -117,13 +109,41 @@ const JumpNav = ({ currentStep, action }: JumpNavProps) => {
                 }
               />
               {stepName}
-            </a>
+            </Link>
           );
         })}
       </JumpNavContainer>
       <CircleConnector />
     </NavItemContainer>
   );
+};
+
+/**
+ * Accepts a step number and returns a correspoding URL
+ * @param step the step number you are on. This will match an index in the `steps` constant
+ * @returns the path that will take you to the correct step
+ */
+const getStepPath = (step: number) => {
+  if (step > 0 && step <= 6) {
+    return `/${steps[step].toLowerCase()}`;
+  }
+
+  return "/";
+};
+
+/**
+ * Custom hook that checks the current path and returns the corresponding step number
+ * @returns the step number you are on. This will match an index in the `steps` constant
+ */
+const useCurrentStep = () => {
+  for (const key in steps) {
+    if (useMatch(steps[key])) {
+      return parseInt(key);
+    }
+  }
+
+  // if no match is found, assume we're on the landing page
+  return 0;
 };
 
 const JumpNavContainer = styled.div`

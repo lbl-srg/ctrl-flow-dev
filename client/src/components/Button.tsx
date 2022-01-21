@@ -3,6 +3,7 @@
 import { jsx, css } from "@emotion/react/macro";
 import styled from "@emotion/styled";
 import { ReactNode, ButtonHTMLAttributes } from "react";
+import { Link, LinkProps } from "react-router-dom";
 
 import { colors } from "../styleHelpers";
 
@@ -44,6 +45,22 @@ export interface ButtonProps extends ButtonHTMLAttributes<unknown> {
 
 const Button = ({ variant = "filled", ...props }: ButtonProps) => (
   <BaseButton css={variantStyles[variant]} {...props} />
+);
+
+export const LinkButton = ({
+  variant = "filled",
+  ...props
+}: ButtonProps & LinkProps) => (
+  <BaseButton
+    as={Link}
+    css={[
+      variantStyles[variant],
+      css`
+        text-decoration: none;
+      `,
+    ]}
+    {...props}
+  />
 );
 
 export default Button;
