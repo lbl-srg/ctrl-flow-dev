@@ -5,6 +5,7 @@
     "target": "es6",
     "outDir": "./build",
     "strict": true,
-    "allowJs": true
+    "allowJs": true,
+    "sourceMap": true,
   }
 }

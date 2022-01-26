@@ -27,3 +27,29 @@
    ```
 
 1. Run `npm run start` to start the development server
+
+## Debugging in the container with VS Code
+
+1. Stop the current linkage-widget container: `npm run docker:stop`
+1. Start a debug container: `npm run docker:debug`.
+1. In VS Code, select the `Run and Debug` tab in the left hand column, click the gear/cog icon at the top of the opened column and add the following `launch.json`:
+   ```
+   {
+      "version": "0.2.0",
+      "configurations": [
+         {
+            "type": "node",
+            "request": "attach",
+            "name": "Docker: Attach",
+            "port": 9229,
+            "address": "localhost",
+            "localRoot": "${workspaceFolder}/server",
+            "remoteRoot": "/app",
+            "outFiles": [
+               "${workspaceFolder}/build/app/**/*.js"
+            ],
+         }
+      ]
+   }
+   ```
+1. With the `Run and Debug` column open, at the top click play to run `Docker: Attach`. At this point you should be able to set and hit breakpoints in the server source code.
