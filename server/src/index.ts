@@ -43,8 +43,18 @@ app.post("/api/jsontomodelica", async (req, res) => {
 });
 
 app.post("/api/modelicatojson", async (req, res) => {
-  // TODO
-  res.send("TODO: convert modelica to JSON");
+  const request = req.body;
+  const tmpFile = tmp.fileSync();
+  const parseMode = request.parseMode;
+  const modelicaToConvert = request.modelica;
+  const outputFormat: 'json' | 'raw-json' = request.format;
+  const prettyPrint = false; // format json
+
+  fs.writeSync(tmpFile.fd, JSON.stringify(modelicaToConvert));
+  const json = parser.getJsons([tmpFile.name], parseMode, outputFormat, tempDirPath, prettyPrint);
+
+  console.log(json);
+  res.send(json);
 });
 
 app.listen(config.PORT, () => {
