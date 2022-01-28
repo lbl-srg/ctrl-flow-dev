@@ -45,16 +45,20 @@ app.post("/api/jsontomodelica", async (req, res) => {
 app.post("/api/modelicatojson", async (req, res) => {
   const request = req.body;
   const tmpFile = tmp.fileSync();
-  const parseMode = request.parseMode;
-  const modelicaToConvert = request.modelica;
-  const outputFormat: 'json' | 'raw-json' = request.format;
+  const { format, modelica, parseMode } = request;
   const prettyPrint = false; // format json
 
-  fs.writeSync(tmpFile.fd, JSON.stringify(modelicaToConvert));
-  const json = parser.getJsons([tmpFile.name], parseMode, outputFormat, tempDirPath, prettyPrint);
+  fs.writeSync(tmpFile.fd, modelica);
+  let response: any;
 
-  console.log(json);
-  res.send(json);
+  try {
+    const jsonList = parser.getJsons([tmpFile.name], parseMode, format, tempDirPath, prettyPrint) as string[];
+    response = jsonList[0];
+  } catch (error) {
+    response = error;
+  }
+
+  res.send(response);
 });
 
 app.listen(config.PORT, () => {
