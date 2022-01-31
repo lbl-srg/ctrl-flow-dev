@@ -44,16 +44,20 @@ app.post("/api/jsontomodelica", async (req, res) => {
 
 app.post("/api/modelicatojson", async (req, res) => {
   const request = req.body;
-  const tmpFile = tmp.fileSync();
+  const modelicaFile = tmp.fileSync();
   const { format, modelica, parseMode } = request;
   const prettyPrint = false; // format json
 
-  fs.writeSync(tmpFile.fd, modelica);
+  fs.writeSync(modelicaFile.fd, modelica);
   let response: any;
 
   try {
-    const jsonList = parser.getJsons([tmpFile.name], parseMode, format, tempDirPath, prettyPrint) as string[];
-    response = jsonList[0];
+    // getJsons will aways return an empty array (but it looks like it should?)
+    parser.getJsons([modelicaFile.name], parseMode, format, tempDirPath, prettyPrint);
+    // path to file: /tmp-directory/json/tmp/<tmp-file-name>.
+    // NOTE: 'modelicaFile.name' is a full path name (e.g. '/tmp/<tmp-file-name>)!
+
+    response = fs.readFileSync(`${tempDirPath}/json/${modelicaFile.name}`, {encoding: "utf8"});
   } catch (error) {
     response = error;
   }
