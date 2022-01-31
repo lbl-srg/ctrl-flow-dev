@@ -14,7 +14,7 @@ export const stripSpacing: (str: string) => string = (str) => {
  * Removes 'modelicaPath' and 'fullMoFilePath' as this path is randomized on the backend
  * TODO: what are these file paths for? Can it be removed? Reporting absolute server
  * paths back is probably not a good idea.
- * @param json 
+ * @param o: object
  * @returns string 
  */
 export const stripFilePaths: (o: any) => string = (o) => {
