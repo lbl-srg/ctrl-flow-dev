@@ -34,11 +34,13 @@ app.get("/", (req, res) => {
 
 app.post("/api/jsontomodelica", async (req, res) => {
   const jsonToConvert = req.body;
-  const tmpFile = tmp.fileSync();
+  const jsonFile = tmp.fileSync();
 
-  fs.writeSync(tmpFile.fd, JSON.stringify(jsonToConvert));
-  const modelica = parser.convertToModelica(tmpFile.name, tempDirPath);
+  fs.writeSync(jsonFile.fd, JSON.stringify(jsonToConvert));
+  const modelica = parser.convertToModelica(jsonFile.name, tempDirPath);
 
+  // remove temp file
+  jsonFile.removeCallback();
   res.send(modelica);
 });
 
@@ -65,6 +67,8 @@ app.post("/api/modelicatojson", async (req, res) => {
     response = error;
   }
 
+  // remove temp file
+  modelicaFile.removeCallback();
   res.send(response);
 });
 
