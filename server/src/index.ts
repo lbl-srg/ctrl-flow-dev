@@ -52,13 +52,16 @@ app.post("/api/modelicatojson", async (req, res) => {
   let response: any;
 
   try {
-    // getJsons will aways return an empty array (but it looks like it should?)
+    // getJsons will aways return an empty array (but it looks like it should?).
+    // To get around this 
     parser.getJsons([modelicaFile.name], parseMode, format, tempDirPath, prettyPrint);
-    // path to file: /tmp-directory/json/tmp/<tmp-file-name>.
     // NOTE: 'modelicaFile.name' is a full path name (e.g. '/tmp/<tmp-file-name>)!
-
+    // FOr now I'm using a kludge to re-use this full path to get to the output path
+    // full path looks something like: /<tmpDirPath>/json/tmp/<tmp-file-name>
+    // TODO: figure out a better way to coordinate tempfile generation and teardown
     response = fs.readFileSync(`${tempDirPath}/json/${modelicaFile.name}`, {encoding: "utf8"});
   } catch (error) {
+    // TODO: put in a proper error response
     response = error;
   }
 
