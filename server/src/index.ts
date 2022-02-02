@@ -34,17 +34,42 @@ app.get("/", (req, res) => {
 
 app.post("/api/jsontomodelica", async (req, res) => {
   const jsonToConvert = req.body;
-  const tmpFile = tmp.fileSync();
+  const jsonFile = tmp.fileSync();
 
-  fs.writeSync(tmpFile.fd, JSON.stringify(jsonToConvert));
-  const modelica = parser.convertToModelica(tmpFile.name, tempDirPath);
+  fs.writeSync(jsonFile.fd, JSON.stringify(jsonToConvert));
+  const modelica = parser.convertToModelica(jsonFile.name, tempDirPath);
 
+  // remove temp file
+  jsonFile.removeCallback();
   res.send(modelica);
 });
 
 app.post("/api/modelicatojson", async (req, res) => {
-  // TODO
-  res.send("TODO: convert modelica to JSON");
+  const request = req.body;
+  const modelicaFile = tmp.fileSync();
+  const { format, modelica, parseMode } = request;
+  const prettyPrint = false; // format json
+
+  fs.writeSync(modelicaFile.fd, modelica);
+  let response: any;
+
+  try {
+    // getJsons will aways return an empty array (but it looks like it should?).
+    // To get around this read from the file that gets output during parsing
+    parser.getJsons([modelicaFile.name], parseMode, format, tempDirPath, prettyPrint);
+    // NOTE: 'modelicaFile.name' is a full path name (e.g. '/tmp/<tmp-file-name>)!
+    // For now I'm using a kludge to re-use this full path to get to the output path
+    // full path looks something like: /<tmpDirPath>/json/tmp/<tmp-file-name>
+    // TODO: figure out a better way to coordinate tempfile generation and teardown
+    response = fs.readFileSync(`${tempDirPath}/json/${modelicaFile.name}`, {encoding: "utf8"});
+  } catch (error) {
+    // TODO: put in a proper error response
+    response = error;
+  }
+
+  // remove temp file
+  modelicaFile.removeCallback();
+  res.send(response);
 });
 
 app.listen(config.PORT, () => {
