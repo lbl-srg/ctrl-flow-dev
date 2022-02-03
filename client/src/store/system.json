@@ -1,0 +1,103 @@
+
+{
+    "equipmentType": [
+        {"id": 1, "name": "Ventilation, Air Handlers and Other Fans"},
+        {"id": 2, "name": "Zone Equipment"}
+    ],
+    "equipment": [
+        {
+            "id": 1,
+            "name": "Multiple Zone VAV Air Handler",
+            "equipmentType": 1,
+            "options": [1, 12]
+        },
+        {
+            "id": 2,
+            "name": "Dual Fan Dual Duct VAV Air Handler",
+            "equipmentType": 1
+        },
+        {
+            "id": 3,
+            "name": "Dedicated Outdoor Air Systems",
+            "equipmentType": 1
+        },
+        {
+            "id": 4,
+            "name": "Single Zone VAV Air Handler",
+            "equipmentType": 1
+        },
+        {
+            "id": 5,
+            "name": "Relief Fans",
+            "equipmentType": 1
+        },
+        {
+            "id": 6,
+            "name": "Exhaust Fans",
+            "equipmentType": 1
+        },
+        {
+            "id": 7,
+            "name": "VAV Terminal Unit with Reheat",
+            "equipmentType": 2,
+            "options": [13]
+        }
+    ],
+    "options": [
+        {
+            "id": 1,
+            "name": "Heating Coil",
+            "type": "dropdown",
+            "group": "Heating coil (preheat position)",
+            "options": [2, 3, 4]
+        },
+        { "id": 2, "type": "final", "name": "No coil"},
+        { 
+            "id": 3,
+            "type": "dropdown",
+            "name": "Water coil",
+            "options": [6, 7, 8, 9]
+        },
+        { 
+            "id": 4,
+            "type": "dropdown",
+            "name": "Steam",
+            "options": [6]
+        },
+        {
+            "id": 5,
+            "name": "Electric",
+            "type": "dropdown",
+            "options": [10, 11]
+        },
+        { "id": 6, "type": "final", "name": "Two-way valve"},
+        { "id": 7, "type": "final", "name": "Three-way valve"},
+        { "id": 8, "type": "final", "name": "2WV with pumped coil"},
+        { "id": 9, "type": "final", "name": "3WV with pumped coil"},
+        { "id": 10, "type": "final", "name": "Staged"},
+        { "id": 11, "type": "final", "name": "Modulating"},
+        { 
+            "id": 12,
+            "type": "checkbox",
+            "name": "Relief (exhaust) fluid port",
+            "group": "Configuration",
+            "default": false
+        },
+        {
+            "id": 13,
+            "type": "dropdown",
+            "name": "Reheat Coil",
+            "group": "",
+            "options": [14]
+        },
+        {
+            "id": 14,
+            "type": "dropdown",
+            "name": "Water coil",
+            "options": [15, 16, 17]
+        },
+        { "id": 15, "type": "final", "name": "Two-way valve - Modulating" },
+        { "id": 16, "type": "final", "name": "Two-way valve - Two-position"},
+        { "id": 17, "type": "final", "name": "three-way valve"}
+    ]
+}
