@@ -2,14 +2,18 @@
 {
     "equipmentType": [
         {"id": 1, "name": "Ventilation, Air Handlers and Other Fans"},
-        {"id": 2, "name": "Zone Equipment"}
+        {"id": 2, "name": "Zone Equipment"},
+        {"id": 3, "name": "Chilled Water Plants"},
+        {"id": 4, "name": "Heating Plants"},
+        {"id": 5, "name": "Domestic Hot Water (DHW)"},
+        {"id": 6, "name": "DHC Consumer Interface"}
     ],
     "equipment": [
         {
             "id": 1,
             "name": "Multiple Zone VAV Air Handler",
             "equipmentType": 1,
-            "options": [1, 12]
+            "options": [1, 12, 18, 28]
         },
         {
             "id": 2,
@@ -41,6 +45,138 @@
             "name": "VAV Terminal Unit with Reheat",
             "equipmentType": 2,
             "options": [13]
+        },
+        {
+            "id": 8,
+            "name": "VAV Terminal Unit - Cooling Only",
+            "equipmentType": 2,
+            "options": []
+        },
+        {
+            "id": 9,
+            "name": "VAV Dual-Duct Terminal Unit",
+            "equipmentType": 2,
+            "options": []
+        },
+        {
+            "id": 10,
+            "name": "VAV Parallel Fan Powered",
+            "equipmentType": 2,
+            "options": []
+        },
+        {
+            "id": 11,
+            "name": "Fan Coil Units",
+            "equipmentType": 2,
+            "options": [] 
+        },
+        {
+            "id": 12,
+            "name": "Water Source Heat Pumps",
+            "equipmentType": 2,
+            "options": []
+        },
+        {
+            "id": 13,
+            "name": "Unit Heaters",
+            "equipmentType": 2,
+            "options": []
+        },
+        {
+            "id": 14,
+            "name": "Infrared Heater",
+            "equipmentType": 2,
+            "options": []
+        },
+        {
+            "id": 15,
+            "name": "VRF Indoor Unit (Evaporator)",
+            "equipmentType": 2,
+            "options": []
+        },
+        {
+            "id": 16,
+            "name": "Split System",
+            "equipmentType": 2,
+            "options": []
+        },
+        {
+            "id": 17,
+            "name": "PTAC",
+            "equipmentType": 2,
+            "options": []
+        },
+        {
+            "id": 18,
+            "name": "Chilled Beams",
+            "equipmentType": 2,
+            "options": []
+        },
+        {
+            "id": 19,
+            "name": "Radiant Panels",
+            "equipmentType": 2,
+            "options": []
+        },
+        {
+            "id": 20,
+            "name": "Active Slabs",
+            "equipmentType": 2,
+            "options": []
+        },
+        {
+            "id": 21,
+            "name": "Baseboard Heat",
+            "equipmentType": 2,
+            "options": []
+        },
+        {
+            "id": 22,
+            "name": "Water-cooled",
+            "equipmentType": 3,
+            "options": []
+        },
+        {
+            "id": 23,
+            "name": "Air-cooled",
+            "equipmentType": 3,
+            "options": []
+        },
+        {
+            "id": 24,
+            "name": "Hot Water Plants",
+            "equipmentType": 4,
+            "options": []
+        },
+        {
+            "id": 25,
+            "name": "Steam Plants",
+            "equipmentType": 4,
+            "options": []
+        },
+        {
+            "id": 26,
+            "name": "Chilled Water Heat Echanger",
+            "equipmentType": 6,
+            "options": []
+        },
+        {
+            "id": 27,
+            "name": "Hot Water Heat Exchanger",
+            "equipmentType": 6,
+            "options": []
+        },
+        {
+            "id": 28,
+            "name": "Steam to Hot Water Heat Exchanger",
+            "equipmentType": 6,
+            "options": []
+        },
+        {
+            "id": 29,
+            "name": "Direct Connection",
+            "equipmentType": 6,
+            "options": []
         }
     ],
     "options": [
@@ -98,6 +234,49 @@
         },
         { "id": 15, "type": "final", "name": "Two-way valve - Modulating" },
         { "id": 16, "type": "final", "name": "Two-way valve - Two-position"},
-        { "id": 17, "type": "final", "name": "three-way valve"}
+        { "id": 17, "type": "final", "name": "three-way valve"},
+        {
+            "id": 18,
+            "type": "dropdown",
+            "name": "Heat recovery",
+            "options": [19, 20, 21, 22]
+        },
+        { "id": 19, "type": "final", "name": "No heat recovery"},
+        { "id": 20, "type": "final", "name": "Plate heat exchanger"},
+        { "id": 21, "type": "final", "name": "Enthalpy wheel"},
+        { "id": 22, "type": "final", "name": "Run-around coil"},
+        {
+            "id": 23,
+            "type": "dropdown",
+            "name": "Outdoor air section",
+            "group": "Economizer",
+            "options": [24, 25, 26, 27]
+        },
+        { "id": 24, "type": "final", "name": "No economizer"},
+        { "id": 25, "type": "final", "name": "Single common OA damper (modulated) with AFMS"},
+        { "id": 26, "type": "final", "name": "Dedicated minimum OA damper (two-position) with differential pressure sensor"},
+        { "id": 27, "type": "final", "name": "Dedicated minimum OA damper (modulated) with AFMS"},
+        {
+            "id": 28,
+            "type": "dropdown",
+            "name": "Exhaust/relief/return section",
+            "group": "Economizer",
+            "options": [24, 29, 30, 31, 32, 33]
+        },
+        { "id": 29, "type": "final", "name": "No relief fan - Barometric relief damper"},
+        { "id": 30, "type": "final", "name": "No relief fan - Modulated relief damper"},
+        { "id": 31, "type": "final", "name": "Relief fan - Two-position relief damper"},
+        { "id": 32, "type": "final", "name": "Return fan with pressure control - Modulated relief damper"},
+        { "id": 33, "type": "final", "name": "Return fan with airflow tracking - Modulated relief damper"},
+        {
+            "id": 34,
+            "type": "dropdown",
+            "name": "Blow-through fan",
+            "group": "Fan Type",
+            "options": [35, 36, 37]
+        },
+        { "id": 35, "type": "final", "name": "No fan"},
+        { "id": 36, "type": "final", "name": "Single fan"},
+        { "id": 38, "type": "final", "name": "Multiple fans (identical)"}
     ]
 }
