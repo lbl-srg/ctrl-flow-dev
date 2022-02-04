@@ -27,7 +27,7 @@ export interface System {
 
 export interface Option {
   id: number;
-  type: 'dropdown' | 'string' | 'boolean' | 'number' | 'final';
+  type: "dropdown" | "string" | "boolean" | "number" | "final";
   name: string;
   options?: Option[];
 }
@@ -72,8 +72,10 @@ export const useStore = create<State>(
       projectDetails: {},
       saveProjectDetails: (projectDetails: Partial<ProjectDetails>) =>
         set(() => ({ projectDetails })),
-      setTemplates: (templates: Partial<SystemTemplates>) => 
-        set(() => {templates}),
+      setTemplates: (templates: Partial<SystemTemplates>) =>
+        set(() => {
+          templates;
+        }),
     }),
     {
       name: "linkage-storage",
@@ -84,4 +86,4 @@ export const useStore = create<State>(
 export const sanatizeStep = (step: number) => (step > 6 || step < 0 ? 0 : step);
 
 // intialize mock values
-useStore.setState({templates: mockTemplates as SystemTemplates});
+useStore.setState({ templates: mockTemplates as SystemTemplates });
