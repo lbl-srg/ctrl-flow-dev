@@ -1,6 +1,6 @@
 
 {
-    "equipmentType": [
+    "systemType": [
         {"id": 1, "name": "Ventilation, Air Handlers and Other Fans"},
         {"id": 2, "name": "Zone Equipment"},
         {"id": 3, "name": "Chilled Water Plants"},
@@ -8,174 +8,174 @@
         {"id": 5, "name": "Domestic Hot Water (DHW)"},
         {"id": 6, "name": "DHC Consumer Interface"}
     ],
-    "equipment": [
+    "system": [
         {
             "id": 1,
             "name": "Multiple Zone VAV Air Handler",
-            "equipmentType": 1,
+            "systemType": 1,
             "options": [1, 12, 18, 28]
         },
         {
             "id": 2,
             "name": "Dual Fan Dual Duct VAV Air Handler",
-            "equipmentType": 1
+            "systemType": 1
         },
         {
             "id": 3,
             "name": "Dedicated Outdoor Air Systems",
-            "equipmentType": 1
+            "systemType": 1
         },
         {
             "id": 4,
             "name": "Single Zone VAV Air Handler",
-            "equipmentType": 1
+            "systemType": 1
         },
         {
             "id": 5,
             "name": "Relief Fans",
-            "equipmentType": 1
+            "systemType": 1
         },
         {
             "id": 6,
             "name": "Exhaust Fans",
-            "equipmentType": 1
+            "systemType": 1
         },
         {
             "id": 7,
             "name": "VAV Terminal Unit with Reheat",
-            "equipmentType": 2,
+            "systemType": 2,
             "options": [13]
         },
         {
             "id": 8,
             "name": "VAV Terminal Unit - Cooling Only",
-            "equipmentType": 2,
+            "systemType": 2,
             "options": []
         },
         {
             "id": 9,
             "name": "VAV Dual-Duct Terminal Unit",
-            "equipmentType": 2,
+            "systemType": 2,
             "options": []
         },
         {
             "id": 10,
             "name": "VAV Parallel Fan Powered",
-            "equipmentType": 2,
+            "systemType": 2,
             "options": []
         },
         {
             "id": 11,
             "name": "Fan Coil Units",
-            "equipmentType": 2,
+            "systemType": 2,
             "options": [] 
         },
         {
             "id": 12,
             "name": "Water Source Heat Pumps",
-            "equipmentType": 2,
+            "systemType": 2,
             "options": []
         },
         {
             "id": 13,
             "name": "Unit Heaters",
-            "equipmentType": 2,
+            "systemType": 2,
             "options": []
         },
         {
             "id": 14,
             "name": "Infrared Heater",
-            "equipmentType": 2,
+            "systemType": 2,
             "options": []
         },
         {
             "id": 15,
             "name": "VRF Indoor Unit (Evaporator)",
-            "equipmentType": 2,
+            "systemType": 2,
             "options": []
         },
         {
             "id": 16,
             "name": "Split System",
-            "equipmentType": 2,
+            "systemType": 2,
             "options": []
         },
         {
             "id": 17,
             "name": "PTAC",
-            "equipmentType": 2,
+            "systemType": 2,
             "options": []
         },
         {
             "id": 18,
             "name": "Chilled Beams",
-            "equipmentType": 2,
+            "systemType": 2,
             "options": []
         },
         {
             "id": 19,
             "name": "Radiant Panels",
-            "equipmentType": 2,
+            "systemType": 2,
             "options": []
         },
         {
             "id": 20,
             "name": "Active Slabs",
-            "equipmentType": 2,
+            "systemType": 2,
             "options": []
         },
         {
             "id": 21,
             "name": "Baseboard Heat",
-            "equipmentType": 2,
+            "systemType": 2,
             "options": []
         },
         {
             "id": 22,
             "name": "Water-cooled",
-            "equipmentType": 3,
+            "systemType": 3,
             "options": []
         },
         {
             "id": 23,
             "name": "Air-cooled",
-            "equipmentType": 3,
+            "systemType": 3,
             "options": []
         },
         {
             "id": 24,
             "name": "Hot Water Plants",
-            "equipmentType": 4,
+            "systemType": 4,
             "options": []
         },
         {
             "id": 25,
             "name": "Steam Plants",
-            "equipmentType": 4,
+            "systemType": 4,
             "options": []
         },
         {
             "id": 26,
             "name": "Chilled Water Heat Echanger",
-            "equipmentType": 6,
+            "systemType": 6,
             "options": []
         },
         {
             "id": 27,
             "name": "Hot Water Heat Exchanger",
-            "equipmentType": 6,
+            "systemType": 6,
             "options": []
         },
         {
             "id": 28,
             "name": "Steam to Hot Water Heat Exchanger",
-            "equipmentType": 6,
+            "systemType": 6,
             "options": []
         },
         {
             "id": 29,
             "name": "Direct Connection",
-            "equipmentType": 6,
+            "systemType": 6,
             "options": []
         }
     ],
