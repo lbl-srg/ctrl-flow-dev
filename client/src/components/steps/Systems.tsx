@@ -9,10 +9,19 @@ import Sidebarlayout from "../layouts/SidebarLayout";
 const Systems = () => (
   <Sidebarlayout
     heading="Add Systems"
-    contentLeft={<p>hello</p>}
+    contentLeft={<ContentLeft />}
     contentRight={<ContentRight />}
   />
 );
+
+const ContentLeft = () => {
+  const userSystems = useStore((state) => state.userProjects.systems);
+  return (
+    <ul>
+      {userSystems?.map(s => (<li key={s.id}>{s.name}</li>))}
+    </ul>
+  )
+}
 
 const ContentRight = () => {
   const templateSystems = useStore((state) => state.templates);
@@ -34,17 +43,29 @@ const ContentRight = () => {
 const SystemGroupList = (typeList: SystemType[], systems: System[]) => {
   // TODO: pass callback that matches the display text to the original
   // system and that then calls the zustand set method`
+  const userSystems = useStore(state => state.userProjects.systems) as System[];
+  const addSystem = useStore(state => state.addSystem);
+  const removeSystem = useStore(state => state.removeSystem);
+
   return typeList.map((type) =>
     MultiSelect(
       type.name,
-      systems.filter((s) => s.systemType === type.id).map((s) => {return {text: s.name, value: false};}),
-      (selection, value) => console.log(`${selection}: ${value}`)
-    ),
-  );
+      systems
+        .filter((s) => s.systemType === type.id)
+        .map((s) => {
+          const value = userSystems?.findIndex(userS => userS.id === s.id) >= 0;
+          return {text: s.name, value: value};
+        }),
+      (selection, value) =>  {
+        const system = systems.find(s => s.name === selection);
+        if (system) {
+          (value) ? addSystem(system) : removeSystem(system); 
+        }
+      })
+    );
 };
 
 const MultiSelect = (title: string, options: {text: string, value: boolean}[], handler: (s: string, value: boolean) => void) => {
-  // const optionList = options.map((option) => <li key="option">{option}</li>);
   return (
     <Fragment key={title}>
       <div>
