@@ -81,13 +81,22 @@ export const useStore = create<State>(
           templates;
         }),
       userProjects: {},
-      addSystem: (system: System) => set(produce((state: State) => {
-        state.userProjects.systems = (state.userProjects?.systems) ?
-          [...state.userProjects.systems as System[], system] : [system];
-      })),
-      removeSystem: (system: System) => set(produce((state: State) => {
-        state.userProjects.systems = state.userProjects.systems?.filter(s => s.id !== system.id) || state.userProjects.systems;
-      }))
+      addSystem: (system: System) =>
+        set(
+          produce((state: State) => {
+            state.userProjects.systems = state.userProjects?.systems
+              ? [...(state.userProjects.systems as System[]), system]
+              : [system];
+          }),
+        ),
+      removeSystem: (system: System) =>
+        set(
+          produce((state: State) => {
+            state.userProjects.systems =
+              state.userProjects.systems?.filter((s) => s.id !== system.id) ||
+              state.userProjects.systems;
+          }),
+        ),
     }),
     {
       name: "linkage-storage",
