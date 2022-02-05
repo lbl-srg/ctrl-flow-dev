@@ -1,5 +1,6 @@
 import create from "zustand";
 import { persist } from "zustand/middleware";
+import { produce } from "immer";
 
 import mockTemplates from "./system.json";
 
@@ -64,6 +65,9 @@ export interface State {
   saveProjectDetails: (projectDetails: Partial<ProjectDetails>) => void;
   templates?: SystemTemplates;
   setTemplates: (templates: SystemTemplates) => void;
+  userProjects: Partial<UserProjects>;
+  addSystem: (system: System) => void;
+  removeSystem: (system: System) => void;
 }
 
 export const useStore = create<State>(
@@ -76,6 +80,14 @@ export const useStore = create<State>(
         set(() => {
           templates;
         }),
+      userProjects: {},
+      addSystem: (system: System) => set(produce((state: State) => {
+        state.userProjects.systems = (state.userProjects?.systems) ?
+          [...state.userProjects.systems as System[], system] : [system];
+      })),
+      removeSystem: (system: System) => set(produce((state: State) => {
+        state.userProjects.systems = state.userProjects.systems?.filter(s => s.id !== system.id) || state.userProjects.systems;
+      }))
     }),
     {
       name: "linkage-storage",
