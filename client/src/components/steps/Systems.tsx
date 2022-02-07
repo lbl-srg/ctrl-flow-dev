@@ -46,8 +46,6 @@ const ContentRight = () => {
 };
 
 const SystemGroupList = (typeList: SystemType[], systems: System[]) => {
-  // TODO: pass callback that matches the display text to the original
-  // system and that then calls the zustand set method`
   const userSystems = useStore(
     (state) => state.userProjects.systems,
   ) as System[];
