@@ -22,10 +22,10 @@ const ContentLeft = () => {
       <Fragment>
         {systemTypes?.map(t =>
           <Fragment key={t.name}>
-            <h3>{t.name}</h3>
+            <a href={`#${t.name}`}><h3>{t.name}</h3></a>
             <ul>
               {userSystems?.filter(s => s.systemType === t.id)
-                .map(s => <li key={s.id}>{s.name}</li>)}
+                .map(s => <a  key={s.id} href={`#${t.name}-${s.name}`}><li>{s.name}</li></a>)}
             </ul>
           </Fragment>
         )}
@@ -37,6 +37,9 @@ const ContentRight = () => {
   const templateSystems = useStore((state) => state.templates);
   return (
     <Fragment>
+      <div>
+        Select the systems types you will configure:
+      </div>
       {SystemGroupList(templateSystems.systemType, templateSystems.system)}
     </Fragment>
   );
@@ -76,12 +79,14 @@ const MultiSelect = (
   options: { text: string; value: boolean }[],
   handler: (s: string, value: boolean) => void,
 ) => {
+  const helpText =''; // TODO: extract from template
+
   return (
     <Fragment key={title}>
       <div>
-        <h3>{title}</h3>
+        <a id={title}><h3>{title}</h3></a>
         {options.map((option) =>
-          OptionSelect(option.text, option.value, handler),
+          OptionSelect(option.text, option.value, helpText, handler, `${title}-${option.text}`),
         )}
       </div>
     </Fragment>
@@ -91,34 +96,52 @@ const MultiSelect = (
 const OptionSelect = (
   text: string,
   value: boolean,
+  helpText: string,
   handler: (text: string, value: boolean) => void,
+  id?: string
 ) => {
+  id = id || text;
   return (
     <Fragment key={text}>
-      <div>
-        <OptionLabel htmlFor="selected">{text}</OptionLabel>
-        <Checkbox
-          id="selected"
-          name="selected"
-          type="checkbox"
-          checked={value}
-          onChange={(e) => handler(text, e.target.checked)}
-        ></Checkbox>
-      </div>
+        <a id={id}>
+          <OptionSelectContainer>
+            <Checkbox
+              id={id}
+              name="selected"
+              type="checkbox"
+              checked={value}
+              onChange={(e) => handler(text, e.target.checked)}
+            ></Checkbox>
+            <OptionLabel htmlFor={id}>{text}</OptionLabel>
+            {OptionInfo(helpText)}
+          </OptionSelectContainer>
+        </a>
     </Fragment>
   );
 };
 
+const OptionInfo = (
+  text: string
+) => {
+  return (
+    <InfoIcon>[i]</InfoIcon>
+  )
+}
+
 const OptionLabel = styled.label`
   display: inline-block;
   font-weight: bold;
+  flex: 1;
 `;
 
 const Checkbox = styled.input`
   display: inline-block;
 `;
-const Container = styled.div`
-  width: 100%;
+const OptionSelectContainer = styled.div`
+  display: flex;
+  justify-content: flex-start;
 `;
+
+const InfoIcon = styled.div``
 
 export default Systems;
