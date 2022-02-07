@@ -15,31 +15,31 @@ const Systems = () => (
 );
 
 const ContentLeft = () => {
-  const userSystems = useStore((state) => state.userProjects.systems);
+  const { userSystems, systemTypes } = useStore((state) => 
+    ({userSystems: state.userProjects.systems, systemTypes: state.templates?.systemType}));
+
   return (
-    <ul>
-      {userSystems?.map((s) => (
-        <li key={s.id}>{s.name}</li>
-      ))}
-    </ul>
+      <Fragment>
+        {systemTypes?.map(t =>
+          <Fragment key={t.name}>
+            <h3>{t.name}</h3>
+            <ul>
+              {userSystems?.filter(s => s.systemType === t.id)
+                .map(s => <li key={s.id}>{s.name}</li>)}
+            </ul>
+          </Fragment>
+        )}
+      </Fragment>
   );
 };
 
 const ContentRight = () => {
   const templateSystems = useStore((state) => state.templates);
-  if (templateSystems) {
-    return (
-      <Fragment>
-        {SystemGroupList(templateSystems.systemType, templateSystems.system)}
-      </Fragment>
-    );
-  } else {
-    return (
-      <Fragment>
-        <div></div>
-      </Fragment>
-    );
-  }
+  return (
+    <Fragment>
+      {SystemGroupList(templateSystems.systemType, templateSystems.system)}
+    </Fragment>
+  );
 };
 
 const SystemGroupList = (typeList: SystemType[], systems: System[]) => {
