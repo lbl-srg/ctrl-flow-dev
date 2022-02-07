@@ -27,7 +27,11 @@ const Sidebarlayout = ({
       `}
     >
       <ColumnsWrapper>
-        <LeftColumn>
+        <LeftColumn
+          css={css`
+            overflow-y:auto;
+          `}
+        >
           <ColumnHeader
             css={css`
               background: ${colors.darkBlue};
@@ -45,7 +49,11 @@ const Sidebarlayout = ({
             {contentLeft}
           </div>
         </LeftColumn>
-        <RightColumn>
+        <RightColumn
+          css={css`
+            overflow-y:auto;
+          `}
+        >
           <ColumnHeader
             css={css`
               border-bottom: 1px solid ${colors.mediumGrey};
