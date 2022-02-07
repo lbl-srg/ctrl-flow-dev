@@ -63,7 +63,7 @@ export interface UserProjects {
 export interface State {
   projectDetails: Partial<ProjectDetails>;
   saveProjectDetails: (projectDetails: Partial<ProjectDetails>) => void;
-  templates?: SystemTemplates;
+  templates: SystemTemplates;
   setTemplates: (templates: SystemTemplates) => void;
   userProjects: Partial<UserProjects>;
   addSystem: (system: System) => void;
@@ -76,6 +76,7 @@ export const useStore = create<State>(
       projectDetails: {},
       saveProjectDetails: (projectDetails: Partial<ProjectDetails>) =>
         set(() => ({ projectDetails })),
+      templates: {systemType: [], system: [], options: []},
       setTemplates: (templates: Partial<SystemTemplates>) =>
         set(() => {
           templates;
