@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import Sidebarlayout from "../layouts/SidebarLayout";
-import SlideOut from "../modal/SlideOut";
+import SlideOut from "../modal/ConfigSlideOut";
 
 // step 3
 const Configs = () => (
