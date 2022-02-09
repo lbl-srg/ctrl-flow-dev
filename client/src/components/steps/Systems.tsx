@@ -14,24 +14,45 @@ const Systems = () => (
   />
 );
 
+
+
 const ContentLeft = () => {
   const { userSystems, systemTypes } = useStore((state) => 
     ({userSystems: state.userProjects.systems, systemTypes: state.templates?.systemType}));
 
   return (
       <Fragment>
-        {systemTypes?.map(t =>
-          <Fragment key={t.name}>
-            <a href={`#${t.name}`}><h3>{t.name}</h3></a>
-            <ul>
-              {userSystems?.filter(s => s.systemType === t.id)
-                .map(s => <a  key={s.id} href={`#${t.name}-${s.name}`}><li>{s.name}</li></a>)}
-            </ul>
-          </Fragment>
+        {systemTypes?.map(systemType =>
+          <UserSystemsNavGroup key={systemType.id}
+            systemType={systemType}
+            userSystems={userSystems?.filter(s => s.systemType === systemType.id)}
+          />
         )}
       </Fragment>
+
   );
 };
+
+interface UserSystemsProps {
+  systemType: SystemType;
+  userSystems: System[] | undefined;
+}
+const UserSystemsNavGroup = ({systemType, userSystems}: UserSystemsProps) => {
+  return (
+    <Fragment>
+      <a href={`#${systemType.name}`}><h3>{systemType.name}</h3></a>
+      { userSystems?.map(system => <UserSystem key={system.id} system={system} /> )}
+    </Fragment>
+  );
+}
+
+interface UserSystemProps {
+  system: System;
+}
+
+const UserSystem = ({system}: UserSystemProps) => {
+  return <a  key={system.id} href={`#${system.name}-${system.name}`}><li>{system.name}</li></a>;
+}
 
 const ContentRight = () => {
   const templateSystems = useStore((state) => state.templates);
