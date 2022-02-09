@@ -76,7 +76,7 @@ export const useStore = create<State>(
       projectDetails: {},
       saveProjectDetails: (projectDetails: Partial<ProjectDetails>) =>
         set(() => ({ projectDetails })),
-      templates: {systemType: [], system: [], options: []},
+      templates: mockTemplates as SystemTemplates,
       setTemplates: (templates: Partial<SystemTemplates>) =>
         set(() => {
           templates;
@@ -106,6 +106,3 @@ export const useStore = create<State>(
 );
 
 export const sanatizeStep = (step: number) => (step > 6 || step < 0 ? 0 : step);
-
-// intialize mock values
-useStore.setState({ templates: mockTemplates as SystemTemplates });
