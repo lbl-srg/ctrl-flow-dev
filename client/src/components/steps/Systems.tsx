@@ -71,8 +71,10 @@ const UserSystem = ({system}: SystemProp) => {
 }
 
 const ContentRight = () => {
-  const { templateSystems, systemTypes } = useStore((state) => 
-  ({templateSystems: state.templates.systems, systemTypes: state.systemTypes}));
+  const { templateSystems, systemTypes } = useStore((state) => ({
+    templateSystems: state.templates.systems,
+    systemTypes: state.systemTypes
+  }));
 
   return (
     <Fragment>
@@ -98,9 +100,9 @@ const TemplateGroupList = ({systemTypes, templateSystems}: TemplateGroupListProp
   ) as System[];
   const addSystem = useStore((state) => state.addSystem);
   const removeSystem = useStore((state) => state.removeSystem);
-
+  
   const handler = (selection: string, value: boolean)  => {
-    const system = userSystems.find((s) => s.name === selection);
+    const system = templateSystems.find((s) => s.name === selection);
     if (system) {
       value ? addSystem(system) : removeSystem(system);
     } 
@@ -141,7 +143,14 @@ const MultiSelect = ({title, options, handler}: MultiSelectProps) => {
       <div>
         <a id={title}><h3>{title}</h3></a>
         {options.map((option) =>
-          OptionSelect(option.text, option.value, helpText, handler, `${title}-${option.text}`),
+          <OptionSelect
+            text={option.text}
+            value={option.value}
+            helpText={helpText}
+            handler={handler}
+            id={`${title}-${option.text}`}
+            key={`${title}-${option.text}`}
+          />
         )}
       </div>
     </Fragment>
@@ -153,39 +162,34 @@ interface OptionSelectProps {
   value: boolean;
   helpText: string;
   handler: (text: string, value: boolean) => void,
-  id?: string
+  id: string
 }
 
-const OptionSelect = (
-  text: string,
-  value: boolean,
-  helpText: string,
-  handler: (text: string, value: boolean) => void,
-  id?: string
-) => {
-  id = id || text;
+const OptionSelect = ({text, value, helpText, handler, id}: OptionSelectProps) => {
   return (
-    <Fragment key={text}>
-        <a id={id}>
-          <OptionSelectContainer>
-            <Checkbox
-              id={id}
-              name="selected"
-              type="checkbox"
-              checked={value}
-              onChange={(e) => handler(text, e.target.checked)}
-            ></Checkbox>
-            <OptionLabel htmlFor={id}>{text}</OptionLabel>
-            {OptionInfo(helpText)}
-          </OptionSelectContainer>
-        </a>
-    </Fragment>
+    <a id={id}>
+      <OptionSelectContainer>
+        <Checkbox
+          id={id}
+          name="selected"
+          type="checkbox"
+          checked={value}
+          onChange={(e) => handler(text, e.target.checked)}
+        ></Checkbox>
+        <OptionLabel htmlFor={id}>{text}</OptionLabel>
+        <OptionInfo
+          infoText=''
+        />
+      </OptionSelectContainer>
+    </a>
   );
 };
 
-const OptionInfo = (
-  text: string
-) => {
+interface OptionInfoProps {
+  infoText: string;
+}
+
+const OptionInfo = ({infoText}: OptionInfoProps) => {
   return (
     <InfoIcon>[i]</InfoIcon>
   )
