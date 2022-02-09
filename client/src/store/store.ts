@@ -77,13 +77,18 @@ export const useStore = create<State>(
       projectDetails: {},
       saveProjectDetails: (projectDetails: Partial<ProjectDetails>) =>
         set(() => ({ projectDetails })),
-      systemTypes: mockData['systemTypes'],
-      templates: {systems: mockData['systems'], options: mockData['options']},
+      systemTypes: mockData["systemTypes"],
+      templates: { systems: mockData["systems"], options: mockData["options"] },
       setTemplates: (templates: Partial<SystemTemplates>) =>
         set(() => {
           templates;
         }),
-      userProjects: {systems: [], configurations: [], metaConfigurations: [], schedules: null},
+      userProjects: {
+        systems: [],
+        configurations: [],
+        metaConfigurations: [],
+        schedules: null,
+      },
       addSystem: (system: System) =>
         set(
           produce((state: State) => {

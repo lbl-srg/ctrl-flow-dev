@@ -29,7 +29,7 @@ const Sidebarlayout = ({
       <ColumnsWrapper>
         <LeftColumn
           css={css`
-            overflow-y:auto;
+            overflow-y: auto;
           `}
         >
           <ColumnHeader
@@ -51,7 +51,7 @@ const Sidebarlayout = ({
         </LeftColumn>
         <RightColumn
           css={css`
-            overflow-y:auto;
+            overflow-y: auto;
           `}
         >
           <ColumnHeader
