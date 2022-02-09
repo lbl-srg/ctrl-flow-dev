@@ -2,7 +2,7 @@ import create from "zustand";
 import { persist } from "zustand/middleware";
 import { produce } from "immer";
 
-import mockTemplates from "./system.json";
+import mockData from "./system.json";
 
 export interface ProjectDetails {
   name: string;
@@ -34,8 +34,7 @@ export interface Option {
 }
 
 export interface SystemTemplates {
-  systemType: SystemType[];
-  system: System[];
+  systems: System[];
   options: Option[];
 }
 
@@ -63,9 +62,10 @@ export interface UserProjects {
 export interface State {
   projectDetails: Partial<ProjectDetails>;
   saveProjectDetails: (projectDetails: Partial<ProjectDetails>) => void;
+  systemTypes: SystemType[];
   templates: SystemTemplates;
   setTemplates: (templates: SystemTemplates) => void;
-  userProjects: Partial<UserProjects>;
+  userProjects: UserProjects;
   addSystem: (system: System) => void;
   removeSystem: (system: System) => void;
 }
@@ -76,12 +76,13 @@ export const useStore = create<State>(
       projectDetails: {},
       saveProjectDetails: (projectDetails: Partial<ProjectDetails>) =>
         set(() => ({ projectDetails })),
-      templates: mockTemplates as SystemTemplates,
+      systemTypes: mockData['systemTypes'],
+      templates: {systems: mockData['systems'], options: mockData['options']} as SystemTemplates,
       setTemplates: (templates: Partial<SystemTemplates>) =>
         set(() => {
           templates;
         }),
-      userProjects: {},
+      userProjects: {systems: [], configurations: [], metaConfigurations: [], schedules: null},
       addSystem: (system: System) =>
         set(
           produce((state: State) => {
