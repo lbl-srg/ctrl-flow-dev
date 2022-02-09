@@ -28,9 +28,10 @@ export interface System {
 
 export interface Option {
   id: number;
-  type: "dropdown" | "string" | "boolean" | "number" | "final";
+  type: string;
   name: string;
-  options?: Option[];
+  options?: number[];
+  group?: string;
 }
 
 export interface SystemTemplates {
@@ -77,7 +78,7 @@ export const useStore = create<State>(
       saveProjectDetails: (projectDetails: Partial<ProjectDetails>) =>
         set(() => ({ projectDetails })),
       systemTypes: mockData['systemTypes'],
-      templates: {systems: mockData['systems'], options: mockData['options']} as SystemTemplates,
+      templates: {systems: mockData['systems'], options: mockData['options']},
       setTemplates: (templates: Partial<SystemTemplates>) =>
         set(() => {
           templates;
