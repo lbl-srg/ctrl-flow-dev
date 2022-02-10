@@ -21,20 +21,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - run: cp ./server/packages-lock.json ./ # unable to specify workdir with node.js action so copying out the packages-lock
+    - run: cp ${{github.workspace}}/server/packages-lock.json ${{github.workspace}} # unable to specify workdir with node.js action
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - name: Build Dependencies
-      working-directory: ./server
+      working-directory: ${{github.workspace}}/server
       run: |
         npm ci
         npm run install-modelica-deps
         npm run build --if-present
         npm test
     - name: Run integration tests
-      working-directory: ./server
+      working-directory: ${{github.workspace}}/server
       run: |
         npm run test
