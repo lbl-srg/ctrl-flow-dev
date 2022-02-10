@@ -31,11 +31,11 @@ interface SystemGroupListProps {
 const SystemGroupList = ({ systemTypes, systems }: SystemGroupListProps) => {
   return (
     <Fragment>
-      {systemTypes?.map((systemType) => (
+      {systemTypes.map((systemType) => (
         <SystemGroup
           key={systemType.id}
           systemType={systemType}
-          systems={systems?.filter((s) => s.systemType === systemType.id)}
+          systems={systems.filter((s) => s.systemType === systemType.id)}
         />
       ))}
     </Fragment>
@@ -119,7 +119,7 @@ const TemplateGroupList = ({
             .filter((s) => s.systemType === systemType.id)
             .map((s) => {
               const value =
-                userSystems?.findIndex((userS) => userS.id === s.id) >= 0;
+                userSystems.findIndex((userS) => userS.id === s.id) >= 0;
               return { text: s.name, value: value };
             })}
           handler={handler}
