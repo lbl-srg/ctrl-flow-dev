@@ -26,9 +26,14 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - name: Build Dependencies
       working-directory: ./server
       run: |
         npm ci
         npm run install-modelica-deps
         npm run build --if-present
         npm test
+    - name: Run integration tests
+      working-directory: ./server
+      run: |
+        npm run test
