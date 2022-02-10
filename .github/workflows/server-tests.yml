@@ -37,6 +37,6 @@ jobs:
     - name: Run integration tests
       working-directory: ${{github.workspace}}/server
       run: |
-        node src/index.ts &
+        npx ts-node src/index.ts &
         sleep 5 # wait for server to start
         npm run integration-test
