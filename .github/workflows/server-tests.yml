@@ -21,9 +21,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - run: cp ./server/packages-lock.json ./ # unable to specify workdir with node.js action so copying out the packages-lock
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
-      working-directory: ./server
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
