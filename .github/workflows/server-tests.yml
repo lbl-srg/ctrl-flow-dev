@@ -27,14 +27,16 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - name: Build Modelica Dependencies
+      working-directory: ${{github.workspace}}/server
+      run: npm run install-modelica-deps
     - name: Build Dependencies
       working-directory: ${{github.workspace}}/server
       run: |
         npm ci
-        npm run install-modelica-deps
-        npm run build --if-present
-        npm test
     - name: Run integration tests
       working-directory: ${{github.workspace}}/server
       run: |
-        npm run test
+        node src/index.ts &
+        sleep 5 # wait for server to start
+        npm run integration-test
