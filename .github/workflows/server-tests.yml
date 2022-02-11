@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{github.workspace}}/server
+        working-directory: server
     strategy:
       matrix:
         node-version: [16.x] # currently only supporting 16 and up
