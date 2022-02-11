@@ -28,7 +28,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: ${{github.workspace}}/server/pack-lock.json
+        cache-dependency-path: server/package-lock.json
     - name: Build Modelica Dependencies
       run: npm run install-modelica-deps
     - name: Build Other Server Dependencies
