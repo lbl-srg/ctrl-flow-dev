@@ -13,7 +13,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}/server
     strategy:
       matrix:
         node-version: [16.x] # currently only supporting 16 and up
@@ -21,21 +23,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - run: cp ${{github.workspace}}/server/package-lock.json ${{github.workspace}} # unable to specify workdir with node.js action
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - name: Build Modelica Dependencies
-      working-directory: ${{github.workspace}}/server
       run: npm run install-modelica-deps
-    - name: Build Dependencies
-      working-directory: ${{github.workspace}}/server
-      run: |
-        npm ci
+    - name: Build Other Server Dependencies
+      run: npm ci
     - name: Run integration tests
-      working-directory: ${{github.workspace}}/server
       run: |
         npx ts-node src/index.ts &
         sleep 5 # wait for server to start
