@@ -4,6 +4,10 @@ import { produce } from "immer";
 
 import mockData from "./system.json";
 
+// TODO... get a better uid system
+let _idIncrement = 1;
+const getID = () => _idIncrement+= 1;
+
 export interface ProjectDetails {
   name: string;
   address: string;
@@ -76,6 +80,8 @@ export interface State {
   userProjects: UserProjects;
   addSystem: (system: System) => void;
   removeSystem: (system: System) => void;
+  addConfig: (system: System) => void;
+  removeConfig: (config: Configuration) => void;
 }
 
 export const useStore = create<State>(
@@ -112,6 +118,24 @@ export const useStore = create<State>(
               state.userProjects.systems;
           }),
         ),
+      addConfig: (system: System) => {
+        set(
+          produce((state: State) => {
+            const config = {system: system.id, name: '', id: getID(), selections: []};
+            state.userProjects.configurations = state.userProjects?.configurations
+              ? [...(state.userProjects.configurations), config]
+              : [config];
+          }),          
+        )
+      },
+      removeConfig: (config: Configuration) =>
+        set(
+          produce((state: State) => {
+            state.userProjects.configurations =
+              state.userProjects.configurations?.filter((c) => c.id !== config.id) ||
+              state.userProjects.configurations;
+        }),
+      ),
     }),
     {
       name: "linkage-storage",
