@@ -43,7 +43,7 @@ export interface Configuration {
   id: number;
   system: number; // ID of system
   name: string;
-  configuration: any; // this is dynamically generated from modelica template selections
+  selections: Selection[];
 }
 
 export interface MetaConfiguration {
@@ -51,6 +51,13 @@ export interface MetaConfiguration {
   tagStartIndex: number;
   quantity: number;
   configuration: number; // configuration ID
+}
+
+export interface selection {
+  modelicaPath: string; // e.g. Buildings.Templates.Components.Types.Valve.ThreeWay
+  option: number; // option id
+  selection: number; // option id
+  value?: any; // number/boolean/enu
 }
 
 export interface UserProjects {
