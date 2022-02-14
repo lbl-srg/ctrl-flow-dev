@@ -20,8 +20,8 @@ const Configs = () => {
       <Fragment>
         {
           systemTypes.map( systemT => {
-          const systems = userSystems.filter(s => s.systemType === systemT.id);
-          const confs = configs.filter(c => systems.map(s => s.id).includes(c.system))
+            const systems = userSystems.filter(s => s.systemType === systemT.id);
+            const confs = configs.filter(c => systems.map(s => s.id).includes(c.system))
 
             return <SystemConfigGroup
               key={systemT.id}
@@ -47,7 +47,7 @@ interface SystemConfigGroupProps {
 const SystemConfigGroup = ({systemType, systems, configs}: SystemConfigGroupProps) => {
   return (
     <Fragment>
-      <h3>{systemType}</h3>
+      <h3>{systemType.name}</h3>
       {
         systems.map(system =>
           <SystemConfigs
@@ -69,6 +69,7 @@ interface SystemConfigsProps {
 const SystemConfigs = ({system, configs}: SystemConfigsProps) => {
   return (
     <Fragment>
+      <h4>{system.name}</h4>
       <div>Configuration(s):</div>
       {
         configs.map(c => <Config key= {c.id} config={c}/>)
