@@ -8,11 +8,13 @@ import { TextButton } from "../Button";
 
 // step 3
 const Configs = () => {
-  const { configs, userSystems, systemTypes, templates } = useStore((state) => ({
+  const { configs, userSystems, systemTypes, templates, addConfig, removeConfig } = useStore((state) => ({
     configs: state.userProjects.configurations,
     userSystems: state.userProjects.systems,
     systemTypes: state.systemTypes,
-    templates: state.templates
+    templates: state.templates,
+    addConfig: state.addConfig,
+    removeConfig: state.removeConfig
   }));
   return (
   <Sidebarlayout
@@ -30,6 +32,8 @@ const Configs = () => {
               systemType={systemT}
               systems={systems}
               configs={confs}
+              addConfig={addConfig}
+              removeConfig={removeConfig}
             />
           })
         }
@@ -43,9 +47,11 @@ interface SystemConfigGroupProps {
   systemType: SystemType;
   systems: System[];
   configs: Configuration[];
+  addConfig: (system: System) => void;
+  removeConfig: (config: Configuration) => void;
 }
 
-const SystemConfigGroup = ({systemType, systems, configs}: SystemConfigGroupProps) => {
+const SystemConfigGroup = ({systemType, systems, configs, addConfig, removeConfig}: SystemConfigGroupProps) => {
   return (
     <Fragment>
       <h3>{systemType.name}</h3>
@@ -55,6 +61,8 @@ const SystemConfigGroup = ({systemType, systems, configs}: SystemConfigGroupProp
             key={system.id}
             system={system}
             configs={configs.filter(c => c.system === system.id)}
+            addConfig={addConfig}
+            removeConfig={removeConfig}
           />
         )
       }
@@ -65,17 +73,19 @@ const SystemConfigGroup = ({systemType, systems, configs}: SystemConfigGroupProp
 interface SystemConfigsProps {
   system: System;
   configs: Configuration[];
+  addConfig: (system: System) => void;
+  removeConfig: (config: Configuration) => void;
 }
 
-const SystemConfigs = ({system, configs}: SystemConfigsProps) => {
+const SystemConfigs = ({system, configs, addConfig, removeConfig}: SystemConfigsProps) => {
   return (
     <Fragment>
       <h4>{system.name}</h4>
       <div>Configuration(s):</div>
       {
-        configs.map(c => <Config key= {c.id} config={c} system={system}/>)
+        configs.map(c => <Config key= {c.id} config={c} system={system} removeConfig={removeConfig}/>)
       }
-      <TextButton>+ Add Configuration</TextButton>
+      <TextButton onClick={() => addConfig(system)}>+ Add Configuration</TextButton>
     </Fragment>
   )
 }
@@ -83,13 +93,15 @@ const SystemConfigs = ({system, configs}: SystemConfigsProps) => {
 interface ConfigProps {
   config: Configuration;
   system: System;
+  removeConfig: (config: Configuration) => void;
 }
 
-const Config = ({config, system}: ConfigProps) => {
+const Config = ({config, system, removeConfig}: ConfigProps) => {
   return (
     <div>
       <div>{config.name}</div>
       <SlideOut config={config} template={system} />
+      <TextButton onClick={()=> removeConfig(config)}>X</TextButton>
     </div>
   )
 }
