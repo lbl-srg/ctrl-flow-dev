@@ -31,7 +31,6 @@ const Configs = () => {
             />
           })
         }
-        <SlideOut />
       </Fragment>
     }
   />
@@ -72,22 +71,34 @@ const SystemConfigs = ({system, configs}: SystemConfigsProps) => {
       <h4>{system.name}</h4>
       <div>Configuration(s):</div>
       {
-        configs.map(c => <Config key= {c.id} config={c}/>)
+        configs.map(c => <Config key= {c.id} config={c} system={system}/>)
       }
-      <div>+ Add another configuration</div>
+      <SlideOut 
+        variant="text"
+        template={system}
+      >
+        + Add another configuration
+      </SlideOut>
     </Fragment>
   )
 }
 
 interface ConfigProps {
-  config: Configuration
+  config: Configuration;
+  system: System;
 }
 
-const Config = ({config}: ConfigProps) => {
+const Config = ({config, system}: ConfigProps) => {
   return (
     <div>
       <div>{config.name}</div>
-      <SlideOut />
+      <SlideOut
+        variant="button"
+        config={config}
+        template={system}
+      >
+        Edit
+      </SlideOut>
     </div>
   )
 }

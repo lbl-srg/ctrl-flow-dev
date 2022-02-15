@@ -1,18 +1,29 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { css, jsx } from "@emotion/react/macro";
-import { Fragment, useState } from "react";
+import { Fragment, ReactNode, useState } from "react";
 
-import Button from "../Button";
+import Button, { LinkButton } from "../Button";
 import { BaseModal, ModalOpenContext } from "./BaseModal";
 
-const SlideOut = () => {
+import { Configuration, System } from "../../store/store"
+
+interface SlideOutProps {
+  template: System;
+  config?: Configuration;
+  variant: "text" | "button";
+  children?: ReactNode;
+}
+
+const SlideOut = ({variant, template, config, ...props}: SlideOutProps) => {
   const [isOpen, setOpen] = useState(false);
+    const openButton = variant === "text" ? <LinkButton to="" variant="link" onClick={() => setOpen(true)} {...props}/>
+            : <Button onClick={() => setOpen(true)} {...props}/>
 
   return (
     <ModalOpenContext.Provider value={isOpen}>
       <Fragment>
-        <Button onClick={() => setOpen(true)}>Edit</Button>
+        {openButton}
         <BaseModal
           closeAction={() => setOpen(false)}
           showCloseButton={false}
