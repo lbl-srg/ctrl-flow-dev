@@ -1,6 +1,12 @@
+/** @jsxRuntime classic */
+/** @jsx jsx */
+import { css, jsx } from "@emotion/react/macro";
+import styled from "@emotion/styled";
 import { Fragment } from "react";
 import Sidebarlayout from "../layouts/SidebarLayout";
 import SlideOut from "../modal/ConfigSlideOut";
+
+import { colors } from "../../styleHelpers";
 
 import { useStore, Configuration, System, SystemType } from "../../store/store";
 
@@ -22,6 +28,7 @@ const Configs = () => {
     contentLeft={<p>hello</p>}
     contentRight={
       <Fragment>
+        <div>Add Configurations For The System Types You Selected</div>
         {
           systemTypes.map( systemT => {
             const systems = userSystems.filter(s => s.systemType === systemT.id);
@@ -80,7 +87,7 @@ interface SystemConfigsProps {
 const SystemConfigs = ({system, configs, addConfig, removeConfig}: SystemConfigsProps) => {
   return (
     <Fragment>
-      <h4>{system.name}</h4>
+      <SystemConfigName system={system} />
       <div>Configuration(s):</div>
       {
         configs.map(c => <Config key= {c.id} config={c} system={system} removeConfig={removeConfig}/>)
@@ -90,6 +97,51 @@ const SystemConfigs = ({system, configs, addConfig, removeConfig}: SystemConfigs
   )
 }
 
+interface SystemConfigNameProps {
+  system: System;
+}
+
+const SystemConfigName = ({system}: SystemConfigNameProps) => {
+  return (
+    <SystemConfigNameContainer>
+        <SystemName>{system.name}</SystemName>
+        <UploadDownload path={`${system.name}`}></UploadDownload>
+    </SystemConfigNameContainer>
+  )
+}
+
+interface UploadDownloadProps {
+  path: string; // file path
+}
+const UploadDownload = ({path}: UploadDownloadProps) => {
+  const buttonCss = css`
+    font-size: 0.8rem;
+    color: ${colors.mediumBlue};
+    padding: 0 0.5rem;
+    text-transform: none;
+  `
+  return (
+    <Fragment>
+        <FileAction><TextButton css={buttonCss}>Download</TextButton></FileAction>
+        <FileAction><TextButton css={buttonCss}>Upload</TextButton></FileAction>      
+    </Fragment>
+  )
+}
+
+const FileAction = styled.div`
+  display: inline;
+`
+
+
+const SystemConfigNameContainer = styled.div`
+  display: flex;
+  justify-content: flex-start;
+`
+
+const SystemName = styled.div`
+  font-weight: bold;
+  flex: 1;
+`
 interface ConfigProps {
   config: Configuration;
   system: System;
