@@ -46,8 +46,8 @@ export interface SystemTemplates {
 export interface Configuration {
   id: number;
   system: number; // ID of system
-  name: string;
-  selections: Selection[];
+  name: string | undefined;
+  selections: Selection[] | undefined;
 }
 
 export interface MetaConfiguration {
@@ -121,7 +121,7 @@ export const useStore = create<State>(
       addConfig: (system: System) => {
         set(
           produce((state: State) => {
-            const config = {system: system.id, name: '', id: getID(), selections: []};
+            const config = {system: system.id, name: 'Test', id: getID(), selections: []};
             state.userProjects.configurations = state.userProjects?.configurations
               ? [...(state.userProjects.configurations), config]
               : [config];
@@ -136,7 +136,16 @@ export const useStore = create<State>(
               state.userProjects.configurations;
         }),
       ),
-    }),
+      updateConfig: (config: Partial<Configuration> & {id: number, system: number}) =>
+        set(
+          produce((state: State) => {
+            let oldConfig = state.userProjects.configurations.find(c => c.id === config.id);
+            if (config !== undefined) {
+              oldConfig = {...oldConfig, ...config} as Configuration;
+            }
+          }),
+        ),
+        }),
     {
       name: "linkage-storage",
     },
