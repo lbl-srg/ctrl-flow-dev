@@ -6,7 +6,7 @@ import { Fragment, ReactNode, useState } from "react";
 import Button, { LinkButton } from "../Button";
 import { BaseModal, ModalOpenContext } from "./BaseModal";
 
-import { Configuration, System } from "../../store/store"
+import { useStore, Configuration, System, State } from "../../store/store"
 
 interface SlideOutProps {
   template: System;
@@ -15,6 +15,8 @@ interface SlideOutProps {
 
 const SlideOut = ({template, config}: SlideOutProps) => {
   const [isOpen, setOpen] = useState(false);
+  const { options } = useStore(state => ({ options: state.templates.options }));
+  const systemOptions = template.options ? template.options.map(optionId => options.find(o => o.id === optionId)) : [];
 
   return (
     <ModalOpenContext.Provider value={isOpen}>
@@ -25,7 +27,7 @@ const SlideOut = ({template, config}: SlideOutProps) => {
           showCloseButton={false}
           css={slideOutCss}
         >
-          <h1>Hello World</h1>
+          <h1>{template.name}</h1>
         </BaseModal>
       </Fragment>
     </ModalOpenContext.Provider>
