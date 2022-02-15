@@ -33,7 +33,7 @@ export const BaseModal = ({
         <Fragment>
           {showCloseButton && (
             <Button
-              variant="link"
+              variant="text"
               css={css`
                 color: ${colors.darkGrey};
                 font-size: 2rem;

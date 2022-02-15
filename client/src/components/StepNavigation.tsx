@@ -43,7 +43,7 @@ const BackButton = () => {
   const currentStep = useCurrentStep();
 
   return (
-    <LinkButton variant="link" to={getStepPath(currentStep - 1)}>
+    <LinkButton variant="text" to={getStepPath(currentStep - 1)}>
       ← Back {currentStep - 1 > 0 && `to ${steps[currentStep - 1]}`}
     </LinkButton>
   );

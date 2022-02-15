@@ -11,19 +11,15 @@ import { Configuration, System } from "../../store/store"
 interface SlideOutProps {
   template: System;
   config?: Configuration;
-  variant: "text" | "button";
-  children?: ReactNode;
 }
 
-const SlideOut = ({variant, template, config, ...props}: SlideOutProps) => {
+const SlideOut = ({template, config}: SlideOutProps) => {
   const [isOpen, setOpen] = useState(false);
-    const openButton = variant === "text" ? <LinkButton to="" variant="link" onClick={() => setOpen(true)} {...props}/>
-            : <Button onClick={() => setOpen(true)} {...props}/>
 
   return (
     <ModalOpenContext.Provider value={isOpen}>
       <Fragment>
-        {openButton}
+        <Button onClick={() => setOpen(true)}>Edit</Button>
         <BaseModal
           closeAction={() => setOpen(false)}
           showCloseButton={false}

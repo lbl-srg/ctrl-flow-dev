@@ -4,6 +4,8 @@ import SlideOut from "../modal/ConfigSlideOut";
 
 import { useStore, Configuration, System, SystemType } from "../../store/store";
 
+import { TextButton } from "../Button";
+
 // step 3
 const Configs = () => {
   const { configs, userSystems, systemTypes, templates } = useStore((state) => ({
@@ -73,12 +75,7 @@ const SystemConfigs = ({system, configs}: SystemConfigsProps) => {
       {
         configs.map(c => <Config key= {c.id} config={c} system={system}/>)
       }
-      <SlideOut 
-        variant="text"
-        template={system}
-      >
-        + Add another configuration
-      </SlideOut>
+      <TextButton>+ Add Configuration</TextButton>
     </Fragment>
   )
 }
@@ -92,13 +89,7 @@ const Config = ({config, system}: ConfigProps) => {
   return (
     <div>
       <div>{config.name}</div>
-      <SlideOut
-        variant="button"
-        config={config}
-        template={system}
-      >
-        Edit
-      </SlideOut>
+      <SlideOut config={config} template={system} />
     </div>
   )
 }
