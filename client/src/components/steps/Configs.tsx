@@ -10,6 +10,7 @@ import { colors } from "../../styleHelpers";
 
 import { useStore, Configuration, System, SystemType } from "../../store/store";
 
+import LeftNav from "../LeftNavigation";
 import { TextButton } from "../Button";
 
 // step 3
@@ -25,7 +26,7 @@ const Configs = () => {
   return (
   <Sidebarlayout
     heading="Configurations"
-    contentLeft={<p>hello</p>}
+    contentLeft={<LeftNav />}
     contentRight={
       <Fragment>
         <div>Add Configurations For The System Types You Selected</div>
@@ -86,16 +87,22 @@ interface SystemConfigsProps {
 
 const SystemConfigs = ({system, configs, addConfig, removeConfig}: SystemConfigsProps) => {
   return (
-    <Fragment>
+    <SystemConfigsContainer>
       <SystemConfigName system={system} />
       <div>Configuration(s):</div>
       {
         configs.map(c => <Config key= {c.id} config={c} system={system} removeConfig={removeConfig}/>)
       }
       <TextButton onClick={() => addConfig(system)}>+ Add Configuration</TextButton>
-    </Fragment>
+    </SystemConfigsContainer>
   )
 }
+
+const SystemConfigsContainer = styled.div`
+  background-color: ${colors.extraLightBlue};
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+`
 
 interface SystemConfigNameProps {
   system: System;
@@ -150,12 +157,23 @@ interface ConfigProps {
 
 const Config = ({config, system, removeConfig}: ConfigProps) => {
   return (
-    <div>
-      <div>{config.name}</div>
+    <ConfigContainer>
+      <ConfigName>{config.name}</ConfigName>
       <SlideOut config={config} template={system} />
       <TextButton onClick={()=> removeConfig(config)}>X</TextButton>
-    </div>
+    </ConfigContainer>
   )
 }
+
+const ConfigName = styled.div`
+  flex: 1;
+  font-size: 1.2rem;
+`
+
+const ConfigContainer = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+`
 
 export default Configs;

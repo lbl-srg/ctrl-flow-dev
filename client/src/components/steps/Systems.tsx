@@ -1,76 +1,23 @@
-import { Fragment, ReactNode, FC } from "react";
+import { Fragment } from "react";
 import styled from "@emotion/styled";
 
 import { useStore, System, SystemType } from "../../store/store";
 
 import Sidebarlayout from "../layouts/SidebarLayout";
-
+import LeftNav from "../LeftNavigation";
 // step 2
 const Systems = () => (
   <Sidebarlayout
     heading="Add Systems"
-    contentLeft={<ContentLeft />}
+    contentLeft={<LeftNav />}
     contentRight={<ContentRight />}
   />
 );
-
-const ContentLeft = () => {
-  const { userSystems, systemTypes } = useStore((state) => ({
-    userSystems: state.userProjects.systems,
-    systemTypes: state.systemTypes,
-  }));
-
-  return <SystemGroupList systemTypes={systemTypes} systems={userSystems} />;
-};
 
 interface SystemGroupListProps {
   systemTypes: SystemType[];
   systems: System[];
 }
-
-const SystemGroupList = ({ systemTypes, systems }: SystemGroupListProps) => {
-  return (
-    <Fragment>
-      {systemTypes.map((systemType) => (
-        <SystemGroup
-          key={systemType.id}
-          systemType={systemType}
-          systems={systems.filter((s) => s.systemType === systemType.id)}
-        />
-      ))}
-    </Fragment>
-  );
-};
-
-interface SystemGroupProps {
-  systemType: SystemType;
-  systems: System[];
-}
-
-const SystemGroup = ({ systemType, systems }: SystemGroupProps) => {
-  return (
-    <Fragment>
-      <a href={`#${systemType.name}`}>
-        <h3>{systemType.name}</h3>
-      </a>
-      {systems.map((s) => (
-        <UserSystem key={s.id} system={s} />
-      ))}
-    </Fragment>
-  );
-};
-
-interface SystemProp {
-  system: System;
-}
-
-const UserSystem = ({ system }: SystemProp) => {
-  return (
-    <a key={system.id} href={`#${system.name}-${system.name}`}>
-      <li>{system.name}</li>
-    </a>
-  );
-};
 
 const ContentRight = () => {
   const { templateSystems, systemTypes } = useStore((state) => ({
