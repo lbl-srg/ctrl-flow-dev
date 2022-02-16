@@ -47,17 +47,9 @@ const Button = ({ variant = "filled", ...props }: ButtonProps) => (
   <BaseButton css={variantStyles[variant]} {...props} />
 );
 
-export const TextButton = ({
-  variant = "text",
-  ...props
-}: ButtonProps) => (
-  <BaseButton
-    css={[
-      variantStyles[variant]
-    ]}
-    {...props}
-  />
-)
+export const TextButton = ({ variant = "text", ...props }: ButtonProps) => (
+  <BaseButton css={[variantStyles[variant]]} {...props} />
+);
 
 export const LinkButton = ({
   variant = "filled",

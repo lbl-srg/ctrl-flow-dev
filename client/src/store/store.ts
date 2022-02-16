@@ -6,7 +6,7 @@ import mockData from "./system.json";
 
 // TODO... get a better uid system
 let _idIncrement = 1;
-const getID = () => _idIncrement+= 1;
+const getID = () => (_idIncrement += 1);
 
 export interface ProjectDetails {
   name: string;
@@ -57,7 +57,7 @@ export interface MetaConfiguration {
   configuration: number; // configuration ID
 }
 
-export interface selection {
+export interface Selection {
   modelicaPath: string; // e.g. Buildings.Templates.Components.Types.Valve.ThreeWay
   option: number; // option id
   selection: number; // option id
@@ -121,31 +121,42 @@ export const useStore = create<State>(
       addConfig: (system: System) => {
         set(
           produce((state: State) => {
-            const config = {system: system.id, name: 'Test', id: getID(), selections: []};
-            state.userProjects.configurations = state.userProjects?.configurations
-              ? [...(state.userProjects.configurations), config]
+            const config = {
+              system: system.id,
+              name: "Test",
+              id: getID(),
+              selections: [],
+            };
+            state.userProjects.configurations = state.userProjects
+              ?.configurations
+              ? [...state.userProjects.configurations, config]
               : [config];
-          }),          
-        )
+          }),
+        );
       },
       removeConfig: (config: Configuration) =>
         set(
           produce((state: State) => {
             state.userProjects.configurations =
-              state.userProjects.configurations?.filter((c) => c.id !== config.id) ||
-              state.userProjects.configurations;
-        }),
-      ),
-      updateConfig: (config: Partial<Configuration> & {id: number, system: number}) =>
+              state.userProjects.configurations?.filter(
+                (c) => c.id !== config.id,
+              ) || state.userProjects.configurations;
+          }),
+        ),
+      updateConfig: (
+        config: Partial<Configuration> & { id: number; system: number },
+      ) =>
         set(
           produce((state: State) => {
-            let oldConfig = state.userProjects.configurations.find(c => c.id === config.id);
+            let oldConfig = state.userProjects.configurations.find(
+              (c) => c.id === config.id,
+            );
             if (config !== undefined) {
-              oldConfig = {...oldConfig, ...config} as Configuration;
+              oldConfig = { ...oldConfig, ...config } as Configuration;
             }
           }),
         ),
-        }),
+    }),
     {
       name: "linkage-storage",
     },

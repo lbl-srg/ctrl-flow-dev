@@ -14,11 +14,6 @@ const Systems = () => (
   />
 );
 
-interface SystemGroupListProps {
-  systemTypes: SystemType[];
-  systems: System[];
-}
-
 const ContentRight = () => {
   const { templateSystems, systemTypes } = useStore((state) => ({
     templateSystems: state.templates.systems,
