@@ -32,7 +32,7 @@ const variantStyles = {
     background: transparent;
     border: 1px solid ${colors.mediumBlue};
   `,
-  link: css`
+  text: css`
     color: ${colors.mediumBlue};
     background: transparent;
   `,
@@ -40,11 +40,15 @@ const variantStyles = {
 
 export interface ButtonProps extends ButtonHTMLAttributes<unknown> {
   children?: ReactNode;
-  variant?: "filled" | "outline" | "link";
+  variant?: "filled" | "outline" | "text";
 }
 
 const Button = ({ variant = "filled", ...props }: ButtonProps) => (
   <BaseButton css={variantStyles[variant]} {...props} />
+);
+
+export const TextButton = ({ variant = "text", ...props }: ButtonProps) => (
+  <BaseButton css={[variantStyles[variant]]} {...props} />
 );
 
 export const LinkButton = ({

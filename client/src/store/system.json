@@ -279,66 +279,161 @@
       "type": "final",
       "name": "No relief fan - Barometric relief damper"
     },
-    { "id": 30, "type": "final", "name": "No relief fan - Modulated relief damper"},
-    { "id": 31, "type": "final", "name": "Relief fan - Two-position relief damper"},
-    { "id": 32, "type": "final", "name": "Return fan with pressure control - Modulated relief damper" },
-    { "id": 33, "type": "final", "name": "Return fan with airflow tracking - Modulated relief damper" },
-    { "id": 34, "type": "dropdown", "name": "Blow-through fan", "group": "Fan Type", "options": [35, 36, 37] },
+    {
+      "id": 30,
+      "type": "final",
+      "name": "No relief fan - Modulated relief damper"
+    },
+    {
+      "id": 31,
+      "type": "final",
+      "name": "Relief fan - Two-position relief damper"
+    },
+    {
+      "id": 32,
+      "type": "final",
+      "name": "Return fan with pressure control - Modulated relief damper"
+    },
+    {
+      "id": 33,
+      "type": "final",
+      "name": "Return fan with airflow tracking - Modulated relief damper"
+    },
+    {
+      "id": 34,
+      "type": "dropdown",
+      "name": "Blow-through fan",
+      "group": "Fan Type",
+      "options": [35, 36, 37]
+    },
     { "id": 35, "type": "final", "name": "No fan" },
     { "id": 36, "type": "final", "name": "Single fan" },
     { "id": 38, "type": "final", "name": "Multiple fans (identical)" },
-    { "id": 39, "type": "dropdown", "name": "Cooling coil", "group": "", "options": [40, 41, 42, 43] },
+    {
+      "id": 39,
+      "type": "dropdown",
+      "name": "Cooling coil",
+      "group": "",
+      "options": [40, 41, 42, 43]
+    },
     { "id": 40, "type": "final", "name": "No coil" },
-    { "id": 41, "type": "dropdown", "name": "Water Coil", "group": "", "options": [42, 44, 46] },
-    { "id": 42, "type": "final", "name": "Two-way valve"},
-    { "id": 43, "type": "final", "name": "Three-way valve"},
-    { "id": 44, "type": "dropdown", "name": "Direct expansion", "options": [45, 46] },
-    { "id": 45, "type": "final", "name": "Staged"},
-    { "id": 46, "type": "final", "name": "Modulating"},
-    { "id": 47, "type": "dropdown", "name": "Heating coil (reheat position)", "options": [48, 49, 52, 53] },
-    { "id": 48, "type": "final", "name": "No coil"},
+    {
+      "id": 41,
+      "type": "dropdown",
+      "name": "Water Coil",
+      "group": "",
+      "options": [42, 44, 46]
+    },
+    { "id": 42, "type": "final", "name": "Two-way valve" },
+    { "id": 43, "type": "final", "name": "Three-way valve" },
+    {
+      "id": 44,
+      "type": "dropdown",
+      "name": "Direct expansion",
+      "options": [45, 46]
+    },
+    { "id": 45, "type": "final", "name": "Staged" },
+    { "id": 46, "type": "final", "name": "Modulating" },
+    {
+      "id": 47,
+      "type": "dropdown",
+      "name": "Heating coil (reheat position)",
+      "options": [48, 49, 52, 53]
+    },
+    { "id": 48, "type": "final", "name": "No coil" },
     { "id": 49, "type": "dropdown", "name": "Water coil", "options": [50, 51] },
-    { "id": 50, "type": "final", "name": "Two-way valve"},
+    { "id": 50, "type": "final", "name": "Two-way valve" },
     { "id": 51, "type": "final", "name": "Three-way valve" },
     { "id": 52, "type": "dropdown", "name": "Steam", "options": [50] },
-    { "id": 53, "type": "dropdown", "name": "Electric", "options": [54, 55]},
+    { "id": 53, "type": "dropdown", "name": "Electric", "options": [54, 55] },
     { "id": 54, "type": "final", "name": "Staged" },
     { "id": 55, "type": "final", "name": "Modulating" },
-    { "id": 56, "type": "dropdown", "name": "Humidifer", "options": [57, 58]},
-    { "id": 57, "type": "final", "name": "Steam"},
-    { "id": 58, "type": "final", "name": "Other"},
-    { "id": 59, "type": "dropdown", "name": "Draw-through fan", "options": [60, 61, 62]},
-    { "id": 60, "type": "final", "name": "No fan"},
-    { "id": 61, "type": "final", "name": "Single fan"},
-    { "id": 62, "type": "final", "name": "Multiple fans (identical)"},
+    { "id": 56, "type": "dropdown", "name": "Humidifer", "options": [57, 58] },
+    { "id": 57, "type": "final", "name": "Steam" },
+    { "id": 58, "type": "final", "name": "Other" },
+    {
+      "id": 59,
+      "type": "dropdown",
+      "name": "Draw-through fan",
+      "options": [60, 61, 62]
+    },
+    { "id": 60, "type": "final", "name": "No fan" },
+    { "id": 61, "type": "final", "name": "Single fan" },
+    { "id": 62, "type": "final", "name": "Multiple fans (identical)" },
     { "id": 63, "type": "dropdown", "name": "Controller", "options": [64] },
-    { "id": 64, "type": "dropdown", "name": "Guideline 36", "options": [65, 66, 72, 73, 74, 75] },
-    { "id": 65, "type": "boolean", "name": "VAV-reheat boxes on perimeter zones"},
-    { "id": 66, "type": "dropdown", "name": "Economizer changeover", "options": [67, 68, 69, 70, 71] },
-    { "id": 67, "type": "final", "name": "Fixed dry bulb"},
-    { "id": 68, "type": "final", "name": "Differential dry bulb"},
-    { "id": 69, "type": "final", "name": "Fixed dry bulb + differential dry bulb"},
-    { "id": 70, "type": "final", "name": "Fixed enthalpy + fixed dry bulb"},
-    { "id": 71, "type": "final", "name": "Differential enthalpy + fixed dry bulb"},
-    { "id": 72, "type": "boolean", "name": "Mixed air temperature measurement enabled"},
-    { "id": 73, "type": "boolean", "name": "G36 freeze protection"},
-    { "id": 74, "type": "enum", "name": "Energy standard"},
-    { "id": 75, "type": "enum", "name": "Climate zone"},
-    { "id": 76, "type": "dropdown", "name": "Controller", "options": [77]},
-    { "id": 77, "type": "dropdown", "name": "Guideline 36", "options": [78, 79, 80, 81, 82,86]},
-    { "id": 78, "type": "boolean", "name": "Occupancy sensor"},
-    { "id": 79, "type": "boolean", "name": "Window status sensor"},
-    { "id": 80, "type": "boolean", "name": "CO2 sensor"},
-    { "id": 81, "type": "boolean", "name": "Boiler plant request"},
-    { "id": 82, "type": "dropdown", "name": "Local set point adjustment", "options": [83, 84, 85]},
-    { "id": 83, "type": "final", "name": "No local set point adjustment"},
-    { "id": 84, "type": "final", "name": "Single set point adjustment"},
-    { "id": 85, "type": "final", "name": "Dual set point adjustment"},
-    { "id": 86, "type": "boolean", "name": "Demand-limit adjustment"},
-    { "id": 87, "type": "dropdown", "name": "Fan Control", "options": [88, 89] },
-    { "id": 88, "type": "final", "name": "On/Off"},
-    { "id": 89, "type": "final", "name": "Modulating (ECM)"},
-    { "id": 90, "type": "dropdown", "name": "Controller", "options": [91]},
-    { "id": 91, "type": "dropdown", "name": "Guideline 36", "options": [78, 79]}
+    {
+      "id": 64,
+      "type": "dropdown",
+      "name": "Guideline 36",
+      "options": [65, 66, 72, 73, 74, 75]
+    },
+    {
+      "id": 65,
+      "type": "boolean",
+      "name": "VAV-reheat boxes on perimeter zones"
+    },
+    {
+      "id": 66,
+      "type": "dropdown",
+      "name": "Economizer changeover",
+      "options": [67, 68, 69, 70, 71]
+    },
+    { "id": 67, "type": "final", "name": "Fixed dry bulb" },
+    { "id": 68, "type": "final", "name": "Differential dry bulb" },
+    {
+      "id": 69,
+      "type": "final",
+      "name": "Fixed dry bulb + differential dry bulb"
+    },
+    { "id": 70, "type": "final", "name": "Fixed enthalpy + fixed dry bulb" },
+    {
+      "id": 71,
+      "type": "final",
+      "name": "Differential enthalpy + fixed dry bulb"
+    },
+    {
+      "id": 72,
+      "type": "boolean",
+      "name": "Mixed air temperature measurement enabled"
+    },
+    { "id": 73, "type": "boolean", "name": "G36 freeze protection" },
+    { "id": 74, "type": "enum", "name": "Energy standard" },
+    { "id": 75, "type": "enum", "name": "Climate zone" },
+    { "id": 76, "type": "dropdown", "name": "Controller", "options": [77] },
+    {
+      "id": 77,
+      "type": "dropdown",
+      "name": "Guideline 36",
+      "options": [78, 79, 80, 81, 82, 86]
+    },
+    { "id": 78, "type": "boolean", "name": "Occupancy sensor" },
+    { "id": 79, "type": "boolean", "name": "Window status sensor" },
+    { "id": 80, "type": "boolean", "name": "CO2 sensor" },
+    { "id": 81, "type": "boolean", "name": "Boiler plant request" },
+    {
+      "id": 82,
+      "type": "dropdown",
+      "name": "Local set point adjustment",
+      "options": [83, 84, 85]
+    },
+    { "id": 83, "type": "final", "name": "No local set point adjustment" },
+    { "id": 84, "type": "final", "name": "Single set point adjustment" },
+    { "id": 85, "type": "final", "name": "Dual set point adjustment" },
+    { "id": 86, "type": "boolean", "name": "Demand-limit adjustment" },
+    {
+      "id": 87,
+      "type": "dropdown",
+      "name": "Fan Control",
+      "options": [88, 89]
+    },
+    { "id": 88, "type": "final", "name": "On/Off" },
+    { "id": 89, "type": "final", "name": "Modulating (ECM)" },
+    { "id": 90, "type": "dropdown", "name": "Controller", "options": [91] },
+    {
+      "id": 91,
+      "type": "dropdown",
+      "name": "Guideline 36",
+      "options": [78, 79]
+    }
   ]
 }

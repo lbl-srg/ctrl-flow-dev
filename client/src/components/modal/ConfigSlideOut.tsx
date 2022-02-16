@@ -1,13 +1,22 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { css, jsx } from "@emotion/react/macro";
-import { Fragment, useState } from "react";
+import { Fragment, ReactNode, useState } from "react";
 
-import Button from "../Button";
+import Button, { LinkButton } from "../Button";
 import { BaseModal, ModalOpenContext } from "./BaseModal";
 
-const SlideOut = () => {
+import { useStore, Configuration, System, State } from "../../store/store"
+
+interface SlideOutProps {
+  template: System;
+  config?: Configuration;
+}
+
+const SlideOut = ({template, config}: SlideOutProps) => {
   const [isOpen, setOpen] = useState(false);
+  const { options } = useStore(state => ({ options: state.templates.options }));
+  const systemOptions = template.options ? template.options.map(optionId => options.find(o => o.id === optionId)) : [];
 
   return (
     <ModalOpenContext.Provider value={isOpen}>
@@ -18,7 +27,7 @@ const SlideOut = () => {
           showCloseButton={false}
           css={slideOutCss}
         >
-          <h1>Hello World</h1>
+          <h1>{template.name}</h1>
         </BaseModal>
       </Fragment>
     </ModalOpenContext.Provider>

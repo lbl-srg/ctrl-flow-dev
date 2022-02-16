@@ -4,6 +4,10 @@ import { produce } from "immer";
 
 import mockData from "./system.json";
 
+// TODO... get a better uid system
+let _idIncrement = 1;
+const getID = () => (_idIncrement += 1);
+
 export interface ProjectDetails {
   name: string;
   address: string;
@@ -42,8 +46,8 @@ export interface SystemTemplates {
 export interface Configuration {
   id: number;
   system: number; // ID of system
-  name: string;
-  configuration: any; // this is dynamically generated from modelica template selections
+  name: string | undefined;
+  selections: Selection[] | undefined;
 }
 
 export interface MetaConfiguration {
@@ -51,6 +55,13 @@ export interface MetaConfiguration {
   tagStartIndex: number;
   quantity: number;
   configuration: number; // configuration ID
+}
+
+export interface Selection {
+  modelicaPath: string; // e.g. Buildings.Templates.Components.Types.Valve.ThreeWay
+  option: number; // option id
+  selection: number; // option id
+  value?: any; // number/boolean/enu
 }
 
 export interface UserProjects {
@@ -69,6 +80,8 @@ export interface State {
   userProjects: UserProjects;
   addSystem: (system: System) => void;
   removeSystem: (system: System) => void;
+  addConfig: (system: System) => void;
+  removeConfig: (config: Configuration) => void;
 }
 
 export const useStore = create<State>(
@@ -103,6 +116,44 @@ export const useStore = create<State>(
             state.userProjects.systems =
               state.userProjects.systems?.filter((s) => s.id !== system.id) ||
               state.userProjects.systems;
+          }),
+        ),
+      addConfig: (system: System) => {
+        set(
+          produce((state: State) => {
+            const config = {
+              system: system.id,
+              name: "Test",
+              id: getID(),
+              selections: [],
+            };
+            state.userProjects.configurations = state.userProjects
+              ?.configurations
+              ? [...state.userProjects.configurations, config]
+              : [config];
+          }),
+        );
+      },
+      removeConfig: (config: Configuration) =>
+        set(
+          produce((state: State) => {
+            state.userProjects.configurations =
+              state.userProjects.configurations?.filter(
+                (c) => c.id !== config.id,
+              ) || state.userProjects.configurations;
+          }),
+        ),
+      updateConfig: (
+        config: Partial<Configuration> & { id: number; system: number },
+      ) =>
+        set(
+          produce((state: State) => {
+            let oldConfig = state.userProjects.configurations.find(
+              (c) => c.id === config.id,
+            );
+            if (config !== undefined) {
+              oldConfig = { ...oldConfig, ...config } as Configuration;
+            }
           }),
         ),
     }),
