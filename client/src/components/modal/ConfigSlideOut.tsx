@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { css, jsx } from "@emotion/react/macro";
-import { Fragment, ReactNode, useState } from "react";
+import { Fragment, useState } from "react";
 import styled from "@emotion/styled";
 import { Field, Form, Formik } from "formik";
 
@@ -10,6 +10,7 @@ import { BaseModal, ModalOpenContext } from "./BaseModal";
 
 import {
   useStore,
+  ConfigSelections,
   Configuration,
   System,
   Option,
@@ -18,25 +19,34 @@ import {
 
 interface SlideOutProps {
   template: System;
-  config?: Configuration;
+  config: Configuration;
 }
+const CONFIG_NAME_KEY = "configName"
 
 const SlideOut = ({ template, config }: SlideOutProps) => {
   const [isOpen, setOpen] = useState(false);
-  const { options } = useStore((state) => ({
+  const { options, updateConfig } = useStore((state) => ({
     options: state.templates.options,
+    updateConfig: state.updateConfig
   }));
+
   const systemOptions = template.options
     ? (template.options.map((optionId) =>
         options.find((o) => o.id === optionId),
       ) as Option[])
     : [];
-  const configSelections = config?.selections || [];
-  // pass in all selections with each option
-  // if the option has a selection, apply it
-  // check if option has options, if it does, render it
-  // if that section is another option, render that option, check for a selection, and apply it
-  // else if final, apply selection
+  const selections = config?.selections || [];
+
+  // build up initial state
+  const initalState: ConfigSelections = {};
+
+  initalState[CONFIG_NAME_KEY] = config.name || '';
+  selections.map(s => {
+    const option = options.find(o => o.id === s.option);
+    if (option) {
+      initalState[option.name] = s;
+    }
+  });
 
   return (
     <ModalOpenContext.Provider value={isOpen}>
@@ -47,17 +57,34 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
           showCloseButton={false}
           css={slideOutCss}
         >
-          <h3>Configuration Name</h3>
-          <input></input>
-          {systemOptions.map((option) => (
-            <div key={option.id}>
-              <OptionDisplay
-                optionID={option.id}
-                options={options}
-                selections={configSelections}
-              />
-            </div>
-          ))}
+          <Formik
+            initialValues={initalState}
+            onSubmit={(configSelections: ConfigSelections) => {
+              updateConfig(config, configSelections);
+              setOpen(false);
+            }}
+          >
+            <Form>
+              <Field id={CONFIG_NAME_KEY} name={config.name} placeholder="Name Your New Configuration" />
+              <Button
+                  type="submit"
+                  css={css`
+
+                  `}
+                >
+                Save
+              </Button>
+              {systemOptions.map((option) => (
+                <div key={option.id}>
+                  <OptionDisplay
+                    option={option}
+                    options={options}
+                    selections={selections}
+                  />
+                </div>
+              ))}
+            </Form>
+          </Formik>
         </BaseModal>
       </Fragment>
     </ModalOpenContext.Provider>
@@ -65,33 +92,27 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
 };
 
 interface OptionDisplayProps {
-  optionID: number;
+  option: Option;
   options: Option[];
   selections: Selection[];
 }
 
 const OptionDisplay = ({
-  optionID,
+  option,
   options,
   selections,
 }: OptionDisplayProps) => {
-  const option = options.find((o) => o.id === optionID) as Option;
-  const selection = selections.find((s) => s.selection === optionID);
   const optionList =
-    (option.options?.map((oID) =>
-      options.find((o) => o.id === oID),
-    ) as Option[]) || ([] as Option[]);
+    (option.options?.map((oID) => options.find((o) => o.id === oID)) || []) as Option[];
 
   // TODO: will need to conditionally render the option based on 'type' (bool, value, dropdown)
 
   return (
     <Fragment>
       <Label htmlFor={option.name}>{option.name}</Label>
-      <Field id={option.name} name={option.name}>
+      <Field as="select" id={option.name} name={option.name}>
         {optionList.map((o) => (
-          <option key={o.id} value={o.name}>
-            {o.name}
-          </option>
+          <option key={o.id} value={o.name}>{o.name}</option>
         ))}
       </Field>
     </Fragment>

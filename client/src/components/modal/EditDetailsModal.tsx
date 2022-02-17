@@ -60,6 +60,16 @@ const EditDetailsModal = ({
                 width: 100% height 100%;
               `}
             >
+              <Button
+                type="submit"
+                css={css`
+                  position: absolute;
+                  bottom: 3rem;
+                  right: 6rem;
+                `}
+              >
+                Save
+              </Button>
               <Label htmlFor="name">Project Name:</Label>
               <Field id="name" name="name" />
 

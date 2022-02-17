@@ -30,12 +30,14 @@ export interface System {
   options?: number[];
 }
 
+// modelicaPath+name should be the unique identifier for options
 export interface Option {
   id: number;
   type: string;
   name: string;
   options?: number[];
   group?: string;
+  modelicaPath?: string;
 }
 
 export interface SystemTemplates {
@@ -64,6 +66,9 @@ export interface Selection {
   value?: any; // number/boolean/enu
 }
 
+// key is ${option.modelicaPath + option.name}
+export type ConfigSelections = {[key: string]: Selection | string | undefined}
+
 export interface UserProjects {
   systems: System[];
   configurations: Configuration[];
@@ -81,6 +86,7 @@ export interface State {
   addSystem: (system: System) => void;
   removeSystem: (system: System) => void;
   addConfig: (system: System) => void;
+  updateConfig: (config: Partial<Configuration> & { id: number; system: number }, selections: ConfigSelections) => void;
   removeConfig: (config: Configuration) => void;
 }
 
@@ -145,15 +151,18 @@ export const useStore = create<State>(
         ),
       updateConfig: (
         config: Partial<Configuration> & { id: number; system: number },
+        selections: ConfigSelections
       ) =>
         set(
           produce((state: State) => {
-            let oldConfig = state.userProjects.configurations.find(
+            const name = selections['configName'] || config.name;
+            const  oldConfig = state.userProjects.configurations.find(
               (c) => c.id === config.id,
             );
             if (config !== undefined) {
-              oldConfig = { ...oldConfig, ...config } as Configuration;
+              config = { ...oldConfig, ...config, ...{name} } as Configuration;
             }
+            // TODO: iterate through selections to update config
           }),
         ),
     }),
