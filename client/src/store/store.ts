@@ -38,6 +38,7 @@ export interface Option {
   options?: number[];
   group?: string;
   modelicaPath?: string;
+  value?: number | boolean;
 }
 
 export interface SystemTemplates {
@@ -49,7 +50,7 @@ export interface Configuration {
   id: number;
   system: number; // ID of system
   name: string | undefined;
-  selections: Selection[] | undefined;
+  selections: Option[] | undefined;
 }
 
 export interface MetaConfiguration {
@@ -58,16 +59,6 @@ export interface MetaConfiguration {
   quantity: number;
   configuration: number; // configuration ID
 }
-
-export interface Selection {
-  modelicaPath: string; // e.g. Buildings.Templates.Components.Types.Valve.ThreeWay
-  option: number; // option id
-  selection: number; // option id
-  value?: any; // number/boolean/enu
-}
-
-// key is ${option.modelicaPath + option.name}
-export type ConfigSelections = {[key: string]: Selection | string | undefined}
 
 export interface UserProjects {
   systems: System[];
@@ -86,7 +77,7 @@ export interface State {
   addSystem: (system: System) => void;
   removeSystem: (system: System) => void;
   addConfig: (system: System) => void;
-  updateConfig: (config: Partial<Configuration> & { id: number; system: number }, selections: ConfigSelections) => void;
+  updateConfig: (config: Partial<Configuration> & { id: number; system: number }, configName: string, selections: Option[]) => void;
   removeConfig: (config: Configuration) => void;
 }
 
@@ -151,17 +142,18 @@ export const useStore = create<State>(
         ),
       updateConfig: (
         config: Partial<Configuration> & { id: number; system: number },
-        selections: ConfigSelections
+        configName: string,
+        selections: Option[]
       ) =>
         set(
           produce((state: State) => {
-            const name = selections['configName'] || config.name;
             const  oldConfig = state.userProjects.configurations.find(
               (c) => c.id === config.id,
             );
             if (config !== undefined) {
               config = { ...oldConfig, ...config, ...{name} } as Configuration;
             }
+            // 
             // TODO: iterate through selections to update config
           }),
         ),

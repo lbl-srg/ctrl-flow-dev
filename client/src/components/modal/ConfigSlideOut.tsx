@@ -10,18 +10,40 @@ import { BaseModal, ModalOpenContext } from "./BaseModal";
 
 import {
   useStore,
-  ConfigSelections,
   Configuration,
   System,
   Option,
-  Selection,
 } from "../../store/store";
 
 interface SlideOutProps {
   template: System;
   config: Configuration;
 }
-const CONFIG_NAME_KEY = "configName"
+
+export type ConfigUpdates = {configName: string;} & {[key: string]: number}
+
+
+const handleSubmit = (
+  configUpdates: ConfigUpdates,
+  config: Configuration,
+  systemOptions: Option[],
+  updateConfig: (config: Partial<Configuration> & { id: number; system: number }, configName: string, selections: Option[]) => void) => {
+  // use the selection key to grab the parent option
+  // remove previous selection (if present), add new selection
+
+  const { configName, ...selections } = configUpdates;
+
+  for (const [parentOptionName, optionId] of Object.entries(selections)) {
+    // TODO: might be worth putting 'parentOption' as attribute on options
+    const parentOption = systemOptions.find(o => o.name === parentOptionName);
+    // check if there is an existing selection for the parent option and remove it
+    // By the end of this process previous selections should be trimmed
+  }
+
+  // const selectedOptions = selections.map(sID => systemOptions.find(sOption => sOption.id === sID))
+
+  updateConfig(config, configName, selections)
+}
 
 const SlideOut = ({ template, config }: SlideOutProps) => {
   const [isOpen, setOpen] = useState(false);
@@ -38,15 +60,7 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
   const selections = config?.selections || [];
 
   // build up initial state
-  const initalState: ConfigSelections = {};
-
-  initalState[CONFIG_NAME_KEY] = config.name || '';
-  selections.map(s => {
-    const option = options.find(o => o.id === s.option);
-    if (option) {
-      initalState[option.name] = s;
-    }
-  });
+  const initalState: ConfigUpdates = {configName: config.name || '', options: selections};
 
   return (
     <ModalOpenContext.Provider value={isOpen}>
@@ -59,13 +73,14 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
         >
           <Formik
             initialValues={initalState}
-            onSubmit={(configSelections: ConfigSelections) => {
-              updateConfig(config, configSelections);
+            onSubmit={(configSelections: ConfigUpdates) => {
+              console.log(configSelections);
+              handleSubmit(configSelections, config, systemOptions, updateConfig)
               setOpen(false);
             }}
           >
             <Form>
-              <Field id={CONFIG_NAME_KEY} name={config.name} placeholder="Name Your New Configuration" />
+              <Field id="configName" name={config.name} placeholder="Name Your New Configuration" />
               <Button
                   type="submit"
                   css={css`
@@ -94,7 +109,7 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
 interface OptionDisplayProps {
   option: Option;
   options: Option[];
-  selections: Selection[];
+  selections: Option[];
 }
 
 const OptionDisplay = ({
@@ -112,7 +127,7 @@ const OptionDisplay = ({
       <Label htmlFor={option.name}>{option.name}</Label>
       <Field as="select" id={option.name} name={option.name}>
         {optionList.map((o) => (
-          <option key={o.id} value={o.name}>{o.name}</option>
+          <option key={o.id} value={o.id}>{o.name}</option>
         ))}
       </Field>
     </Fragment>
