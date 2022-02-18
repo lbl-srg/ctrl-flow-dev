@@ -369,7 +369,7 @@
     },
     {
       "id": 65,
-      "type": "boolean",
+      "type": "checkbox",
       "name": "VAV-reheat boxes on perimeter zones"
     },
     {
@@ -393,10 +393,10 @@
     },
     {
       "id": 72,
-      "type": "boolean",
+      "type": "checkbox",
       "name": "Mixed air temperature measurement enabled"
     },
-    { "id": 73, "type": "boolean", "name": "G36 freeze protection" },
+    { "id": 73, "type": "checkbox", "name": "G36 freeze protection" },
     { "id": 74, "type": "enum", "name": "Energy standard" },
     { "id": 75, "type": "enum", "name": "Climate zone" },
     { "id": 76, "type": "dropdown", "name": "Controller", "options": [77] },
@@ -406,10 +406,10 @@
       "name": "Guideline 36",
       "options": [78, 79, 80, 81, 82, 86]
     },
-    { "id": 78, "type": "boolean", "name": "Occupancy sensor" },
-    { "id": 79, "type": "boolean", "name": "Window status sensor" },
-    { "id": 80, "type": "boolean", "name": "CO2 sensor" },
-    { "id": 81, "type": "boolean", "name": "Boiler plant request" },
+    { "id": 78, "type": "checkbox", "name": "Occupancy sensor" },
+    { "id": 79, "type": "checkbox", "name": "Window status sensor" },
+    { "id": 80, "type": "checkbox", "name": "CO2 sensor" },
+    { "id": 81, "type": "checkbox", "name": "Boiler plant request" },
     {
       "id": 82,
       "type": "dropdown",
@@ -419,7 +419,7 @@
     { "id": 83, "type": "final", "name": "No local set point adjustment" },
     { "id": 84, "type": "final", "name": "Single set point adjustment" },
     { "id": 85, "type": "final", "name": "Dual set point adjustment" },
-    { "id": 86, "type": "boolean", "name": "Demand-limit adjustment" },
+    { "id": 86, "type": "checkbox", "name": "Demand-limit adjustment" },
     {
       "id": 87,
       "type": "dropdown",
