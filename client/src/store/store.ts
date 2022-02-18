@@ -147,14 +147,11 @@ export const useStore = create<State>(
       ) =>
         set(
           produce((state: State) => {
-            const  oldConfig = state.userProjects.configurations.find(
-              (c) => c.id === config.id,
-            );
-            if (config !== undefined) {
-              config = { ...oldConfig, ...config, ...{name} } as Configuration;
+            const conf = state.userProjects.configurations.find(c => c.id === config.id);
+            if (conf) {
+              conf.name = configName;
+              conf.selections = selections;
             }
-            // 
-            // TODO: iterate through selections to update config
           }),
         ),
     }),
