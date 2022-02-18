@@ -1,9 +1,9 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { css, jsx } from "@emotion/react/macro";
-import { Fragment, useState } from "react";
+import { Fragment, ReactNode, useState } from "react";
 import styled from "@emotion/styled";
-import { Field, Form, Formik } from "formik";
+import { Field, Form, Formik, FormikProps } from "formik";
 
 import Button, { LinkButton } from "../Button";
 import { BaseModal, ModalOpenContext } from "./BaseModal";
@@ -86,26 +86,29 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
               setOpen(false);
             }}
           >
-            <Form>
-              <Field id="configName" name="configName" placeholder="Name Your New Configuration" />
-              <Button
-                  type="submit"
-                  css={css`
-
-                  `}
-                >
-                Save
-              </Button>
-              {systemOptions.map((option) => (
-                <div key={option.id}>
+            {
+              formik => (
+                <Form>
+                <Field id="configName" name="configName" placeholder="Name Your New Configuration" />
+                <Button
+                    type="submit"
+                    css={css`
+  
+                    `}
+                  >
+                  Save
+                </Button>
+                {systemOptions.map((option) => (
                   <OptionDisplay
                     option={option}
                     options={options}
-                    selections={selections}
+                    formik={formik}
+                    key={option.id}
                   />
-                </div>
-              ))}
-            </Form>
+                ))}
+              </Form>
+              )
+            }
           </Formik>
         </BaseModal>
       </Fragment>
@@ -113,30 +116,55 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
   );
 };
 
+const constructOption = ({
+  option,
+  options,
+}: {option: Option, options: Option[]}) => {
+  const optionType = option.type;
+
+  switch (option.type) {
+    case 'dropdown': {
+      const optionList =
+        (option.options?.map((oID) => options.find((o) => o.id === oID)) || []) as Option[];
+  
+        return (
+          <Fragment>
+            <Label htmlFor={option.name}>{option.name}</Label>
+            <Field as="select" id={option.name} name={option.name}>
+              {optionList.map((o) => (
+                <option key={o.id} value={o.id}>{o.name}</option>
+              ))}
+            </Field>
+          </Fragment>        
+        ) 
+    }
+    default:
+      return <div>TODO: {option.type}: {option.name}</div>
+  }
+}
+
 interface OptionDisplayProps {
   option: Option;
   options: Option[];
-  selections: Option[];
+  formik: FormikProps<ConfigUpdates>;
 }
 
 const OptionDisplay = ({
   option,
   options,
-  selections,
+  formik,
 }: OptionDisplayProps) => {
-  const optionList =
-    (option.options?.map((oID) => options.find((o) => o.id === oID)) || []) as Option[];
+  const childOption = options.find(o => o.id === formik.values[option.name]);
 
-  // TODO: will need to conditionally render the option based on 'type' (bool, value, dropdown)
 
   return (
     <Fragment>
-      <Label htmlFor={option.name}>{option.name}</Label>
-      <Field as="select" id={option.name} name={option.name}>
-        {optionList.map((o) => (
-          <option key={o.id} value={o.id}>{o.name}</option>
-        ))}
-      </Field>
+      {constructOption({option, options})}
+      {childOption && <OptionDisplay
+        option={childOption}
+        options={options}
+        formik={formik}
+      />}
     </Fragment>
   );
 };
