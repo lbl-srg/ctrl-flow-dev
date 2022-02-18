@@ -53,16 +53,12 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
   const selections = config?.selections || [];
   const initSelections: {[key: string]: number | string} = {};
 
-  // TODO: determine if options should have a 'parent' field.
-  // There may be other places where traversal from child
-  // to parent would be helpful
   selections.map(s => {
-    const parentOption = systemOptions.find(o => o.options?.includes(s.id));
+    const parentOption = options.find(o => o.options?.includes(s.id));
     if (parentOption) {
       initSelections[parentOption.name] = s.id;
     }
   });
-
 
   // build up initial state
   const initialState = {
@@ -120,8 +116,6 @@ const constructOption = ({
   option,
   options,
 }: {option: Option, options: Option[]}) => {
-  const optionType = option.type;
-
   switch (option.type) {
     case 'dropdown': {
       const optionList =
@@ -155,7 +149,6 @@ const OptionDisplay = ({
   formik,
 }: OptionDisplayProps) => {
   const childOption = options.find(o => o.id === formik.values[option.name]);
-
 
   return (
     <Fragment>
