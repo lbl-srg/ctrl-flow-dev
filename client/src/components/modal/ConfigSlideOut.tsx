@@ -34,27 +34,43 @@ const buildOptionMap = (options: Option[]): {[key: number]: OptionRelation} => {
   const optionMap: {[key: number]: OptionRelation} = {};
 
   options.map(option => {
-    const optionRelation = optionMap[option.id];
+    const optionRelation = optionMap[option.id] || {};
     optionRelation.children = option.options?.map(childID => options.find(o => o.id === childID) as Option);
 
     optionRelation.children?.map(childOption => {
       const childOptionRelation = optionMap[childOption.id] || {};
       childOptionRelation.parent = option;
-    })
+    });
+    optionMap[option.id] = optionRelation;
   });
 
   return optionMap;
 }
 
+// utility method to get only changed values
+const getChangedValues = (values: ConfigFormValues, initialValues: ConfigFormValues) => {
+  return Object
+    .entries(values)
+    .reduce((acc, [key, value]) => {
+      const hasChanged = initialValues[key] !== value
+
+      if (hasChanged) {
+        acc[key] = value
+      }
+
+      return acc
+    }, {} as ConfigFormValues)
+}
+
 const handleSubmit = (
-  configUpdates: ConfigFormValues,
+  configValues: ConfigFormValues,
   initialConfigValues: ConfigFormValues,
   config: Configuration,
   options: Option[],
   updateConfig: (config: Partial<Configuration> & { id: number; system: number }, configName: string, selections: Option[]) => void) => {
 
-  const { configName, ...selections } = configUpdates;
-
+  const changedValues = getChangedValues(configValues, initialConfigValues)
+  const { configName, ...selections } = changedValues;
   const selectedOptions = Object.values(selections)
     .map(sID => options.find(o => o.id === Number(sID)))
     .filter(o => o !== undefined) as Option[];
@@ -113,8 +129,6 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
           <Formik
             initialValues={initialValues}
             onSubmit={(configSelections: ConfigFormValues) => {
-              console.log(initialValues);
-              console.log(configSelections);
               handleSubmit(configSelections, initialValues, config, options, updateConfig)
               setOpen(false);
             }}
