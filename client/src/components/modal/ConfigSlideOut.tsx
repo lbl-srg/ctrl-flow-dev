@@ -8,6 +8,8 @@ import { Field, Form, Formik, FormikProps } from "formik";
 import Button, { LinkButton } from "../Button";
 import { BaseModal, ModalOpenContext } from "./BaseModal";
 
+import { getChangedValues } from "../../utils";
+
 import {
   useStore,
   Configuration,
@@ -37,9 +39,11 @@ const buildOptionMap = (options: Option[]): {[key: number]: OptionRelation} => {
     const optionRelation = optionMap[option.id] || {};
     optionRelation.children = option.options?.map(childID => options.find(o => o.id === childID) as Option);
 
+    // initalize children in map
     optionRelation.children?.map(childOption => {
       const childOptionRelation = optionMap[childOption.id] || {};
       childOptionRelation.parent = option;
+      optionMap[childOption.id] = childOptionRelation;
     });
     optionMap[option.id] = optionRelation;
   });
@@ -47,42 +51,47 @@ const buildOptionMap = (options: Option[]): {[key: number]: OptionRelation} => {
   return optionMap;
 }
 
-// utility method to get only changed values
-const getChangedValues = (values: ConfigFormValues, initialValues: ConfigFormValues) => {
-  return Object
-    .entries(values)
-    .reduce((acc, [key, value]) => {
-      const hasChanged = initialValues[key] !== value
-
-      if (hasChanged) {
-        acc[key] = value
-      }
-
-      return acc
-    }, {} as ConfigFormValues)
-}
-
 const handleSubmit = (
-  configValues: ConfigFormValues,
-  initialConfigValues: ConfigFormValues,
+  configSelections: ConfigFormValues,
+  initSelections: ConfigFormValues,
+  optionMap: {[key: number]: OptionRelation},
   config: Configuration,
   options: Option[],
   updateConfig: (config: Partial<Configuration> & { id: number; system: number }, configName: string, selections: Option[]) => void) => {
-
-  const changedValues = getChangedValues(configValues, initialConfigValues)
-  const { configName, ...selections } = changedValues;
-  const selectedOptions = Object.values(selections)
-    .map(sID => options.find(o => o.id === Number(sID)))
+  const changedValues = getChangedValues(configSelections, initSelections) as ConfigFormValues;
+  const { configName, ...changedSelections } = changedValues; // configName is the one odd value in this form
+  const parentList: Option[] = Object.values(changedSelections)
+    .map(sID => optionMap[Number(sID)].parent)
     .filter(o => o !== undefined) as Option[];
 
-    // - for each selection
-    // - if selection parent in parentList
-    //   - if selection has options
-    //     - add selection to parentList
-    //   - remove parent from parent list // assuming only one selection
-    //   - remove selection from selections
+  const selectionsToFilter: string[] = []
 
-  updateConfig(config, configName, selectedOptions)
+  // build up list of options to remove from selection (by parent name string)
+  while (parentList.length > 0) {
+    const parent = parentList.pop() as Option;
+    if (parent) {
+      const children = optionMap[parent.id].children;
+      if (children) {
+        parentList.push(...children);
+      }
+    }
+    selectionsToFilter.push(parent.name);
+  }
+
+  // get existing selections, filter out removed options
+  const selections = Object.entries(configSelections)
+    .filter(([key, _]) => selectionsToFilter.indexOf(key) < 0)
+    .map(([_, id]) => options.find(o => o.id === Number(id)))
+    .filter(o => o !== undefined) as Option[];
+
+  // get changed options
+  const changedOptions = Object.values(changedSelections)
+    .map(oID => options.find(o => o.id === Number(oID)))
+    .filter(o => o !== undefined) as Option[];
+
+  // append to get full set of options for the current config
+  selections.push(...changedOptions);
+  updateConfig(config, configName, selections)
 }
 
 const SlideOut = ({ template, config }: SlideOutProps) => {
@@ -129,7 +138,7 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
           <Formik
             initialValues={initialValues}
             onSubmit={(configSelections: ConfigFormValues) => {
-              handleSubmit(configSelections, initialValues, config, options, updateConfig)
+              handleSubmit(configSelections, initialValues, optionMap, config, options, updateConfig)
               setOpen(false);
             }}
           >
