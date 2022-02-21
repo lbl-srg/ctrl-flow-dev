@@ -20,11 +20,35 @@ interface SlideOutProps {
   config: Configuration;
 }
 
-export type ConfigUpdates = & {[key: string]: number | string, configName: string} 
+export type ConfigFormValues = & {[key: string]: number | string, configName: string} 
 
+type OptionRelation = {parent?: Option | undefined, children?: Option[] | undefined};
+
+/**
+ * Options are stored as a flat list, but there is a unidirectonal tree of object relations
+ * defined by Options having children options. It is helpful to have a map from
+ * child to parent to help clear suboptions that are no longer relevant if a parent
+ * option changes (formik will not automatically do this for us)
+ */
+const buildOptionMap = (options: Option[]): {[key: number]: OptionRelation} => {
+  const optionMap: {[key: number]: OptionRelation} = {};
+
+  options.map(option => {
+    const optionRelation = optionMap[option.id];
+    optionRelation.children = option.options?.map(childID => options.find(o => o.id === childID) as Option);
+
+    optionRelation.children?.map(childOption => {
+      const childOptionRelation = optionMap[childOption.id] || {};
+      childOptionRelation.parent = option;
+    })
+  });
+
+  return optionMap;
+}
 
 const handleSubmit = (
-  configUpdates: ConfigUpdates,
+  configUpdates: ConfigFormValues,
+  initialConfigValues: ConfigFormValues,
   config: Configuration,
   options: Option[],
   updateConfig: (config: Partial<Configuration> & { id: number; system: number }, configName: string, selections: Option[]) => void) => {
@@ -34,6 +58,13 @@ const handleSubmit = (
   const selectedOptions = Object.values(selections)
     .map(sID => options.find(o => o.id === Number(sID)))
     .filter(o => o !== undefined) as Option[];
+
+    // - for each selection
+    // - if selection parent in parentList
+    //   - if selection has options
+    //     - add selection to parentList
+    //   - remove parent from parent list // assuming only one selection
+    //   - remove selection from selections
 
   updateConfig(config, configName, selectedOptions)
 }
@@ -60,8 +91,12 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
     }
   });
 
+  // TODO: this only needs to be done once and probably does not
+  // need to live here.
+  const optionMap = buildOptionMap(options);
+
   // build up initial state
-  const initialState = {
+  const initialValues = {
     configName: config.name || '',
     ...initSelections
   };
@@ -76,9 +111,11 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
           css={slideOutCss}
         >
           <Formik
-            initialValues={initialState}
-            onSubmit={(configSelections: ConfigUpdates) => {
-              handleSubmit(configSelections, config, options, updateConfig)
+            initialValues={initialValues}
+            onSubmit={(configSelections: ConfigFormValues) => {
+              console.log(initialValues);
+              console.log(configSelections);
+              handleSubmit(configSelections, initialValues, config, options, updateConfig)
               setOpen(false);
             }}
           >
@@ -140,7 +177,7 @@ const constructOption = ({
 interface OptionDisplayProps {
   option: Option;
   options: Option[];
-  formik: FormikProps<ConfigUpdates>;
+  formik: FormikProps<ConfigFormValues>;
 }
 
 const OptionDisplay = ({
