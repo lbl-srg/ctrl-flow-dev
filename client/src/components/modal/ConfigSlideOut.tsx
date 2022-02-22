@@ -58,8 +58,8 @@ const handleSubmit = (
   config: Configuration,
   options: Option[],
   updateConfig: (config: Partial<Configuration> & { id: number; system: number }, configName: string, selections: Option[]) => void) => {
-  const changedValues = getChangedValues(configSelections, initSelections) as ConfigFormValues;
-  const { configName, ...changedSelections } = changedValues; // configName is the one odd value in this form
+  const { configName, ...confSelections } = configSelections // extract out name
+  const changedSelections = getChangedValues(confSelections, initSelections) as ConfigFormValues;
   const parentList: Option[] = Object.values(changedSelections)
     .map(sID => optionMap[Number(sID)].parent)
     .filter(o => o !== undefined) as Option[];
@@ -106,6 +106,7 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
         options.find((o) => o.id === optionId),
       ) as Option[])
     : [];
+
   const selections = config?.selections || [];
   const initSelections: {[key: string]: number | string} = {};
 
@@ -193,7 +194,7 @@ const constructOption = ({
         ) 
     }
     default:
-      return <div>TODO: {option.type}: {option.name}</div>
+      return null;  
   }
 }
 
