@@ -130,7 +130,7 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
   return (
     <ModalOpenContext.Provider value={isOpen}>
       <Fragment>
-        <Button onClick={() => setOpen(true)}>Edit</Button>
+        <Button variant="filledSmall" onClick={() => setOpen(true)}>Edit</Button>
         <BaseModal
           closeAction={() => setOpen(false)}
           showCloseButton={false}
@@ -212,7 +212,8 @@ const OptionDisplay = ({
   options,
   formik,
 }: OptionDisplayProps) => {
-  // TODO: onChange needs to re-evaluate this expression
+  // TODO: onChange needs to re-evaluate this expression... not sure of the best way to do
+  // this with formik
   const childOption = options.find(o => o.id === formik.values[option.name]);
 
   return (
