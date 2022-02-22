@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { css, jsx } from "@emotion/react/macro";
-import { Fragment, ReactNode, useState } from "react";
+import { Fragment, useState } from "react";
 import styled from "@emotion/styled";
 import { Field, Form, Formik, FormikProps } from "formik";
 
@@ -146,24 +146,24 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
             {
               formik => (
                 <Form>
-                <Field id="configName" name="configName" placeholder="Name Your New Configuration" />
-                <Button
-                    type="submit"
-                    css={css`
-  
-                    `}
-                  >
-                  Save
-                </Button>
-                {systemOptions.map((option) => (
-                  <OptionDisplay
-                    option={option}
-                    options={options}
-                    formik={formik}
-                    key={option.id}
-                  />
-                ))}
-              </Form>
+                  <Field id="configName" name="configName" placeholder="Name Your New Configuration" />
+                  <Button
+                      type="submit"
+                      css={css`
+    
+                      `}
+                    >
+                    Save
+                  </Button>
+                  {systemOptions.map((option) => (
+                    <OptionDisplay
+                      option={option}
+                      options={options}
+                      formik={formik}
+                      key={option.id}
+                    />
+                  ))}
+                </Form>
               )
             }
           </Formik>
@@ -185,7 +185,10 @@ const constructOption = ({
         return (
           <Fragment>
             <Label htmlFor={option.name}>{option.name}</Label>
-            <Field as="select" id={option.name} name={option.name}>
+            <Field
+              as="select"
+              id={option.name}
+              name={option.name}>
               {optionList.map((o) => (
                 <option key={o.id} value={o.id}>{o.name}</option>
               ))}
@@ -209,6 +212,7 @@ const OptionDisplay = ({
   options,
   formik,
 }: OptionDisplayProps) => {
+  // TODO: onChange needs to re-evaluate this expression
   const childOption = options.find(o => o.id === formik.values[option.name]);
 
   return (
