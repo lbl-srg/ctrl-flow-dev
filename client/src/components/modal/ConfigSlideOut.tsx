@@ -121,12 +121,6 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
   // need to live here.
   const optionMap = buildOptionMap(options);
 
-  // build up initial state
-  // const initialValues = {
-  //   configName: config.name || '',
-  //   ...initSelections
-  // };
-
   const [initialValues, setInitialValues] = useState({
     configName: config.name || '',
     ...initSelections
@@ -155,6 +149,9 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
                   onChange={(e) => {
                     const target = e.target as any;
                     const newValue: {[key: string]: any} = {};
+                    // TODO: this will not work once we start incorporating more types of input
+                    // 'setInitialValues' should be passed the OptionDisplay component constructor
+                    // so we can make intelligent decisions about how to cast input.
                     const value = isNaN(target.value) ? target.value : Number(target.value);
                     newValue[target.name] = value;
                     setInitialValues({...initialValues, ...newValue});
