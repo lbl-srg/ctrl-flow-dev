@@ -122,10 +122,15 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
   const optionMap = buildOptionMap(options);
 
   // build up initial state
-  const initialValues = {
+  // const initialValues = {
+  //   configName: config.name || '',
+  //   ...initSelections
+  // };
+
+  const [initialValues, setInitialValues] = useState({
     configName: config.name || '',
     ...initSelections
-  };
+  })
 
   return (
     <ModalOpenContext.Provider value={isOpen}>
@@ -138,6 +143,7 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
         >
           <Formik
             initialValues={initialValues}
+            enableReinitialize={true}
             onSubmit={(configSelections: ConfigFormValues) => {
               handleSubmit(configSelections, initialValues, optionMap, config, options, updateConfig)
               setOpen(false);
@@ -145,7 +151,15 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
           >
             {
               formik => (
-                <Form>
+                <Form
+                  onChange={(e) => {
+                    const target = e.target as any;
+                    const newValue: {[key: string]: any} = {};
+                    const value = isNaN(target.value) ? target.value : Number(target.value);
+                    newValue[target.name] = value;
+                    setInitialValues({...initialValues, ...newValue});
+                  }}
+                >
                   <Field id="configName" name="configName" placeholder="Name Your New Configuration" />
                   <Button
                       type="submit"
