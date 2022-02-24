@@ -28,14 +28,17 @@ const buildOptionMap = (options: Option[]): {[key: number]: OptionRelation} => {
 
   options.map(option => {
     const optionRelation = optionMap[option.id] || {};
-    optionRelation.children = option.options?.map(childID => options.find(o => o.id === childID) as Option);
+    const children = option.options?.map(childID => options.find(o => o.id === childID) as Option);
+    optionRelation.children = children;
 
-    // initalize children in map
-    optionRelation.children?.map(childOption => {
-      const childOptionRelation = optionMap[childOption.id] || {};
-      childOptionRelation.parent = option;
-      optionMap[childOption.id] = childOptionRelation;
-    });
+    if (children) {
+      children.map(childOption => {
+        const childOptionRelation = optionMap[childOption.id] || {};
+        childOptionRelation.parent = option;
+        optionMap[childOption.id] = childOptionRelation;
+      });
+    }
+
     optionMap[option.id] = optionRelation;
   });
 
@@ -96,12 +99,12 @@ export const getSelections = (
   const selections = Object.entries(values)
     .filter(([key, _]) => selectionsToFilter.indexOf(key) < 0)
     .map(([_, id]) => options.find(o => o.id === Number(id)))
-    .filter(o => o !== undefined) as Option[];
+    .filter(o => o) as Option[];
 
   // get changed options
   const changedOptions = Object.values(changedSelections)
     .map(oID => options.find(o => o.id === Number(oID)))
-    .filter(o => o !== undefined) as Option[];
+    .filter(o => o) as Option[];
 
   // append to get full set of options for the current config
   selections.push(...changedOptions);
