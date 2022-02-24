@@ -201,7 +201,6 @@ const Config = ({ config, system, removeConfig }: ConfigProps) => {
 
 const ConfigName = styled.div`
   flex: 1;
-  font-weight: 
 `;
 
 const ConfigNameEditContainer = styled.div`

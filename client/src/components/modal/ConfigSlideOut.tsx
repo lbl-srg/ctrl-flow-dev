@@ -39,16 +39,7 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
       ) as Option[])
     : [];
 
-  const selections = config?.selections || [];
-  const initSelections: {[key: string]: number | string} = {};
-
-  selections.map(s => {
-    const parentOption = options.find(o => o.options?.includes(s.id));
-    if (parentOption) {
-      initSelections[parentOption.name] = s.id;
-    }
-  });
-
+  const initSelections = getInitialFormValues(template, config, options);
   const [initialValues, setInitialValues] = useState({
     configName: config.name || '',
     ...initSelections
@@ -122,23 +113,23 @@ const constructOption = ({
     case 'dropdown': {
       const optionList =
         (option.options?.map((oID) => options.find((o) => o.id === oID)) || []) as Option[];
-  
-        return (
-          <Fragment>
-            <Label htmlFor={option.name}>{option.name}</Label>
-            <Field
-              as="select"
-              id={option.name}
-              name={option.name}>
-              {optionList.map((o) => (
-                <option key={o.id} value={o.id}>{o.name}</option>
-              ))}
-            </Field>
-          </Fragment>        
-        ) 
+      return (
+        <Fragment>
+          <Label htmlFor={option.name}>{option.name}</Label>
+          <Field
+            as="select"
+            id={option.name}
+            name={option.name}>
+            {optionList.map((o) => (
+              <option key={o.id} value={o.id}>{o.name}</option>
+            ))}
+          </Field>
+        </Fragment>        
+      )
     }
     default:
-      return null;  
+      // TODO: implement other input types
+      return null; 
   }
 }
 
