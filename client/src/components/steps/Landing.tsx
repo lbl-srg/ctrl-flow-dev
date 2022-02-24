@@ -16,7 +16,7 @@ function Landing() {
 
         <article>
           <div className="row">
-            <div className="col-md-6 col-xs-12">
+            <div className="col-md-7 col-xs-12">
               <h3>HVAC Controls Design Tool</h3>
               <p>
                 The controls design tool allows you to model the complete HVAC
@@ -27,11 +27,20 @@ function Landing() {
               </p>
             </div>
 
-            <div className="col-md-6 col-xs-12">
-              <ul>
-                <li>Select components</li>
-                <li>Configure systems</li>
-                <li>Create system relationships</li>
+            <div className="col-md-5 col-xs-12">
+              <ul className="components">
+                <li>
+                  <i className="icon-th-list" />
+                  Select components
+                </li>
+                <li>
+                  <i className="icon-cog" />
+                  Configure systems
+                </li>
+                <li>
+                  <i className="icon-table" />
+                  Create system relationships
+                </li>
               </ul>
             </div>
           </div>
@@ -45,6 +54,7 @@ function Landing() {
               afterSubmit={() => navigate("/details")}
               className="outline"
             >
+              <i className="icon-plus-squared-alt" />
               Create New Project
             </EditDetailsModal>
           </div>
@@ -54,6 +64,7 @@ function Landing() {
               className="outline"
               onClick={() => alert("an upload dialogue should appear.")}
             >
+              <i className="icon-upload" />
               Upload Existing Project
             </button>
           </div>

@@ -24,3 +24,7 @@ h3 {
 p {
   line-height: 1.5rem;
 }
+
+i {
+  margin-right: var(--spacing-sm);
+}
