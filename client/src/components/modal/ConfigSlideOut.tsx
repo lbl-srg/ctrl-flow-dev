@@ -8,7 +8,11 @@ import { Field, Form, Formik, FormikProps } from "formik";
 import Button, { LinkButton } from "../Button";
 import { BaseModal, ModalOpenContext } from "./BaseModal";
 
-import { getChangedValues } from "../../utils";
+import {
+  getInitialFormValues,
+  getSelections,
+  ConfigFormValues
+} from "../../utils/FormHelpers"
 
 import {
   useStore,
@@ -20,78 +24,6 @@ import {
 interface SlideOutProps {
   template: System;
   config: Configuration;
-}
-
-export type ConfigFormValues = & {[key: string]: number | string, configName: string} 
-
-type OptionRelation = {parent?: Option | undefined, children?: Option[] | undefined};
-
-/**
- * Options are stored as a flat list, but there is a unidirectonal tree of object relations
- * defined by Options having children options. It is helpful to have a map from
- * child to parent to help clear suboptions that are no longer relevant if a parent
- * option changes (formik will not automatically do this for us)
- */
-const buildOptionMap = (options: Option[]): {[key: number]: OptionRelation} => {
-  const optionMap: {[key: number]: OptionRelation} = {};
-
-  options.map(option => {
-    const optionRelation = optionMap[option.id] || {};
-    optionRelation.children = option.options?.map(childID => options.find(o => o.id === childID) as Option);
-
-    // initalize children in map
-    optionRelation.children?.map(childOption => {
-      const childOptionRelation = optionMap[childOption.id] || {};
-      childOptionRelation.parent = option;
-      optionMap[childOption.id] = childOptionRelation;
-    });
-    optionMap[option.id] = optionRelation;
-  });
-
-  return optionMap;
-}
-
-const handleSubmit = (
-  configSelections: ConfigFormValues,
-  initSelections: ConfigFormValues,
-  optionMap: {[key: number]: OptionRelation},
-  config: Configuration,
-  options: Option[],
-  updateConfig: (config: Partial<Configuration> & { id: number; system: number }, configName: string, selections: Option[]) => void) => {
-  const { configName, ...confSelections } = configSelections // extract out name
-  const changedSelections = getChangedValues(confSelections, initSelections) as ConfigFormValues;
-  const parentList: Option[] = Object.values(changedSelections)
-    .map(sID => optionMap[Number(sID)].parent)
-    .filter(o => o !== undefined) as Option[];
-
-  const selectionsToFilter: string[] = []
-
-  // build up list of options to remove from selection (by parent name string)
-  while (parentList.length > 0) {
-    const parent = parentList.pop() as Option;
-    if (parent) {
-      const children = optionMap[parent.id].children;
-      if (children) {
-        parentList.push(...children);
-      }
-    }
-    selectionsToFilter.push(parent.name);
-  }
-
-  // get existing selections, filter out removed options
-  const selections = Object.entries(configSelections)
-    .filter(([key, _]) => selectionsToFilter.indexOf(key) < 0)
-    .map(([_, id]) => options.find(o => o.id === Number(id)))
-    .filter(o => o !== undefined) as Option[];
-
-  // get changed options
-  const changedOptions = Object.values(changedSelections)
-    .map(oID => options.find(o => o.id === Number(oID)))
-    .filter(o => o !== undefined) as Option[];
-
-  // append to get full set of options for the current config
-  selections.push(...changedOptions);
-  updateConfig(config, configName, selections)
 }
 
 const SlideOut = ({ template, config }: SlideOutProps) => {
@@ -117,10 +49,6 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
     }
   });
 
-  // TODO: this only needs to be done once and probably does not
-  // need to live here.
-  const optionMap = buildOptionMap(options);
-
   const [initialValues, setInitialValues] = useState({
     configName: config.name || '',
     ...initSelections
@@ -139,7 +67,9 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
             initialValues={initialValues}
             enableReinitialize={true}
             onSubmit={(configSelections: ConfigFormValues) => {
-              handleSubmit(configSelections, initialValues, optionMap, config, options, updateConfig)
+              const selections = getSelections(configSelections, initialValues, config, options)
+              const configName = configSelections.configName;
+              updateConfig(config, configName, selections)
               setOpen(false);
             }}
           >
