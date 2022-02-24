@@ -4,9 +4,6 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
-// set Pico.css theme to light
-document.querySelector("html")?.setAttribute("data-theme", "light");
-
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>

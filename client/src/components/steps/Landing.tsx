@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import Button from "../Button";
 import EditDetailsModal from "../modal/EditDetailsModal";
 import "../../css/steps/landing.css";
 
@@ -15,7 +14,7 @@ function Landing() {
           <h2>HVAC Controls Design Tool</h2>
         </header>
 
-        <article className="well">
+        <article>
           <div className="row">
             <div className="col-md-6 col-xs-12">
               <h3>HVAC Controls Design Tool</h3>
