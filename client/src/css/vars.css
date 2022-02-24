@@ -1,0 +1,22 @@
+:root {
+  --font-size: 16px;
+  --font-family: "Roboto", sans-serif;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+
+  --spacing: 1rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 3rem;
+  --spacing-xl: 6rem;
+
+  --text-color: #222222;
+  --color-gray-light: #f7f7f7;
+  --color-gray-medium: #787878;
+  --color-grey-dark: #092532;
+  --color-blue-light: #b1d0de;
+  --color-blue-dark: #0b9ec1;
+
+  --border-radius: 0.6rem;
+}

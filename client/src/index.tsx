@@ -1,27 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
-import { Global, css } from "@emotion/react/macro";
-
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
+// set Pico.css theme to light
+document.querySelector("html")?.setAttribute("data-theme", "light");
+
 ReactDOM.render(
   <React.StrictMode>
-    <Global
-      styles={css`
-        html,
-        body {
-          margin: 0;
-          width: 100%;
-          height: 100%;
-        }
-        #root {
-          width: 100%;
-          height: 100%;
-        }
-      `}
-    />
     <BrowserRouter>
       <App />
     </BrowserRouter>

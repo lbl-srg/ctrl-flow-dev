@@ -1,0 +1,24 @@
+/* 
+variables to override can be found here 
+https://github.com/picocss/pico/blob/master/css/pico.css
+*/
+
+/* pico overrides */
+[data-theme="light"],
+:root:not([data-theme="dark"]) {
+  --primary: var(--color-blue-dark);
+
+  /* card */
+  --card-background-color: var(--color-gray-light);
+  --card-box-shadow: none;
+}
+
+button,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+[role="button"] {
+  border-radius: 2rem;
+  text-transform: uppercase;
+  font-weight: var(--font-weight-medium);
+}
