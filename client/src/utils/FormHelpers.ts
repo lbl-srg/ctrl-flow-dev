@@ -8,7 +8,6 @@
  import { getChangedValues } from "./utils";
 
  import {
-    useStore,
     Configuration,
     System,
     Option,
@@ -20,8 +19,6 @@ export type ConfigFormValues = & {[key: string]: number | string, configName: st
 /**
  * Makes a map [option id] -> {parent, children} to help with bidirectional traversal
  * of the option tree
- * @param options 
- * @returns {[key: number]: OptionRelation}
  */
 const buildOptionMap = (options: Option[]): {[key: number]: OptionRelation} => {
   const optionMap: {[key: number]: OptionRelation} = {};
@@ -65,25 +62,60 @@ export const getInitialFormValues =
 }
 
 /**
- * When given a set of values from formik, this helper method figures out
- * the full set of currently specified options for a given configuration and
- * updates the store
+ * When given a set of new selections from formik, this helper method figures out
+ * the full set of currently specified options, trimming no longer relevant selections paths
+ * for a given configuration and returns a complete array of all selections after form submission
+ * 
+ * General algorithm:
+ * 
+ * Here is an example tree of options:
+ * 
+ *            A
+ *          /   \
+ *         B     E
+ *        / \   / \
+ *       C   D F   G
+ * 
+ * If a user previously had the selection: 'E', and 'F'
+ * 
+ * This means we have an initial state of: {'A': 'E', 'E': 'F'} 
+ * 
+ * The use selects 'B', then 'D'.
+ * 
+ * We get a change list like this: ['B', 'D']
+ * 
+ * Use the optionMap to get the parents of 'B' and 'D': parentList: ['A', 'B']
+ * NOTE: we may just want to add a 'parent' field in options to avoid the use of a map
+ * 
+ * For each node in the parent list, add that node to a filter list.
+ * Then traverse to each child and also add that to the filter list
+ * 
+ * A has B and E: ['A', 'B', 'E']
+ * B has C and D: ['A', 'B', 'C', 'B', 'D']
+ * E has F and G: ['A', 'B', 'C', 'B', 'D', 'F', 'G']
+ * 
+ * 
+ * Next: build up the full list of selections for the config useing the initial set of
+ * selections with selection branches pruned combined with the new selections
+ * 
+ * prunedPreviousSelections = initialSelects.filter(s => filterList has s)
+ * fullList = {...previousSelections, newSelections}
  */
 export const getSelections = (
   values: ConfigFormValues,
   initValues: ConfigFormValues,
-  config: Configuration,
   options: Option[]): Option[] => {
   const optionMap = buildOptionMap(options);
   const { configName, ...confSelections } = values // extract out name
   const changedSelections = getChangedValues(confSelections, initValues) as ConfigFormValues;
+
   const parentList: Option[] = Object.values(changedSelections)
     .map(sID => optionMap[Number(sID)].parent)
-    .filter(o => o !== undefined) as Option[];
+    .filter(o => o) as Option[];
 
   const selectionsToFilter: string[] = []
 
-  // build up list of options to remove from selection (by parent name string)
+  // Traverse down each path of options
   while (parentList.length > 0) {
     const parent = parentList.pop() as Option;
     if (parent) {
@@ -95,19 +127,23 @@ export const getSelections = (
     selectionsToFilter.push(parent.name);
   }
 
+  // TODO: formik fields need better names. We will have collisions
+  // if we just rely on option 'name' as there are bound to be duplicates
+  const selectionsToFilterSet = new Set(selectionsToFilter) // remove duplicates
+
   // get existing selections, filter out removed options
   const selections = Object.entries(values)
-    .filter(([key, _]) => selectionsToFilter.indexOf(key) < 0)
+    .filter(([key, _]) => selectionsToFilterSet.has(key))
     .map(([_, id]) => options.find(o => o.id === Number(id)))
     .filter(o => o) as Option[];
 
   // get changed options
-  const changedOptions = Object.values(changedSelections)
+  const newSelections = Object.values(changedSelections)
     .map(oID => options.find(o => o.id === Number(oID)))
     .filter(o => o) as Option[];
 
   // append to get full set of options for the current config
-  selections.push(...changedOptions);
+  selections.push(...newSelections);
 
   return selections;
 }
