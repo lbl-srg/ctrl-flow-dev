@@ -8,6 +8,8 @@ import { Field, Form, Formik, FormikProps } from "formik";
 import Button, { LinkButton } from "../Button";
 import { BaseModal, ModalOpenContext } from "./BaseModal";
 
+import { SelectInput } from "../shared/SelectInput";
+
 import {
   getInitialFormValues,
   getSelections,
@@ -71,6 +73,7 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
                     const target = e.target as any;
                     const newValue: {[key: string]: any} = {};
                     // TODO: this will not work once we start incorporating more types of input
+                    // This would also fail if a config is given a number as a name
                     // 'setInitialValues' should be passed the OptionDisplay component constructor
                     // so we can make intelligent decisions about how to cast input.
                     const value = isNaN(target.value) ? target.value : Number(target.value);
@@ -111,20 +114,14 @@ const constructOption = ({
 }: {option: Option, options: Option[]}) => {
   switch (option.type) {
     case 'dropdown': {
-      const optionList =
+      const selectionList =
         (option.options?.map((oID) => options.find((o) => o.id === oID)) || []) as Option[];
       return (
-        <Fragment>
-          <Label htmlFor={option.name}>{option.name}</Label>
-          <Field
-            as="select"
-            id={option.name}
-            name={option.name}>
-            {optionList.map((o) => (
-              <option key={o.id} value={o.id}>{o.name}</option>
-            ))}
-          </Field>
-        </Fragment>        
+        <SelectInput
+          id={option.name}
+          name={option.name}
+          selections={selectionList}
+        />     
       )
     }
     default:
@@ -144,8 +141,6 @@ const OptionDisplay = ({
   options,
   formik,
 }: OptionDisplayProps) => {
-  // TODO: onChange needs to re-evaluate this expression... not sure of the best way to do
-  // this with formik
   const childOption = options.find(o => o.id === formik.values[option.name]);
 
   return (
