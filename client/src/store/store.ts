@@ -41,8 +41,14 @@ export interface Option {
   value?: number | boolean;
 }
 
-export interface Selection {
-  id: number;
+// export interface Selection {
+//   id: number;
+//   parent: number;
+//   option: number;
+//   value?: number | boolean | string;
+// }
+
+export type Selection = {
   parent: number;
   option: number;
   value?: number | boolean | string;
@@ -59,7 +65,7 @@ export interface Configuration {
   id: number;
   template: number; // ID of SystemTemplate
   name: string | undefined;
-  selections: Option[] | undefined;
+  selections: Selection[];
 }
 
 export interface MetaConfiguration {
@@ -90,18 +96,36 @@ export interface State {
   systemTypes: SystemType[];
   templates: SystemTemplate[];
   options: Option[];
-  userProject: UserProject;
+  userProjects: UserProject[];
+  activeProject: UserProject;
   configurations: Configuration[];
-  addConfig: SetAction<Configuration>;
-  updateConfig: SetAction<ConfigUpdatePayload>
+  addConfig: SetAction<Configuration>; // TODO: on template add, default template must be added
+  updateConfig: SetAction<UpdateConfigPayload>
   removeConfig: SetAction<Configuration>;
   removeAllConfigs: SetAction<System>;
-  // addSystem: SetAction<System>;//(system: System) => void;
-  // removeSystem: SetAction<System>;
-  // addConfig: (system: System) => void;
-  // updateConfig: (config: Partial<Configuration> & { id: number; system: number }, configName: string, selections: Option[]) => void;
-  // removeConfig: (config: Configuration) => void;
 }
+
+export const useStore = create<State>(
+  persist(
+    (set, get) => ({
+      projectDetails: {},
+      saveProjectDetails: projectDetails => saveProjectDetails(projectDetails, set),
+      systemTypes: [],
+      templates: [],
+      options: [],
+      configurations: [],
+      userProjects: [initialUserProject],
+      activeProject: initialUserProject,
+      addConfig: addConfig,
+      updateConfig: updateConfig,
+      removeConfig: removeConfig,
+      removeAllConfigs: removeAllConfigs
+    }),
+    {
+      name: "linkage-storage",
+    }
+  )
+)
 
 const initialUserProject: UserProject = {configs: [], metaConfigs: [], schedules: []}
 
@@ -112,8 +136,8 @@ const saveProjectDetails: SetAction<Partial<ProjectDetails>> = (projectDetails, 
 const addConfig: SetAction<Configuration> = (config, set) => {
   set(
     produce((state: State) => {
-      state.userProject.configs = state.userProject?.configs
-        ? [...(state.userProject.configs as number[]), config.id]
+      state.activeProject.configs = state.activeProject?.configs
+        ? [...(state.activeProject.configs as number[]), config.id]
         : [config.id];
     }),
   )
@@ -126,38 +150,49 @@ interface UpdateConfigPayload {
   selections: Selection[];
 }
 
+/**
+ * Given a set of selections, make sure no-longer relevant selections are removed from
+ * the provided config
+ */
+const pruneOldSelections = (state: State, conf: Configuration, newSelections: Selection[]) => {
+  const options = state.options;
+  // add the parent option of each selection to a remove list
+  // add child nodes to the remove list
+  const nodeList = newSelections.map(s => s.parent);
+  const filterList: number[] = [];
+
+  while (nodeList.length > 0) {
+    const parentOption = options.find(o => o.id === nodeList.pop());
+    if (parentOption) {
+      const children = parentOption.options;
+      if (children) {
+        nodeList.push(...children);
+      }
+      filterList.push(parentOption.id);
+    }
+  }
+
+  return [...conf.selections.filter(s => !filterList.includes(s.parent)),
+    ...newSelections];
+}
+
 const updateConfig: SetAction<UpdateConfigPayload> = (payload, set) =>
   produce((state: State) => {
     const conf = state.configurations.find(c => c.id === payload.config.id);
     // for each selection
     if (conf) {
       conf.name = payload.configName;
-      // conf.selections = payload.selections;
+      conf.selections = pruneOldSelections(state, conf, payload.selections);
     }
   }
 )
 
-//       updateConfig: (
-//         config: Partial<Configuration> & { id: number; system: number },
-//         configName: string,
-//         selections: Option[]
-//       ) =>
-//         set(
-//           produce((state: State) => {
-//             const conf = state.userProjects.configurations.find(c => c.id === config.id);
-//             if (conf) {
-//               conf.name = configName;
-//               conf.selections = selections;
-//             }
-//           }),
-//         ),
-
 const removeConfig: SetAction<Configuration> = (config, set) => {
   set(
     produce((state: State) => {
-      state.userProject.configs =
-        state.userProject.configs?.filter(cID => cID !== config.id) ||
-        state.userProject.configs;
+      state.activeProject.configs =
+        state.activeProject.configs?.filter(cID => cID !== config.id) ||
+        state.activeProject.configs;
     }),
   )
 }
@@ -167,111 +202,13 @@ const removeAllConfigs: SetAction<SystemTemplate> = (template, set) => {
     produce((state: State) => {
       const configs = state.configurations;
       const userSystemConfigs =
-        state.userProject.configs.map(cID => configs.find(c => c.id === cID)) as Configuration[];
-      state.userProject.configs = userSystemConfigs
+        state.activeProject.configs.map(cID => configs.find(c => c.id === cID)) as Configuration[];
+      state.activeProject.configs = userSystemConfigs
         .filter(c => c.template !== template.id)
         .map(c => c.id);
     }),
   )
 }
 
-export const useStore = create<State>(
-  persist(
-    (set, get) => ({
-      projectDetails: {},
-      saveProjectDetails: projectDetails => saveProjectDetails(projectDetails, set),
-      systemTypes: [],
-      templates: [],
-      options: [],
-      configurations: [],
-      userProject: initialUserProject,
-      addConfig: addConfig,
-      updateConfig: updateConfig,
-      removeConfig: removeConfig,
-      removeAllConfigs: removeAllConfigs
-    }),
-    {
-      name: "linkage-storage",
-    }
-  )
-)
-
-
-// export const useStore = create<State>(
-//   persist(
-//     (set, get) => ({
-//       projectDetails: {},
-//       saveProjectDetails: (projectDetails: Partial<ProjectDetails>) =>
-//         set(() => ({ projectDetails })),
-//       systemTypes: mockData["systemTypes"],
-//       systems: mockData['systems'],
-//       options: mockData['options'],
-//       userProjects: {
-//         systems: [],
-//         configurations: [],
-//         metaConfigurations: [],
-//         schedules: null,
-//       },
-//       addSystem: (system: System) =>
-//         set(
-//           produce((state: State) => {
-//             state.userProjects.systems = state.userProjects?.systems
-//               ? [...(state.userProjects.systems as System[]), system]
-//               : [system];
-//           }),
-//         ),
-      // removeSystem: (system: System) =>
-      //   set(
-      //     produce((state: State) => {
-      //       state.userProjects.systems =
-      //         state.userProjects.systems?.filter((s) => s.id !== system.id) ||
-      //         state.userProjects.systems;
-      //     }),
-      //   ),
-//       addConfig: (system: System) => {
-//         set(
-//           produce((state: State) => {
-//             const config = {
-//               system: system.id,
-//               name: "Test",
-//               id: getID(),
-//               selections: [],
-//             };
-//             state.userProjects.configurations = state.userProjects
-//               ?.configurations
-//               ? [...state.userProjects.configurations, config]
-//               : [config];
-//           }),
-//         );
-//       },
-//       removeConfig: (config: Configuration) =>
-//         set(
-//           produce((state: State) => {
-//             state.userProjects.configurations =
-//               state.userProjects.configurations?.filter(
-//                 (c) => c.id !== config.id,
-//               ) || state.userProjects.configurations;
-//           }),
-//         ),
-//       updateConfig: (
-//         config: Partial<Configuration> & { id: number; system: number },
-//         configName: string,
-//         selections: Option[]
-//       ) =>
-//         set(
-//           produce((state: State) => {
-//             const conf = state.userProjects.configurations.find(c => c.id === config.id);
-//             if (conf) {
-//               conf.name = configName;
-//               conf.selections = selections;
-//             }
-//           }),
-//         ),
-//     }),
-//     {
-//       name: "linkage-storage",
-//     },
-//   ),
-// );
 
 export const sanatizeStep = (step: number) => (step > 6 || step < 0 ? 0 : step);
