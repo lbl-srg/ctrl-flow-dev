@@ -25,6 +25,16 @@ p {
   line-height: 1.5rem;
 }
 
+/* icons */
 i {
   margin-right: var(--spacing-sm);
+}
+
+i.large {
+  font-size: 2rem;
+  margin-right: var(--spacing);
+}
+
+label {
+  font-weight: var(--font-weight-medium);
 }

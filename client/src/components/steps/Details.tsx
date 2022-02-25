@@ -22,7 +22,7 @@ const ContentRight = () => {
   return (
     <Fragment>
       <h2>{projectDetails.name}</h2>
-      <EditDetailsModal
+      {/* <EditDetailsModal
         initialState={projectDetails}
         modalTitle="Edit Project Details"
         submitText="Save Project Details"
@@ -34,7 +34,7 @@ const ContentRight = () => {
         `}
       >
         Edit Project Details
-      </EditDetailsModal>
+      </EditDetailsModal> */}
       <DetailsList>
         <li>
           <strong>Address: </strong>

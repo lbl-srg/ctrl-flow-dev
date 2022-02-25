@@ -1,19 +1,14 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { css, jsx } from "@emotion/react/macro";
-import styled from "@emotion/styled";
 import { Field, Form, Formik } from "formik";
-import { Fragment, ReactNode, useState } from "react";
 import { ProjectDetails, useStore } from "../../store/store";
-import Button, { ButtonProps } from "../Button";
-import { BaseModal, ModalOpenContext } from "./BaseModal";
 
 interface EditDetailsModalProps {
   afterSubmit?: () => void;
-  children: ReactNode;
   initialState?: Partial<ProjectDetails>;
   modalTitle: string;
   submitText: string;
+  isOpen: boolean;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  close: Function;
 }
 
 const defaultState = {
@@ -26,92 +21,76 @@ const defaultState = {
   notes: "",
 } as unknown as ProjectDetails;
 
-const EditDetailsModal = ({
+function EditDetailsModal({
   afterSubmit,
-  children,
   initialState = defaultState,
   modalTitle,
   submitText,
-  ...props
-}: EditDetailsModalProps & ButtonProps) => {
+  isOpen,
+  close,
+}: EditDetailsModalProps) {
   const { saveProjectDetails } = useStore((state) => ({
     saveProjectDetails: state.saveProjectDetails,
   }));
-  const [isOpen, setOpen] = useState(false);
 
   return (
-    <ModalOpenContext.Provider value={isOpen}>
-      <Fragment>
-        <Button onClick={() => setOpen(true)} {...props}>
-          {children}
-        </Button>
-        <BaseModal closeAction={() => setOpen(false)}>
+    <dialog open={isOpen}>
+      <article>
+        <header>
+          <a
+            href="#close"
+            aria-label="Close"
+            className="close"
+            onClick={() => close()}
+          ></a>
           <h1>{modalTitle}</h1>
-          <Formik
-            initialValues={initialState}
-            onSubmit={(values: Partial<ProjectDetails>) => {
-              saveProjectDetails(values);
-              setOpen(false);
-              afterSubmit && afterSubmit();
-            }}
-          >
-            <Form
-              css={css`
-                width: 100% height 100%;
-              `}
-            >
-              <Label htmlFor="name">Project Name:</Label>
-              <Field id="name" name="name" />
+        </header>
 
-              <Label htmlFor="address">Address:</Label>
-              <Field id="address" name="address" />
+        <Formik
+          initialValues={initialState}
+          onSubmit={(values: Partial<ProjectDetails>) => {
+            saveProjectDetails(values);
+            afterSubmit && afterSubmit();
+          }}
+        >
+          <Form>
+            <label htmlFor="name">Project Name:</label>
+            <Field id="name" name="name" />
 
-              <Label htmlFor="type">Type</Label>
-              <Field as="select" name="type" data-testid="type-input">
-                <option value="multi-story office">Multi-Story Office</option>
-                <option value="warehouse">Warehouse</option>
-                <option value="something else">Something Else</option>
-              </Field>
+            <label htmlFor="address">Address:</label>
+            <Field id="address" name="address" />
 
-              <Label htmlFor="size">Size</Label>
-              <Field id="size" type="number" name="size" />
+            <label htmlFor="type">Type</label>
+            <Field as="select" name="type" data-testid="type-input">
+              <option value="multi-story office">Multi-Story Office</option>
+              <option value="warehouse">Warehouse</option>
+              <option value="something else">Something Else</option>
+            </Field>
 
-              <Label htmlFor="units">Units</Label>
-              <Field as="select" name="units" data-testid="units-input">
-                <option value="ip">IP</option>
-                <option value="something">Something</option>
-              </Field>
+            <label htmlFor="size">Size</label>
+            <Field id="size" type="number" name="size" />
 
-              <Label htmlFor="code">Energy Code</Label>
-              <Field as="select" name="code" data-testid="code-input">
-                <option value="ashrae 90.1 20201">ASHRAE 90.1 20201</option>
-                <option value="a different one">A Different One</option>
-              </Field>
+            <label htmlFor="units">Units</label>
+            <Field as="select" name="units" data-testid="units-input">
+              <option value="ip">IP</option>
+              <option value="something">Something</option>
+            </Field>
 
-              <Label htmlFor="notes">Notes:</Label>
-              <Field as="textarea" id="notes" name="notes" />
+            <label htmlFor="code">Energy Code</label>
+            <Field as="select" name="code" data-testid="code-input">
+              <option value="ashrae 90.1 20201">ASHRAE 90.1 20201</option>
+              <option value="a different one">A Different One</option>
+            </Field>
 
-              <Button
-                type="submit"
-                css={css`
-                  position: absolute;
-                  bottom: 3rem;
-                  right: 6rem;
-                `}
-              >
-                {submitText}
-              </Button>
-            </Form>
-          </Formik>
-        </BaseModal>
-      </Fragment>
-    </ModalOpenContext.Provider>
+            <label htmlFor="notes">Notes:</label>
+            <Field as="textarea" id="notes" name="notes" />
+
+            <input type="submit" value={submitText} />
+          </Form>
+        </Formik>
+      </article>
+    </dialog>
   );
-};
-
-const Label = styled.label`
-  display: block;
-  font-weight: bold;
-`;
+}
 
 export default EditDetailsModal;

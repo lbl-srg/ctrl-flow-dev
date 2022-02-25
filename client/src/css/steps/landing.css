@@ -19,3 +19,7 @@ main.landing ul.components li i {
   font-size: 2.3rem;
   margin-right: var(--spacing-md);
 }
+
+main.landing .cta button {
+  padding: var(--spacing);
+}

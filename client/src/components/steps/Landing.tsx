@@ -1,13 +1,24 @@
 import { useNavigate } from "react-router-dom";
 import EditDetailsModal from "../modal/EditDetailsModal";
+import { useState } from "react";
+
 import "../../css/steps/landing.css";
 
 // step 0
 function Landing() {
+  const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
 
   return (
     <div className="container-fluid">
+      <EditDetailsModal
+        close={() => setModalOpen(false)}
+        isOpen={modalOpen}
+        modalTitle="Create New Project"
+        submitText="Create Project"
+        afterSubmit={() => navigate("/details")}
+      ></EditDetailsModal>
+
       <main className="landing">
         <header>
           <h1>Welcome to Lawrence Berkley National Labs</h1>
@@ -48,15 +59,10 @@ function Landing() {
 
         <div className="row">
           <div className="col-md-6 col-xs-12">
-            <EditDetailsModal
-              modalTitle="Create New Project"
-              submitText="Create Project"
-              afterSubmit={() => navigate("/details")}
-              className="outline"
-            >
-              <i className="icon-plus-squared-alt" />
+            <button onClick={() => setModalOpen(true)} className="outline">
+              <i className="icon-plus-squared-alt large" />
               Create New Project
-            </EditDetailsModal>
+            </button>
           </div>
 
           <div className="col-md-6 col-xs-12">
@@ -64,7 +70,7 @@ function Landing() {
               className="outline"
               onClick={() => alert("an upload dialogue should appear.")}
             >
-              <i className="icon-upload" />
+              <i className="icon-upload large" />
               Upload Existing Project
             </button>
           </div>

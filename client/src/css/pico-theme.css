@@ -11,14 +11,10 @@ https://github.com/picocss/pico/blob/master/css/pico.css
   /* card */
   --card-background-color: var(--color-gray-light);
   --card-box-shadow: none;
+  --modal-overlay-background-color: rgba(0, 0, 0, 0.3);
 }
 
-button,
-input[type="submit"],
-input[type="button"],
-input[type="reset"],
-[role="button"] {
-  border-radius: 2rem;
-  text-transform: uppercase;
-  font-weight: var(--font-weight-medium);
+dialog article {
+  max-width: 70%;
+  width: 100%;
 }
