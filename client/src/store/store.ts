@@ -30,12 +30,15 @@ export interface System {
   options?: number[];
 }
 
+// modelicaPath+name should be the unique identifier for options
 export interface Option {
   id: number;
   type: string;
   name: string;
   options?: number[];
   group?: string;
+  modelicaPath?: string;
+  value?: number | boolean;
 }
 
 export interface SystemTemplates {
@@ -47,7 +50,7 @@ export interface Configuration {
   id: number;
   system: number; // ID of system
   name: string | undefined;
-  selections: Selection[] | undefined;
+  selections: Option[] | undefined;
 }
 
 export interface MetaConfiguration {
@@ -55,13 +58,6 @@ export interface MetaConfiguration {
   tagStartIndex: number;
   quantity: number;
   configuration: number; // configuration ID
-}
-
-export interface Selection {
-  modelicaPath: string; // e.g. Buildings.Templates.Components.Types.Valve.ThreeWay
-  option: number; // option id
-  selection: number; // option id
-  value?: any; // number/boolean/enu
 }
 
 export interface UserProjects {
@@ -81,6 +77,7 @@ export interface State {
   addSystem: (system: System) => void;
   removeSystem: (system: System) => void;
   addConfig: (system: System) => void;
+  updateConfig: (config: Partial<Configuration> & { id: number; system: number }, configName: string, selections: Option[]) => void;
   removeConfig: (config: Configuration) => void;
 }
 
@@ -145,14 +142,15 @@ export const useStore = create<State>(
         ),
       updateConfig: (
         config: Partial<Configuration> & { id: number; system: number },
+        configName: string,
+        selections: Option[]
       ) =>
         set(
           produce((state: State) => {
-            let oldConfig = state.userProjects.configurations.find(
-              (c) => c.id === config.id,
-            );
-            if (config !== undefined) {
-              oldConfig = { ...oldConfig, ...config } as Configuration;
+            const conf = state.userProjects.configurations.find(c => c.id === config.id);
+            if (conf) {
+              conf.name = configName;
+              conf.selections = selections;
             }
           }),
         ),

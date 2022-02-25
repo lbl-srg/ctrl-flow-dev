@@ -27,6 +27,11 @@ const variantStyles = {
     background: ${colors.mediumBlue};
     color: ${colors.white};
   `,
+  filledSmall: css`
+    background: ${colors.mediumBlue};
+    color: ${colors.white};
+    padding: 0.4rem 1.2rem;
+  `,
   outline: css`
     color: ${colors.mediumBlue};
     background: transparent;
@@ -40,7 +45,7 @@ const variantStyles = {
 
 export interface ButtonProps extends ButtonHTMLAttributes<unknown> {
   children?: ReactNode;
-  variant?: "filled" | "outline" | "text";
+  variant?: "filled" | "filledSmall" | "outline" | "text";
 }
 
 const Button = ({ variant = "filled", ...props }: ButtonProps) => (
