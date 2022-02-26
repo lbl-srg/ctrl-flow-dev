@@ -11,11 +11,13 @@
 
 .sidebar-layout .col-container .left-col,
 .sidebar-layout .col-container .right-col {
+  box-sizing: border-box;
   height: 100%;
+  min-width: 400px;
 }
 
 .sidebar-layout .left-col {
-  min-width: 400px;
+  flex-grow: 1;
   background-color: var(--color-gray-light);
   position: relative;
 }
@@ -25,9 +27,16 @@
   top: 0;
   right: 0;
   width: 10px;
-  background-color: black;
+  background-color: var(--color-gray-medium);
+  opacity: 0;
   height: 100%;
   cursor: col-resize;
+  transition: opacity 0.2s ease-in;
+}
+
+.sidebar-layout .left-col:active .dragger,
+.sidebar-layout .left-col .dragger:hover {
+  opacity: 1;
 }
 
 .sidebar-layout .left-col > header,
@@ -35,6 +44,8 @@
   height: 5.5rem;
   display: flex;
   align-items: center;
+  flex-grow: 1;
+  width: auto;
 }
 
 .sidebar-layout .left-col > header {

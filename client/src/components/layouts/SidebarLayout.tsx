@@ -1,4 +1,4 @@
-import { ReactNode, useState, SyntheticEvent } from "react";
+import { ReactNode, MouseEvent, createRef } from "react";
 import { useStore } from "../../store/store";
 import StepNavigation from "../StepNavigation";
 
@@ -17,20 +17,32 @@ const Sidebarlayout = ({
 }: SidebarLayoutProps) => {
   const projectName = useStore((state) => state.projectDetails.name);
 
-  const [isDragging, setIsDragging] = useState(false);
-  const startDrag = setIsDragging.bind(null, true);
-  const stopDrag = setIsDragging.bind(null, false);
+  let isDragging = false;
 
-  function recordDrag(ev: MouseEvent) {
+  const stopDrag = () => (isDragging = false);
+  const startDrag = () => (isDragging = true);
+
+  function recordDrag(ev: MouseEvent): void {
     if (isDragging) {
-      console.log(ev.pageX);
+      const $left = leftCol?.current;
+      if ($left) $left.setAttribute("style", `width: ${ev.pageX}px`);
+      const $right = rightCol?.current;
+      if ($right)
+        $right.setAttribute("style", `width: calc(100vw - ${ev.pageX}px);`);
     }
   }
 
+  const leftCol = createRef<HTMLElement>();
+  const rightCol = createRef<HTMLElement>();
+
   return (
-    <main className="sidebar-layout">
+    <main
+      className="sidebar-layout"
+      onMouseUp={stopDrag}
+      onMouseMove={recordDrag}
+    >
       <div className="col-container">
-        <section className="left-col">
+        <section className="left-col" ref={leftCol}>
           <header>
             All Projects &gt;
             <strong>{projectName}</strong>
@@ -38,15 +50,10 @@ const Sidebarlayout = ({
 
           {contentLeft}
 
-          <div
-            className="dragger"
-            onMouseDown={startDrag}
-            onMouseMove={recordDrag}
-            onMouseUp={stopDrag}
-          ></div>
+          <div className="dragger" onMouseDown={startDrag}></div>
         </section>
 
-        <section className="right-col">
+        <section className="right-col" ref={rightCol}>
           <header>
             <h1>{heading}</h1>
 
