@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'icomoon';
   src:
-    url('fonts/icomoon.ttf?t0uhwp') format('truetype'),
-    url('fonts/icomoon.woff?t0uhwp') format('woff'),
-    url('fonts/icomoon.svg?t0uhwp#icomoon') format('svg');
+    url('fonts/icomoon.ttf?vjaxg') format('truetype'),
+    url('fonts/icomoon.woff?vjaxg') format('woff'),
+    url('fonts/icomoon.svg?vjaxg#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -77,4 +77,7 @@ i {
 }
 .icon-ahu:before {
   content: "\e911";
+}
+.icon-cross:before {
+  content: "\ea0f";
 }

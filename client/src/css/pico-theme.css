@@ -15,6 +15,18 @@ https://github.com/picocss/pico/blob/master/css/pico.css
 }
 
 dialog article {
+  position: relative;
   max-width: 70%;
   width: 100%;
+  padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+dialog article a.close {
+  width: 2rem;
+  height: 2rem;
+  opacity: 0.7;
+  background-size: auto 2rem;
+  position: absolute;
+  top: var(--spacing-lg);
+  right: var(--spacing-md);
 }

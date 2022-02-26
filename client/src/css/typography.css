@@ -35,6 +35,6 @@ i.large {
   margin-right: var(--spacing);
 }
 
-label {
-  font-weight: var(--font-weight-medium);
+.no-margin {
+  margin: 0;
 }

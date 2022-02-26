@@ -1,0 +1,13 @@
+label {
+  font-weight: var(--font-weight-medium);
+}
+
+form .action-bar {
+  margin-top: var(--spacing-md);
+}
+
+form .action-bar input[type="submit"],
+button,
+a {
+  margin: 0;
+}

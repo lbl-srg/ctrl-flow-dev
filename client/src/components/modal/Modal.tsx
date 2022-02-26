@@ -12,15 +12,14 @@ function Modal({ modalTitle, isOpen, close, children }: ModalInterface) {
     <div className={isOpen ? "modal-is-opening" : ""}>
       <dialog open={isOpen}>
         <article>
-          <header>
-            <a
-              href="#close"
-              aria-label="Close"
-              className="close"
-              onClick={close}
-            ></a>
-            <h1>{modalTitle}</h1>
-          </header>
+          <a
+            href="#close"
+            aria-label="Close"
+            className="close"
+            onClick={close}
+          ></a>
+          <h1>{modalTitle}</h1>
+
           {children}
         </article>
       </dialog>
