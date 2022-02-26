@@ -3,6 +3,8 @@ label {
 }
 
 form .action-bar {
+  display: flex;
+  justify-content: flex-end;
   margin-top: var(--spacing-md);
 }
 
@@ -10,4 +12,8 @@ form .action-bar input[type="submit"],
 button,
 a {
   margin: 0;
+}
+
+textarea {
+  min-height: 5rem;
 }

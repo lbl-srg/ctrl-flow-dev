@@ -18,6 +18,7 @@ function Modal({ modalTitle, isOpen, close, children }: ModalInterface) {
             className="close"
             onClick={close}
           ></a>
+
           <h1>{modalTitle}</h1>
 
           {children}

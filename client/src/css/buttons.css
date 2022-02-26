@@ -9,4 +9,22 @@ input[type="reset"],
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-left: var(--spacing-md) !important;
+  padding-right: var(--spacing-md) !important;
+}
+
+button.inline,
+input[type="submit"].inline,
+input[type="button"].inline,
+input[type="reset"].inline,
+[role="button"].inline {
+  width: auto;
+}
+
+button.small,
+input[type="submit"].small,
+input[type="button"].small,
+input[type="reset"].small,
+[role="button"].small {
+  padding: var(--spacing-sm) var(--spacing-md);
 }

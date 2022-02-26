@@ -1,6 +1,5 @@
 import { Field, Form, Formik } from "formik";
 import { ProjectDetails, useStore } from "../../store/store";
-
 import Modal, { ModalInterface } from "./Modal";
 
 interface EditDetailsModalProps extends ModalInterface {
@@ -10,13 +9,14 @@ interface EditDetailsModalProps extends ModalInterface {
 }
 
 const defaultState = {
-  name: "",
-  address: "",
+  name: "Test project",
+  address: "5330 SE 38th ave",
   type: "multi-story office",
-  size: "",
+  size: 33,
   units: "ip",
   code: "ashrae 90.1 20201",
-  notes: "",
+  notes:
+    "Offal tattooed ramps bicycle rights 8-bit green juice XOXO, etsy brunch semiotics scenester umami mumblecore actually cronut. Kombucha iPhone normcore, fashion axe paleo meh scenester synth selfies mlkshk keytar polaroid. Sustainable vaporware vice hoodie brooklyn. Kinfolk semiotics scenester, next level unicorn umami wayfarers man bun.",
 } as unknown as ProjectDetails;
 
 function EditDetailsModal({
@@ -86,10 +86,8 @@ function EditDetailsModal({
           <label htmlFor="notes">Notes:</label>
           <Field as="textarea" id="notes" name="notes" />
 
-          <div className="row action-bar">
-            <div className="col-md-offset-9 col-md-3 col-xs-offset-0 col-xs-12">
-              <input type="submit" value={submitText} />
-            </div>
+          <div className="action-bar">
+            <input type="submit" className="inline" value={submitText} />
           </div>
         </Form>
       </Formik>

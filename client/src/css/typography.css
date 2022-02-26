@@ -34,7 +34,3 @@ i.large {
   font-size: 2rem;
   margin-right: var(--spacing);
 }
-
-.no-margin {
-  margin: 0;
-}

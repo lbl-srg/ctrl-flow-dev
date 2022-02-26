@@ -1,0 +1,25 @@
+.sidebar-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-layout .col-container {
+  display: flex;
+  height: 100%;
+}
+
+.sidebar-layout .col-container .left-col,
+.sidebar-layout .col-container .right-col {
+  height: 100%;
+}
+
+.sidebar-layout .left-col {
+  min-width: 400px;
+  background-color: var(--color-gray-light);
+}
+
+.sidebar-layout .right-col {
+  flex-grow: 1;
+  overflow: auto;
+}

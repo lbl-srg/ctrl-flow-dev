@@ -1,10 +1,5 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx, css } from "@emotion/react/macro";
-import styled from "@emotion/styled";
-import { Fragment } from "react";
+import { useState } from "react";
 import { useStore } from "../../store/store";
-import { colors } from "../../styleHelpers";
 import Sidebarlayout from "../layouts/SidebarLayout";
 import EditDetailsModal from "../modal/EditDetailsModal";
 
@@ -16,26 +11,41 @@ const Details = () => (
   />
 );
 
-const ContentRight = () => {
+function ContentRight() {
+  const [modalOpen, setModalOpen] = useState(false);
   const projectDetails = useStore((state) => state.projectDetails);
 
+  const openModal = setModalOpen.bind(null, true);
+  const closeModal = setModalOpen.bind(null, false);
+
   return (
-    <Fragment>
-      <h2>{projectDetails.name}</h2>
-      {/* <EditDetailsModal
+    <div>
+      <div className="row">
+        <div className="col-md-8">
+          <h2>{projectDetails.name}</h2>
+        </div>
+        <div className="col-md-4">
+          <button
+            className="outline small inline pull-right"
+            onClick={openModal}
+          >
+            Edit Project Details
+          </button>
+        </div>
+      </div>
+
+      <EditDetailsModal
         initialState={projectDetails}
         modalTitle="Edit Project Details"
         submitText="Save Project Details"
-        variant="outline"
-        css={css`
-          position: absolute;
-          right: 0;
-          top: 0;
-        `}
-      >
-        Edit Project Details
-      </EditDetailsModal> */}
-      <DetailsList>
+        isOpen={modalOpen}
+        afterSubmit={closeModal}
+        close={closeModal}
+      ></EditDetailsModal>
+
+      <pre>{JSON.stringify(projectDetails, null, 2)}</pre>
+
+      <ul>
         <li>
           <strong>Address: </strong>
           {projectDetails.address}
@@ -63,33 +73,27 @@ const ContentRight = () => {
 
         <li>
           <strong>Notes:</strong>
-          <p
-            css={css`
-              margin: 0 0 0 2rem;
-            `}
-          >
-            {projectDetails.notes}
-          </p>
+          <p>{projectDetails.notes}</p>
         </li>
-      </DetailsList>
-    </Fragment>
+      </ul>
+    </div>
   );
-};
+}
 
-const DetailsList = styled.ul`
-  list-style: none;
+// const DetailsList = styled.ul`
+//   list-style: none;
 
-  font-size: 1.2rem;
+//   font-size: 1.2rem;
 
-  li {
-    margin-bottom: 1rem;
+//   li {
+//     margin-bottom: 1rem;
 
-    &:before {
-      content: "■";
-      color: ${colors.lightBlue};
-      margin-right: 1rem;
-    }
-  }
-`;
+//     &:before {
+//       content: "■";
+//       color: ${colors.lightBlue};
+//       margin-right: 1rem;
+//     }
+//   }
+// `;
 
 export default Details;
