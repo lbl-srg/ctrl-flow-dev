@@ -102,8 +102,9 @@ export interface State {
   options: Option[];
   userProjects: UserProject[];
   activeProject: number;
-  getActiveProject: GetAction<UserProject>;
+  getActiveProject: () => UserProject;
   setActiveProject: SetAction<UserProject>;
+  getSystemTemplates: GetAction<SystemTemplate[]>;
   configurations: Configuration[];
   addConfig: SetAction<Configuration>; // TODO: on template add, default config must be added
   updateConfig: SetAction<UpdateConfigPayload>
@@ -121,8 +122,12 @@ export const useStore = create<State>(
       configurations: [],
       userProjects: [initialUserProject],
       activeProject: 1, // hard coding this for now
-      getActiveProject: () => getActiveProject(get),
+      getActiveProject: () => {
+        return get().userProjects.find(uProject => uProject.id === get().activeProject)
+          ||    initialUserProject;
+      },
       setActiveProject: (payload) => setActiveProject(payload, get, set),
+      getSystemTemplates: () => getSystemTemplates(get),
       addConfig: (config) => addConfig(config, get, set),
       updateConfig: (payload) => updateConfig(payload, get, set),
       removeConfig: (config) => removeConfig(config, get, set),
@@ -150,7 +155,7 @@ const saveProjectDetails: SetAction<Partial<ProjectDetails>> = (projectDetails, 
 const addConfig: SetAction<Configuration> = (config, get, set) => {
   set(
     produce((state: State) => {
-      const activeProject = state.getActiveProject(get);
+      const activeProject = state.getActiveProject();
       activeProject.configs = [...activeProject.configs as number[], config.id]
       state.configurations.push(config);
     }),
@@ -161,6 +166,18 @@ const setActiveProject: SetAction<UserProject> = (userProject, get, set) => set(
 const getActiveProject: GetAction<UserProject> = get =>
   get().userProjects.find(uProject => uProject.id === get().activeProject)
   || initialUserProject;
+
+const getSystemTemplates: GetAction<SystemTemplate[]> = get => {
+  const configs = get().configurations;
+  const systemTemplates = get().getActiveProject().configs
+    .map(cID => configs.find(c => c.id === cID) as Configuration)
+    .map(c => c.template)
+  
+  // remove duplicates
+  const systemTemplatesSet = new Set(systemTemplates);
+
+  return get().templates.filter(template => systemTemplatesSet.has(template.id));
+}
 
   /**
  * Helper method that given a set of new selections, makes sure no-longer relevant child
@@ -207,8 +224,8 @@ const updateConfig: SetAction<UpdateConfigPayload> = (payload, get, set) =>
 const removeConfig: SetAction<Configuration> = (config, get, set) => {
   set(
     produce((state: State) => {
-      const configs = get().getActiveProject(get).configs
-      get().getActiveProject(get).configs = configs.filter(cID => cID !== config.id)
+      const configs = get().getActiveProject().configs
+      get().getActiveProject().configs = configs.filter(cID => cID !== config.id)
       state.configurations = state.configurations.filter(c => c.id !== config.id);
     }),
   )
@@ -218,7 +235,7 @@ const removeAllTemplateConfigs: SetAction<SystemTemplate> = (template, get, set)
   set(
     produce((state: State) => {
       const configs = state.configurations;
-      const activeProject = get().getActiveProject(get);
+      const activeProject = get().getActiveProject();
       const configsToRemove = activeProject.configs
         .map(cID => configs.find(c => c.id === cID) as Configuration)
         .filter(c => c.template === template.id)
