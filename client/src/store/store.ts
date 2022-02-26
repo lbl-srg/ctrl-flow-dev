@@ -16,6 +16,7 @@ export interface ProjectDetails {
   units: "ip" | "something";
   code: "ashrae 90.1 20201" | "a different one";
   notes: string;
+  id: number;
 }
 
 export interface SystemType {
@@ -86,40 +87,46 @@ export interface UserProject {
   configs: number[];
   metaConfigs: number[];
   schedules: number[];
+  projectDetails: Partial<ProjectDetails>;
+  id: number;
 }
 
-type SetAction<T> = (payload: T, set: SetState<State>) => void
+type GetAction<T> = (get: GetState<State>) => T;
+type SetAction<T> = (payload: T, get: GetState<State>, set: SetState<State>) => void
+// type SetActionWithGet<T> = (payload: T, set: SetState<State>, get: GetState<State>) => void;
 
 export interface State {
-  projectDetails: Partial<ProjectDetails>;
-  saveProjectDetails: (projectDetails: Partial<ProjectDetails>) => void;
+  saveProjectDetails: SetAction<Partial<ProjectDetails>>;
   systemTypes: SystemType[];
   templates: SystemTemplate[];
   options: Option[];
   userProjects: UserProject[];
-  activeProject: UserProject;
+  activeProject: number;
+  getActiveProject: GetAction<UserProject>;
+  setActiveProject: SetAction<UserProject>;
   configurations: Configuration[];
-  addConfig: SetAction<Configuration>; // TODO: on template add, default template must be added
+  addConfig: SetAction<Configuration>; // TODO: on template add, default config must be added
   updateConfig: SetAction<UpdateConfigPayload>
   removeConfig: SetAction<Configuration>;
-  removeAllConfigs: SetAction<System>;
+  removeAllTemplateConfigs: SetAction<SystemTemplate>;
 }
 
 export const useStore = create<State>(
   persist(
     (set, get) => ({
-      projectDetails: {},
-      saveProjectDetails: projectDetails => saveProjectDetails(projectDetails, set),
+      saveProjectDetails: projectDetails => saveProjectDetails(projectDetails, get, set),
       systemTypes: [],
       templates: [],
       options: [],
       configurations: [],
       userProjects: [initialUserProject],
-      activeProject: initialUserProject,
-      addConfig: addConfig,
-      updateConfig: updateConfig,
-      removeConfig: removeConfig,
-      removeAllConfigs: removeAllConfigs
+      activeProject: 1, // hard coding this for now
+      getActiveProject: () => getActiveProject(get),
+      setActiveProject: (payload) => setActiveProject(payload, get, set),
+      addConfig: (config) => addConfig(config, get, set),
+      updateConfig: (payload) => updateConfig(payload, get, set),
+      removeConfig: (config) => removeConfig(config, get, set),
+      removeAllTemplateConfigs: (template) => removeAllTemplateConfigs(template, get, set)
     }),
     {
       name: "linkage-storage",
@@ -127,37 +134,40 @@ export const useStore = create<State>(
   )
 )
 
-const initialUserProject: UserProject = {configs: [], metaConfigs: [], schedules: []}
+const initialUserProject: UserProject = {configs: [], metaConfigs: [], schedules: [], projectDetails: {}, id: getID()};
 
-const saveProjectDetails: SetAction<Partial<ProjectDetails>> = (projectDetails, set) => {
-  set(() => ({projectDetails}))
-}
-
-const addConfig: SetAction<Configuration> = (config, set) => {
+const saveProjectDetails: SetAction<Partial<ProjectDetails>> = (projectDetails, get, set) =>
   set(
     produce((state: State) => {
-      state.activeProject.configs = state.activeProject?.configs
-        ? [...(state.activeProject.configs as number[]), config.id]
-        : [config.id];
+      const activeProject = state.userProjects.find(project => project.id === state.activeProject);
+      if (activeProject) {
+        activeProject.projectDetails = {...activeProject?.projectDetails, ...projectDetails};
+      }
+    })
+  )
+
+
+const addConfig: SetAction<Configuration> = (config, get, set) => {
+  set(
+    produce((state: State) => {
+      const activeProject = state.getActiveProject(get);
+      activeProject.configs = [...activeProject.configs as number[], config.id]
+      state.configurations.push(config);
     }),
   )
 }
 
+const setActiveProject: SetAction<UserProject> = (userProject, get, set) => set({activeProject: userProject.id});
+const getActiveProject: GetAction<UserProject> = get =>
+  get().userProjects.find(uProject => uProject.id === get().activeProject)
+  || initialUserProject;
 
-interface UpdateConfigPayload {
-  config: Partial<Configuration> & { id: number; system: number };
-  configName: string;
-  selections: Selection[];
-}
-
-/**
- * Given a set of selections, make sure no-longer relevant selections are removed from
- * the provided config
+  /**
+ * Helper method that given a set of new selections, makes sure no-longer relevant child
+ * selections are removed from the provided config
  */
-const pruneOldSelections = (state: State, conf: Configuration, newSelections: Selection[]) => {
+const filterOldSelections = (state: State, conf: Configuration, newSelections: Selection[]) => {
   const options = state.options;
-  // add the parent option of each selection to a remove list
-  // add child nodes to the remove list
   const nodeList = newSelections.map(s => s.parent);
   const filterList: number[] = [];
 
@@ -172,43 +182,52 @@ const pruneOldSelections = (state: State, conf: Configuration, newSelections: Se
     }
   }
 
+  // combine the filtered list of old selections + the new selections
   return [...conf.selections.filter(s => !filterList.includes(s.parent)),
     ...newSelections];
 }
 
-const updateConfig: SetAction<UpdateConfigPayload> = (payload, set) =>
+interface UpdateConfigPayload {
+  config: Partial<Configuration> & { id: number; system: number };
+  configName: string;
+  selections: Selection[];
+}
+
+const updateConfig: SetAction<UpdateConfigPayload> = (payload, get, set) =>
   produce((state: State) => {
     const conf = state.configurations.find(c => c.id === payload.config.id);
     // for each selection
     if (conf) {
       conf.name = payload.configName;
-      conf.selections = pruneOldSelections(state, conf, payload.selections);
+      conf.selections = filterOldSelections(state, conf, payload.selections);
     }
   }
 )
 
-const removeConfig: SetAction<Configuration> = (config, set) => {
+const removeConfig: SetAction<Configuration> = (config, get, set) => {
   set(
     produce((state: State) => {
-      state.activeProject.configs =
-        state.activeProject.configs?.filter(cID => cID !== config.id) ||
-        state.activeProject.configs;
+      const configs = get().getActiveProject(get).configs
+      get().getActiveProject(get).configs = configs.filter(cID => cID !== config.id)
+      state.configurations = state.configurations.filter(c => c.id !== config.id);
     }),
   )
 }
 
-const removeAllConfigs: SetAction<SystemTemplate> = (template, set) => {
+const removeAllTemplateConfigs: SetAction<SystemTemplate> = (template, get, set) => {
   set(
     produce((state: State) => {
       const configs = state.configurations;
-      const userSystemConfigs =
-        state.activeProject.configs.map(cID => configs.find(c => c.id === cID)) as Configuration[];
-      state.activeProject.configs = userSystemConfigs
-        .filter(c => c.template !== template.id)
+      const activeProject = get().getActiveProject(get);
+      const configsToRemove = activeProject.configs
+        .map(cID => configs.find(c => c.id === cID) as Configuration)
+        .filter(c => c.template === template.id)
         .map(c => c.id);
+
+      activeProject.configs = activeProject.configs.filter(cID => !configsToRemove.includes(cID))
+      state.configurations = configs.filter(c => !configsToRemove.includes(c.id));
     }),
   )
 }
-
 
 export const sanatizeStep = (step: number) => (step > 6 || step < 0 ? 0 : step);
