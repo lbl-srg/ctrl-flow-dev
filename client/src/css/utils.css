@@ -2,6 +2,8 @@
   margin: 0;
 }
 
-.pull-right {
-  align-self: flex-end;
+.flex-space-between {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 }

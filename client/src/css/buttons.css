@@ -21,6 +21,14 @@ input[type="reset"].inline,
   width: auto;
 }
 
+button.outline,
+input[type="submit"].outline,
+input[type="button"].outline,
+input[type="reset"].outline,
+[role="button"].outline {
+  border-width: 2px;
+}
+
 button.small,
 input[type="submit"].small,
 input[type="button"].small,

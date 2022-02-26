@@ -20,19 +20,12 @@ function ContentRight() {
 
   return (
     <div>
-      <div className="row">
-        <div className="col-md-8">
-          <h2>{projectDetails.name}</h2>
-        </div>
-        <div className="col-md-4">
-          <button
-            className="outline small inline pull-right"
-            onClick={openModal}
-          >
-            Edit Project Details
-          </button>
-        </div>
-      </div>
+      <h2 className="flex-space-between">
+        {projectDetails.name}
+        <button className="outline small inline" onClick={openModal}>
+          Edit Project Details
+        </button>
+      </h2>
 
       <EditDetailsModal
         initialState={projectDetails}
@@ -42,8 +35,6 @@ function ContentRight() {
         afterSubmit={closeModal}
         close={closeModal}
       ></EditDetailsModal>
-
-      <pre>{JSON.stringify(projectDetails, null, 2)}</pre>
 
       <ul>
         <li>
