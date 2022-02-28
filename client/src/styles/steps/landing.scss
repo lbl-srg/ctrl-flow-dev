@@ -1,0 +1,25 @@
+main.landing {
+  padding: var(--spacing-xl) var(--spacing-lg);
+
+  ul.components {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+
+    li {
+      list-style: none;
+      display: flex;
+      align-items: center;
+
+      i {
+        font-size: 2.3rem;
+        margin-right: var(--spacing-md);
+      }
+    }
+  }
+
+  .cta button {
+    padding: var(--spacing);
+  }
+}

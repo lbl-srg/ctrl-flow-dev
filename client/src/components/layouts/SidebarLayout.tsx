@@ -2,7 +2,7 @@ import { ReactNode, MouseEvent, createRef } from "react";
 import { useStore } from "../../store/store";
 import StepNavigation from "../StepNavigation";
 
-import "../../css/components/sidebar-layout.css";
+import "../../styles/components/sidebar-layout.scss";
 
 export interface SidebarLayoutProps {
   heading: string;

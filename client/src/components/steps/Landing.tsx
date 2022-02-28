@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import EditDetailsModal from "../modal/EditDetailsModal";
 import { useState } from "react";
 
-import "../../css/steps/landing.css";
+import "../../styles/steps/landing.scss";
 
 // step 0
 function Landing() {
