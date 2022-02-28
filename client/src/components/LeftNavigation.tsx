@@ -4,16 +4,18 @@ import { css, jsx } from "@emotion/react/macro";
 import { Fragment } from "react";
 import styled from "@emotion/styled";
 
-import { useStore, System, SystemType, Configuration } from "../store/store";
+import { useStore, SystemTemplate, SystemType, Configuration } from "../store/store";
 
 import { colors } from "../styleHelpers";
 
 const LeftNav = () => {
-  const { userSystems, systemTypes, configs } = useStore((state) => ({
-    userSystems: state.userProjects.systems,
+  const { configs, systemTypes } = useStore((state) => ({
+    configs: state.getActiveProject().configs,
     systemTypes: state.systemTypes,
-    configs: state.userProjects.configurations,
   }));
+
+  const userSystemsSet = new Set(configs.map(c => c.template));
+  const userSystems = Array.from(userSystemsSet.values());
 
   return (
     <SystemGroupList
@@ -26,7 +28,7 @@ const LeftNav = () => {
 
 interface SystemGroupListProps {
   systemTypes: SystemType[];
-  systems: System[];
+  systems: SystemTemplate[];
   configs: Configuration[];
 }
 
@@ -41,7 +43,7 @@ const SystemGroupList = ({
         <SystemGroup
           key={systemType.id}
           systemType={systemType}
-          systems={systems.filter((s) => s.systemType === systemType.id)}
+          templates={systems.filter((s) => s.systemType.id === systemType.id)}
           configs={configs}
         />
       ))}
@@ -51,21 +53,21 @@ const SystemGroupList = ({
 
 interface SystemGroupProps {
   systemType: SystemType;
-  systems: System[];
+  templates: SystemTemplate[];
   configs: Configuration[];
 }
 
-const SystemGroup = ({ systemType, systems, configs }: SystemGroupProps) => {
+const SystemGroup = ({ systemType, templates, configs }: SystemGroupProps) => {
   return (
     <Fragment>
       <SystemTypeTitle href={`#${systemType.name}`}>
         <h3>{systemType.name}</h3>
       </SystemTypeTitle>
-      {systems.map((s) => (
+      {templates.map((t) => (
         <UserSystem
-          key={s.id}
-          system={s}
-          configs={configs.filter((c) => c.system === s.id)}
+          key={t.id}
+          template={t}
+          configs={configs.filter((c) => c.template.id === t.id)}
         />
       ))}
     </Fragment>
@@ -73,20 +75,20 @@ const SystemGroup = ({ systemType, systems, configs }: SystemGroupProps) => {
 };
 
 interface SystemProp {
-  system: System;
+  template: SystemTemplate;
   configs: Configuration[];
 }
 
-const UserSystem = ({ system, configs }: SystemProp) => {
+const UserSystem = ({ template, configs }: SystemProp) => {
   return (
     <a
-      key={system.id}
-      href={`#${system.name}-${system.name}`}
+      key={template.id}
+      href={`#${template.name}-${template.name}`}
       css={css`
         text-decoration: none;
       `}
     >
-      <SystemTitle>{system.name}</SystemTitle>
+      <SystemTitle>{template.name}</SystemTitle>
       {configs.map((c) => (
         <ConfigTitle key={c.id}>{c.name}</ConfigTitle>
       ))}

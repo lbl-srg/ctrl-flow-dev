@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import styled from "@emotion/styled";
 
-import { useStore, System, SystemType } from "../../store/store";
+import { useStore, SystemTemplate, SystemType } from "../../store/store";
 
 import Sidebarlayout from "../layouts/SidebarLayout";
 import LeftNav from "../LeftNavigation";
@@ -15,17 +15,19 @@ const Systems = () => (
 );
 
 const ContentRight = () => {
-  const { templateSystems, systemTypes } = useStore((state) => ({
-    templateSystems: state.templates.systems,
+  const { getTemplates, systemTypes } = useStore((state) => ({
+    getTemplates: state.getTemplates,
     systemTypes: state.systemTypes,
   }));
+
+  const templates = getTemplates();
 
   return (
     <Fragment>
       <div>Select the systems types you will configure:</div>
       <TemplateGroupList
         systemTypes={systemTypes}
-        templateSystems={templateSystems}
+        templates={templates}
       />
     </Fragment>
   );
@@ -33,21 +35,23 @@ const ContentRight = () => {
 
 interface TemplateGroupListProps {
   systemTypes: SystemType[];
-  templateSystems: System[];
+  templates: SystemTemplate[];
 }
 
 const TemplateGroupList = ({
   systemTypes,
-  templateSystems,
+  templates,
 }: TemplateGroupListProps) => {
-  const userSystems = useStore((state) => state.userProjects.systems);
-  const addSystem = useStore((state) => state.addSystem);
-  const removeSystem = useStore((state) => state.removeSystem);
+  const getActiveTemplates = useStore((state) => state.getActiveTemplates);
+  const addConfig = useStore((state) => state.addConfig);
+  const removeAllTemplateConfigs = useStore((state) => state.removeAllTemplateConfigs);
+
+  const activeTemplates = getActiveTemplates();
 
   const handler = (selection: string, value: boolean) => {
-    const system = templateSystems.find((s) => s.name === selection);
+    const system = templates.find((s) => s.name === selection);
     if (system) {
-      value ? addSystem(system) : removeSystem(system);
+      value ? addConfig(system) : removeAllTemplateConfigs(system);
     }
   };
 
@@ -57,11 +61,11 @@ const TemplateGroupList = ({
         <MultiSelect
           key={systemType.id}
           title={systemType.name}
-          options={templateSystems
-            .filter((s) => s.systemType === systemType.id)
+          options={templates
+            .filter((t) => t.systemType.id === systemType.id)
             .map((s) => {
               const value =
-                userSystems.findIndex((userS) => userS.id === s.id) >= 0;
+                activeTemplates.findIndex((userS) => userS.id === s.id) >= 0;
               return { text: s.name, value: value };
             })}
           handler={handler}
