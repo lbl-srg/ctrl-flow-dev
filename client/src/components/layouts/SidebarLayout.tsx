@@ -1,4 +1,4 @@
-import { ReactNode, MouseEvent, createRef } from "react";
+import { ReactNode, MouseEvent, useState } from "react";
 import { useStore } from "../../store/store";
 import StepNavigation from "../StepNavigation";
 
@@ -10,39 +10,36 @@ export interface SidebarLayoutProps {
   contentRight: ReactNode;
 }
 
+const STORAGE_KEY = "sideBarWidth";
+
 const Sidebarlayout = ({
   heading,
   contentLeft,
   contentRight,
 }: SidebarLayoutProps) => {
   const projectName = useStore((state) => state.projectDetails.name);
+  const fromStore = localStorage.getItem(STORAGE_KEY);
 
-  let isDragging = false;
-
-  const stopDrag = () => (isDragging = false);
-  const startDrag = () => (isDragging = true);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [width, setWidth] = useState<number>(
+    fromStore ? parseInt(fromStore) : 400,
+  );
 
   function recordDrag(ev: MouseEvent): void {
     if (isDragging) {
-      const $left = leftCol?.current;
-      if ($left) $left.setAttribute("style", `width: ${ev.pageX}px`);
-      const $right = rightCol?.current;
-      if ($right)
-        $right.setAttribute("style", `width: calc(100vw - ${ev.pageX}px);`);
+      setWidth(ev.pageX);
+      localStorage.setItem(STORAGE_KEY, `${ev.pageX}`);
     }
   }
-
-  const leftCol = createRef<HTMLElement>();
-  const rightCol = createRef<HTMLElement>();
 
   return (
     <main
       className="sidebar-layout"
-      onMouseUp={stopDrag}
+      onMouseUp={() => setIsDragging(false)}
       onMouseMove={recordDrag}
     >
       <div className="col-container">
-        <section className="left-col" ref={leftCol}>
+        <section className="left-col" style={{ width }}>
           <header>
             All Projects &gt;
             <strong>{projectName}</strong>
@@ -50,10 +47,16 @@ const Sidebarlayout = ({
 
           {contentLeft}
 
-          <div className="dragger" onMouseDown={startDrag}></div>
+          <div
+            className="dragger"
+            onMouseDown={() => setIsDragging(true)}
+          ></div>
         </section>
 
-        <section className="right-col" ref={rightCol}>
+        <section
+          className="right-col"
+          style={{ width: `calc(100vw - ${width}px)` }}
+        >
           <header>
             <h1>{heading}</h1>
 

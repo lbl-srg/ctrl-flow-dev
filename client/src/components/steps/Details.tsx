@@ -36,7 +36,7 @@ function ContentRight() {
         close={closeModal}
       ></EditDetailsModal>
 
-      <ul>
+      <ul className="styled-ul">
         <li>
           <strong>Address: </strong>
           {projectDetails.address}

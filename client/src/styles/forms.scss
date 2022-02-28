@@ -1,19 +1,21 @@
-label {
-  font-weight: var(--font-weight-medium);
-}
+form {
+  .action-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--spacing-md);
 
-form .action-bar {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: var(--spacing-md);
-}
+    input[type="submit"],
+    button,
+    a {
+      margin: 0;
+    }
+  }
 
-form .action-bar input[type="submit"],
-button,
-a {
-  margin: 0;
-}
+  label {
+    font-weight: var(--font-weight-medium);
+  }
 
-textarea {
-  min-height: 5rem;
+  textarea {
+    min-height: 5rem;
+  }
 }
