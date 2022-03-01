@@ -19,29 +19,22 @@ import {
 import {
   useStore,
   Configuration,
-  System,
+  SystemTemplate,
   Option,
 } from "../../store/store";
 
 interface SlideOutProps {
-  template: System;
+  template: SystemTemplate;
   config: Configuration;
 }
 
 const SlideOut = ({ template, config }: SlideOutProps) => {
   const [isOpen, setOpen] = useState(false);
-  const { options, updateConfig } = useStore((state) => ({
-    options: state.templates.options,
+  const { updateConfig } = useStore((state) => ({
     updateConfig: state.updateConfig
   }));
 
-  const systemOptions = template.options
-    ? (template.options.map((optionId) =>
-        options.find((o) => o.id === optionId),
-      ) as Option[])
-    : [];
-
-  const initSelections = getInitialFormValues(template, config, options);
+  const initSelections = {};//getInitialFormValues(template, config, template.options);
   const [initialValues, setInitialValues] = useState({
     configName: config.name || '',
     ...initSelections
@@ -60,9 +53,9 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
             initialValues={initialValues}
             enableReinitialize={true}
             onSubmit={(configSelections: ConfigFormValues) => {
-              const selections = getSelections(configSelections, initialValues, options)
-              const configName = configSelections.configName;
-              updateConfig(config, configName, selections)
+              // const selections = getSelections(configSelections)
+              // const configName = configSelections.configName;
+              // updateConfig({config, configName, selections})
               setOpen(false);
             }}
           >
@@ -90,14 +83,14 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
                     >
                     Save
                   </Button>
-                  {systemOptions.map((option) => (
+                  {/* {systemOptions.map((option) => (
                     <OptionDisplay
                       option={option}
                       options={options}
                       formik={formik}
                       key={option.id}
                     />
-                  ))}
+                  ))} */}
                 </Form>
               )
             }
@@ -115,7 +108,7 @@ const constructOption = ({
   switch (option.type) {
     case 'dropdown': {
       const selectionList =
-        (option.options?.map((oID) => options.find((o) => o.id === oID)) || []) as Option[];
+        (option.options?.map((childO) => options.find((o) => o.id === childO.id)) || []) as Option[];
       return (
         <SelectInput
           id={option.name}
