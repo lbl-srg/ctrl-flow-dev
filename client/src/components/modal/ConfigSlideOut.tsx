@@ -35,7 +35,7 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
   const [isOpen, setOpen] = useState(false);
   const updateConfig = useStore(state => state.updateConfig);
   const getTemplateOptions = useStore(state => state.getTemplateOptions);
-  const options = getTemplateOptions(template);
+  const [initTemplateOptions, fullTemplateOptions] = getTemplateOptions(template);
 
   const initSelections = config.selections.reduce(
     (previousValue: FormikFormData, currentValue: Selection) => {
@@ -47,8 +47,6 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
     configName: config.name || '',
     ...initSelections
   })
-
-  const templateOptions = template.options || [];
 
   return (
     <ModalOpenContext.Provider value={isOpen}>
@@ -93,10 +91,10 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
                     >
                     Save
                   </Button>
-                  {templateOptions.map((option) => (
+                  {initTemplateOptions.map((option) => (
                     <OptionDisplay
                       option={option}
-                      options={options}
+                      options={fullTemplateOptions}
                       formik={formik}
                       key={option.id}
                     />
@@ -119,7 +117,6 @@ const constructOption = ({
     case 'dropdown': {
       // TODO: figure out why 'option.options' is an array of 
       // numbers and not an array of options
-      console.log(option, option.options);
       const optionList =
         (option.options?.map((childO) => options.find((o) => o.id === childO.id)) || []) as Option[];
       return (

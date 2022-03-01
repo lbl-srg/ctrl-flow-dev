@@ -10,7 +10,6 @@ interface SelectInputProps {
 }
 
 export const SelectInput = ({ id, name, options }: SelectInputProps) => {
-    console.log(id, name, options);
     return (
         <Fragment>
             <Label htmlFor={name}>{name}</Label>

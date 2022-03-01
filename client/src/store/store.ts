@@ -162,10 +162,11 @@ const _getActiveTemplates: GetAction<SystemTemplate[]> = (get) => {
   return Array.from(activeTemplateSet.values());
 }
 
-// for a given template, returns all available options
-const _getOptions: (template: SystemTemplate, get: GetState<State>) => Option[]= (template, get) => {
+// for a given template, returns two lists: the initial options and all available options
+const _getOptions: (template: SystemTemplate, get: GetState<State>) => [Option[], Option[]]= (template, get) => {
   const optionIDs: number[] = [];
   const templateOptionsN: OptionN[] = [];
+  let initOptions = template.options as Option[]
   if (template.options) {
     const options = get().options;
     optionIDs.push(...template.options.map(o => o.id));
@@ -191,7 +192,8 @@ const _getOptions: (template: SystemTemplate, get: GetState<State>) => Option[]=
     }
   });
 
-  return templateOptions;
+  initOptions = initOptions.map(o => templateOptions.find(option => option.id === o.id) as Option);
+  return [initOptions, templateOptions];
 }
 
 const _getConfigs: GetAction<Configuration[]> = (get) => {
@@ -344,7 +346,7 @@ export interface State {
   getActiveProject: () => UserProject;
   setActiveProject: SetAction<UserProject>;
   getTemplates: () => SystemTemplate[];
-  getTemplateOptions: (template: SystemTemplate) => Option[];
+  getTemplateOptions: (template: SystemTemplate) => [Option[], Option[]];
   getActiveTemplates: () => SystemTemplate[],
   getConfigs: () => Configuration[];
   getMetaConfigs: () => MetaConfiguration[];
