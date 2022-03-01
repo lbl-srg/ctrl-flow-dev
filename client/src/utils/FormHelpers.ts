@@ -9,7 +9,7 @@
 
  import {
     Configuration,
-    System,
+    SystemTemplate,
     Option,
 } from "../store/store";
 
@@ -25,7 +25,7 @@ const buildOptionMap = (options: Option[]): {[key: number]: OptionRelation} => {
 
   options.map(option => {
     const optionRelation = optionMap[option.id] || {};
-    const children = option.options?.map(childID => options.find(o => o.id === childID) as Option);
+    const children = option.options?.map(childO => options.find(o => o.id === childO.id) as Option);
     optionRelation.children = children;
 
     if (children) {
@@ -47,15 +47,14 @@ const buildOptionMap = (options: Option[]): {[key: number]: OptionRelation} => {
  * to a format convenient for formik
  */
 export const getInitialFormValues =
-    (template: System, config: Configuration, options: Option[]): {[key: number]: number | string} => {
+    (template: SystemTemplate, config: Configuration, options: Option[]): {[key: number]: number | string} => {
     const initValues: {[key: string]: number | string} = {};
     const selections = config?.selections || [];
 
     selections.map(s => {
-        const parentOption = options.find(o => o.options?.includes(s.id));
-        if (parentOption) {
-          initValues[parentOption.name] = s.id;
-        }
+      if (s.parent) {
+        initValues[s.parent.name] = s.option.id;
+      }
     });
 
     return initValues;
