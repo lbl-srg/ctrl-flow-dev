@@ -164,8 +164,33 @@ const _getActiveTemplates: GetAction<SystemTemplate[]> = (get) => {
 
 // for a given template, returns all available options
 const _getOptions: (template: SystemTemplate, get: GetState<State>) => Option[]= (template, get) => {
-  // TODO: traverse tree of options to get the full list of choices
-  return template.options || [];
+  const optionIDs: number[] = [];
+  const templateOptionsN: OptionN[] = [];
+  if (template.options) {
+    const options = get().options;
+    optionIDs.push(...template.options.map(o => o.id));
+
+    while (optionIDs.length > 0) {
+      const curNode = options.find(o => o.id === optionIDs.pop()) as OptionN;
+      if (curNode.options) {
+        templateOptionsN.push(curNode);
+        optionIDs.push(...curNode.options);
+      }
+    }
+  }
+
+  // denormalize list in two passes: first create options without child options
+  // then populate child options after references have been created
+  const templateOptions = templateOptionsN.map(o => ({...o, ...{options: undefined}}) as Option);
+  templateOptions.map(o => {
+    const optionN = templateOptionsN.find(option => option.id === o.id);
+    if (optionN?.options) {
+      const options = optionN.options.map(cID => templateOptions.find(tOption => cID === tOption.id))
+      o.options = options as Option[];
+    }
+  });
+
+  return templateOptions;
 }
 
 const _getConfigs: GetAction<Configuration[]> = (get) => {
