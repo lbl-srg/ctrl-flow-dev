@@ -6,10 +6,11 @@ import styled from "@emotion/styled";
 interface SelectInputProps {
     id: string
     name: string;
-    selections: {id: number, name: string}[];
+    options: {id: number, name: string}[];
 }
 
-export const SelectInput = ({ id, name, selections }: SelectInputProps) => {
+export const SelectInput = ({ id, name, options }: SelectInputProps) => {
+    console.log(id, name, options);
     return (
         <Fragment>
             <Label htmlFor={name}>{name}</Label>
@@ -17,8 +18,8 @@ export const SelectInput = ({ id, name, selections }: SelectInputProps) => {
                 as="select"
                 id={id}
                 name={name}>
-                {selections.map((s) => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
+                {options.map((o) => (
+                    <option key={o.id} value={o.id}>{o.name}</option>
                 ))}
             </Field>
         </Fragment>  

@@ -29,13 +29,16 @@ interface SlideOutProps {
   config: Configuration;
 }
 
+type FormikFormData = {[key: string]: number};
+
 const SlideOut = ({ template, config }: SlideOutProps) => {
   const [isOpen, setOpen] = useState(false);
-  const updateConfig = useStore(state => ({updateConfig: state.updateConfig});
-  const getTemplateOptions = useStore(state => ({getTemplateOptions: state.getTemplateOptions}));
+  const updateConfig = useStore(state => state.updateConfig);
+  const getTemplateOptions = useStore(state => state.getTemplateOptions);
+  const options = getTemplateOptions(template);
 
   const initSelections = config.selections.reduce(
-    (previousValue: {[key: string]: number}, currentValue: Selection) => {
+    (previousValue: FormikFormData, currentValue: Selection) => {
       previousValue[currentValue.parent.name] = currentValue.option.id
       return previousValue;
     }, {});
@@ -75,6 +78,7 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
                     // TODO: this will not work once we start incorporating more types of input
                     // For example, this would also fail if a config is given a number as a name
                     // we'll need to be able to make intelligent decisions about how to cast input.
+                    // use option name
                     const value = isNaN(target.value) ? target.value : Number(target.value);
                     newValue[target.name] = value;
                     setInitialValues({...initialValues, ...newValue});
@@ -113,13 +117,16 @@ const constructOption = ({
 }: {option: Option, options: Option[]}) => {
   switch (option.type) {
     case 'dropdown': {
-      const selectionList =
+      // TODO: figure out why 'option.options' is an array of 
+      // numbers and not an array of options
+      console.log(option, option.options);
+      const optionList =
         (option.options?.map((childO) => options.find((o) => o.id === childO.id)) || []) as Option[];
       return (
         <SelectInput
           id={option.name}
           name={option.name}
-          selections={selectionList}
+          options={optionList}
         />     
       )
     }
