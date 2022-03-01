@@ -45,13 +45,6 @@ export interface Option {
   value?: number | boolean;
 }
 
-// export interface Selection {
-//   id: number;
-//   parent: number;
-//   option: number;
-//   value?: number | boolean | string;
-// }
-
 export type SelectionN = {
   parent: number;
   option: number;
@@ -60,7 +53,7 @@ export type SelectionN = {
 
 export type Selection = {
   parent: Option;
-  option: Option;
+  option: Option; // TODO: remove this 'option' key and add 'Option' as a possible type for value
   value?: number | boolean | string;
 }
 

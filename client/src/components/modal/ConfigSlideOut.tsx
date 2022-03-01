@@ -61,9 +61,9 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
             initialValues={initialValues}
             enableReinitialize={true}
             onSubmit={(configSelections: ConfigFormValues) => {
-              // const selections = getSelections(configSelections)
-              // const configName = configSelections.configName;
-              // updateConfig({config, configName, selections})
+              const selections = getSelections(configSelections, initialValues, fullTemplateOptions)
+              const configName = configSelections.configName;
+              updateConfig(config, configName, selections);
               setOpen(false);
             }}
           >
