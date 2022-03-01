@@ -22,8 +22,9 @@ function ContentRight() {
     <div>
       <h2 className="flex-space-between">
         {projectDetails.name}
+
         <button className="outline small inline" onClick={openModal}>
-          Edit Project Details
+          Edit Details
         </button>
       </h2>
 

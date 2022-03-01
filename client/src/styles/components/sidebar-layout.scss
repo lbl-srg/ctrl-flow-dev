@@ -20,8 +20,22 @@
         height: 5.5rem;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         flex-grow: 1;
         width: auto;
+
+        .save-widget {
+          display: flex;
+          align-items: center;
+          color: var(--text-sub-color);
+          text-transform: uppercase;
+          font-weight: var(--font-weight-medium);
+          font-size: 0.9rem;
+
+          button {
+            margin-left: var(--spacing-sm);
+          }
+        }
       }
     }
 

@@ -60,9 +60,11 @@ const Sidebarlayout = ({
           <header>
             <h1>{heading}</h1>
 
-            <span>
+            <div className="save-widget">
+              <span>last saved 4 hours ago</span>
+
               <button className="small inline">Save</button>
-            </span>
+            </div>
           </header>
 
           {contentRight}
