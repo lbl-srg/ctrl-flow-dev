@@ -1,7 +1,7 @@
 .sidebar-layout {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: calc(100vh - var(--footer-height));
 
   &.dragging {
     user-select: none;
@@ -16,6 +16,7 @@
       box-sizing: border-box;
       height: 100%;
       min-width: 400px;
+      overflow: auto;
     }
 
     .left-col,
@@ -24,7 +25,6 @@
         height: 5.5rem;
         display: flex;
         align-items: center;
-        justify-content: space-between;
         flex-grow: 1;
         width: auto;
 

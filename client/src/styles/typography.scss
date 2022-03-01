@@ -23,6 +23,11 @@ p {
 /* icons */
 i {
   margin-right: var(--spacing-sm);
+
+  &.right {
+    margin-right: 0;
+    margin-left: var(--spacing-sm);
+  }
 }
 
 i.large {
