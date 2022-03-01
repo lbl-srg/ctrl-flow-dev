@@ -3,6 +3,10 @@
   flex-direction: column;
   height: 100%;
 
+  &.dragging {
+    user-select: none;
+  }
+
   .col-container {
     display: flex;
     height: 100%;

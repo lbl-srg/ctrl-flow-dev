@@ -34,7 +34,7 @@ const Sidebarlayout = ({
 
   return (
     <main
-      className="sidebar-layout"
+      className={isDragging ? "sidebar-layout dragging" : "sidebar-layout"}
       onMouseUp={() => setIsDragging(false)}
       onMouseMove={recordDrag}
     >
@@ -62,7 +62,6 @@ const Sidebarlayout = ({
 
             <div className="save-widget">
               <span>last saved 4 hours ago</span>
-
               <button className="small inline">Save</button>
             </div>
           </header>
