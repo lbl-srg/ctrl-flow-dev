@@ -3,7 +3,6 @@ import { persist } from "zustand/middleware";
 import { produce } from "immer";
 
 import mockData from "./mock-data.json";
-import Systems from "../components/steps/Systems";
 
 // TODO... get a better uid system
 let _idIncrement = 0;
@@ -158,10 +157,15 @@ const _getTemplates: GetAction<SystemTemplate[]> = (get) => {
 }
 
 const _getActiveTemplates: GetAction<SystemTemplate[]> = (get) => {
-  const activeProject = get().userProjects.find(proj => proj.id === get().activeProject) as UserProjectN
   const configs = get().getConfigs();
   const activeTemplateSet = new Set(configs.map(c => c.template));
   return Array.from(activeTemplateSet.values());
+}
+
+// for a given template, returns all available options
+const _getOptions: (template: SystemTemplate, get: GetState<State>) => Option[]= (template, get) => {
+  // TODO: traverse tree of options to get the full list of choices
+  return template.options || [];
 }
 
 const _getConfigs: GetAction<Configuration[]> = (get) => {
@@ -225,15 +229,7 @@ const _addConfig: SetAction<SystemTemplate> = (template, get, set) => {
   )
 }
 
-type ConfigUpdate = Partial<Configuration> & { id: number; template: number }
-
-interface UpdateConfigPayload {
-  config: ConfigUpdate;
-  configName: string;
-  selections: Selection[];
-}
-
-  /**
+/**
  * Helper method that given a set of new selections, makes sure no-longer relevant child
  * selections are removed from the provided config, then combines that filtered list
  * of previous selections with the new ones
@@ -322,6 +318,7 @@ export interface State {
   getActiveProject: () => UserProject;
   setActiveProject: SetAction<UserProject>;
   getTemplates: () => SystemTemplate[];
+  getTemplateOptions: (template: SystemTemplate) => Option[];
   getActiveTemplates: () => SystemTemplate[],
   getConfigs: () => Configuration[];
   getMetaConfigs: () => MetaConfiguration[];
@@ -345,6 +342,7 @@ export const useStore = create<State>(
       getActiveProject: () => _getActiveProject(get),
       setActiveProject: (userProject: UserProject) => set({activeProject: userProject.id}),
       getTemplates: () => _getTemplates(get),
+      getTemplateOptions: (template: SystemTemplate) => _getOptions(template, get),
       getActiveTemplates: () => _getActiveTemplates(get),
       addConfig: (template: SystemTemplate) => _addConfig(template, get, set),
       getConfigs: () => _getConfigs(get),

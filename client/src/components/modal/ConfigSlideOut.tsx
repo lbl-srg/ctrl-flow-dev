@@ -20,6 +20,7 @@ import {
   useStore,
   Configuration,
   SystemTemplate,
+  Selection,
   Option,
 } from "../../store/store";
 
@@ -30,15 +31,21 @@ interface SlideOutProps {
 
 const SlideOut = ({ template, config }: SlideOutProps) => {
   const [isOpen, setOpen] = useState(false);
-  const { updateConfig } = useStore((state) => ({
-    updateConfig: state.updateConfig
-  }));
+  const updateConfig = useStore(state => ({updateConfig: state.updateConfig});
+  const getTemplateOptions = useStore(state => ({getTemplateOptions: state.getTemplateOptions}));
 
-  const initSelections = {};//getInitialFormValues(template, config, template.options);
+  const initSelections = config.selections.reduce(
+    (previousValue: {[key: string]: number}, currentValue: Selection) => {
+      previousValue[currentValue.parent.name] = currentValue.option.id
+      return previousValue;
+    }, {});
+
   const [initialValues, setInitialValues] = useState({
     configName: config.name || '',
     ...initSelections
   })
+
+  const templateOptions = template.options || [];
 
   return (
     <ModalOpenContext.Provider value={isOpen}>
@@ -66,9 +73,8 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
                     const target = e.target as any;
                     const newValue: {[key: string]: any} = {};
                     // TODO: this will not work once we start incorporating more types of input
-                    // This would also fail if a config is given a number as a name
-                    // 'setInitialValues' should be passed the OptionDisplay component constructor
-                    // so we can make intelligent decisions about how to cast input.
+                    // For example, this would also fail if a config is given a number as a name
+                    // we'll need to be able to make intelligent decisions about how to cast input.
                     const value = isNaN(target.value) ? target.value : Number(target.value);
                     newValue[target.name] = value;
                     setInitialValues({...initialValues, ...newValue});
@@ -83,14 +89,14 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
                     >
                     Save
                   </Button>
-                  {/* {systemOptions.map((option) => (
+                  {templateOptions.map((option) => (
                     <OptionDisplay
                       option={option}
                       options={options}
                       formik={formik}
                       key={option.id}
                     />
-                  ))} */}
+                  ))}
                 </Form>
               )
             }
