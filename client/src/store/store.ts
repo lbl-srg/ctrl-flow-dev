@@ -237,12 +237,13 @@ const saveProjectDetails: SetAction<Partial<ProjectDetails>> = (projectDetails, 
   )
 
 
-const _addConfig: SetAction<SystemTemplate> = (template, get, set) => {
+const _addConfig = (template: SystemTemplate, attrs: Partial<ConfigurationN>, set: SetState<State>) => {
   set(
     produce((state: State) => {
       const activeProject = state.userProjects.find(proj => proj.id === state.activeProject);
       if (activeProject) {
-        const config = {id: getID(), template: template.id, name: '', selections: []};
+        const configDefaults = {id: getID(), template: template.id, name: '', selections: []};
+        const config = {...configDefaults, ...attrs};
         activeProject.configs.push(config.id);
         state.configurations.push(config);
       }
@@ -343,7 +344,7 @@ export interface State {
   getActiveTemplates: () => SystemTemplate[],
   getConfigs: () => Configuration[];
   getMetaConfigs: () => MetaConfiguration[];
-  addConfig: (template: SystemTemplate) => void; // TODO: on template add, default config must be added
+  addConfig: (template: SystemTemplate, attrs?: Partial<ConfigurationN>) => void; // TODO: on template add, default config must be added
   updateConfig: (config: Configuration, configName: string, selections: Selection[]) => void;
   removeConfig: (config: Configuration) => void;
   removeAllTemplateConfigs: (template: SystemTemplate) => void;
@@ -365,7 +366,7 @@ export const useStore = create<State>(
       getTemplates: () => _getTemplates(get),
       getTemplateOptions: (template: SystemTemplate) => _getOptions(template, get),
       getActiveTemplates: () => _getActiveTemplates(get),
-      addConfig: (template: SystemTemplate) => _addConfig(template, get, set),
+      addConfig: (template: SystemTemplate, attrs={}) => _addConfig(template, attrs, set),
       getConfigs: () => _getConfigs(get),
       getMetaConfigs: () => _getMetaConfigs(get),
       updateConfig: (config: Configuration, configName: string, selections: Selection[]) =>

@@ -51,7 +51,7 @@ const TemplateGroupList = ({
   const handler = (selection: string, value: boolean) => {
     const system = templates.find((s) => s.name === selection);
     if (system) {
-      value ? addConfig(system) : removeAllTemplateConfigs(system);
+      value ? addConfig(system, {name: 'Default'}) : removeAllTemplateConfigs(system);
     }
   };
 
