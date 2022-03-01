@@ -2,10 +2,11 @@ import create, {SetState, GetState} from "zustand";
 import { persist } from "zustand/middleware";
 import { produce } from "immer";
 
-import mockData from "./system.json";
+import mockData from "./mock-data.json";
+import Systems from "../components/steps/Systems";
 
 // TODO... get a better uid system
-let _idIncrement = 1;
+let _idIncrement = 0;
 const getID = () => (_idIncrement += 1);
 
 export interface ProjectDetails {
@@ -22,20 +23,6 @@ export interface ProjectDetails {
 export interface SystemType {
   id: number;
   name: string;
-}
-
-export interface SystemN {
-  id: number;
-  name: string;
-  systemType: number;
-  options?: number[];
-}
-
-export interface System {
-  id: number;
-  name: string;
-  systemType: SystemType;
-  options?: Option[];
 }
 
 // modelicaPath+name should be the unique identifier for options
@@ -101,24 +88,26 @@ export interface ConfigurationN {
 
 export interface Configuration {
   id: number;
-  template: number; // ID of SystemTemplate
+  template: SystemTemplate;
   name: string | undefined;
   selections: Selection[];
 }
 
-export interface MetaConfiguration {
+export interface MetaConfigurationN {
+  id: number;
   tagPrefix: string;
   tagStartIndex: number;
   quantity: number;
   configuration: number; // configuration ID
 }
 
-// export interface UserProjects {
-//   systems: System[];
-//   configurations: Configuration[];
-//   metaConfigurations: MetaConfiguration[];
-//   schedules: any;
-// }
+export interface MetaConfiguration {
+  id: number;
+  tagPrefix: string;
+  tagStartIndex: number;
+  quantity: number;
+  configuration: Configuration;
+}
 
 export interface UserProjectN {
   configs: number[];
@@ -138,73 +127,78 @@ export interface UserProject {
 
 type GetAction<T> = (get: GetState<State>) => T;
 type SetAction<T> = (payload: T, get: GetState<State>, set: SetState<State>) => void
-// type SetActionWithGet<T> = (payload: T, set: SetState<State>, get: GetState<State>) => void;
-
-export interface State {
-  saveProjectDetails: SetAction<Partial<ProjectDetails>>;
-  systemTypes: SystemType[];
-  templates: SystemTemplateN[];
-  options: OptionN[];
-  configurations: ConfigurationN[];
-  userProjects: UserProjectN[];
-  activeProject: number;
-  // getActiveProject: () => UserProject;
-  // setActiveProject: SetAction<UserProject>;
-  // getSystemTemplates: GetAction<SystemTemplate[]>;
-  getConfigs: GetAction<Configuration>;
-  // addConfig: SetAction<Configuration>; // TODO: on template add, default config must be added
-  // updateConfig: SetAction<UpdateConfigPayload>
-  // removeConfig: SetAction<Configuration>;
-  // removeAllTemplateConfigs: SetAction<SystemTemplate>;
-}
-
-export const useStore = create<State>(
-  persist(
-    (set, get) => ({
-      saveProjectDetails: projectDetails => saveProjectDetails(projectDetails, get, set),
-      systemTypes: [],
-      templates: [],
-      options: [],
-      configurations: [],
-      userProjects: [initialUserProject],
-      activeProject: 1,
-      // getActiveProject: () => {
-      //   return get().userProjects.find(uProject => uProject.id === get().activeProject)
-      //     ||    initialUserProject;
-      // },
-      // setActiveProject: (userProject) => set({activeProject: userProject.id}),
-      // getSystemTemplates: () => getSystemTemplates(get),
-      // addConfig: (config) => addConfig(config, get, set),
-      getConfigs: () => getConfigurations(get)
-      // updateConfig: (payload) => updateConfig(payload, get, set),
-      // removeConfig: (config) => removeConfig(config, get, set),
-      // removeAllTemplateConfigs: (template) => removeAllTemplateConfigs(template, get, set)
-    }),
-    {
-      name: "linkage-storage",
-    }
-  )
-)
 
 const initialUserProject: UserProjectN = {configs: [], metaConfigs: [], schedules: [], projectDetails: {}, id: getID()};
 
 /**
  * Returns a denormalized user project
  */
-const getActiveProjectHelper: GetAction<UserProject> = (get) => {
+const _getActiveProject: GetAction<UserProject> = (get) => {
   const activeProjectN = get().userProjects.find(uProject => uProject.id === get().activeProject) as UserProjectN;
   const activeProject = {}
 
   return {
-    configs: get().getConfigurations(),
-    metaConfigs: get().getMetaConfigurations(),
+    id: activeProjectN.id,
+    configs: get().getConfigs(),
+    metaConfigs: get().getMetaConfigs(),
     schedules: [],
     projectDetails: activeProjectN.projectDetails
   }
 }
 
-const getConfigurations: GetAction<Configuration> = (get) => {
-  
+const _getTemplates: GetAction<SystemTemplate[]> = (get) => {
+  const templatesN = get().templates;
+
+  return templatesN.map(t => ({
+    id: t.id,
+    systemType: get().systemTypes.find(sType => sType.id === t.systemType) as SystemType,
+    name: t.name,
+    options: t.options?.map(oID => get().options.find(o => oID === o.id)) as Option[]
+  }))
+}
+
+const _getActiveTemplates: GetAction<SystemTemplate[]> = (get) => {
+  const activeProject = get().userProjects.find(proj => proj.id === get().activeProject) as UserProjectN
+  const configs = get().getConfigs();
+  const activeTemplateSet = new Set(configs.map(c => c.template));
+  return Array.from(activeTemplateSet.values());
+}
+
+const _getConfigs: GetAction<Configuration[]> = (get) => {
+  const configs = get().configurations;
+  const activeProject = get().userProjects.find(proj => proj.id === get().activeProject) as UserProjectN
+  const projectConfigs = configs.filter(c => activeProject.configs.indexOf(c.id) >= 0);
+
+  return _getConfigsHelper(projectConfigs, get);
+}
+
+const _getConfigsHelper: (configs: ConfigurationN[], get: GetState<State>) => Configuration[] = (configs, get) => {
+  const templates = get().getTemplates();
+  return configs.map(config => ({
+    id: config.id,
+    template: templates.find(t => t.id === config.template) as SystemTemplate,
+    name: config.name,
+    selections: config.selections.map(s => ({
+      parent: get().options.find(o => o.id === s.parent) as Option,
+      option: get().options.find(o => o.id === s.option) as Option,
+      value: s.value
+    }))
+  }));
+}
+
+const _getMetaConfigs: GetAction<MetaConfiguration[]> = (get) => {
+  const configs = get().getConfigs();
+  const metaConfigs = get().metaConfigurations;
+  const userProject = get().userProjects.find(proj => proj.id === get().activeProject) as UserProjectN
+  const projectMetaConfigs = metaConfigs.filter(mConfig => userProject.metaConfigs.indexOf(mConfig.id) >=0)
+
+  return get().metaConfigurations.map(mConf => ({
+    id: mConf.id,
+    tagPrefix: mConf.tagPrefix,
+    tagStartIndex: mConf.tagStartIndex,
+    quantity: mConf.quantity,
+    configuration: configs.find(c => c.id === mConf.configuration) as Configuration
+  }));
 }
 
 const saveProjectDetails: SetAction<Partial<ProjectDetails>> = (projectDetails, get, set) =>
@@ -218,45 +212,20 @@ const saveProjectDetails: SetAction<Partial<ProjectDetails>> = (projectDetails, 
   )
 
 
-const addConfig: SetAction<SystemTemplate> = (template, get, set) => {
+const _addConfig: SetAction<SystemTemplate> = (template, get, set) => {
   set(
     produce((state: State) => {
       const activeProject = state.userProjects.find(proj => proj.id === state.activeProject);
       if (activeProject) {
         const config = {id: getID(), template: template.id, name: '', selections: []};
-        activeProject.configs = [...activeProject.configs as number[], config.id]
+        activeProject.configs.push(config.id);
         state.configurations.push(config);
       }
     }),
   )
 }
 
-const getSystemTemplates: GetAction<SystemTemplate[]> = get => {
-  const configs = get().configurations;
-  const activeProject = get().getActiveProject();
-
-  const systemTemplates = get().getActiveProject().configs
-    .map(cID => activeProject.configs.find(configID => configID === cID) as Configuration)
-    .map(c => c.template)
-
-  // remove duplicates
-  const systemTemplatesSet = new Set(systemTemplates);
-
-  const systemTemplatesN =
-    get().templates.filter(template => systemTemplatesSet.has(template.id));
-
-  // create and return denormalized instances
-  return systemTemplatesN.map(template =>
-    ({
-      id: template.id,
-      systemType: get().systemTypes.find(t => t.id === template.systemType) as SystemType,
-      name: template.name,
-      options: template.options?.map(oID => get().options.find(o => o.id === oID)) as Option[]
-    })
-  )
-}
-
-type ConfigUpdate = Partial<Configuration> & { id: number; system: number }
+type ConfigUpdate = Partial<Configuration> & { id: number; template: number }
 
 interface UpdateConfigPayload {
   config: ConfigUpdate;
@@ -269,8 +238,7 @@ interface UpdateConfigPayload {
  * selections are removed from the provided config, then combines that filtered list
  * of previous selections with the new ones
  */
-const getFullSelectionList = (state: State, conf: ConfigUpdate, newSelections: Selection[]) => {
-  const options = state.options;
+const getFullSelectionList = (state: State, selections: Selection[], newSelections: Selection[]) => {
   const nodeList = newSelections.map(s => s.parent);
   const filterList: number[] = [];
 
@@ -285,38 +253,31 @@ const getFullSelectionList = (state: State, conf: ConfigUpdate, newSelections: S
     }
   }
 
-  const previousSelections = (conf.selections) ?
-    conf.selections.filter(s => !filterList.includes(s.parent.id)) : [];
+  const previousSelections = (selections) ?
+    selections.filter(s => !filterList.includes(s.parent.id)) : [];
 
   // combine the filtered list of old selections + the new selections
   return [...previousSelections,
     ...newSelections];
 }
 
-interface UpdateConfigPayload {
-  config: Partial<Configuration> & { id: number; system: number };
-  configName: string;
-  selections: Selection[];
-}
+const _updateConfig = (config: Configuration, configName: string, selections: Selection[], set: SetState<State>) =>
+  set(
+    produce((state: State) => {
+      const conf = state.configurations.find(c => c.id === config.id) as ConfigurationN;
 
-const updateConfig: SetAction<UpdateConfigPayload> = (payload, get, set) =>
-  produce((state: State) => {
-    const conf = state.configurations.find(c => c.id === payload.config.id);
-
-    if (conf) {
-      conf.name = payload.configName;
-      const selections = getFullSelectionList(state, payload.config, payload.selections);
+      conf.name = configName;
+      const updatedSelections = getFullSelectionList(state, config.selections, selections);
       // convert to normalized format
-      conf.selections = selections.map(s => ({
+      conf.selections = updatedSelections.map(s => ({
         parent: s.parent.id,
         option: s.option.id,
         value: s.value
       }));
-    }
-  }
+    })
 )
 
-const removeConfig: SetAction<Configuration> = (config, get, set) => {
+const _removeConfig: SetAction<Configuration> = (config, get, set) => {
   set(
     produce((state: State) => {
       const configs = get().getActiveProject().configs
@@ -331,7 +292,7 @@ const removeConfig: SetAction<Configuration> = (config, get, set) => {
   )
 }
 
-const removeAllTemplateConfigs: SetAction<SystemTemplate> = (template, get, set) => {
+const _removeAllTemplateConfigs: SetAction<SystemTemplate> = (template, get, set) => {
   set(
     produce((state: State) => {
       const configs = state.configurations;
@@ -348,3 +309,53 @@ const removeAllTemplateConfigs: SetAction<SystemTemplate> = (template, get, set)
 }
 
 export const sanatizeStep = (step: number) => (step > 6 || step < 0 ? 0 : step);
+
+export interface State {
+  saveProjectDetails: (projectDetails: Partial<ProjectDetails>) => void;
+  systemTypes: SystemType[];
+  templates: SystemTemplateN[];
+  options: OptionN[];
+  configurations: ConfigurationN[];
+  metaConfigurations: MetaConfigurationN[];
+  userProjects: UserProjectN[];
+  activeProject: number;
+  getActiveProject: () => UserProject;
+  setActiveProject: SetAction<UserProject>;
+  getTemplates: () => SystemTemplate[];
+  getActiveTemplates: () => SystemTemplate[],
+  getConfigs: () => Configuration[];
+  getMetaConfigs: () => MetaConfiguration[];
+  addConfig: (template: SystemTemplate) => void; // TODO: on template add, default config must be added
+  updateConfig: (config: Configuration, configName: string, selections: Selection[]) => void;
+  removeConfig: (config: Configuration) => void;
+  removeAllTemplateConfigs: (template: SystemTemplate) => void;
+}
+
+export const useStore = create<State>(
+  persist(
+    (set, get) => ({
+      saveProjectDetails: projectDetails => saveProjectDetails(projectDetails, get, set),
+      systemTypes: mockData['systemTypes'],
+      templates: mockData['templates'],
+      options: mockData['options'],
+      configurations: [],
+      metaConfigurations: [],
+      userProjects: [initialUserProject],
+      activeProject: 1,
+      getActiveProject: () => _getActiveProject(get),
+      setActiveProject: (userProject: UserProject) => set({activeProject: userProject.id}),
+      getTemplates: () => _getTemplates(get),
+      getActiveTemplates: () => _getActiveTemplates(get),
+      addConfig: (template: SystemTemplate) => _addConfig(template, get, set),
+      getConfigs: () => _getConfigs(get),
+      getMetaConfigs: () => _getMetaConfigs(get),
+      updateConfig: (config: Configuration, configName: string, selections: Selection[]) =>
+        _updateConfig(config, configName, selections, set),
+      removeConfig: (config: Configuration) => _removeConfig(config, get, set),
+      removeAllTemplateConfigs: (template: SystemTemplate) => _removeAllTemplateConfigs(template, get, set)
+    }),
+    {
+      name: "linkage-storage",
+    }
+  )
+)
