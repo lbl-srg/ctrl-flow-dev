@@ -171,11 +171,12 @@ const _getOptions: (template: SystemTemplate, get: GetState<State>) => Option[]=
     optionIDs.push(...template.options.map(o => o.id));
 
     while (optionIDs.length > 0) {
-      const curNode = options.find(o => o.id === optionIDs.pop()) as OptionN;
+      const curID = optionIDs.pop();
+      const curNode = options.find(o => o.id === curID) as OptionN;
       if (curNode.options) {
-        templateOptionsN.push(curNode);
         optionIDs.push(...curNode.options);
       }
+      templateOptionsN.push(curNode);
     }
   }
 
@@ -183,10 +184,10 @@ const _getOptions: (template: SystemTemplate, get: GetState<State>) => Option[]=
   // then populate child options after references have been created
   const templateOptions = templateOptionsN.map(o => ({...o, ...{options: undefined}}) as Option);
   templateOptions.map(o => {
-    const optionN = templateOptionsN.find(option => option.id === o.id);
-    if (optionN?.options) {
-      const options = optionN.options.map(cID => templateOptions.find(tOption => cID === tOption.id))
-      o.options = options as Option[];
+    const optionN = templateOptionsN.find(option => option.id === o.id) as OptionN;
+    if (optionN.options) {
+      o.options =
+        optionN.options.map(cID => templateOptions.find(tOption => cID === tOption.id) as Option)
     }
   });
 
