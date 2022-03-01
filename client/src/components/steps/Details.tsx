@@ -17,7 +17,8 @@ const Details = () => (
 );
 
 const ContentRight = () => {
-  const projectDetails = useStore((state) => state.projectDetails);
+  const getActiveProject = useStore((state) => state.getActiveProject);
+  const projectDetails = getActiveProject().projectDetails;
 
   return (
     <Fragment>

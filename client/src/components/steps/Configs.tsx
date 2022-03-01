@@ -8,7 +8,7 @@ import SlideOut from "../modal/ConfigSlideOut";
 
 import { colors } from "../../styleHelpers";
 
-import { useStore, Configuration, System, SystemType } from "../../store/store";
+import { useStore, Configuration, SystemTemplate, SystemType } from "../../store/store";
 
 import LeftNav from "../LeftNavigation";
 import { TextButton } from "../Button";
@@ -16,20 +16,26 @@ import { TextButton } from "../Button";
 // step 3
 const Configs = () => {
   const {
-    configs,
-    userSystems,
+    getConfigs,
     systemTypes,
-    templates,
+    getActiveTemplates,
     addConfig,
     removeConfig,
   } = useStore((state) => ({
-    configs: state.userProjects.configurations,
-    userSystems: state.userProjects.systems,
+    getConfigs: state.getConfigs,
     systemTypes: state.systemTypes,
-    templates: state.templates,
+    getActiveTemplates: state.getActiveTemplates,
     addConfig: state.addConfig,
     removeConfig: state.removeConfig,
   }));
+
+  const configs = getConfigs();
+  const templates = getActiveTemplates();
+
+  // based on user configs, figure out which templates they are using
+
+
+
   return (
     <Sidebarlayout
       heading="Configurations"
@@ -38,18 +44,18 @@ const Configs = () => {
         <Fragment>
           <div>Add Configurations For The System Types You Selected</div>
           {systemTypes.map((systemT) => {
-            const systems = userSystems.filter(
-              (s) => s.systemType === systemT.id,
+            const systemTypeTemplates = templates.filter(
+              (t) => t.systemType.id === systemT.id,
             );
             const confs = configs.filter((c) =>
-              systems.map((s) => s.id).includes(c.system),
+              systemTypeTemplates.map((s) => s.id).includes(c.template.id),
             );
 
             return (
               <SystemConfigGroup
                 key={systemT.id}
                 systemType={systemT}
-                systems={systems}
+                templates={systemTypeTemplates}
                 configs={confs}
                 addConfig={addConfig}
                 removeConfig={removeConfig}
@@ -64,15 +70,15 @@ const Configs = () => {
 
 interface SystemConfigGroupProps {
   systemType: SystemType;
-  systems: System[];
+  templates: SystemTemplate[];
   configs: Configuration[];
-  addConfig: (system: System) => void;
+  addConfig: (template: SystemTemplate) => void;
   removeConfig: (config: Configuration) => void;
 }
 
 const SystemConfigGroup = ({
   systemType,
-  systems,
+  templates,
   configs,
   addConfig,
   removeConfig,
@@ -80,11 +86,11 @@ const SystemConfigGroup = ({
   return (
     <Fragment>
       <h3>{systemType.name}</h3>
-      {systems.map((system) => (
+      {templates.map((template) => (
         <SystemConfigs
-          key={system.id}
-          system={system}
-          configs={configs.filter((c) => c.system === system.id)}
+          key={template.id}
+          template={template}
+          configs={configs.filter((c) => c.template.id === template.id)}
           addConfig={addConfig}
           removeConfig={removeConfig}
         />
@@ -94,14 +100,14 @@ const SystemConfigGroup = ({
 };
 
 interface SystemConfigsProps {
-  system: System;
+  template: SystemTemplate;
   configs: Configuration[];
-  addConfig: (system: System) => void;
+  addConfig: (template: SystemTemplate) => void;
   removeConfig: (config: Configuration) => void;
 }
 
 const SystemConfigs = ({
-  system,
+  template,
   configs,
   addConfig,
   removeConfig,
@@ -109,7 +115,7 @@ const SystemConfigs = ({
   return (
     <SystemConfigsContainer>
       <SystemTitleContainer>
-        <SystemName>{system.name}</SystemName>
+        <SystemName>{template.name}</SystemName>
         <UploadDownload path=''></UploadDownload>
       </SystemTitleContainer>
       <div css={css`text-transform: uppercase; font-size: 0.8rem; font-weight: 600; padding: 0.3rem 0rem;`}>
@@ -119,11 +125,11 @@ const SystemConfigs = ({
         <Config
           key={c.id}
           config={c}
-          system={system}
+          template={template}
           removeConfig={removeConfig}
         />
       ))}
-      <TextButton css={css`padding-left:0rem; padding-bottom: 1.5rem; font-size: 1rem;`}onClick={() => addConfig(system)}>
+      <TextButton css={css`padding-left:0rem; padding-bottom: 1.5rem; font-size: 1rem;`}onClick={() => addConfig(template)}>
         + Add Configuration
       </TextButton>
     </SystemConfigsContainer>
@@ -174,11 +180,11 @@ const SystemName = styled.div`
 
 interface ConfigProps {
   config: Configuration;
-  system: System;
+  template: SystemTemplate;
   removeConfig: (config: Configuration) => void;
 }
 
-const Config = ({ config, system, removeConfig }: ConfigProps) => {
+const Config = ({ config, template, removeConfig }: ConfigProps) => {
   const [inHover, setHover] = useState(false);
 
   return (
@@ -188,7 +194,7 @@ const Config = ({ config, system, removeConfig }: ConfigProps) => {
     >
       <ConfigNameEditContainer>
         <ConfigName>{config.name}</ConfigName>
-        <SlideOut config={config} template={system} />
+        <SlideOut config={config} template={template} />
       </ConfigNameEditContainer>
       <TextButton
         css={inHover ? css`visibility: visible;` : css`visibility: hidden;`}
