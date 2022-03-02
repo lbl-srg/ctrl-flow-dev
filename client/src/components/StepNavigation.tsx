@@ -45,7 +45,7 @@ function StepNavigation() {
         <div className="col-xs-2">
           {next && (
             <Link role="button" to={next.path}>
-              {next.label}
+              Next Step: {next.label}
               <i className="icon-right-open right" />
             </Link>
           )}

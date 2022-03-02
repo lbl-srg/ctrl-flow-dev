@@ -9,6 +9,10 @@
   background-color: rgba(255, 255, 255, 0.5);
 
   .step-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     a {
       color: var(--color-grey-dark);
       text-transform: uppercase;
