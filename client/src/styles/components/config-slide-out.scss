@@ -1,0 +1,33 @@
+.config-slide-out {
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  &.modal-is-opening dialog > article,
+  &.modal-is-closing dialog > article {
+    animation-delay: 0.2s;
+    animation-name: slideInLeft;
+  }
+
+  dialog[open] {
+    padding: 0;
+
+    article {
+      position: fixed;
+      margin: 0;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: 400px;
+      padding: var(--spacing-md);
+      max-height: 100vh;
+    }
+  }
+}

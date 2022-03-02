@@ -11,7 +11,6 @@ import { colors } from "../../styleHelpers";
 import { useStore, Configuration, System, SystemType } from "../../store/store";
 
 import LeftNav from "../LeftNavigation";
-import { TextButton } from "../Button";
 
 // step 3
 const Configs = () => {
@@ -118,9 +117,7 @@ const SystemConfigs = ({
           removeConfig={removeConfig}
         />
       ))}
-      <TextButton onClick={() => addConfig(system)}>
-        + Add Configuration
-      </TextButton>
+      <a onClick={() => addConfig(system)}>+ Add Configuration</a>
     </SystemConfigsContainer>
   );
 };
@@ -157,10 +154,10 @@ const UploadDownload = ({ path }: UploadDownloadProps) => {
   return (
     <Fragment>
       <FileAction>
-        <TextButton css={buttonCss}>Download</TextButton>
+        <a css={buttonCss}>Download</a>
       </FileAction>
       <FileAction>
-        <TextButton css={buttonCss}>Upload</TextButton>
+        <a css={buttonCss}>Upload</a>
       </FileAction>
     </Fragment>
   );
@@ -190,7 +187,7 @@ const Config = ({ config, system, removeConfig }: ConfigProps) => {
     <ConfigContainer>
       <ConfigName>{config.name}</ConfigName>
       <SlideOut config={config} template={system} />
-      <TextButton onClick={() => removeConfig(config)}>X</TextButton>
+      <a onClick={() => removeConfig(config)}>X</a>
     </ConfigContainer>
   );
 };

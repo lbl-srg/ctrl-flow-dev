@@ -22,34 +22,37 @@ function StepNavigation() {
 
   return (
     <div className="step-navigation">
-      <div className="row">
-        <div className="col-xs-2">
-          <Link to={previous.path}>
-            <i className="icon-left-open" />
-            Back
+      <div className="prev-container">
+        <Link to={previous.path}>
+          <i className="icon-left-open" />
+          Back
+        </Link>
+      </div>
+
+      <div className="step-links">
+        {steps
+          .filter(({ path }) => path !== "/")
+          .map(({ label, path }) => {
+            return (
+              <Link
+                key={label}
+                to={path}
+                className={location.pathname === path ? "active" : ""}
+              >
+                <div className="marker"></div>
+                {label}
+              </Link>
+            );
+          })}
+      </div>
+
+      <div className="next-container">
+        {next && (
+          <Link role="button" to={next.path}>
+            Next Step: {next.label}
+            <i className="icon-right-open right" />
           </Link>
-        </div>
-
-        <div className="col-xs-8 step-links">
-          {steps
-            .filter(({ path }) => path !== "/")
-            .map(({ label, path }) => {
-              return (
-                <Link key={label} to={path}>
-                  {label}
-                </Link>
-              );
-            })}
-        </div>
-
-        <div className="col-xs-2">
-          {next && (
-            <Link role="button" to={next.path}>
-              Next Step: {next.label}
-              <i className="icon-right-open right" />
-            </Link>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );

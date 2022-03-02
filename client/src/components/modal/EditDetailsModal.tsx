@@ -6,6 +6,7 @@ interface EditDetailsModalProps extends ModalInterface {
   afterSubmit?: () => void;
   initialState?: Partial<ProjectDetails>;
   submitText: string;
+  modalTitle: string;
 }
 
 const defaultState = {
@@ -32,7 +33,9 @@ function EditDetailsModal({
   }));
 
   return (
-    <Modal modalTitle={modalTitle} close={close} isOpen={isOpen}>
+    <Modal close={close} isOpen={isOpen}>
+      <h1>{modalTitle}</h1>
+
       <Formik
         initialValues={initialState}
         onSubmit={(values: Partial<ProjectDetails>) => {

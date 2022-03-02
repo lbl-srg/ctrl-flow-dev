@@ -1,16 +1,21 @@
 import { ReactNode } from "react";
+import "../../styles/components/modal.scss";
 
 export interface ModalInterface {
-  modalTitle: string;
   isOpen: boolean;
   close: () => void;
+  className?: string;
   children?: ReactNode;
 }
 
-function Modal({ modalTitle, isOpen, close, children }: ModalInterface) {
+function Modal({ isOpen, close, className, children }: ModalInterface) {
+  const classes = className ? [className] : [];
+  if (isOpen) classes.push("modal-is-opening");
+
   return (
-    <div className={isOpen ? "modal-is-opening" : ""}>
+    <div className={classes.join(" ")}>
       <dialog open={isOpen}>
+        <div className="underlay" onClick={close}></div>
         <article>
           <a
             href="#close"
@@ -18,8 +23,6 @@ function Modal({ modalTitle, isOpen, close, children }: ModalInterface) {
             className="close"
             onClick={close}
           ></a>
-
-          <h1>{modalTitle}</h1>
 
           {children}
         </article>
