@@ -2,7 +2,7 @@
 /** @jsx jsx */
 import { css, jsx } from "@emotion/react/macro";
 import styled from "@emotion/styled";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import Sidebarlayout from "../layouts/SidebarLayout";
 import SlideOut from "../modal/ConfigSlideOut";
 
@@ -107,8 +107,13 @@ const SystemConfigs = ({
 }: SystemConfigsProps) => {
   return (
     <SystemConfigsContainer>
-      <SystemConfigName system={system} />
-      <div>Configuration(s):</div>
+      <SystemTitleContainer>
+        <SystemName>{system.name}</SystemName>
+        <UploadDownload path=''></UploadDownload>
+      </SystemTitleContainer>
+      <div css={css`text-transform: uppercase; font-size: 0.8rem; font-weight: 600; padding: 0.3rem 0rem;`}>
+        Configuration(s):
+      </div>
       {configs.map((c) => (
         <Config
           key={c.id}
@@ -124,8 +129,7 @@ const SystemConfigs = ({
 
 const SystemConfigsContainer = styled.div`
   background-color: ${colors.extraLightBlue};
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  padding: 0rem 0.75rem;
 `;
 
 interface SystemConfigNameProps {
@@ -167,15 +171,17 @@ const FileAction = styled.div`
   display: inline;
 `;
 
-const SystemConfigNameContainer = styled.div`
+const SystemTitleContainer = styled.div`
   display: flex;
   justify-content: flex-start;
+  padding: 1rem 0rem;
 `;
 
 const SystemName = styled.div`
   font-weight: bold;
   flex: 1;
 `;
+
 interface ConfigProps {
   config: Configuration;
   system: System;
@@ -183,24 +189,44 @@ interface ConfigProps {
 }
 
 const Config = ({ config, system, removeConfig }: ConfigProps) => {
+  const [inHover, setHover] = useState(false);
+
   return (
-    <ConfigContainer>
-      <ConfigName>{config.name}</ConfigName>
-      <SlideOut config={config} template={system} />
+    <ConfigContainer
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <ConfigNameEditContainer>
+        <ConfigName>{config.name}</ConfigName>
+        <SlideOut config={config} template={system} />
+      </ConfigNameEditContainer>
+      <TextButton
+        css={inHover ? css`visibility: visible;` : css`visibility: hidden;`}
       <a onClick={() => removeConfig(config)}>X</a>
+        X
+      </TextButton>
     </ConfigContainer>
   );
 };
 
 const ConfigName = styled.div`
   flex: 1;
-  font-size: 1.2rem;
 `;
+
+const ConfigNameEditContainer = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  outline: 1px solid ${colors.mediumGrey};
+  width: 100%;
+  padding: 0.5rem 0.9rem;
+  align-items: center;
+`
 
 const ConfigContainer = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  margin: 0.5rem 0rem;
 `;
 
 export default Configs;

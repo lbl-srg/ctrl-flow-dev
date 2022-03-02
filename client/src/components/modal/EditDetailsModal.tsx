@@ -5,8 +5,8 @@ import Modal, { ModalInterface } from "./Modal";
 interface EditDetailsModalProps extends ModalInterface {
   afterSubmit?: () => void;
   initialState?: Partial<ProjectDetails>;
-  submitText: string;
   modalTitle: string;
+  submitText: string;
 }
 
 const defaultState = {
@@ -35,6 +35,31 @@ function EditDetailsModal({
   return (
     <Modal close={close} isOpen={isOpen}>
       <h1>{modalTitle}</h1>
+          <Formik
+            initialValues={initialState}
+            onSubmit={(values: Partial<ProjectDetails>) => {
+              saveProjectDetails(values);
+              setOpen(false);
+              afterSubmit && afterSubmit();
+            }}
+          >
+            <Form
+              css={css`
+                width: 100% height 100%;
+              `}
+            >
+              <Button
+                type="submit"
+                css={css`
+                  position: absolute;
+                  bottom: 3rem;
+                  right: 6rem;
+                `}
+              >
+                Save
+              </Button>
+              <Label htmlFor="name">Project Name:</Label>
+              <Field id="name" name="name" />
 
       <Formik
         initialValues={initialState}
