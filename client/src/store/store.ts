@@ -265,7 +265,7 @@ const _addConfig = (template: SystemTemplate, attrs: Partial<ConfigurationN>, se
  * selections are removed from the provided config, then combines that filtered list
  * of previous selections with the new ones
  */
-const getFullSelectionList = (state: State, selections: Selection[], newSelections: Selection[]) => {
+const getFilteredSelectionList = (state: State, selections: Selection[], newSelections: Selection[]) => {
   const nodeList = newSelections.map(s => s.parent);
   const filterList: number[] = [];
 
@@ -294,7 +294,7 @@ const _updateConfig = (config: Configuration, configName: string, selections: Se
       const conf = state.configurations.find(c => c.id === config.id) as ConfigurationN;
 
       conf.name = configName;
-      const updatedSelections = getFullSelectionList(state, config.selections, selections);
+      const updatedSelections = getFilteredSelectionList(state, config.selections, selections);
       // convert to normalized format
       conf.selections = updatedSelections.map(s => ({
         parent: s.parent.id,
