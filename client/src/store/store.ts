@@ -140,13 +140,14 @@ const _getActiveProject: GetAction<UserProject> = (get) => {
 
 const _getTemplates: GetAction<SystemTemplate[]> = (get) => {
   const templatesN = get().templates;
+  const options = _getAllOptions(get);
 
   return templatesN.map(t => ({
-    id: t.id,
-    systemType: get().systemTypes.find(sType => sType.id === t.systemType) as SystemType,
-    name: t.name,
-    options: t.options?.map(oID => get().options.find(o => oID === o.id)) as Option[]
-  }))
+      id: t.id,
+      systemType: get().systemTypes.find(sType => sType.id === t.systemType) as SystemType,
+      name: t.name,
+      options: t.options?.map(oID => options.find(o => oID === o.id)) as Option[]
+    }))
 }
 
 const _getActiveTemplates: GetAction<SystemTemplate[]> = (get) => {
@@ -155,11 +156,28 @@ const _getActiveTemplates: GetAction<SystemTemplate[]> = (get) => {
   return Array.from(activeTemplateSet.values());
 }
 
+const _getAllOptions: (get: GetState<State>) => Option[] = (get) => {
+  // denormalize list in two passes: first create options without child options
+  // then populate child options after references have been created
+  const optionsN = get().options
+  const options = optionsN.map(o => ({...o, ...{options: undefined}}) as Option);
+  options.map(o => {
+    const optionN = optionsN.find(option => option.id === o.id) as OptionN;
+    if (optionN.options) {
+      o.options =
+        optionN.options.map(cID => options.find(option => cID === option.id) as Option)
+    }
+  });
+
+  return options;
+}
+
 // for a given template, returns two lists: the initial options and all available options
 const _getOptions: (template: SystemTemplate, get: GetState<State>) => [Option[], Option[]]= (template, get) => {
   const optionIDs: number[] = [];
   const templateOptionsN: OptionN[] = [];
-  let initOptions = template.options as Option[]
+  const initOptions = template.options as Option[];
+
   if (template.options) {
     const options = get().options;
     optionIDs.push(...template.options.map(o => o.id));
@@ -174,18 +192,9 @@ const _getOptions: (template: SystemTemplate, get: GetState<State>) => [Option[]
     }
   }
 
-  // denormalize list in two passes: first create options without child options
-  // then populate child options after references have been created
-  const templateOptions = templateOptionsN.map(o => ({...o, ...{options: undefined}}) as Option);
-  templateOptions.map(o => {
-    const optionN = templateOptionsN.find(option => option.id === o.id) as OptionN;
-    if (optionN.options) {
-      o.options =
-        optionN.options.map(cID => templateOptions.find(tOption => cID === tOption.id) as Option)
-    }
-  });
+  const options = _getAllOptions(get);
+  const templateOptions = templateOptionsN.map(o => options.find(option => option.id === o.id) as Option);
 
-  initOptions = initOptions.map(o => templateOptions.find(option => option.id === o.id) as Option);
   return [initOptions, templateOptions];
 }
 
@@ -339,6 +348,7 @@ export interface State {
   activeProject: number;
   getActiveProject: () => UserProject;
   setActiveProject: SetAction<UserProject>;
+  getOptions: () => Option[];
   getTemplates: () => SystemTemplate[];
   getTemplateOptions: (template: SystemTemplate) => [Option[], Option[]];
   getActiveTemplates: () => SystemTemplate[],
@@ -363,6 +373,7 @@ export const useStore = create<State>(
       activeProject: 1,
       getActiveProject: () => _getActiveProject(get),
       setActiveProject: (userProject: UserProject) => set({activeProject: userProject.id}),
+      getOptions: () => _getAllOptions(get),
       getTemplates: () => _getTemplates(get),
       getTemplateOptions: (template: SystemTemplate) => _getOptions(template, get),
       getActiveTemplates: () => _getActiveTemplates(get),
