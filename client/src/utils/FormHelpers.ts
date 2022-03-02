@@ -42,7 +42,7 @@ export const getInitialFormValues =
  */
 export const getSelections = (
   values: ConfigFormValues,
-  initValues: ConfigFormValues,
+  initValues: {[key: string]: number},
   options: Option[]): Selection[] => {
   const { configName, ...confSelections } = values // extract out name
   const newSelectionsFormValues = getChangedValues(confSelections, initValues) as ConfigFormValues;
@@ -56,5 +56,6 @@ export const getSelections = (
       } as Selection
     })
 
+  console.log(newSelectionsFormValues);
   return newSelections;
 }

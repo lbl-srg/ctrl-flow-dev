@@ -29,8 +29,6 @@ interface SlideOutProps {
   config: Configuration;
 }
 
-type FormikFormData = {[key: string]: number};
-
 const SlideOut = ({ template, config }: SlideOutProps) => {
   const [isOpen, setOpen] = useState(false);
   const updateConfig = useStore(state => state.updateConfig);
@@ -38,7 +36,7 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
   const [initTemplateOptions, fullTemplateOptions] = getTemplateOptions(template);
 
   const initSelections = config.selections.reduce(
-    (previousValue: FormikFormData, currentValue: Selection) => {
+    (previousValue: {[key: string]: number}, currentValue: Selection) => {
       previousValue[currentValue.parent.name] = currentValue.option.id
       return previousValue;
     }, {});
@@ -61,7 +59,7 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
             initialValues={initialValues}
             enableReinitialize={true}
             onSubmit={(configSelections: ConfigFormValues) => {
-              const selections = getSelections(configSelections, initialValues, fullTemplateOptions)
+              const selections = getSelections(configSelections, initSelections, fullTemplateOptions)
               const configName = configSelections.configName;
               updateConfig(config, configName, selections);
               setOpen(false);
