@@ -3,7 +3,7 @@ const mockData = {
     { "id": 1, "name": "Ventilation, Air Handlers and Other Fans" },
     { "id": 2, "name": "Zone Equipment" }
   ],
-  "systems": [
+  "templates": [
     {
       "id": 1, "name": "Multiple Zone VAV Air Handler",
       "systemType": 1,
