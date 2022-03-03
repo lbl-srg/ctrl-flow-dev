@@ -5,6 +5,10 @@
 
   &.dragging {
     user-select: none;
+
+    .dragger {
+      opacity: 1 !important;
+    }
   }
 
   .col-container {
@@ -15,7 +19,6 @@
     .right-col {
       box-sizing: border-box;
       height: 100%;
-      min-width: 400px;
       overflow: auto;
     }
 
@@ -57,18 +60,17 @@
       .dragger {
         position: absolute;
         top: 0;
-        right: 0;
-        width: 10px;
-        background-color: var(--color-gray-medium);
+        right: 0px;
+        width: 5px;
+        background-color: var(--color-blue-dark);
         opacity: 0;
         height: 100%;
         cursor: col-resize;
         transition: opacity 0.2s ease-in;
-      }
 
-      &:active .dragger,
-      .dragger:hover {
-        opacity: 1;
+        &:hover {
+          opacity: 1;
+        }
       }
     }
 

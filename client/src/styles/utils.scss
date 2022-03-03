@@ -12,3 +12,10 @@
 .no-wrap {
   white-space: nowrap;
 }
+
+.truncate {
+  white-space: nowrap;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

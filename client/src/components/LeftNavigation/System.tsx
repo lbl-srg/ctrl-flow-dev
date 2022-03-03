@@ -19,8 +19,10 @@ function System({ systemType, templates, configs }: SystemProps) {
     <details className={classes.join(" ")}>
       <summary>
         <a href={`/configs#${systemType.id}`}>
-          {icon && <i className={icon.iconClass} />}
-          {systemType.name}
+          <div className="truncate">
+            {icon && <i className={icon.iconClass} />}
+            {systemType.name}
+          </div>
         </a>
       </summary>
 

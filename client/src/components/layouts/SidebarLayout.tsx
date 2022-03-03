@@ -10,6 +10,7 @@ export interface SidebarLayoutProps {
   contentRight: ReactNode;
 }
 
+const MIN_WIDTH = 300;
 const STORAGE_KEY = "sideBarWidth";
 
 const Sidebarlayout = ({
@@ -26,12 +27,13 @@ const Sidebarlayout = ({
 
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [width, setWidth] = useState<number>(
-    fromStore ? parseInt(fromStore) : 400,
+    fromStore ? parseInt(fromStore) : MIN_WIDTH,
   );
 
   function recordDrag(ev: MouseEvent): void {
     if (isDragging) {
-      setWidth(ev.pageX);
+      const desiredWidth = ev.pageX < MIN_WIDTH ? MIN_WIDTH : ev.pageX;
+      setWidth(desiredWidth);
       localStorage.setItem(STORAGE_KEY, `${ev.pageX}`);
     }
   }
