@@ -1,6 +1,6 @@
 import { SystemTemplate, SystemType, Configuration } from "../../store/store";
 import Template from "./Template";
-
+import IconMapping from "./icon-mappings";
 export interface SystemProps {
   systemType: SystemType;
   templates: SystemTemplate[];
@@ -11,10 +11,17 @@ function System({ systemType, templates, configs }: SystemProps) {
   const classes = ["system"];
   if (!templates.length) classes.push("empty");
 
+  const icon = IconMapping.find(
+    (item) => item.systemName.toLowerCase() === systemType.name.toLowerCase(),
+  );
+
   return (
     <details className={classes.join(" ")}>
       <summary>
-        <a href={`/configs#${systemType.id}`}>{systemType.name}</a>
+        <a href={`/configs#${systemType.id}`}>
+          {icon && <i className={icon.iconClass} />}
+          {systemType.name}
+        </a>
       </summary>
 
       {configs.length && (

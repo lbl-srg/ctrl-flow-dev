@@ -17,15 +17,26 @@
       font-weight: var(--font-weight-medium);
       padding: var(--spacing-sm) var(--spacing-md);
       background-color: var(--color-blue-light);
+      transition: all 0.3s ease;
 
       > a {
         color: var(--color-grey-dark);
+        position: relative;
+        padding-left: var(--spacing-lg);
+
+        i {
+          color: inherit;
+          position: absolute;
+          left: 0;
+          top: 0;
+          font-size: 1.4rem;
+        }
       }
 
       &:after {
+        content: "\e906";
         background-image: none;
         font-family: "icomoon";
-        content: "\e906";
         width: 1.5rem;
         text-align: center;
         font-size: 0.8rem;
@@ -60,7 +71,7 @@
   }
 
   ul.templates {
-    padding-left: var(--spacing-md);
+    padding-left: calc(var(--spacing-lg) + 1.4rem);
 
     > li {
       list-style: none;
