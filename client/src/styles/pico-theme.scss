@@ -1,0 +1,20 @@
+/* 
+variables to override can be found here 
+https://github.com/picocss/pico/blob/master/css/pico.css
+*/
+
+/* pico overrides */
+[data-theme="light"],
+:root:not([data-theme="dark"]) {
+  --primary: var(--color-blue-dark);
+
+  /* card */
+  --card-background-color: var(--color-gray-light);
+  --card-box-shadow: none;
+  --modal-overlay-background-color: rgba(0, 0, 0, 0.3);
+  --card-sectionning-background-color: white;
+}
+
+h2 {
+  --typography-spacing-vertical: var(--spacing-lg);
+}

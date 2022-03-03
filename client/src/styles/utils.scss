@@ -1,0 +1,14 @@
+.no-margin {
+  margin: 0;
+}
+
+.flex-space-between {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.no-wrap {
+  white-space: nowrap;
+}

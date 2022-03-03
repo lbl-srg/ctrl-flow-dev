@@ -1,0 +1,30 @@
+button,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+[role="button"] {
+  border-radius: 2rem;
+  text-transform: uppercase;
+  font-weight: var(--font-weight-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: var(--spacing-md) !important;
+  padding-right: var(--spacing-md) !important;
+
+  &.inline {
+    width: auto;
+  }
+
+  &.outline {
+    border-width: 2px;
+  }
+
+  &.small {
+    // padding: var(--spacing-sm) var(--spacing-md);
+    margin: 0;
+    line-height: 0.2em;
+    // padding: 0;
+    // line-height: 0;
+  }
+}

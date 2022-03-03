@@ -1,0 +1,21 @@
+@import-normalize; /* bring in normalize.css styles */
+/* fonts */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap");
+/* npm modules */
+@import "~flexboxgrid";
+@import "~@picocss/pico";
+
+@import "./vars";
+// themeing pico
+@import "./pico-theme";
+
+@import "./typography";
+@import "./buttons";
+@import "./forms";
+@import "./utils";
+
+html,
+body,
+#root {
+  height: 100%;
+}

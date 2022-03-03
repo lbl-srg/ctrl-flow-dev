@@ -1,0 +1,34 @@
+@import "./pico-theme";
+
+// override pico vartiables below,
+// complete list found at https://github.com/picocss/pico/tree/master/scss/themes/default
+
+
+  --card-border-color: #{mix($black, $grey-900, 37.5%)};
+  --card-box-shadow: 0 0.125rem 1rem #{rgba($black, 0.06)},
+    0 0.125rem 2rem #{rgba($black, 0.12)},
+    0 0 0 0.0625rem #{rgba($black, 0.036)};
+  --card-sectionning-background-color: #{mix($black, $grey-900, 12.5%)};
+
+  // Modal (<dialog>)
+  --modal-overlay-background-color: #{rgba(mix($grey-900, $grey-800), 0.9)};
+
+
+@import "~@picocss/pico/scss/pico"; // html
+
+dialog article {
+  position: relative;
+  max-width: 70%;
+  width: 100%;
+  padding: var(--spacing-lg) var(--spacing-xl);
+
+  a.close {
+    width: 2rem;
+    height: 2rem;
+    opacity: 0.7;
+    background-size: auto 2rem;
+    position: absolute;
+    top: var(--spacing-lg);
+    right: var(--spacing-md);
+  }
+}

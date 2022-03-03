@@ -1,11 +1,8 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx, css } from "@emotion/react/macro";
-import styled from "@emotion/styled/macro";
-import { ReactNode } from "react";
+import { ReactNode, MouseEvent, useState } from "react";
 import { useStore } from "../../store/store";
-import { colors } from "../../styleHelpers";
-import StepNavigation, { FOOTER_NAV_HEIGHT } from "../StepNavigation";
+import StepNavigation from "../StepNavigation";
+
+import "../../styles/components/sidebar-layout.scss";
 
 export interface SidebarLayoutProps {
   heading: string;
@@ -13,98 +10,73 @@ export interface SidebarLayoutProps {
   contentRight: ReactNode;
 }
 
+const STORAGE_KEY = "sideBarWidth";
+
 const Sidebarlayout = ({
   heading,
   contentLeft,
   contentRight,
 }: SidebarLayoutProps) => {
-  const projectDetails = useStore((state) => state.getActiveProject().projectDetails);
+  const projectDetails = useStore(
+    (state) => state.getActiveProject().projectDetails,
+  );
   const projectName = projectDetails.name;
 
+  const fromStore = localStorage.getItem(STORAGE_KEY);
+
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [width, setWidth] = useState<number>(
+    fromStore ? parseInt(fromStore) : 400,
+  );
+
+  function recordDrag(ev: MouseEvent): void {
+    if (isDragging) {
+      setWidth(ev.pageX);
+      localStorage.setItem(STORAGE_KEY, `${ev.pageX}`);
+    }
+  }
+
   return (
-    <section
-      css={css`
-        height: calc(100% - ${FOOTER_NAV_HEIGHT});
-      `}
+    <main
+      className={isDragging ? "sidebar-layout dragging" : "sidebar-layout"}
+      onMouseUp={() => setIsDragging(false)}
+      onMouseMove={recordDrag}
     >
-      <ColumnsWrapper>
-        <LeftColumn
-          css={css`
-            overflow-y: auto;
-          `}
-        >
-          <ColumnHeader
-            css={css`
-              background: ${colors.darkBlue};
-              color: ${colors.white};
-              padding: 0 2rem;
-            `}
-          >
-            All Projects{" >"} <strong>{projectName}</strong>
-          </ColumnHeader>
+      <div className="col-container">
+        <section className="left-col" style={{ width }}>
+          <header>
+            All Projects &gt;
+            <strong>{projectName}</strong>
+          </header>
+
+          {contentLeft}
+
           <div
-            css={css`
-              padding: 0 2rem;
-            `}
-          >
-            {contentLeft}
-          </div>
-        </LeftColumn>
-        <RightColumn
-          css={css`
-            overflow-y: auto;
-          `}
+            className="dragger"
+            onMouseDown={() => setIsDragging(true)}
+          ></div>
+        </section>
+
+        <section
+          className="right-col"
+          style={{ width: `calc(100vw - ${width}px)` }}
         >
-          <ColumnHeader
-            css={css`
-              border-bottom: 1px solid ${colors.mediumGrey};
-            `}
-          >
-            <h1
-              css={css`
-                color: ${colors.darkGrey};
-                margin: 0;
-              `}
-            >
-              {heading}
-            </h1>
-          </ColumnHeader>
-          <div
-            css={css`
-              position: relative;
-            `}
-          >
-            {contentRight}
-          </div>
-        </RightColumn>
-      </ColumnsWrapper>
+          <header>
+            <h1>{heading}</h1>
+
+            <div className="save-widget">
+              <span>last saved 4 hours ago</span>
+              <button className="small inline">Save</button>
+            </div>
+          </header>
+
+          {contentRight}
+        </section>
+      </div>
+
       <StepNavigation />
-    </section>
+    </main>
   );
 };
-
-const ColumnsWrapper = styled.div`
-  display: flex;
-  height: 100%;
-`;
-
-const LeftColumn = styled.div`
-  width: 28rem;
-  height: 100%;
-  background: ${colors.lightGrey};
-  flex-shrink: 0;
-`;
-
-const RightColumn = styled.div`
-  flex-grow: 1;
-  height: 100%;
-  padding: 0 3rem;
-`;
-
-const ColumnHeader = styled.div`
-  height: 5rem;
-  line-height: 5rem;
-  margin: 0;
-`;
 
 export default Sidebarlayout;

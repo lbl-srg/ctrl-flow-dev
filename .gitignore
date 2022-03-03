@@ -4,6 +4,7 @@ build
 # env files
 .env*
 !.env.example
+.DS_Store
 
 
 # Dependencies
