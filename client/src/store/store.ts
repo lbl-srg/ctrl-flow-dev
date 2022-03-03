@@ -2,7 +2,7 @@ import create, {SetState, GetState} from "zustand";
 import { persist } from "zustand/middleware";
 import { produce } from "immer";
 
-import mockData from "./mock-data.json";
+import getMockData from "./mock-data";
 
 // TODO... get a better uid system
 let _idIncrement = 0;
@@ -146,7 +146,7 @@ const _getTemplates: GetAction<SystemTemplate[]> = (get) => {
       id: t.id,
       systemType: get().systemTypes.find(sType => sType.id === t.systemType) as SystemType,
       name: t.name,
-      options: t.options?.map(oID => options.find(o => oID === o.id)) as Option[]
+      options: (t.options) ? t.options?.map(oID => options.find(o => oID === o.id) as Option) : []
     }))
 }
 
@@ -176,7 +176,7 @@ const _getAllOptions: (get: GetState<State>) => Option[] = (get) => {
 const _getOptions: (template: SystemTemplate, get: GetState<State>) => [Option[], Option[]]= (template, get) => {
   const optionIDs: number[] = [];
   const templateOptionsN: OptionN[] = [];
-  const initOptions = template.options as Option[];
+  const initOptions = template.options || [];
 
   if (template.options) {
     const options = get().options;
@@ -364,9 +364,9 @@ export const useStore = create<State>(
   persist(
     (set, get) => ({
       saveProjectDetails: projectDetails => saveProjectDetails(projectDetails, get, set),
-      systemTypes: mockData['systemTypes'],
-      templates: mockData['templates'],
-      options: mockData['options'],
+      systemTypes: getMockData()['systemTypes'],
+      templates: getMockData()['templates'],
+      options: getMockData()['options'],
       configurations: [],
       metaConfigurations: [],
       userProjects: [initialUserProject],
