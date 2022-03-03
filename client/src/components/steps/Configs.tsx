@@ -11,6 +11,7 @@ import { colors } from "../../styleHelpers";
 import { useStore, Configuration, System, SystemType } from "../../store/store";
 
 import LeftNav from "../LeftNavigation";
+import { TextButton } from "../Button";
 
 // step 3
 const Configs = () => {
@@ -122,7 +123,9 @@ const SystemConfigs = ({
           removeConfig={removeConfig}
         />
       ))}
-      <a onClick={() => addConfig(system)}>+ Add Configuration</a>
+      <TextButton css={css`padding-left:0rem; padding-bottom: 1.5rem; font-size: 1rem;`}onClick={() => addConfig(system)}>
+        + Add Configuration
+      </TextButton>
     </SystemConfigsContainer>
   );
 };
@@ -131,19 +134,6 @@ const SystemConfigsContainer = styled.div`
   background-color: ${colors.extraLightBlue};
   padding: 0rem 0.75rem;
 `;
-
-interface SystemConfigNameProps {
-  system: System;
-}
-
-const SystemConfigName = ({ system }: SystemConfigNameProps) => {
-  return (
-    <SystemConfigNameContainer>
-      <SystemName>{system.name}</SystemName>
-      <UploadDownload path={`${system.name}`}></UploadDownload>
-    </SystemConfigNameContainer>
-  );
-};
 
 interface UploadDownloadProps {
   path: string; // file path
@@ -158,10 +148,10 @@ const UploadDownload = ({ path }: UploadDownloadProps) => {
   return (
     <Fragment>
       <FileAction>
-        <a css={buttonCss}>Download</a>
+        <TextButton css={buttonCss}>Download</TextButton>
       </FileAction>
       <FileAction>
-        <a css={buttonCss}>Upload</a>
+        <TextButton css={buttonCss}>Upload</TextButton>
       </FileAction>
     </Fragment>
   );
@@ -202,7 +192,7 @@ const Config = ({ config, system, removeConfig }: ConfigProps) => {
       </ConfigNameEditContainer>
       <TextButton
         css={inHover ? css`visibility: visible;` : css`visibility: hidden;`}
-      <a onClick={() => removeConfig(config)}>X</a>
+        onClick={() => removeConfig(config)}>
         X
       </TextButton>
     </ConfigContainer>
