@@ -17,7 +17,11 @@ const Sidebarlayout = ({
   contentLeft,
   contentRight,
 }: SidebarLayoutProps) => {
-  const projectName = useStore((state) => state.projectDetails.name);
+  const projectDetails = useStore(
+    (state) => state.getActiveProject().projectDetails,
+  );
+  const projectName = projectDetails.name;
+
   const fromStore = localStorage.getItem(STORAGE_KEY);
 
   const [isDragging, setIsDragging] = useState<boolean>(false);
