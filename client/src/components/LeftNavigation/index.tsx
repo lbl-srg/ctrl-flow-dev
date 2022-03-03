@@ -13,17 +13,16 @@ const LeftNav = () => {
 
   return (
     <div className="left-nav">
-      <h3>Systems</h3>
-      <ul className="systems">
-        {systemTypes.map((systemType) => (
-          <System
-            key={systemType.id}
-            systemType={systemType}
-            templates={systems.filter((s) => s.systemType.id === systemType.id)}
-            configs={configs}
-          />
-        ))}
-      </ul>
+      <h4>Systems</h4>
+
+      {systemTypes.map((systemType) => (
+        <System
+          key={systemType.id}
+          systemType={systemType}
+          templates={systems.filter((s) => s.systemType.id === systemType.id)}
+          configs={configs}
+        />
+      ))}
     </div>
   );
 };

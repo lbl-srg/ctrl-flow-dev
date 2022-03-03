@@ -11,9 +11,12 @@ function Template({ template, configs }: Template) {
       <a key={template.id} href={`#${template.name}-${template.name}`}>
         {template.name}
       </a>
-      <ul>
+
+      <ul className="configs">
         {configs.map((c) => (
-          <li key={c.id}>{c.name}</li>
+          <li key={c.id}>
+            <a>{c.name}</a>
+          </li>
         ))}
       </ul>
     </li>

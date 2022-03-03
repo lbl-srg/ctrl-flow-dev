@@ -8,19 +8,27 @@ export interface SystemProps {
 }
 
 function System({ systemType, templates, configs }: SystemProps) {
+  const classes = ["system"];
+  if (!templates.length) classes.push("empty");
+
   return (
-    <li className="system">
-      <a href={`/configs#${systemType.id}`}>{systemType.name}</a>
-      <ul>
-        {templates.map((t) => (
-          <Template
-            key={t.id}
-            template={t}
-            configs={configs.filter((c) => c.template.id === t.id)}
-          />
-        ))}
-      </ul>
-    </li>
+    <details className={classes.join(" ")}>
+      <summary>
+        <a href={`/configs#${systemType.id}`}>{systemType.name}</a>
+      </summary>
+
+      {configs.length && (
+        <ul className="templates">
+          {templates.map((t) => (
+            <Template
+              key={t.id}
+              template={t}
+              configs={configs.filter((c) => c.template.id === t.id)}
+            />
+          ))}
+        </ul>
+      )}
+    </details>
   );
 }
 
