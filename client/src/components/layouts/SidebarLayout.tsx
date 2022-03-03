@@ -18,7 +18,8 @@ const Sidebarlayout = ({
   contentLeft,
   contentRight,
 }: SidebarLayoutProps) => {
-  const projectName = useStore((state) => state.projectDetails.name);
+  const projectDetails = useStore((state) => state.getActiveProject().projectDetails);
+  const projectName = projectDetails.name;
 
   return (
     <section

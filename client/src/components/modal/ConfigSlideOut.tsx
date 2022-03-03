@@ -19,29 +19,28 @@ import {
 import {
   useStore,
   Configuration,
-  System,
+  SystemTemplate,
+  Selection,
   Option,
 } from "../../store/store";
 
 interface SlideOutProps {
-  template: System;
+  template: SystemTemplate;
   config: Configuration;
 }
 
 const SlideOut = ({ template, config }: SlideOutProps) => {
   const [isOpen, setOpen] = useState(false);
-  const { options, updateConfig } = useStore((state) => ({
-    options: state.templates.options,
-    updateConfig: state.updateConfig
-  }));
+  const updateConfig = useStore(state => state.updateConfig);
+  const getTemplateOptions = useStore(state => state.getTemplateOptions);
+  const [initTemplateOptions, fullTemplateOptions] = getTemplateOptions(template);
 
-  const systemOptions = template.options
-    ? (template.options.map((optionId) =>
-        options.find((o) => o.id === optionId),
-      ) as Option[])
-    : [];
+  const initSelections = config.selections.reduce(
+    (previousValue: {[key: string]: number}, currentValue: Selection) => {
+      previousValue[currentValue.parent.name] = currentValue.option.id
+      return previousValue;
+    }, {});
 
-  const initSelections = getInitialFormValues(template, config, options);
   const [initialValues, setInitialValues] = useState({
     configName: config.name || '',
     ...initSelections
@@ -60,9 +59,9 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
             initialValues={initialValues}
             enableReinitialize={true}
             onSubmit={(configSelections: ConfigFormValues) => {
-              const selections = getSelections(configSelections, initialValues, options)
+              const selections = getSelections(configSelections, initSelections, fullTemplateOptions)
               const configName = configSelections.configName;
-              updateConfig(config, configName, selections)
+              updateConfig(config, configName, selections);
               setOpen(false);
             }}
           >
@@ -73,9 +72,9 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
                     const target = e.target as any;
                     const newValue: {[key: string]: any} = {};
                     // TODO: this will not work once we start incorporating more types of input
-                    // This would also fail if a config is given a number as a name
-                    // 'setInitialValues' should be passed the OptionDisplay component constructor
-                    // so we can make intelligent decisions about how to cast input.
+                    // For example, this would also fail if a config is given a number as a name
+                    // we'll need to be able to make intelligent decisions about how to cast input.
+                    // use option name
                     const value = isNaN(target.value) ? target.value : Number(target.value);
                     newValue[target.name] = value;
                     setInitialValues({...initialValues, ...newValue});
@@ -90,10 +89,10 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
                     >
                     Save
                   </Button>
-                  {systemOptions.map((option) => (
+                  {initTemplateOptions.map((option) => (
                     <OptionDisplay
                       option={option}
-                      options={options}
+                      options={fullTemplateOptions}
                       formik={formik}
                       key={option.id}
                     />
@@ -114,13 +113,15 @@ const constructOption = ({
 }: {option: Option, options: Option[]}) => {
   switch (option.type) {
     case 'dropdown': {
-      const selectionList =
-        (option.options?.map((oID) => options.find((o) => o.id === oID)) || []) as Option[];
+      // TODO: figure out why 'option.options' is an array of 
+      // numbers and not an array of options
+      const optionList =
+        (option.options?.map((childO) => options.find((o) => o.id === childO.id)) || []) as Option[];
       return (
         <SelectInput
           id={option.name}
           name={option.name}
-          selections={selectionList}
+          options={optionList}
         />     
       )
     }
