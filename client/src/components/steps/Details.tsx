@@ -1,10 +1,5 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx, css } from "@emotion/react/macro";
-import styled from "@emotion/styled";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { useStore } from "../../store/store";
-import { colors } from "../../styleHelpers";
 import Sidebarlayout from "../layouts/SidebarLayout";
 import EditDetailsModal from "../modal/EditDetailsModal";
 
@@ -17,25 +12,34 @@ const Details = () => (
 );
 
 const ContentRight = () => {
-  const projectDetails = useStore((state) => state.getActiveProject().projectDetails);
+  const projectDetails = useStore(
+    (state) => state.getActiveProject().projectDetails,
+  );
+
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Fragment>
-      <h2>{projectDetails.name}</h2>
+      <h2 className="flex-space-between">
+        {projectDetails.name}
+
+        <button
+          className="outline small inline"
+          onClick={() => setIsOpen(true)}
+        >
+          Edit Details
+        </button>
+      </h2>
+
       <EditDetailsModal
+        isOpen={isOpen}
+        close={() => setIsOpen(false)}
         initialState={projectDetails}
         modalTitle="Edit Project Details"
         submitText="Save Project Details"
-        variant="outline"
-        css={css`
-          position: absolute;
-          right: 0;
-          top: 0;
-        `}
-      >
-        Edit Project Details
-      </EditDetailsModal>
-      <DetailsList>
+      />
+
+      <ul className="styled-ul">
         <li>
           <strong>Address: </strong>
           {projectDetails.address}
@@ -63,33 +67,11 @@ const ContentRight = () => {
 
         <li>
           <strong>Notes:</strong>
-          <p
-            css={css`
-              margin: 0 0 0 2rem;
-            `}
-          >
-            {projectDetails.notes}
-          </p>
+          <p>{projectDetails.notes}</p>
         </li>
-      </DetailsList>
+      </ul>
     </Fragment>
   );
 };
-
-const DetailsList = styled.ul`
-  list-style: none;
-
-  font-size: 1.2rem;
-
-  li {
-    margin-bottom: 1rem;
-
-    &:before {
-      content: "■";
-      color: ${colors.lightBlue};
-      margin-right: 1rem;
-    }
-  }
-`;
 
 export default Details;
