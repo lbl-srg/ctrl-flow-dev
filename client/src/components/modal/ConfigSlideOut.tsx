@@ -52,8 +52,12 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
       <Button variant="filledSmall" onClick={() => setOpen(true)}>
         Edit
       </Button>
-      <Modal close={() => setOpen(false)} isOpen={isOpen}>
-        <h2>{template.name}</h2>
+      <Modal
+        close={() => setOpen(false)}
+        isOpen={isOpen}
+        className="config-slide-out"
+      >
+        <h3>{template.name}</h3>
         <Formik
           initialValues={initialValues}
           enableReinitialize={true}
@@ -89,7 +93,6 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
                 name="configName"
                 placeholder="Name Your New Configuration"
               />
-              <Button type="submit">Save</Button>
               {initTemplateOptions.map((option) => (
                 <OptionDisplay
                   option={option}
@@ -98,6 +101,8 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
                   key={option.id}
                 />
               ))}
+
+              <Button type="submit">Save</Button>
             </Form>
           )}
         </Formik>
