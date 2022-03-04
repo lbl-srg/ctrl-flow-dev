@@ -26,17 +26,15 @@ function System({ systemType, templates, configs }: SystemProps) {
         </a>
       </summary>
 
-      {configs.length && (
-        <ul className="templates">
-          {templates.map((t) => (
-            <Template
-              key={t.id}
-              template={t}
-              configs={configs.filter((c) => c.template.id === t.id)}
-            />
-          ))}
-        </ul>
-      )}
+      <ul className="templates">
+        {templates.map((t) => (
+          <Template
+            key={t.id}
+            template={t}
+            configs={configs.filter((c) => c.template.id === t.id)}
+          />
+        ))}
+      </ul>
     </details>
   );
 }
