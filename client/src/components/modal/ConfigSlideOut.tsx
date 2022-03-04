@@ -1,5 +1,4 @@
 import { Fragment, useState } from "react";
-import styled from "@emotion/styled";
 import { Field, Form, Formik, FormikProps } from "formik";
 
 import Button from "../Button";
@@ -8,11 +7,7 @@ import Modal from "./Modal";
 import { SelectInput } from "../shared/SelectInput";
 import "../../styles/components/config-slide-out.scss";
 
-import {
-  getInitialFormValues,
-  getSelections,
-  ConfigFormValues,
-} from "../../utils/FormHelpers";
+import { getSelections, ConfigFormValues } from "../../utils/FormHelpers";
 
 import {
   useStore,
