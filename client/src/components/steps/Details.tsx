@@ -2,11 +2,12 @@ import { Fragment, useState } from "react";
 import { useStore } from "../../store/store";
 import Sidebarlayout from "../layouts/SidebarLayout";
 import EditDetailsModal from "../modal/EditDetailsModal";
+import LeftNav from "../LeftNavigation";
 
 const Details = () => (
   <Sidebarlayout
     heading="Project Details"
-    contentLeft={<p>imagine a sidebar here</p>}
+    contentLeft={<LeftNav />}
     contentRight={<ContentRight />}
   />
 );

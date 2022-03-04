@@ -10,29 +10,30 @@ export interface SidebarLayoutProps {
   contentRight: ReactNode;
 }
 
-const STORAGE_KEY = "sideBarWidth";
+const MIN_WIDTH = 300;
 
 const Sidebarlayout = ({
   heading,
   contentLeft,
   contentRight,
 }: SidebarLayoutProps) => {
-  const projectDetails = useStore(
-    (state) => state.getActiveProject().projectDetails,
+  const { projectDetails, leftColWidth, setLeftColWidth } = useStore(
+    (state) => {
+      return {
+        leftColWidth: state.leftColWidth,
+        setLeftColWidth: state.setLeftColWidth,
+        projectDetails: state.getActiveProject().projectDetails,
+      };
+    },
   );
+
   const projectName = projectDetails.name;
-
-  const fromStore = localStorage.getItem(STORAGE_KEY);
-
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [width, setWidth] = useState<number>(
-    fromStore ? parseInt(fromStore) : 400,
-  );
 
   function recordDrag(ev: MouseEvent): void {
     if (isDragging) {
-      setWidth(ev.pageX);
-      localStorage.setItem(STORAGE_KEY, `${ev.pageX}`);
+      const desiredWidth = ev.pageX < MIN_WIDTH ? MIN_WIDTH : ev.pageX;
+      setLeftColWidth(desiredWidth);
     }
   }
 
@@ -43,7 +44,7 @@ const Sidebarlayout = ({
       onMouseMove={recordDrag}
     >
       <div className="col-container">
-        <section className="left-col" style={{ width }}>
+        <section className="left-col" style={{ width: leftColWidth }}>
           <header>
             All Projects &gt;
             <strong>{projectName}</strong>
@@ -59,7 +60,7 @@ const Sidebarlayout = ({
 
         <section
           className="right-col"
-          style={{ width: `calc(100vw - ${width}px)` }}
+          style={{ width: `calc(100vw - ${leftColWidth}px)` }}
         >
           <header>
             <h1>{heading}</h1>
