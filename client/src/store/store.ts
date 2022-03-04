@@ -208,13 +208,14 @@ const _getConfigs: GetAction<Configuration[]> = (get) => {
 
 const _getConfigsHelper: (configs: ConfigurationN[], get: GetState<State>) => Configuration[] = (configs, get) => {
   const templates = get().getTemplates();
+  const options = get().getOptions();
   return configs.map(config => ({
     id: config.id,
     template: templates.find(t => t.id === config.template) as SystemTemplate,
     name: config.name,
     selections: config.selections.map(s => ({
-      parent: get().options.find(o => o.id === s.parent) as Option,
-      option: get().options.find(o => o.id === s.option) as Option,
+      parent: options.find(o => o.id === s.parent) as Option,
+      option: options.find(o => o.id === s.option) as Option,
       value: s.value
     }))
   }));
@@ -295,6 +296,7 @@ const _updateConfig = (config: Configuration, configName: string, selections: Se
 
       conf.name = configName;
       const updatedSelections = getFilteredSelectionList(state, config.selections, selections);
+      
       // convert to normalized format
       conf.selections = updatedSelections.map(s => ({
         parent: s.parent.id,
