@@ -1,4 +1,4 @@
-{
+const mockData = {
   "systemTypes": [
     { "id": 1, "name": "Ventilation, Air Handlers and Other Fans" },
     { "id": 2, "name": "Zone Equipment" },
@@ -17,7 +17,7 @@
     {
       "id": 2,
       "name": "Dual Fan Dual Duct VAV Air Handler",
-      "systemType": 1
+      "systemType": 1,
     },
     {
       "id": 3,
@@ -27,7 +27,14 @@
     {
       "id": 4,
       "name": "Single Zone VAV Air Handler",
-      "systemType": 1
+      "systemType": 1,
+      "options": []
+    },
+    {
+      "id": 30,
+      "name": "Single Zone Constant Volume Air Handler",
+      "systemType": 1,
+      "options": []
     },
     {
       "id": 5,
@@ -60,6 +67,12 @@
     {
       "id": 10,
       "name": "VAV Parallel Fan Powered",
+      "systemType": 2,
+      "options": [13, 87, 66]
+    },
+    {
+      "id": 31,
+      "name": "VAV Series Fan Powered",
       "systemType": 2,
       "options": [13, 87, 90]
     },
@@ -133,7 +146,7 @@
       "id": 22,
       "name": "Water-cooled",
       "systemType": 3,
-      "options": []
+      "options": [92, 95, 99, 102, 105, 109, 114, 117]
     },
     {
       "id": 23,
@@ -429,11 +442,36 @@
     { "id": 88, "type": "final", "name": "On/Off" },
     { "id": 89, "type": "final", "name": "Modulating (ECM)" },
     { "id": 90, "type": "dropdown", "name": "Controller", "options": [91] },
-    {
-      "id": 91,
-      "type": "dropdown",
-      "name": "Guideline 36",
-      "options": [78, 79]
-    }
+    { "id": 91, "type": "dropdown", "name": "Guideline 36", "options": [78, 79]},
+    { "id": 92, "type": "dropdown", "name": "Chilled water primary pump group", "options": [93, 94]},
+    { "id": 93, "type": "final", "name": "Headered"},
+    { "id": 94, "type": "final", "name": "Dedicated"},
+    { "id": 95, "type": "dropdown", "name": "Chilled water secondary pump group", "options": [96, 97, 98]},
+    { "id": 96, "type": "final", "name": "None"},
+    { "id": 97, "type": "final", "name": "Centralized secondary pumping"},
+    { "id": 98, "type": "final", "name": "Distributed secondary pumping"},
+    { "id": 99, "type": "dropdown", "name": "Chilled water return section", "options": [100, 101]},
+    { "id": 100, "type": "final", "name": "None (Passthrough)"},
+    { "id": 101, "type": "final", "name": "Waterside Economizer"},
+    { "id": 102, "type": "dropdown", "name": "Condenser water pump group", "options": [103, 104]},
+    { "id": 103, "type": "final", "name": "Headered"},
+    { "id": 104, "type": "final", "name": "Dedicated"},
+    { "id": 105, "type": "dropdown", "name": "Cooling Towers", "options": [106, 107, 108]},
+    { "id": 106, "type": "final", "name": "Single speed"},
+    { "id": 107, "type": "final", "name": "Two speed"},
+    { "id": 108, "type": "final", "name": "Variable speed"},
+    { "id": 109, "type": "dropdown", "name": "Chiller", "options": [110, 111, 112, 113]},
+    { "id": 110, "type": "final", "name": "Constant Speed Centrifugal"},
+    { "id": 111, "type": "final", "name": "Variable Speed Centrifugal"},
+    { "id": 112, "type": "final", "name": "Positive Displacement"},
+    { "id": 113, "type": "final", "name": "Absorption"},
+    { "id": 114, "type": "dropdown", "name": "Chilled water-side isolation valve", "options": [115, 116]},
+    { "id": 115, "type": "final", "name": "Modulating"},
+    { "id": 116, "type": "final", "name": "Two-position"},
+    { "id": 117, "type": "dropdown", "name": "Condenser water-side isolation valve", "options": [118, 119]},
+    { "id": 118, "type": "final", "name": "Modulating"},
+    { "id": 119, "type": "final", "name": "Two-position"},
   ]
 }
+
+export default () => mockData;
