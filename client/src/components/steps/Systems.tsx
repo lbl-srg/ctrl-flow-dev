@@ -1,20 +1,11 @@
 import { Fragment } from "react";
 import styled from "@emotion/styled";
-
+import PageHeader from "../PageHeader";
 import { useStore, SystemTemplate, SystemType } from "../../store/store";
 
-import Sidebarlayout from "../layouts/SidebarLayout";
-import LeftNav from "../LeftNavigation";
 // step 2
-const Systems = () => (
-  <Sidebarlayout
-    heading="Add Systems"
-    contentLeft={<LeftNav />}
-    contentRight={<ContentRight />}
-  />
-);
 
-const ContentRight = () => {
+const Systems = () => {
   const { getTemplates, systemTypes } = useStore((state) => ({
     getTemplates: state.getTemplates,
     systemTypes: state.systemTypes,
@@ -24,11 +15,9 @@ const ContentRight = () => {
 
   return (
     <Fragment>
+      <PageHeader headerText="Systems" />
       <div>Select the systems types you will configure:</div>
-      <TemplateGroupList
-        systemTypes={systemTypes}
-        templates={templates}
-      />
+      <TemplateGroupList systemTypes={systemTypes} templates={templates} />
     </Fragment>
   );
 };
@@ -44,14 +33,18 @@ const TemplateGroupList = ({
 }: TemplateGroupListProps) => {
   const getActiveTemplates = useStore((state) => state.getActiveTemplates);
   const addConfig = useStore((state) => state.addConfig);
-  const removeAllTemplateConfigs = useStore((state) => state.removeAllTemplateConfigs);
+  const removeAllTemplateConfigs = useStore(
+    (state) => state.removeAllTemplateConfigs,
+  );
 
   const activeTemplates = getActiveTemplates();
 
   const handler = (selection: string, value: boolean) => {
     const system = templates.find((s) => s.name === selection);
     if (system) {
-      value ? addConfig(system, {name: 'Default'}) : removeAllTemplateConfigs(system);
+      value
+        ? addConfig(system, { name: "Default" })
+        : removeAllTemplateConfigs(system);
     }
   };
 

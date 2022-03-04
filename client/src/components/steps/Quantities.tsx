@@ -1,12 +1,13 @@
-import Sidebarlayout from "../layouts/SidebarLayout";
+import { Fragment } from "react";
+import PageHeader from "../PageHeader";
 
-// step 4
-const Quantities = () => (
-  <Sidebarlayout
-    heading="Quantities"
-    contentLeft={<p>hello</p>}
-    contentRight={<p>world</p>}
-  />
-);
+function Quantities() {
+  return (
+    <Fragment>
+      <PageHeader headerText="Quantities" />
+      <p>world</p>;
+    </Fragment>
+  );
+}
 
 export default Quantities;
