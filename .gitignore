@@ -10,6 +10,3 @@ build
 # Dependencies
 dependencies/*
 !dependencies/.gitkeep
-
-# IDE
-.vscode
