@@ -1,12 +1,13 @@
-import Sidebarlayout from "../layouts/SidebarLayout";
+import { Fragment } from "react";
+import PageHeader from "../PageHeader";
 
-// step 5
-const Schedules = () => (
-  <Sidebarlayout
-    heading="Equipment Schedules"
-    contentLeft={<p>hello</p>}
-    contentRight={<p>world</p>}
-  />
-);
+function Schedules() {
+  return (
+    <Fragment>
+      <PageHeader headerText="Schedules" />
+      <p>world</p>;
+    </Fragment>
+  );
+}
 
 export default Schedules;

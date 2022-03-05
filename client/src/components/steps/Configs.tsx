@@ -3,14 +3,18 @@
 import { css, jsx } from "@emotion/react/macro";
 import styled from "@emotion/styled";
 import { Fragment, useState } from "react";
-import Sidebarlayout from "../layouts/SidebarLayout";
+import PageHeader from "../PageHeader";
 import SlideOut from "../modal/ConfigSlideOut";
 
 import { colors } from "../../styleHelpers";
 
-import { useStore, Configuration, SystemTemplate, SystemType } from "../../store/store";
+import {
+  useStore,
+  Configuration,
+  SystemTemplate,
+  SystemType,
+} from "../../store/store";
 
-import LeftNav from "../LeftNavigation";
 import { TextButton } from "../Button";
 
 // step 3
@@ -34,37 +38,30 @@ const Configs = () => {
 
   // based on user configs, figure out which templates they are using
 
-
-
   return (
-    <Sidebarlayout
-      heading="Configurations"
-      contentLeft={<LeftNav />}
-      contentRight={
-        <Fragment>
-          <div>Add Configurations For The System Types You Selected</div>
-          {systemTypes.map((systemT) => {
-            const systemTypeTemplates = templates.filter(
-              (t) => t.systemType.id === systemT.id,
-            );
-            const confs = configs.filter((c) =>
-              systemTypeTemplates.map((s) => s.id).includes(c.template.id),
-            );
+    <Fragment>
+      <PageHeader headerText="Configurations" />
+      <div>Add Configurations For The System Types You Selected</div>
+      {systemTypes.map((systemT) => {
+        const systemTypeTemplates = templates.filter(
+          (t) => t.systemType.id === systemT.id,
+        );
+        const confs = configs.filter((c) =>
+          systemTypeTemplates.map((s) => s.id).includes(c.template.id),
+        );
 
-            return (
-              <SystemConfigGroup
-                key={systemT.id}
-                systemType={systemT}
-                templates={systemTypeTemplates}
-                configs={confs}
-                addConfig={addConfig}
-                removeConfig={removeConfig}
-              />
-            );
-          })}
-        </Fragment>
-      }
-    />
+        return (
+          <SystemConfigGroup
+            key={systemT.id}
+            systemType={systemT}
+            templates={systemTypeTemplates}
+            configs={confs}
+            addConfig={addConfig}
+            removeConfig={removeConfig}
+          />
+        );
+      })}
+    </Fragment>
   );
 };
 
@@ -116,9 +113,16 @@ const SystemConfigs = ({
     <SystemConfigsContainer>
       <SystemTitleContainer>
         <SystemName>{template.name}</SystemName>
-        <UploadDownload path=''></UploadDownload>
+        <UploadDownload path=""></UploadDownload>
       </SystemTitleContainer>
-      <div css={css`text-transform: uppercase; font-size: 0.8rem; font-weight: 600; padding: 0.3rem 0rem;`}>
+      <div
+        css={css`
+          text-transform: uppercase;
+          font-size: 0.8rem;
+          font-weight: 600;
+          padding: 0.3rem 0rem;
+        `}
+      >
         Configuration(s):
       </div>
       {configs.map((c) => (
@@ -129,7 +133,14 @@ const SystemConfigs = ({
           removeConfig={removeConfig}
         />
       ))}
-      <TextButton css={css`padding-left:0rem; padding-bottom: 1.5rem; font-size: 1rem;`}onClick={() => addConfig(template)}>
+      <TextButton
+        css={css`
+          padding-left: 0rem;
+          padding-bottom: 1.5rem;
+          font-size: 1rem;
+        `}
+        onClick={() => addConfig(template)}
+      >
         + Add Configuration
       </TextButton>
     </SystemConfigsContainer>
@@ -197,8 +208,17 @@ const Config = ({ config, template, removeConfig }: ConfigProps) => {
         <SlideOut config={config} template={template} />
       </ConfigNameEditContainer>
       <TextButton
-        css={inHover ? css`visibility: visible;` : css`visibility: hidden;`}
-        onClick={() => removeConfig(config)}>
+        css={
+          inHover
+            ? css`
+                visibility: visible;
+              `
+            : css`
+                visibility: hidden;
+              `
+        }
+        onClick={() => removeConfig(config)}
+      >
         X
       </TextButton>
     </ConfigContainer>
@@ -216,7 +236,7 @@ const ConfigNameEditContainer = styled.div`
   width: 100%;
   padding: 0.5rem 0.9rem;
   align-items: center;
-`
+`;
 
 const ConfigContainer = styled.div`
   display: flex;
