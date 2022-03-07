@@ -254,7 +254,10 @@ const _getConfigsHelper: (
   }));
 };
 
-const _getMetaConfigs: GetAction<MetaConfiguration[]> = (get) => {
+const _getMetaConfigs: (
+  template: SystemTemplate | undefined,
+  get: GetState<State>,
+) => MetaConfiguration[] = (template, get) => {
   const configs = get().getConfigs();
   const metaConfigs = get().metaConfigurations;
   const userProject = get().userProjects.find(
@@ -264,7 +267,15 @@ const _getMetaConfigs: GetAction<MetaConfiguration[]> = (get) => {
     (mConfig) => userProject.metaConfigs.indexOf(mConfig.id) >= 0,
   );
 
-  return get().metaConfigurations.map((mConf) => ({
+  const filteredMetaConfigs = template
+    ? projectMetaConfigs.filter((mConf) => {
+        const config = configs.find((c) => c.id === mConf.config);
+        console.log(config?.template.id);
+        return config?.template.id === template.id;
+      })
+    : metaConfigs;
+
+  return filteredMetaConfigs.map((mConf) => ({
     id: mConf.id,
     tagPrefix: mConf.tagPrefix,
     tagStartIndex: mConf.tagStartIndex,
@@ -478,7 +489,7 @@ export interface State extends uiSliceInterface {
     configName: string,
     selections: Selection[],
   ) => void;
-  getMetaConfigs: () => MetaConfiguration[];
+  getMetaConfigs: (template?: SystemTemplate) => MetaConfiguration[];
   addMetaConfig: (
     prefix: string,
     start: number,
@@ -519,7 +530,7 @@ export const useStore = create<State>(
         quantity: number,
         config: Configuration,
       ) => _addMetaConfig(prefix, start, quantity, config, set),
-      getMetaConfigs: () => _getMetaConfigs(get),
+      getMetaConfigs: (template = undefined) => _getMetaConfigs(template, get),
       updateConfig: (
         config: Configuration,
         configName: string,

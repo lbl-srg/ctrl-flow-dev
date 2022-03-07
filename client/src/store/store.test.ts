@@ -81,7 +81,7 @@ test("Template/Option Denormalization", () => {
 test("Test Setting Config Name", () => {
   const testName = "ConfigTestName";
   const options = useStore.getState().getOptions();
-  expect(options.length).toBe(7);
+
   const [template1, templates] = useStore.getState().getTemplates();
 
   useStore.getState().addConfig(template1);
@@ -109,7 +109,7 @@ test("Test Setting Config Name", () => {
 test("Test Updating Config Selections", () => {
   const testName = "ConfigTestName";
   const options = useStore.getState().getOptions();
-  expect(options.length).toBe(7);
+
   const [template1, templates] = useStore.getState().getTemplates();
 
   useStore.getState().addConfig(template1);
@@ -139,7 +139,7 @@ test("Test Updating Config Selections", () => {
 test("Test Config Selection Pruning", () => {
   const testName = "ConfigTestName";
   const options = useStore.getState().getOptions();
-  expect(options.length).toBe(7);
+
   const [template1, templates] = useStore.getState().getTemplates();
 
   useStore.getState().addConfig(template1);
@@ -183,9 +183,8 @@ test("Adding a metaconfig", () => {
   const prefix = "Test";
   const quantity = 10;
   const start = 5;
-  const options = useStore.getState().getOptions();
-  expect(options.length).toBe(7);
-  const [template1, templates] = useStore.getState().getTemplates();
+
+  const [template1, _templates] = useStore.getState().getTemplates();
 
   useStore.getState().addConfig(template1);
   const [config, _rest] = useStore.getState().getConfigs();
@@ -198,4 +197,27 @@ test("Adding a metaconfig", () => {
   expect(metaConfig.quantity).toEqual(quantity);
   expect(metaConfig.tagPrefix).toEqual(prefix);
   expect(metaConfig.tagStartIndex).toEqual(start);
+});
+
+test("Getting metaconfigs by system template type", () => {
+  const [template1, template2, _templates] = useStore.getState().getTemplates();
+
+  useStore.getState().addConfig(template1);
+  useStore.getState().addConfig(template1);
+  useStore.getState().addConfig(template2);
+
+  const [config1, config2, config3, _rest] = useStore.getState().getConfigs();
+
+  useStore.getState().addMetaConfig("", 0, 10, config1);
+  useStore.getState().addMetaConfig("", 0, 10, config2);
+  useStore.getState().addMetaConfig("", 0, 10, config3);
+
+  const allMetaConfigs = useStore.getState().getMetaConfigs();
+  expect(allMetaConfigs.length).toBe(3);
+
+  const metaConfigsForTemplate1 = useStore.getState().getMetaConfigs(template1);
+  expect(metaConfigsForTemplate1.length).toBe(2);
+
+  const metaConfigsForTemplate2 = useStore.getState().getMetaConfigs(template2);
+  expect(metaConfigsForTemplate2.length).toBe(1);
 });
