@@ -156,13 +156,17 @@ const _getTemplates: GetAction<SystemTemplate[]> = (get) => {
   const templatesN = get().templates;
   const options = _getAllOptions(get);
 
-  return templatesN.map(t => ({
-      id: t.id,
-      systemType: get().systemTypes.find(sType => sType.id === t.systemType) as SystemType,
-      name: t.name,
-      options: (t.options) ? t.options?.map(oID => options.find(o => oID === o.id) as Option) : []
-    }))
-}
+  return templatesN.map((t) => ({
+    id: t.id,
+    systemType: get().systemTypes.find(
+      (sType) => sType.id === t.systemType,
+    ) as SystemType,
+    name: t.name,
+    options: t.options
+      ? t.options?.map((oID) => options.find((o) => oID === o.id) as Option)
+      : [],
+  }));
+};
 
 const _getActiveTemplates: GetAction<SystemTemplate[]> = (get) => {
   const configs = get().getConfigs();
@@ -238,15 +242,15 @@ const _getConfigsHelper: (
 ) => Configuration[] = (configs, get) => {
   const templates = get().getTemplates();
   const options = get().getOptions();
-  return configs.map(config => ({
+  return configs.map((config) => ({
     id: config.id,
     template: templates.find((t) => t.id === config.template) as SystemTemplate,
     name: config.name,
-    selections: config.selections.map(s => ({
-      parent: options.find(o => o.id === s.parent) as Option,
-      option: options.find(o => o.id === s.option) as Option,
-      value: s.value
-    }))
+    selections: config.selections.map((s) => ({
+      parent: options.find((o) => o.id === s.parent) as Option,
+      option: options.find((o) => o.id === s.option) as Option,
+      value: s.value,
+    })),
   }));
 };
 
