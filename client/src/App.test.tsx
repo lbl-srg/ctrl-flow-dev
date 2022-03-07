@@ -19,7 +19,7 @@ test("renders welcome page", () => {
 });
 
 test("create new project modal opens and creates a new project", async () => {
-  userEvent.click(screen.getByRole('button', {name: /create new project/i}));
+  userEvent.click(screen.getByRole("button", { name: /create new project/i }));
 
   // Open the create project modal
   const modal = screen.getByRole("dialog");
@@ -76,7 +76,7 @@ test("create new project modal opens and creates a new project", async () => {
 });
 
 test("navigate through steps", async () => {
-  userEvent.click(screen.getByRole('button', {name: /create new project/i}));
+  userEvent.click(screen.getByRole("button", { name: /create new project/i }));
 
   // Open the create project modal and move on without changes
   const modal = screen.getByRole("dialog");
@@ -90,38 +90,34 @@ test("navigate through steps", async () => {
   expect(
     screen.getByText("Project Details", { selector: "h1" }),
   ).toBeInTheDocument();
-  expect(screen.getByRole("link", {name: "Back"})).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Back" })).toBeInTheDocument();
   expect(screen.getByText("Next Step: Systems")).toBeInTheDocument();
 
   userEvent.click(screen.getByText("Next Step: Systems"));
-  expect(
-    screen.getByText("Add Systems", { selector: "h1" }),
-  ).toBeInTheDocument();
-  expect(screen.getByRole("link", {name: "Back"})).toBeInTheDocument();
+  expect(screen.getByText("Systems", { selector: "h1" })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Back" })).toBeInTheDocument();
   expect(screen.getByText("Next Step: Configs")).toBeInTheDocument();
 
   userEvent.click(screen.getByText("Next Step: Configs"));
   expect(
     screen.getByText("Configurations", { selector: "h1" }),
   ).toBeInTheDocument();
-  expect(screen.getByRole("link", {name: "Back"})).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Back" })).toBeInTheDocument();
   expect(screen.getByText("Next Step: Quantities")).toBeInTheDocument();
 
   userEvent.click(screen.getByText("Next Step: Quantities"));
   expect(
     screen.getByText("Quantities", { selector: "h1" }),
   ).toBeInTheDocument();
-  expect(screen.getByRole("link", {name: "Back"})).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Back" })).toBeInTheDocument();
   expect(screen.getByText("Next Step: Schedules")).toBeInTheDocument();
 
   userEvent.click(screen.getByText("Next Step: Schedules"));
-  expect(
-    screen.getByText("Equipment Schedules", { selector: "h1" }),
-  ).toBeInTheDocument();
-  expect(screen.getByRole("link", {name: "Back"})).toBeInTheDocument();
+  expect(screen.getByText("Schedules", { selector: "h1" })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Back" })).toBeInTheDocument();
   expect(screen.getByText("Next Step: Results")).toBeInTheDocument();
 
   userEvent.click(screen.getByText("Next Step: Results"));
   expect(screen.getByText("Results", { selector: "h1" })).toBeInTheDocument();
-  expect(screen.getByRole("link", {name: "Back"})).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Back" })).toBeInTheDocument();
 });
