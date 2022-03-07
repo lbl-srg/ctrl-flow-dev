@@ -37,14 +37,8 @@ export interface OptionN {
   value?: number | boolean;
 }
 
-export interface Option {
-  id: number;
-  type: string;
-  name: string;
+export interface Option extends Omit<OptionN, "options"> {
   options?: Option[];
-  group?: string;
-  modelicaPath?: string;
-  value?: number | boolean;
 }
 
 export type SelectionN = {
@@ -53,11 +47,10 @@ export type SelectionN = {
   value?: number | boolean | string;
 };
 
-export type Selection = {
+export interface Selection extends Omit<SelectionN, "parent" | "option"> {
   parent: Option;
   option: Option; // TODO: remove this 'option' key and add 'Option' as a possible type for value
-  value?: number | boolean | string;
-};
+}
 
 export interface SystemTemplateN {
   id: number;
@@ -66,10 +59,9 @@ export interface SystemTemplateN {
   options?: number[];
 }
 
-export interface SystemTemplate {
-  id: number;
+export interface SystemTemplate
+  extends Omit<SystemTemplateN, "systemType" | "options"> {
   systemType: SystemType;
-  name: string;
   options?: Option[];
 }
 
@@ -80,11 +72,22 @@ export interface ConfigurationN {
   selections: SelectionN[];
 }
 
-export interface Configuration {
-  id: number;
+export interface Configuration
+  extends Omit<ConfigurationN, "template" | "selections"> {
   template: SystemTemplate;
-  name: string | undefined;
   selections: Selection[];
+}
+
+export interface AppliedConfigurationN {
+  id: number;
+  tag: string;
+  config: number;
+  data: any[]; // TODO: how we get the types for the rest of the table data is still being defined
+}
+
+export interface AppliedConfiguration
+  extends Omit<AppliedConfigurationN, "config"> {
+  config: Configuration;
 }
 
 export interface MetaConfigurationN {
@@ -95,28 +98,23 @@ export interface MetaConfigurationN {
   config: number; // configuration ID
 }
 
-export interface MetaConfiguration {
-  id: number;
-  tagPrefix: string;
-  tagStartIndex: number;
-  quantity: number;
+export interface MetaConfiguration extends Omit<MetaConfigurationN, "config"> {
   config: Configuration;
 }
 
 export interface UserProjectN {
   configs: number[];
   metaConfigs: number[];
-  schedules: number[];
+  appliedConfigs: number[];
   projectDetails: Partial<ProjectDetails>;
   id: number;
 }
 
-export interface UserProject {
+export interface UserProject
+  extends Omit<UserProjectN, "configs" | "metaConfigs" | "appliedConfigs"> {
   configs: Configuration[];
   metaConfigs: MetaConfiguration[];
-  schedules: number[];
-  projectDetails: Partial<ProjectDetails>;
-  id: number;
+  appliedConfigs: AppliedConfiguration[];
 }
 
 type GetAction<T> = (get: GetState<State>) => T;
@@ -129,7 +127,7 @@ type SetAction<T> = (
 const initialUserProject: UserProjectN = {
   configs: [],
   metaConfigs: [],
-  schedules: [],
+  appliedConfigs: [],
   projectDetails: {},
   id: getID(),
 };
@@ -147,7 +145,7 @@ const _getActiveProject: GetAction<UserProject> = (get) => {
     id: activeProjectN.id,
     configs: get().getConfigs(),
     metaConfigs: get().getMetaConfigs(),
-    schedules: [],
+    appliedConfigs: [],
     projectDetails: activeProjectN.projectDetails,
   };
 };
@@ -270,7 +268,6 @@ const _getMetaConfigs: (
   const filteredMetaConfigs = template
     ? projectMetaConfigs.filter((mConf) => {
         const config = configs.find((c) => c.id === mConf.config);
-        console.log(config?.template.id);
         return config?.template.id === template.id;
       })
     : metaConfigs;
