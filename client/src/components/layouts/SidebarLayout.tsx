@@ -5,17 +5,17 @@ import StepNavigation from "../StepNavigation";
 import "../../styles/components/sidebar-layout.scss";
 
 export interface SidebarLayoutProps {
-  heading: string;
   contentLeft: ReactNode;
   contentRight: ReactNode;
+  isFullScreen?: boolean;
 }
 
 const MIN_WIDTH = 300;
 
 const Sidebarlayout = ({
-  heading,
   contentLeft,
   contentRight,
+  isFullScreen = true,
 }: SidebarLayoutProps) => {
   const { projectDetails, leftColWidth, setLeftColWidth } = useStore(
     (state) => {
@@ -44,38 +44,31 @@ const Sidebarlayout = ({
       onMouseMove={recordDrag}
     >
       <div className="col-container">
-        <section className="left-col" style={{ width: leftColWidth }}>
-          <header>
-            All Projects &gt;
-            <strong>{projectName}</strong>
-          </header>
+        {!isFullScreen && (
+          <section className="left-col" style={{ width: leftColWidth }}>
+            <header>
+              All Projects &gt; &nbsp;
+              <strong>{projectName}</strong>
+            </header>
 
-          {contentLeft}
+            {contentLeft}
 
-          <div
-            className="dragger"
-            onMouseDown={() => setIsDragging(true)}
-          ></div>
-        </section>
+            <div
+              className="dragger"
+              onMouseDown={() => setIsDragging(true)}
+            ></div>
+          </section>
+        )}
 
         <section
           className="right-col"
           style={{ width: `calc(100vw - ${leftColWidth}px)` }}
         >
-          <header>
-            <h1>{heading}</h1>
-
-            <div className="save-widget">
-              <span>last saved 4 hours ago</span>
-              <button className="small inline">Save</button>
-            </div>
-          </header>
-
           {contentRight}
         </section>
       </div>
 
-      <StepNavigation />
+      {!isFullScreen && <StepNavigation />}
     </main>
   );
 };

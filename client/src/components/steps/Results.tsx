@@ -1,12 +1,13 @@
-import Sidebarlayout from "../layouts/SidebarLayout";
+import { Fragment } from "react";
+import PageHeader from "../PageHeader";
 
-// step 6
-const Results = () => (
-  <Sidebarlayout
-    heading="Results"
-    contentLeft={<p>hello</p>}
-    contentRight={<p>world</p>}
-  />
-);
+function Results() {
+  return (
+    <Fragment>
+      <PageHeader headerText="Results" />
+      <p>world</p>;
+    </Fragment>
+  );
+}
 
 export default Results;

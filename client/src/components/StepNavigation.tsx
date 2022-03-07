@@ -22,12 +22,14 @@ function StepNavigation() {
 
   return (
     <div className="step-navigation">
-      <div className="prev-container">
-        <Link to={previous.path}>
-          <i className="icon-left-open" />
-          Back
-        </Link>
-      </div>
+      {previous && (
+        <div className="prev-container">
+          <Link to={previous.path}>
+            <i className="icon-left-open" />
+            Back
+          </Link>
+        </div>
+      )}
 
       <div className="step-links">
         {steps

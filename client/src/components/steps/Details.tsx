@@ -1,18 +1,9 @@
 import { Fragment, useState } from "react";
 import { useStore } from "../../store/store";
-import Sidebarlayout from "../layouts/SidebarLayout";
 import EditDetailsModal from "../modal/EditDetailsModal";
-import LeftNav from "../LeftNavigation";
+import PageHeader from "../PageHeader";
 
-const Details = () => (
-  <Sidebarlayout
-    heading="Project Details"
-    contentLeft={<LeftNav />}
-    contentRight={<ContentRight />}
-  />
-);
-
-const ContentRight = () => {
+function Details() {
   const projectDetails = useStore(
     (state) => state.getActiveProject().projectDetails,
   );
@@ -21,6 +12,8 @@ const ContentRight = () => {
 
   return (
     <Fragment>
+      <PageHeader headerText="Project Details" />
+
       <h2 className="flex-space-between">
         {projectDetails.name}
 
@@ -73,6 +66,6 @@ const ContentRight = () => {
       </ul>
     </Fragment>
   );
-};
+}
 
 export default Details;

@@ -2,7 +2,7 @@ import create, { SetState, GetState } from "zustand";
 import { persist } from "zustand/middleware";
 import { produce } from "immer";
 
-import mockData from "./mock-data.json";
+import getMockData from "./mock-data";
 
 import uiSlice, { uiSliceInterface } from "./slices/ui-slice";
 
@@ -156,17 +156,13 @@ const _getTemplates: GetAction<SystemTemplate[]> = (get) => {
   const templatesN = get().templates;
   const options = _getAllOptions(get);
 
-  return templatesN.map((t) => ({
-    id: t.id,
-    systemType: get().systemTypes.find(
-      (sType) => sType.id === t.systemType,
-    ) as SystemType,
-    name: t.name,
-    options: t.options?.map((oID) =>
-      options.find((o) => oID === o.id),
-    ) as Option[],
-  }));
-};
+  return templatesN.map(t => ({
+      id: t.id,
+      systemType: get().systemTypes.find(sType => sType.id === t.systemType) as SystemType,
+      name: t.name,
+      options: (t.options) ? t.options?.map(oID => options.find(o => oID === o.id) as Option) : []
+    }))
+}
 
 const _getActiveTemplates: GetAction<SystemTemplate[]> = (get) => {
   const configs = get().getConfigs();
@@ -200,7 +196,7 @@ const _getOptions: (
 ) => [Option[], Option[]] = (template, get) => {
   const optionIDs: number[] = [];
   const templateOptionsN: OptionN[] = [];
-  const initOptions = template.options as Option[];
+  const initOptions = template.options || [];
 
   if (template.options) {
     const options = get().options;
@@ -241,15 +237,16 @@ const _getConfigsHelper: (
   get: GetState<State>,
 ) => Configuration[] = (configs, get) => {
   const templates = get().getTemplates();
-  return configs.map((config) => ({
+  const options = get().getOptions();
+  return configs.map(config => ({
     id: config.id,
     template: templates.find((t) => t.id === config.template) as SystemTemplate,
     name: config.name,
-    selections: config.selections.map((s) => ({
-      parent: get().options.find((o) => o.id === s.parent) as Option,
-      option: get().options.find((o) => o.id === s.option) as Option,
-      value: s.value,
-    })),
+    selections: config.selections.map(s => ({
+      parent: options.find(o => o.id === s.parent) as Option,
+      option: options.find(o => o.id === s.option) as Option,
+      value: s.value
+    }))
   }));
 };
 
@@ -462,9 +459,9 @@ export const useStore = create<State>(
       ...uiSlice(set, get),
       saveProjectDetails: (projectDetails) =>
         saveProjectDetails(projectDetails, get, set),
-      systemTypes: mockData["systemTypes"],
-      templates: mockData["templates"],
-      options: mockData["options"],
+      systemTypes: getMockData()["systemTypes"],
+      templates: getMockData()["templates"],
+      options: getMockData()["options"],
       configurations: [],
       metaConfigurations: [],
       userProjects: [initialUserProject],
