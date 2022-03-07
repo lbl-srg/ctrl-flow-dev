@@ -178,3 +178,24 @@ test("Test Config Selection Pruning", () => {
   // expect both selections (because both are on the same branch of options)
   expect(config.selections).toEqual([...newSelections, ...addChildSelection]);
 });
+
+test("Adding a metaconfig", () => {
+  const prefix = "Test";
+  const quantity = 10;
+  const start = 5;
+  const options = useStore.getState().getOptions();
+  expect(options.length).toBe(7);
+  const [template1, templates] = useStore.getState().getTemplates();
+
+  useStore.getState().addConfig(template1);
+  const [config, _rest] = useStore.getState().getConfigs();
+
+  useStore.getState().addMetaConfig(prefix, start, quantity, config);
+
+  const [metaConfig, _others] = useStore.getState().getMetaConfigs();
+
+  expect(metaConfig.config).toEqual(config);
+  expect(metaConfig.quantity).toEqual(quantity);
+  expect(metaConfig.tagPrefix).toEqual(prefix);
+  expect(metaConfig.tagStartIndex).toEqual(start);
+});

@@ -282,13 +282,21 @@ const _addMetaConfig = (
 ) => {
   set(
     produce((state: State) => {
-      const metaConfigDefaults: MetaConfigurationN = {
-        id: getID(),
-        tagPrefix: prefix,
-        tagStartIndex: start,
-        config: config.id,
-        quantity: quantity,
-      };
+      const activeProject = state.userProjects.find(
+        (proj) => proj.id === state.activeProject,
+      );
+      if (activeProject) {
+        const metaConfig: MetaConfigurationN = {
+          id: getID(),
+          tagPrefix: prefix,
+          tagStartIndex: start,
+          config: config.id,
+          quantity: quantity,
+        };
+
+        state.metaConfigurations.push(metaConfig);
+        activeProject.metaConfigs.push(metaConfig.id);
+      }
     }),
   );
 };
@@ -330,8 +338,8 @@ const _addConfig = (
           selections: [],
         };
         const config = { ...configDefaults, ...attrs };
-        activeProject.configs.push(config.id);
         state.configurations.push(config);
+        activeProject.configs.push(config.id);
       }
     }),
   );
