@@ -92,7 +92,7 @@ export interface MetaConfigurationN {
   tagPrefix: string;
   tagStartIndex: number;
   quantity: number;
-  configuration: number; // configuration ID
+  config: number; // configuration ID
 }
 
 export interface MetaConfiguration {
@@ -100,7 +100,7 @@ export interface MetaConfiguration {
   tagPrefix: string;
   tagStartIndex: number;
   quantity: number;
-  configuration: Configuration;
+  config: Configuration;
 }
 
 export interface UserProjectN {
@@ -269,10 +269,28 @@ const _getMetaConfigs: GetAction<MetaConfiguration[]> = (get) => {
     tagPrefix: mConf.tagPrefix,
     tagStartIndex: mConf.tagStartIndex,
     quantity: mConf.quantity,
-    configuration: configs.find(
-      (c) => c.id === mConf.configuration,
-    ) as Configuration,
+    config: configs.find((c) => c.id === mConf.config) as Configuration,
   }));
+};
+
+const _addMetaConfig = (
+  prefix: string,
+  start: number,
+  quantity: number,
+  config: Configuration,
+  set: SetState<State>,
+) => {
+  set(
+    produce((state: State) => {
+      const metaConfigDefaults: MetaConfigurationN = {
+        id: getID(),
+        tagPrefix: prefix,
+        tagStartIndex: start,
+        config: config.id,
+        quantity: quantity,
+      };
+    }),
+  );
 };
 
 const saveProjectDetails: SetAction<Partial<ProjectDetails>> = (
@@ -443,7 +461,6 @@ export interface State extends uiSliceInterface {
   getTemplateOptions: (template: SystemTemplate) => [Option[], Option[]];
   getActiveTemplates: () => SystemTemplate[];
   getConfigs: () => Configuration[];
-  getMetaConfigs: () => MetaConfiguration[];
   addConfig: (
     template: SystemTemplate,
     attrs?: Partial<ConfigurationN>,
@@ -452,6 +469,13 @@ export interface State extends uiSliceInterface {
     config: Configuration,
     configName: string,
     selections: Selection[],
+  ) => void;
+  getMetaConfigs: () => MetaConfiguration[];
+  addMetaConfig: (
+    prefix: string,
+    start: number,
+    quantity: number,
+    config: Configuration,
   ) => void;
   removeConfig: (config: Configuration) => void;
   removeAllTemplateConfigs: (template: SystemTemplate) => void;
@@ -481,6 +505,12 @@ export const useStore = create<State>(
       addConfig: (template: SystemTemplate, attrs = {}) =>
         _addConfig(template, attrs, set),
       getConfigs: () => _getConfigs(get),
+      addMetaConfig: (
+        prefix: string,
+        start: number,
+        quantity: number,
+        config: Configuration,
+      ) => _addMetaConfig(prefix, start, quantity, config, set),
       getMetaConfigs: () => _getMetaConfigs(get),
       updateConfig: (
         config: Configuration,
