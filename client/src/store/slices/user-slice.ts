@@ -18,6 +18,8 @@ export interface ProjectDetails {
 export interface UserSystemN {
   id: number;
   tag: string;
+  prefix: string;
+  number: number;
   config: number;
   data: any[]; // TODO: how we get the types for the rest of the table data is still being defined
 }
@@ -26,16 +28,12 @@ export interface UserSystem extends Omit<UserSystemN, "config"> {
   config: Configuration;
 }
 
-export interface MetaConfigurationN {
-  id: number;
+export interface MetaConfiguration {
   tagPrefix: string;
   tagStartIndex: number;
   quantity: number;
-  config: number; // configuration ID
-}
-
-export interface MetaConfiguration extends Omit<MetaConfigurationN, "config"> {
-  config: Configuration;
+  config: Configuration; // configuration ID
+  systems: UserSystem[];
 }
 
 export interface UserProjectN {
@@ -315,6 +313,8 @@ const _getUserSystems: (
   return filteredSystems.map((system) => ({
     id: system.id,
     tag: system.tag,
+    prefix: system.prefix,
+    number: system.number,
     config: configs.find((c) => c.id === system.config) as Configuration,
     data: system.data,
   }));
@@ -339,6 +339,8 @@ const _addUserSystems = (
           const system: UserSystemN = {
             id: getID(),
             tag: `${prefix} - ${start + i}`,
+            prefix: prefix,
+            number: start + i,
             config: config.id,
             data: [],
           };
@@ -350,6 +352,54 @@ const _addUserSystems = (
       }
     }),
   );
+};
+
+const _removeUserSystem = (system: UserSystem, set: SetState<State>) => {
+  set(
+    produce((state: State) => {
+      const activeProject = state.userProjects.find(
+        (proj) => proj.id === state.activeProject,
+      );
+      if (activeProject) {
+        activeProject.userSystems = activeProject.userSystems.filter(
+          (sID) => sID !== system.id,
+        );
+      }
+      state.userSystems = state.userSystems.filter((s) => s.id !== system.id);
+    }),
+  );
+};
+
+const _getMetaConfigs = (get: GetState<State>) => {
+  const sortedSystems: { [key: string]: UserSystem[] } = {};
+  const systems = get().getUserSystems();
+
+  systems.map((s) => {
+    const key = `${s.config.id}${s.prefix}`;
+    const metaConfigList = sortedSystems[key] || [];
+    sortedSystems[key] = [...metaConfigList, s];
+  });
+
+  const metaConfigList: MetaConfiguration[] = [];
+
+  Object.entries(sortedSystems).map(([key, systemList]) => {
+    const [system, ...rest] = systemList;
+    const start = Math.min(...systemList.map((s) => s.number));
+    const sortedList = systemList.sort((s1, s2) => s1.number - s2.number);
+    const configs = get().getConfigs();
+
+    const metaConfig: MetaConfiguration = {
+      tagPrefix: system.prefix,
+      tagStartIndex: start,
+      quantity: sortedList.length,
+      config: system.config,
+      systems: sortedList,
+    };
+
+    metaConfigList.push(metaConfig);
+  });
+
+  return metaConfigList;
 };
 
 // TODO... get a better uid system
@@ -384,6 +434,7 @@ export interface UserSliceInterface {
   ) => void;
   removeConfig: (config: Configuration) => void;
   removeAllTemplateConfigs: (template: SystemTemplate) => void;
+  getMetaConfigs: () => MetaConfiguration[];
   getUserSystems: (template?: SystemTemplate) => UserSystem[];
   addUserSystems: (
     prefix: string,
@@ -391,6 +442,7 @@ export interface UserSliceInterface {
     quantity: number,
     config: Configuration,
   ) => void;
+  removeUserSystem: (system: UserSystem) => void;
 }
 
 export default function (
@@ -427,6 +479,7 @@ export default function (
     ) => _addUserSystems(prefix, start, quantity, config, set),
     getUserSystems: (template = undefined) => _getUserSystems(template, get),
     removeUserSystem: (userSystem: UserSystem) =>
-      _removeUserSystem(userSystem, get),
+      _removeUserSystem(userSystem, set),
+    getMetaConfigs: () => _getMetaConfigs(get),
   };
 }
