@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import Configs from "./components/steps/Configs";
 import Details from "./components/steps/Details";
 import Landing from "./components/steps/Landing";
-import Quantities from "./components/steps/Quantities";
 import Results from "./components/steps/Results";
 import Schedules from "./components/steps/Schedules";
 import Systems from "./components/steps/Systems";
