@@ -76,46 +76,15 @@ export interface Configuration
   selections: Selection[];
 }
 
-// TODO... get a better uid system
-let _idIncrement = 0;
-const getID = () => (_idIncrement += 1);
+export interface UserSystemN {
+  id: number;
+  tag: string;
+  config: number;
+  data: any[]; // placeholder for whatever else will populate schedule table
+}
 
-const initialUserProject: UserProjectN = {
-  configs: [],
-  metaConfigs: [],
-  appliedConfigs: [],
-  projectDetails: {},
-  id: getID(),
-};
-
-export interface UserSliceInterface {
-  saveProjectDetails: (projectDetails: Partial<ProjectDetails>) => void;
-  configurations: ConfigurationN[];
-  metaConfigurations: MetaConfigurationN[];
-  userProjects: UserProjectN[];
-  activeProject: number;
-  getActiveTemplates: () => SystemTemplate[];
-  getActiveProject: () => UserProject;
-  setActiveProject: SetAction<UserProject>;
-  getConfigs: () => Configuration[];
-  addConfig: (
-    template: SystemTemplate,
-    attrs?: Partial<ConfigurationN>,
-  ) => void; // TODO: on template add, default config must be added
-  updateConfig: (
-    config: Configuration,
-    configName: string,
-    selections: Selection[],
-  ) => void;
-  removeConfig: (config: Configuration) => void;
-  removeAllTemplateConfigs: (template: SystemTemplate) => void;
-  getMetaConfigs: (template?: SystemTemplate) => MetaConfiguration[];
-  addMetaConfig: (
-    prefix: string,
-    start: number,
-    quantity: number,
-    config: Configuration,
-  ) => void;
+export interface UserSystem extends Omit<UserSystemN, "config"> {
+  config: Configuration;
 }
 
 const _saveProjectDetails: SetAction<Partial<ProjectDetails>> = (
@@ -376,11 +345,58 @@ const _addMetaConfig = (
   );
 };
 
+const _getUserSystems: (
+  template: SystemTemplate | undefined,
+  get: GetState<State>,
+) => UserSystem[] = (template, get) => {};
+
 const _getActiveTemplates: GetAction<SystemTemplate[]> = (get) => {
   const configs = get().getConfigs();
   const activeTemplateSet = new Set(configs.map((c) => c.template));
   return Array.from(activeTemplateSet.values());
 };
+
+// TODO... get a better uid system
+let _idIncrement = 0;
+const getID = () => (_idIncrement += 1);
+
+const initialUserProject: UserProjectN = {
+  configs: [],
+  metaConfigs: [],
+  appliedConfigs: [],
+  projectDetails: {},
+  id: getID(),
+};
+
+export interface UserSliceInterface {
+  saveProjectDetails: (projectDetails: Partial<ProjectDetails>) => void;
+  configurations: ConfigurationN[];
+  userProjects: UserProjectN[];
+  userSystems: UserSystemN[];
+  activeProject: number;
+  getActiveTemplates: () => SystemTemplate[];
+  getActiveProject: () => UserProject;
+  setActiveProject: SetAction<UserProject>;
+  getConfigs: () => Configuration[];
+  addConfig: (
+    template: SystemTemplate,
+    attrs?: Partial<ConfigurationN>,
+  ) => void; // TODO: on template add, default config must be added
+  updateConfig: (
+    config: Configuration,
+    configName: string,
+    selections: Selection[],
+  ) => void;
+  removeConfig: (config: Configuration) => void;
+  removeAllTemplateConfigs: (template: SystemTemplate) => void;
+  getMetaConfigs: (template?: SystemTemplate) => MetaConfiguration[];
+  addMetaConfig: (
+    prefix: string,
+    start: number,
+    quantity: number,
+    config: Configuration,
+  ) => void;
+}
 
 export default function (
   set: SetState<State>,
@@ -389,8 +405,8 @@ export default function (
   return {
     activeProject: 1,
     userProjects: [initialUserProject],
+    userSystems: [],
     configurations: [],
-    metaConfigurations: [],
     saveProjectDetails: (projectDetails) =>
       _saveProjectDetails(projectDetails, get, set),
     getActiveProject: () => _getActiveProject(get),
@@ -415,5 +431,8 @@ export default function (
       quantity: number,
       config: Configuration,
     ) => _addMetaConfig(prefix, start, quantity, config, set),
+    getUserSystems: (template = undefined) => _getUserSystems(template, get),
+    removeUserSystem: (userSystem: UserSystem) =>
+      _removeUserSystem(userSystem, get),
   };
 }
