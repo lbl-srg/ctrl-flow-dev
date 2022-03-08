@@ -179,6 +179,56 @@ test("Test Config Selection Pruning", () => {
   expect(config.selections).toEqual([...newSelections, ...addChildSelection]);
 });
 
-test("Use 'addUserSystems' to batch add user systems", () => {});
+test("Use 'addUserSystems' to batch add user systems", () => {
+  const prefix = "TEST";
+  const start = 1;
+  const quantity = 10;
+  const [template1, templates] = useStore.getState().getTemplates();
 
-test("Metaconfigs are correctly generated based on systems added", () => {});
+  useStore.getState().addConfig(template1);
+
+  let [config, ...rest] = useStore.getState().getConfigs();
+  useStore.getState().addUserSystems(prefix, start, quantity, config);
+
+  // check that 10 systems were added
+  const allSystems = useStore.getState().getUserSystems();
+  expect(allSystems.length).toBe(quantity);
+
+  // check that tag, prefix, number, and config are as expected
+  allSystems.forEach((s, i) => {
+    expect(s.prefix).toEqual(prefix);
+    expect(s.number).toEqual(start + i);
+    expect(s.tag).toEqual(`${prefix} - ${start + i}`);
+    expect(s.config).toEqual(config);
+    expect(s.data).toEqual([]);
+  });
+});
+
+test("Metaconfigs are correctly generated based on systems added", () => {
+  const prefix = "TEST";
+  const start = 1;
+  const quantity1 = 10;
+  const quantity2 = 5;
+
+  const [template1, template2, ...templates] = useStore
+    .getState()
+    .getTemplates();
+
+  useStore.getState().addConfig(template1);
+  useStore.getState().addConfig(template2);
+
+  let [config1, config2, ...rest] = useStore.getState().getConfigs();
+  useStore.getState().addUserSystems(prefix, start, quantity1, config1);
+  useStore.getState().addUserSystems(prefix, start, quantity2, config2);
+
+  const metaConfigs = useStore.getState().getMetaConfigs();
+
+  expect(metaConfigs.length).toBe(2);
+  const [metaConfig1, metaConfig2] = metaConfigs;
+
+  expect(metaConfig1.quantity).toBe(quantity1);
+  expect(metaConfig2.quantity).toBe(quantity2);
+
+  expect(metaConfig1.config).toEqual(config1);
+  expect(metaConfig2.config).toEqual(config2);
+});
