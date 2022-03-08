@@ -8,7 +8,7 @@ import "../../styles/components/left-navigation.scss";
 const LeftNav = () => {
   const { configs, systemTypes, meta } = useStore((state) => ({
     configs: state.getActiveProject().configs,
-    meta: state.getActiveProject().getMetaConfigs(),
+    meta: state.getMetaConfigs(),
     systemTypes: state.systemTypes,
   }));
 
