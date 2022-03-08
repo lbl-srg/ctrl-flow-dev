@@ -5,7 +5,7 @@ import PageHeader from "../PageHeader";
 
 function Details() {
   const projectDetails = useStore(
-    (state) => state.getActiveProject().projectDetails,
+    (state) => state.getActiveProject()?.projectDetails || {},
   );
 
   const [isOpen, setIsOpen] = useState(false);
