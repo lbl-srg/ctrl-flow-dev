@@ -8,7 +8,7 @@ export interface Template {
 function Template({ template, configs }: Template) {
   return (
     <li>
-      <a key={template.id} href={`#${template.name}-${template.name}`}>
+      <a key={template.id} href={`#${template.name}`}>
         {template.name}
       </a>
 

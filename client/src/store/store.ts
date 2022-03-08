@@ -3,12 +3,14 @@ import { persist } from "zustand/middleware";
 import { produce } from "immer";
 
 import getMockData from "./mock-data";
-
 import uiSlice, { uiSliceInterface } from "./slices/ui-slice";
 
-// TODO... get a better uid system
-let _idIncrement = 0;
-const getID = () => (_idIncrement += 1);
+let _incriment = 0;
+
+function getID(): number {
+  _incriment++;
+  return Math.floor(Math.random() * 1000000000 + _incriment);
+}
 
 export interface ProjectDetails {
   name: string;
@@ -144,11 +146,11 @@ const _getActiveProject: GetAction<UserProject> = (get) => {
   const activeProject = {};
 
   return {
-    id: activeProjectN.id,
+    id: activeProjectN?.id,
     configs: get().getConfigs(),
     metaConfigs: get().getMetaConfigs(),
     schedules: [],
-    projectDetails: activeProjectN.projectDetails,
+    projectDetails: activeProjectN?.projectDetails,
   };
 };
 
@@ -290,6 +292,8 @@ const saveProjectDetails: SetAction<Partial<ProjectDetails>> = (
           ...activeProject?.projectDetails,
           ...projectDetails,
         };
+      } else {
+        state.activeProject;
       }
     }),
   );
@@ -469,7 +473,7 @@ export const useStore = create<State>(
       configurations: [],
       metaConfigurations: [],
       userProjects: [initialUserProject],
-      activeProject: 1,
+      activeProject: initialUserProject.id,
       getActiveProject: () => _getActiveProject(get),
       setActiveProject: (userProject: UserProject) =>
         set({ activeProject: userProject.id }),

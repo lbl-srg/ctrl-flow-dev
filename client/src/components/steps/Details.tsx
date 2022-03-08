@@ -4,9 +4,11 @@ import EditDetailsModal from "../modal/EditDetailsModal";
 import PageHeader from "../PageHeader";
 
 function Details() {
-  const projectDetails = useStore(
-    (state) => state.getActiveProject().projectDetails,
-  );
+  const { projectDetails } = useStore((state) => {
+    return {
+      projectDetails: state.getActiveProject()?.projectDetails || {},
+    };
+  });
 
   const [isOpen, setIsOpen] = useState(false);
 

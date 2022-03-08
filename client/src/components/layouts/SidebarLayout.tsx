@@ -22,12 +22,12 @@ const Sidebarlayout = ({
       return {
         leftColWidth: state.leftColWidth,
         setLeftColWidth: state.setLeftColWidth,
-        projectDetails: state.getActiveProject().projectDetails,
+        projectDetails: state.getActiveProject()?.projectDetails,
       };
     },
   );
 
-  const projectName = projectDetails.name;
+  const projectName = projectDetails?.name;
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
   function recordDrag(ev: MouseEvent): void {
