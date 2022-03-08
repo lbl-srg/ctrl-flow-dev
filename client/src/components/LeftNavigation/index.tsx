@@ -1,19 +1,18 @@
 import { useStore } from "../../store/store";
 import System from "./System";
+
+import { deduplicate } from "../../utils/utils";
+
 import "../../styles/components/left-navigation.scss";
 
 const LeftNav = () => {
   const { configs, systemTypes, meta } = useStore((state) => ({
     configs: state.getActiveProject().configs,
-    meta: state.getActiveProject().metaConfigs,
+    meta: state.getActiveProject().getMetaConfigs(),
     systemTypes: state.systemTypes,
   }));
 
-  // console.log("config:", configs);
-  // console.log("meta:", meta);
-
-  const userSystemsSet = new Set(configs.map((c) => c.template));
-  const systems = Array.from(userSystemsSet.values());
+  const systems = deduplicate(configs.map((c) => c.template));
 
   return (
     <div className="left-nav">

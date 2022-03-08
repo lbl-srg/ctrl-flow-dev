@@ -2,6 +2,8 @@ import { SetState, GetState } from "zustand";
 import { State, Option, SystemTemplate, GetAction, SetAction } from "../store";
 import { produce } from "immer";
 
+import { deduplicate } from "../../utils/utils";
+
 export interface ProjectDetails {
   name: string;
   address: string;
@@ -13,15 +15,14 @@ export interface ProjectDetails {
   id: number;
 }
 
-export interface AppliedConfigurationN {
+export interface UserSystemN {
   id: number;
   tag: string;
   config: number;
   data: any[]; // TODO: how we get the types for the rest of the table data is still being defined
 }
 
-export interface AppliedConfiguration
-  extends Omit<AppliedConfigurationN, "config"> {
+export interface UserSystem extends Omit<UserSystemN, "config"> {
   config: Configuration;
 }
 
@@ -39,17 +40,15 @@ export interface MetaConfiguration extends Omit<MetaConfigurationN, "config"> {
 
 export interface UserProjectN {
   configs: number[];
-  metaConfigs: number[];
-  appliedConfigs: number[];
+  userSystems: number[];
   projectDetails: Partial<ProjectDetails>;
   id: number;
 }
 
 export interface UserProject
-  extends Omit<UserProjectN, "configs" | "metaConfigs" | "appliedConfigs"> {
+  extends Omit<UserProjectN, "configs" | "userSystems" | "appliedConfigs"> {
   configs: Configuration[];
-  metaConfigs: MetaConfiguration[];
-  appliedConfigs: AppliedConfiguration[];
+  userSystems: UserSystem[];
 }
 
 export type SelectionN = {
@@ -118,10 +117,15 @@ const _getActiveProject: GetAction<UserProject> = (get) => {
   return {
     id: activeProjectN.id,
     configs: get().getConfigs(),
-    metaConfigs: get().getMetaConfigs(),
-    appliedConfigs: [],
+    userSystems: get().getUserSystems(),
     projectDetails: activeProjectN.projectDetails,
   };
+};
+
+const _getActiveTemplates: GetAction<SystemTemplate[]> = (get) => {
+  const configs = get().getConfigs();
+
+  return deduplicate(configs.map((c) => c.template));
 };
 
 /**
@@ -288,36 +292,35 @@ const _removeAllTemplateConfigs: SetAction<SystemTemplate> = (
   );
 };
 
-const _getMetaConfigs: (
+const _getUserSystems: (
   template: SystemTemplate | undefined,
   get: GetState<State>,
-) => MetaConfiguration[] = (template, get) => {
+) => UserSystem[] = (template, get) => {
   const configs = get().getConfigs();
-  const metaConfigs = get().metaConfigurations;
+  const systems = get().userSystems;
   const userProject = get().userProjects.find(
     (proj) => proj.id === get().activeProject,
   ) as UserProjectN;
-  const projectMetaConfigs = metaConfigs.filter(
-    (mConfig) => userProject.metaConfigs.indexOf(mConfig.id) >= 0,
+  const projectSystems = systems.filter(
+    (system) => userProject.userSystems.indexOf(system.id) >= 0,
   );
 
-  const filteredMetaConfigs = template
-    ? projectMetaConfigs.filter((mConf) => {
-        const config = configs.find((c) => c.id === mConf.config);
+  const filteredSystems = template
+    ? projectSystems.filter((system) => {
+        const config = configs.find((c) => c.id === system.config);
         return config?.template.id === template.id;
       })
-    : metaConfigs;
+    : projectSystems;
 
-  return filteredMetaConfigs.map((mConf) => ({
-    id: mConf.id,
-    tagPrefix: mConf.tagPrefix,
-    tagStartIndex: mConf.tagStartIndex,
-    quantity: mConf.quantity,
-    config: configs.find((c) => c.id === mConf.config) as Configuration,
+  return filteredSystems.map((system) => ({
+    id: system.id,
+    tag: system.tag,
+    config: configs.find((c) => c.id === system.config) as Configuration,
+    data: system.data,
   }));
 };
 
-const _addMetaConfig = (
+const _addUserSystems = (
   prefix: string,
   start: number,
   quantity: number,
@@ -330,30 +333,23 @@ const _addMetaConfig = (
         (proj) => proj.id === state.activeProject,
       );
       if (activeProject) {
-        const metaConfig: MetaConfigurationN = {
-          id: getID(),
-          tagPrefix: prefix,
-          tagStartIndex: start,
-          config: config.id,
-          quantity: quantity,
-        };
+        const newSystems: UserSystemN[] = [];
 
-        state.metaConfigurations.push(metaConfig);
-        activeProject.metaConfigs.push(metaConfig.id);
+        for (let i = 0; i < quantity; i += 1) {
+          const system: UserSystemN = {
+            id: getID(),
+            tag: `${prefix} - ${start + i}`,
+            config: config.id,
+            data: [],
+          };
+          newSystems.push(system);
+        }
+
+        state.userSystems.push(...newSystems);
+        activeProject.userSystems.push(...newSystems.map((s) => s.id));
       }
     }),
   );
-};
-
-const _getUserSystems: (
-  template: SystemTemplate | undefined,
-  get: GetState<State>,
-) => UserSystem[] = (template, get) => {};
-
-const _getActiveTemplates: GetAction<SystemTemplate[]> = (get) => {
-  const configs = get().getConfigs();
-  const activeTemplateSet = new Set(configs.map((c) => c.template));
-  return Array.from(activeTemplateSet.values());
 };
 
 // TODO... get a better uid system
@@ -362,8 +358,7 @@ const getID = () => (_idIncrement += 1);
 
 const initialUserProject: UserProjectN = {
   configs: [],
-  metaConfigs: [],
-  appliedConfigs: [],
+  userSystems: [],
   projectDetails: {},
   id: getID(),
 };
@@ -389,8 +384,8 @@ export interface UserSliceInterface {
   ) => void;
   removeConfig: (config: Configuration) => void;
   removeAllTemplateConfigs: (template: SystemTemplate) => void;
-  getMetaConfigs: (template?: SystemTemplate) => MetaConfiguration[];
-  addMetaConfig: (
+  getUserSystems: (template?: SystemTemplate) => UserSystem[];
+  addUserSystems: (
     prefix: string,
     start: number,
     quantity: number,
@@ -424,13 +419,12 @@ export default function (
     removeConfig: (config: Configuration) => _removeConfig(config, get, set),
     removeAllTemplateConfigs: (template: SystemTemplate) =>
       _removeAllTemplateConfigs(template, get, set),
-    getMetaConfigs: (template = undefined) => _getMetaConfigs(template, get),
-    addMetaConfig: (
+    addUserSystems: (
       prefix: string,
       start: number,
       quantity: number,
       config: Configuration,
-    ) => _addMetaConfig(prefix, start, quantity, config, set),
+    ) => _addUserSystems(prefix, start, quantity, config, set),
     getUserSystems: (template = undefined) => _getUserSystems(template, get),
     removeUserSystem: (userSystem: UserSystem) =>
       _removeUserSystem(userSystem, get),

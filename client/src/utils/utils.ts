@@ -15,3 +15,8 @@ export const getChangedValues = (
     return acc;
   }, {} as { [key: string]: any });
 };
+
+/**
+ *
+ */
+export const deduplicate = (arr: any[]) => Array.from(new Set(arr).values());
