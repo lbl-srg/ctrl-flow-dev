@@ -23,6 +23,29 @@ function Schedules() {
   );
 }
 
+interface SystemWidgetForm {
+  tag: string;
+  start: number;
+  quantity: number;
+  configID: number;
+}
+
+function addSystemsFormSubmit(
+  configs: Configuration[],
+  formValues: SystemWidgetForm,
+  addUserSystems: (
+    tag: string,
+    start: number,
+    quantity: number,
+    config: Configuration,
+  ) => void,
+) {
+  const config = configs.find(
+    (c) => c.id === Number(formValues.configID),
+  ) as Configuration;
+  addUserSystems(formValues.tag, formValues.start, formValues.quantity, config);
+}
+
 function AddUserSystemsWidget() {
   const addUserSystems = useStore((state) => state.addUserSystems);
   const configs = useStore((state) => state.getConfigs());
@@ -37,12 +60,13 @@ function AddUserSystemsWidget() {
   return (
     <Formik
       initialValues={initValues}
-      onSubmit={(values) => {
-        const config = configs.find(
-          (c) => c.id === Number(values.configID),
-        ) as Configuration;
-        addUserSystems(values.tag, values.start, values.quantity, config);
-      }}
+      onSubmit={(values) =>
+        addSystemsFormSubmit(
+          configs,
+          values as SystemWidgetForm, // TODO: remove cast once we have proper form valildation
+          addUserSystems,
+        )
+      }
     >
       <Form>
         <label htmlFor="tag">System Tag</label>
