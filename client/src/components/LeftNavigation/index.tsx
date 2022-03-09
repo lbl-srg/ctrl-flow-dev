@@ -6,13 +6,13 @@ import { deduplicate } from "../../utils/utils";
 import "../../styles/components/left-navigation.scss";
 
 const LeftNav = () => {
-  const { configs, systemTypes, meta } = useStore((state) => ({
-    configs: state.getActiveProject().configs,
+  const { systemTypes, meta, getActiveTemplates } = useStore((state) => ({
     meta: state.getMetaConfigs(),
     systemTypes: state.systemTypes,
+    getActiveTemplates: state.getActiveTemplates,
   }));
 
-  const systems = deduplicate(configs.map((c) => c.template));
+  const templates = getActiveTemplates();
 
   return (
     <div className="left-nav">
@@ -22,7 +22,7 @@ const LeftNav = () => {
         <System
           key={systemType.id}
           systemType={systemType}
-          templates={systems.filter((s) => s.systemType.id === systemType.id)}
+          templates={templates.filter((t) => t.systemType.id === systemType.id)}
           meta={meta}
         />
       ))}
