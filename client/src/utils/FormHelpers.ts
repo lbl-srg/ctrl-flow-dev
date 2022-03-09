@@ -70,6 +70,5 @@ export const getSelections = (
     } as Selection;
   });
 
-  console.log(newSelectionsFormValues);
   return newSelections;
 };
