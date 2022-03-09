@@ -206,6 +206,7 @@ test("Use 'addUserSystems' to batch add user systems", () => {
 
 test("Metaconfigs are correctly generated based on systems added", () => {
   const prefix = "TEST";
+  const prefix2 = "TEST2";
   const start = 1;
   const quantity1 = 10;
   const quantity2 = 5;
@@ -220,13 +221,14 @@ test("Metaconfigs are correctly generated based on systems added", () => {
   let [config1, config2, ...rest] = useStore.getState().getConfigs();
   useStore.getState().addUserSystems(prefix, start, quantity1, config1);
   useStore.getState().addUserSystems(prefix, start, quantity2, config2);
+  useStore.getState().addUserSystems(prefix2, start, quantity1, config1);
 
   const metaConfigs = useStore.getState().getMetaConfigs();
 
   expect(metaConfigs.length).toBe(2);
   const [metaConfig1, metaConfig2] = metaConfigs;
 
-  expect(metaConfig1.quantity).toBe(quantity1);
+  expect(metaConfig1.quantity).toBe(quantity1 + quantity1);
   expect(metaConfig2.quantity).toBe(quantity2);
 
   expect(metaConfig1.config).toEqual(config1);

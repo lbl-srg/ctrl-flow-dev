@@ -280,11 +280,22 @@ const _removeAllTemplateConfigs: SetAction<SystemTemplate> = (
         .filter((c) => c.template === template.id)
         .map((c) => c.id);
 
+      // remove configs
       activeProject.configs = activeProject.configs.filter(
         (c) => !configsToRemove.includes(c.id),
       );
       state.configurations = configs.filter(
         (c) => !configsToRemove.includes(c.id),
+      );
+
+      // remove UserSystems from the project and general store
+      const systemsToRemove = state.userSystems.filter((s) =>
+        configsToRemove.includes(s.config),
+      );
+
+      systemsToRemove.map((s) => state.removeUserSystem(s));
+      activeProject.userSystems = activeProject.userSystems.filter(
+        (s) => !configsToRemove.includes(s.config.id),
       );
     }),
   );
@@ -354,7 +365,10 @@ const _addUserSystems = (
   );
 };
 
-const _removeUserSystem = (system: UserSystem, set: SetState<State>) => {
+const _removeUserSystem = (
+  system: UserSystem | UserSystemN,
+  set: SetState<State>,
+) => {
   set(
     produce((state: State) => {
       const activeProject = state.userProjects.find(
@@ -384,7 +398,7 @@ const _getMetaConfigs = (
     : systems;
 
   filteredSystems.map((s) => {
-    const key = `${s.config.id}${s.prefix}`;
+    const key = `${s.config.id}`;
     const metaConfigList = systemMap[key] || [];
     systemMap[key] = [...metaConfigList, s];
   });
@@ -450,7 +464,7 @@ export interface UserSliceInterface {
     quantity: number,
     config: Configuration,
   ) => void;
-  removeUserSystem: (system: UserSystem) => void;
+  removeUserSystem: (system: UserSystem | UserSystemN) => void;
   getMetaConfigs: (template?: SystemTemplate) => MetaConfiguration[];
 }
 
@@ -487,7 +501,7 @@ export default function (
       config: Configuration,
     ) => _addUserSystems(prefix, start, quantity, config, set),
     getUserSystems: (template = undefined) => _getUserSystems(template, get),
-    removeUserSystem: (userSystem: UserSystem) =>
+    removeUserSystem: (userSystem: UserSystem | UserSystemN) =>
       _removeUserSystem(userSystem, set),
     getMetaConfigs: (template = undefined) => _getMetaConfigs(template, get),
   };
