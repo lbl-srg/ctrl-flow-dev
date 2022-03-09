@@ -9,11 +9,15 @@ import { SelectInput, SelectInputOption } from "../shared/SelectInput";
 
 function Schedules() {
   const userSystems = useStore((state) => state.getUserSystems());
+  const removeUserSystem = useStore((state) => state.removeUserSystem);
 
   return (
     <Fragment>
       <PageHeader headerText="Schedules" />
       <AddUserSystemsWidget />
+      <Button onClick={() => userSystems.map((s) => removeUserSystem(s))}>
+        DEBUG - Remove Systems
+      </Button>
       <UserSystems userSystems={userSystems} />
     </Fragment>
   );
@@ -24,7 +28,12 @@ function AddUserSystemsWidget() {
   const configs = useStore((state) => state.getConfigs());
   const multiZoneConfigs = configs.filter((c) => c.template.id === 1); // multi-zone VAV
   const [firstConfig, ...others] = multiZoneConfigs;
-  const initValues = { tag: "", start: 1, configID: 1, quantity: 4 };
+  const initValues = {
+    tag: "",
+    start: 1,
+    quantity: 1,
+    configID: firstConfig.id,
+  };
   return (
     <Formik
       initialValues={initValues}
@@ -32,7 +41,6 @@ function AddUserSystemsWidget() {
         const config = configs.find(
           (c) => c.id === Number(values.configID),
         ) as Configuration;
-        debugger;
         addUserSystems(values.tag, values.start, values.quantity, config);
       }}
     >
