@@ -15,9 +15,9 @@ function Schedules() {
     <Fragment>
       <PageHeader headerText="Schedules" />
       <AddUserSystemsWidget />
-      <Button onClick={() => userSystems.map((s) => removeUserSystem(s))}>
+      <button onClick={() => userSystems.map((s) => removeUserSystem(s))}>
         DEBUG - Remove Systems
-      </Button>
+      </button>
       <UserSystems userSystems={userSystems} />
     </Fragment>
   );
