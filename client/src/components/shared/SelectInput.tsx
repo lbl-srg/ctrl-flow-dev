@@ -24,7 +24,7 @@ export const SelectInput = ({
   return (
     <Fragment>
       <Label htmlFor={name}>{name}</Label>
-      <Field as="select" id={id} name={name} value={defaultVal}>
+      <Field as="select" id={id} name={name} selected={defaultVal}>
         {options.map((o) => (
           <option key={o.id} value={o.id}>
             {o.name}
