@@ -40,7 +40,7 @@ function AddUserSystemsWidget() {
         <label htmlFor="tag">System Tag</label>
         <Field id="tag" name="tag" placeholder="" />
         <label htmlFor="start">ID #</label>
-        <Field id="start" name="start #" type="number" placeholder="1" />
+        <Field id="start" name="start" type="number" placeholder="1" />
         <SelectInput
           id="configID"
           name="configID"
@@ -48,7 +48,7 @@ function AddUserSystemsWidget() {
           defaultOption={firstConfig as SelectInputOption}
         />
         <label htmlFor="quantity">Quantity</label>
-        <Field id="quantity" name="quantity #" type="number" placeholder="1" />
+        <Field id="quantity" name="quantity" type="number" placeholder="1" />
         <Button type="submit">Apply</Button>
       </Form>
     </Formik>
@@ -63,7 +63,13 @@ const UserSystems = ({ userSystems }: UserSystemsProps) => {
   return (
     <Fragment>
       <div>
-        <pre>{JSON.stringify(userSystems, null, 2)}</pre>
+        <pre>
+          {JSON.stringify(
+            userSystems.map((s) => `${s.tag}: ${s.config.name}`),
+            null,
+            2,
+          )}
+        </pre>
       </div>
     </Fragment>
   );
