@@ -14,7 +14,7 @@ function Template({ template, meta }: Template) {
 
       <ul className="configs">
         {meta.map((m) => (
-          <li key={m.tagPrefix}>
+          <li key={m.config.name}>
             <a className="grid">
               <div>{`${m.config.name}`}</div>
               <div>{`qty.${m.quantity}`}</div>
