@@ -2,17 +2,29 @@ import { Field } from "formik";
 import { Fragment } from "react";
 import styled from "@emotion/styled";
 
+export interface SelectInputOption {
+  id: number;
+  name: string;
+}
+
 interface SelectInputProps {
   id: string;
   name: string;
-  options: { id: number; name: string }[];
+  options: SelectInputOption[];
+  defaultOption?: SelectInputOption;
 }
 
-export const SelectInput = ({ id, name, options }: SelectInputProps) => {
+export const SelectInput = ({
+  id,
+  name,
+  options,
+  defaultOption,
+}: SelectInputProps) => {
+  const defaultVal = defaultOption ? defaultOption.id : null;
   return (
     <Fragment>
       <Label htmlFor={name}>{name}</Label>
-      <Field as="select" id={id} name={name}>
+      <Field as="select" id={id} name={name} value={defaultVal}>
         {options.map((o) => (
           <option key={o.id} value={o.id}>
             {o.name}
