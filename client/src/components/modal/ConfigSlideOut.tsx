@@ -121,7 +121,12 @@ const constructOption = ({
         options.find((o) => o.id === childO.id),
       ) || []) as Option[];
       return (
-        <SelectInput id={option.name} name={option.name} options={optionList} />
+        <SelectInput
+          id={option.name}
+          name={option.name}
+          label={option.name}
+          options={optionList}
+        />
       );
     }
     default:

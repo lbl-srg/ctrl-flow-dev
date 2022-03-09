@@ -10,6 +10,7 @@ export interface SelectInputOption {
 interface SelectInputProps {
   id: string;
   name: string;
+  label: string;
   options: SelectInputOption[];
   defaultOption?: SelectInputOption;
 }
@@ -17,14 +18,21 @@ interface SelectInputProps {
 export const SelectInput = ({
   id,
   name,
+  label,
   options,
   defaultOption,
 }: SelectInputProps) => {
   const defaultVal = defaultOption ? defaultOption.id : null;
   return (
     <Fragment>
-      <Label htmlFor={name}>{name}</Label>
-      <Field as="select" id={id} name={name} selected={defaultVal}>
+      <Label htmlFor={name}>{label}</Label>
+      <Field
+        as="select"
+        id={id}
+        name={name}
+        selected={defaultVal}
+        disabled={options.length === 0}
+      >
         {options.map((o) => (
           <option key={o.id} value={o.id}>
             {o.name}

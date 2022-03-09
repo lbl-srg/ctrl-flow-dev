@@ -32,7 +32,7 @@ function AddUserSystemsWidget() {
     tag: "",
     start: 1,
     quantity: 1,
-    configID: firstConfig.id,
+    configID: firstConfig?.id || undefined,
   };
   return (
     <Formik
@@ -52,6 +52,7 @@ function AddUserSystemsWidget() {
         <SelectInput
           id="configID"
           name="configID"
+          label="Configuration"
           options={multiZoneConfigs as SelectInputOption[]}
           defaultOption={firstConfig as SelectInputOption}
         />
