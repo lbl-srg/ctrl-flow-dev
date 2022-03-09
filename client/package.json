@@ -29,7 +29,8 @@
     "eject": "react-scripts eject",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "format": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --write ."
+    "format": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --write .",
+    "gh:build": "BUILD_PATH='../docs' react-scripts build"
   },
   "eslintConfig": {
     "extends": [
