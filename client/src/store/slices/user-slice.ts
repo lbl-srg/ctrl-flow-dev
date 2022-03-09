@@ -1,3 +1,12 @@
+/**
+ * Store slice containing actions and storage for user generated data
+ *
+ * TODO: clean up use of the zustand 'get()' and immer 'state'. Anytime there is a state update,
+ * the 'state' object must be used to find what is being updated and not the zustand 'get()'
+ *
+ * Zustand freezes (makes read only) items returned from a 'get()' and does not allow updates
+ */
+
 import { SetState, GetState } from "zustand";
 import { State, Option, SystemTemplate, GetAction, SetAction } from "../store";
 import { produce } from "immer";
@@ -103,13 +112,17 @@ const _saveProjectDetails: SetAction<Partial<ProjectDetails>> = (
     }),
   );
 
+const _getActiveProjectN: (state: State) => UserProjectN = (state) => {
+  return state.userProjects.find(
+    (proj) => proj.id === state.activeProject,
+  ) as UserProjectN;
+};
+
 /**
  * Returns a denormalized user project
  */
 const _getActiveProject: GetAction<UserProject> = (get) => {
-  const activeProjectN = get().userProjects.find(
-    (uProject) => uProject.id === get().activeProject,
-  ) as UserProjectN;
+  const activeProjectN = _getActiveProjectN(get());
   const activeProject = {};
 
   return {
@@ -246,7 +259,6 @@ const _updateConfig = (
 const _removeConfig: SetAction<Configuration> = (config, get, set) => {
   set(
     produce((state: State) => {
-      const configs = get().getActiveProject().configs;
       const activeProject = state.userProjects.find(
         (proj) => proj.id === state.activeProject,
       );
@@ -272,30 +284,31 @@ const _removeAllTemplateConfigs: SetAction<SystemTemplate> = (
   set(
     produce((state: State) => {
       const configs = state.configurations;
-      const activeProject = get().getActiveProject();
+      const activeProject = _getActiveProjectN(state);
+
       const configsToRemove = activeProject.configs
-        .map(
-          (config) => configs.find((c) => c.id === config.id) as ConfigurationN,
-        )
+        .map((cID) => configs.find((c) => c.id === cID) as ConfigurationN)
         .filter((c) => c.template === template.id)
         .map((c) => c.id);
 
+      const systemsToRemove = state.userSystems
+        .filter((s) => configsToRemove.includes(s.config))
+        .map((s) => s.id);
+
+      state.userSystems = state.userSystems.filter((s) =>
+        systemsToRemove.includes(s.id),
+      );
+
+      activeProject.userSystems = activeProject.userSystems.filter(
+        (sID) => !systemsToRemove.includes(sID),
+      );
+
       // remove configs
       activeProject.configs = activeProject.configs.filter(
-        (c) => !configsToRemove.includes(c.id),
+        (cID) => !configsToRemove.includes(cID),
       );
       state.configurations = configs.filter(
         (c) => !configsToRemove.includes(c.id),
-      );
-
-      // remove UserSystems from the project and general store
-      const systemsToRemove = state.userSystems.filter((s) =>
-        configsToRemove.includes(s.config),
-      );
-
-      systemsToRemove.map((s) => state.removeUserSystem(s));
-      activeProject.userSystems = activeProject.userSystems.filter(
-        (s) => !configsToRemove.includes(s.config.id),
       );
     }),
   );
@@ -409,7 +422,6 @@ const _getMetaConfigs = (
     const [system, ...rest] = systemList;
     const start = Math.min(...systemList.map((s) => s.number));
     const sortedList = systemList.sort((s1, s2) => s1.number - s2.number);
-    const configs = get().getConfigs();
 
     const metaConfig: MetaConfiguration = {
       tagPrefix: system.prefix,

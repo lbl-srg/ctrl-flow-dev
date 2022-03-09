@@ -1,6 +1,9 @@
+/**
+ * Store for linkage widget
+ */
+
 import create, { SetState, GetState } from "zustand";
 import { persist } from "zustand/middleware";
-import { produce } from "immer";
 
 import getMockData from "./mock-data";
 
