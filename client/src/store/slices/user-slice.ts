@@ -95,7 +95,6 @@ export interface UserSystem extends Omit<UserSystemN, "config"> {
 
 const _saveProjectDetails: SetAction<Partial<ProjectDetails>> = (
   projectDetails,
-  get,
   set,
 ) =>
   set(
@@ -256,7 +255,7 @@ const _updateConfig = (
     }),
   );
 
-const _removeConfig: SetAction<Configuration> = (config, get, set) => {
+const _removeConfig: SetAction<Configuration> = (config, set) => {
   set(
     produce((state: State) => {
       const activeProject = state.userProjects.find(
@@ -278,7 +277,6 @@ const _removeConfig: SetAction<Configuration> = (config, get, set) => {
 
 const _removeAllTemplateConfigs: SetAction<SystemTemplate> = (
   template,
-  get,
   set,
 ) => {
   set(
@@ -303,7 +301,6 @@ const _removeAllTemplateConfigs: SetAction<SystemTemplate> = (
         (sID) => !systemsToRemove.includes(sID),
       );
 
-      // remove configs
       activeProject.configs = activeProject.configs.filter(
         (cID) => !configsToRemove.includes(cID),
       );
@@ -490,7 +487,7 @@ export default function (
     userSystems: [],
     configurations: [],
     saveProjectDetails: (projectDetails) =>
-      _saveProjectDetails(projectDetails, get, set),
+      _saveProjectDetails(projectDetails, set),
     getActiveProject: () => _getActiveProject(get),
     setActiveProject: (userProject: UserProject) =>
       set({ activeProject: userProject.id }),
@@ -503,9 +500,9 @@ export default function (
       configName: string,
       selections: Selection[],
     ) => _updateConfig(config, configName, selections, set),
-    removeConfig: (config: Configuration) => _removeConfig(config, get, set),
+    removeConfig: (config: Configuration) => _removeConfig(config, set),
     removeAllTemplateConfigs: (template: SystemTemplate) =>
-      _removeAllTemplateConfigs(template, get, set),
+      _removeAllTemplateConfigs(template, set),
     addUserSystems: (
       prefix: string,
       start: number,

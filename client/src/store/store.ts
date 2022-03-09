@@ -46,11 +46,7 @@ export interface SystemTemplate
 }
 
 export type GetAction<T> = (get: GetState<State>) => T;
-export type SetAction<T> = (
-  payload: T,
-  get: GetState<State>,
-  set: SetState<State>,
-) => void;
+export type SetAction<T> = (payload: T, set: SetState<State>) => void;
 
 const _getTemplates: GetAction<SystemTemplate[]> = (get) => {
   const templatesN = get().templates;
