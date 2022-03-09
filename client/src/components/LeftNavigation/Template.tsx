@@ -1,11 +1,11 @@
-import { SystemTemplate, Configuration } from "../../store/store";
+import { SystemTemplate, MetaConfiguration } from "../../store/store";
 
 export interface Template {
   template: SystemTemplate;
-  configs: Configuration[];
+  meta: MetaConfiguration[];
 }
 
-function Template({ template, configs }: Template) {
+function Template({ template, meta }: Template) {
   return (
     <li>
       <a key={template.id} href={`#${template.name}-${template.name}`}>
@@ -13,9 +13,12 @@ function Template({ template, configs }: Template) {
       </a>
 
       <ul className="configs">
-        {configs.map((c) => (
-          <li key={c.id}>
-            <a>{c.name}</a>
+        {meta.map((m) => (
+          <li key={m.tagPrefix}>
+            <a className="grid">
+              <div>{`${m.config.name}`}</div>
+              <div>{`qty.${m.quantity}`}</div>
+            </a>
           </li>
         ))}
       </ul>

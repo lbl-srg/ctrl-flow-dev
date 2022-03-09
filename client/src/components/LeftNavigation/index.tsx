@@ -23,7 +23,7 @@ const LeftNav = () => {
           key={systemType.id}
           systemType={systemType}
           templates={systems.filter((s) => s.systemType.id === systemType.id)}
-          configs={configs}
+          meta={meta}
         />
       ))}
     </div>

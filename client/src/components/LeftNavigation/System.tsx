@@ -1,13 +1,18 @@
-import { SystemTemplate, SystemType, Configuration } from "../../store/store";
+import {
+  SystemTemplate,
+  SystemType,
+  Configuration,
+  MetaConfiguration,
+} from "../../store/store";
 import Template from "./Template";
 import IconMapping from "./icon-mappings";
 export interface SystemProps {
   systemType: SystemType;
   templates: SystemTemplate[];
-  configs: Configuration[];
+  meta: MetaConfiguration[];
 }
 
-function System({ systemType, templates, configs }: SystemProps) {
+function System({ systemType, templates, meta }: SystemProps) {
   const classes = ["system"];
   if (!templates.length) classes.push("empty");
 
@@ -31,7 +36,7 @@ function System({ systemType, templates, configs }: SystemProps) {
           <Template
             key={t.id}
             template={t}
-            configs={configs.filter((c) => c.template.id === t.id)}
+            meta={meta.filter((m) => m.config.template.id === t.id)}
           />
         ))}
       </ul>
