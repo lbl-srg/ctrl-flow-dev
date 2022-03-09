@@ -58,7 +58,7 @@ function AddUserSystemsWidget() {
         />
         <label htmlFor="quantity">Quantity</label>
         <Field id="quantity" name="quantity" type="number" placeholder="1" />
-        <Button type="submit">Apply</Button>
+        <button type="submit">Apply</button>
       </Form>
     </Formik>
   );
