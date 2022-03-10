@@ -1,10 +1,13 @@
 import { SetState, GetState } from "zustand";
-import { State } from "../store";
+import { State, SystemTemplate } from "../store";
 import { produce } from "immer";
 
 export interface uiSliceInterface {
   setLeftColWidth: (width: number) => void;
+  setActiveTemplate: (template: SystemTemplate) => void;
+  getActiveTemplate: () => SystemTemplate | undefined;
   leftColWidth: number;
+  activeTemplate: number | null;
 }
 
 export default function (
@@ -13,7 +16,7 @@ export default function (
 ): uiSliceInterface {
   return {
     leftColWidth: 300,
-
+    activeTemplate: null,
     setLeftColWidth: (width) => {
       set(
         produce((state: State) => {
@@ -21,5 +24,10 @@ export default function (
         }),
       );
     },
+    setActiveTemplate: (template) => set({ activeTemplate: template?.id }),
+    getActiveTemplate: () =>
+      get()
+        .getTemplates()
+        .find((t) => t.id === get().activeTemplate),
   };
 }
