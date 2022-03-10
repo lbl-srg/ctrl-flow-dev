@@ -159,16 +159,21 @@ const _getConfigsHelper: (
   }));
 };
 
-const _getConfigs: GetAction<Configuration[]> = (get) => {
-  const configs = get().configurations;
+const _getConfigs: (
+  template: SystemTemplate,
+  get: GetState<State>,
+) => Configuration[] = (template, get) => {
+  const allConfigs = get().configurations;
   const activeProject = get().userProjects.find(
     (proj) => proj.id === get().activeProject,
   ) as UserProjectN;
-  const projectConfigs = configs.filter(
-    (c) => activeProject.configs.indexOf(c.id) >= 0,
-  );
+  // get only active project configs, if a template has been provided
+  // just return configs that match that template
+  const configs = allConfigs
+    .filter((c) => activeProject.configs.indexOf(c.id) >= 0)
+    .filter((c) => (template ? c.template === template.id : true));
 
-  return _getConfigsHelper(projectConfigs, get);
+  return _getConfigsHelper(configs, get);
 };
 
 const _addConfig = (
@@ -454,7 +459,7 @@ export interface UserSliceInterface {
   getActiveTemplates: () => SystemTemplate[];
   getActiveProject: () => UserProject;
   setActiveProject: SetAction<UserProject>;
-  getConfigs: () => Configuration[];
+  getConfigs: (template?: SystemTemplate) => Configuration[];
   addConfig: (
     template: SystemTemplate,
     attrs?: Partial<ConfigurationN>,
@@ -492,7 +497,7 @@ export default function (
     setActiveProject: (userProject: UserProject) =>
       set({ activeProject: userProject.id }),
     getActiveTemplates: () => _getActiveTemplates(get),
-    getConfigs: () => _getConfigs(get),
+    getConfigs: (template = undefined) => _getConfigs(template, get),
     addConfig: (template: SystemTemplate, attrs = {}) =>
       _addConfig(template, attrs, set),
     updateConfig: (
