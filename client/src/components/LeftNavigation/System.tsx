@@ -10,9 +10,15 @@ export interface SystemProps {
   systemType: SystemType;
   templates: SystemTemplate[];
   meta: MetaConfiguration[];
+  setActiveTemplate: (template: SystemTemplate) => void;
 }
 
-function System({ systemType, templates, meta }: SystemProps) {
+function System({
+  systemType,
+  templates,
+  meta,
+  setActiveTemplate,
+}: SystemProps) {
   const classes = ["system"];
   if (!templates.length) classes.push("empty");
 
@@ -37,6 +43,7 @@ function System({ systemType, templates, meta }: SystemProps) {
             key={t.id}
             template={t}
             meta={meta.filter((m) => m.config.template.id === t.id)}
+            setActiveTemplate={setActiveTemplate}
           />
         ))}
       </ul>

@@ -160,7 +160,7 @@ const _getConfigsHelper: (
 };
 
 const _getConfigs: (
-  template: SystemTemplate,
+  template: SystemTemplate | undefined,
   get: GetState<State>,
 ) => Configuration[] = (template, get) => {
   const allConfigs = get().configurations;

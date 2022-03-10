@@ -1,16 +1,17 @@
 import { useStore } from "../../store/store";
 import System from "./System";
 
-import { deduplicate } from "../../utils/utils";
-
 import "../../styles/components/left-navigation.scss";
 
 const LeftNav = () => {
-  const { systemTypes, meta, getActiveTemplates } = useStore((state) => ({
-    meta: state.getMetaConfigs(),
-    systemTypes: state.systemTypes,
-    getActiveTemplates: state.getActiveTemplates,
-  }));
+  const { systemTypes, meta, getActiveTemplates, setActiveTemplate } = useStore(
+    (state) => ({
+      meta: state.getMetaConfigs(),
+      systemTypes: state.systemTypes,
+      getActiveTemplates: state.getActiveTemplates,
+      setActiveTemplate: state.setActiveTemplate,
+    }),
+  );
 
   const templates = getActiveTemplates();
 
@@ -24,6 +25,7 @@ const LeftNav = () => {
           systemType={systemType}
           templates={templates.filter((t) => t.systemType.id === systemType.id)}
           meta={meta}
+          setActiveTemplate={setActiveTemplate}
         />
       ))}
     </div>

@@ -3,12 +3,17 @@ import { SystemTemplate, MetaConfiguration } from "../../store/store";
 export interface Template {
   template: SystemTemplate;
   meta: MetaConfiguration[];
+  setActiveTemplate: (template: SystemTemplate) => void;
 }
 
-function Template({ template, meta }: Template) {
+function Template({ template, meta, setActiveTemplate }: Template) {
   return (
     <li>
-      <a key={template.id} href={`#${template.name}-${template.name}`}>
+      <a
+        key={template.id}
+        onClick={() => setActiveTemplate(template)}
+        href={`#${template.name}-${template.name}`}
+      >
         {template.name}
       </a>
 
