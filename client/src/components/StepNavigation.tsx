@@ -6,7 +6,6 @@ const steps = [
   { label: "Details", path: "/details" },
   { label: "Systems", path: "/systems" },
   { label: "Configs", path: "/configs" },
-  { label: "Quantities", path: "/quantities" },
   { label: "Schedules", path: "/schedules" },
   { label: "Results", path: "/results" },
 ];

@@ -102,13 +102,7 @@ test("navigate through steps", async () => {
   expect(
     screen.getByText("Configurations", { selector: "h1" }),
   ).toBeInTheDocument();
-  expect(screen.getByRole("link", { name: "Back" })).toBeInTheDocument();
-  expect(screen.getByText("Next Step: Quantities")).toBeInTheDocument();
 
-  userEvent.click(screen.getByText("Next Step: Quantities"));
-  expect(
-    screen.getByText("Quantities", { selector: "h1" }),
-  ).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Back" })).toBeInTheDocument();
   expect(screen.getByText("Next Step: Schedules")).toBeInTheDocument();
 

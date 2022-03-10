@@ -1,19 +1,19 @@
 import { useStore } from "../../store/store";
 import System from "./System";
+
 import "../../styles/components/left-navigation.scss";
 
 const LeftNav = () => {
-  const { configs, systemTypes, meta } = useStore((state) => ({
-    configs: state.getActiveProject().configs,
-    meta: state.getActiveProject().metaConfigs,
-    systemTypes: state.systemTypes,
-  }));
+  const { systemTypes, meta, getActiveTemplates, setActiveTemplate } = useStore(
+    (state) => ({
+      meta: state.getMetaConfigs(),
+      systemTypes: state.systemTypes,
+      getActiveTemplates: state.getActiveTemplates,
+      setActiveTemplate: state.setActiveTemplate,
+    }),
+  );
 
-  // console.log("config:", configs);
-  // console.log("meta:", meta);
-
-  const userSystemsSet = new Set(configs.map((c) => c.template));
-  const systems = Array.from(userSystemsSet.values());
+  const templates = getActiveTemplates();
 
   return (
     <div className="left-nav">
@@ -23,8 +23,9 @@ const LeftNav = () => {
         <System
           key={systemType.id}
           systemType={systemType}
-          templates={systems.filter((s) => s.systemType.id === systemType.id)}
-          configs={configs}
+          templates={templates.filter((t) => t.systemType.id === systemType.id)}
+          meta={meta}
+          setActiveTemplate={setActiveTemplate}
         />
       ))}
     </div>

@@ -1,21 +1,29 @@
-import { SystemTemplate, Configuration } from "../../store/store";
+import { SystemTemplate, MetaConfiguration } from "../../store/store";
 
 export interface Template {
   template: SystemTemplate;
-  configs: Configuration[];
+  meta: MetaConfiguration[];
+  setActiveTemplate: (template: SystemTemplate) => void;
 }
 
-function Template({ template, configs }: Template) {
+function Template({ template, meta, setActiveTemplate }: Template) {
   return (
     <li>
-      <a key={template.id} href={`#${template.name}`}>
+      <a
+        key={template.id}
+        onClick={() => setActiveTemplate(template)}
+        href={`#${template.name}`}
+      >
         {template.name}
       </a>
 
       <ul className="configs">
-        {configs.map((c) => (
-          <li key={c.id}>
-            <a>{c.name}</a>
+        {meta.map((m) => (
+          <li key={m.config.name}>
+            <a className="grid">
+              <div>{`${m.config.name}`}</div>
+              <div>{`qty.${m.quantity}`}</div>
+            </a>
           </li>
         ))}
       </ul>
