@@ -54,13 +54,6 @@ test("Adding configs adds active system templates", () => {
   expect(activeTemplates.length).toEqual(2);
 });
 
-// TODO: expand this once we are actually switching between projects
-test("Active Project defaults to 1", () => {
-  const project = useStore.getState().getActiveProject();
-
-  expect(project.id).toEqual(1);
-});
-
 test("Template/Option Denormalization", () => {
   const [templateN, ...templatesN] = useStore.getState().templates;
   const template = useStore

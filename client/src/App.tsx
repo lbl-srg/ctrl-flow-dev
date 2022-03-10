@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Configs from "./components/steps/Configs";
 import Details from "./components/steps/Details";
 import Landing from "./components/steps/Landing";
@@ -7,7 +7,6 @@ import Schedules from "./components/steps/Schedules";
 import Systems from "./components/steps/Systems";
 import Sidebarlayout from "./components/layouts/SidebarLayout";
 import LeftNav from "./components/LeftNavigation";
-import { useLocation } from "react-router-dom";
 
 import "./styles/application.scss";
 

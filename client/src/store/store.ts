@@ -6,7 +6,6 @@ import create, { SetState, GetState } from "zustand";
 import { persist } from "zustand/middleware";
 
 import getMockData from "./mock-data";
-
 import uiSlice, { uiSliceInterface } from "./slices/ui-slice";
 import userSlice, { UserSliceInterface } from "./slices/user-slice";
 

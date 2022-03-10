@@ -12,7 +12,7 @@ function Template({ template, meta, setActiveTemplate }: Template) {
       <a
         key={template.id}
         onClick={() => setActiveTemplate(template)}
-        href={`#${template.name}-${template.name}`}
+        href={`#${template.name}`}
       >
         {template.name}
       </a>

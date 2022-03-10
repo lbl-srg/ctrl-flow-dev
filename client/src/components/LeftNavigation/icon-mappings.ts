@@ -25,4 +25,11 @@ const map: IconMap[] = [
   },
 ];
 
+export function findIcon(systemName: string): string | null {
+  const match = map.find(
+    (item) => item.systemName.toLowerCase() === systemName.toLowerCase(),
+  );
+  return match ? match.iconClass : null;
+}
+
 export default map;

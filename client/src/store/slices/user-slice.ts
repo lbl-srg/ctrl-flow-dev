@@ -440,9 +440,11 @@ const _getMetaConfigs = (
 };
 
 // TODO... get a better uid system
-let _idIncrement = 0;
-const getID = () => (_idIncrement += 1);
-
+let _incriment = 0;
+function getID(): number {
+  _incriment++;
+  return Math.floor(Math.random() * 1000000000 + _incriment);
+}
 const initialUserProject: UserProjectN = {
   configs: [],
   userSystems: [],
@@ -487,7 +489,7 @@ export default function (
   get: GetState<State>,
 ): UserSliceInterface {
   return {
-    activeProject: 1,
+    activeProject: initialUserProject.id,
     userProjects: [initialUserProject],
     userSystems: [],
     configurations: [],

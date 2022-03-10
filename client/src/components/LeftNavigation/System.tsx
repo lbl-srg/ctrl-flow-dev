@@ -5,7 +5,7 @@ import {
   MetaConfiguration,
 } from "../../store/store";
 import Template from "./Template";
-import IconMapping from "./icon-mappings";
+import { findIcon } from "./icon-mappings";
 export interface SystemProps {
   systemType: SystemType;
   templates: SystemTemplate[];
@@ -22,16 +22,14 @@ function System({
   const classes = ["system"];
   if (!templates.length) classes.push("empty");
 
-  const icon = IconMapping.find(
-    (item) => item.systemName.toLowerCase() === systemType.name.toLowerCase(),
-  );
+  const icon = findIcon(systemType.name);
 
   return (
     <details className={classes.join(" ")}>
       <summary>
-        <a href={`/configs#${systemType.id}`}>
+        <a href={`#${systemType.name}`}>
           <div className="truncate">
-            {icon && <i className={icon.iconClass} />}
+            {icon && <i className={icon} />}
             {systemType.name}
           </div>
         </a>
