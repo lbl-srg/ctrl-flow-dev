@@ -3,20 +3,36 @@ import Button from "../Button";
 
 import { Formik, Field, Form } from "formik";
 import PageHeader from "../PageHeader";
-import { useStore, Configuration, UserSystem } from "../../store/store";
+import {
+  useStore,
+  Configuration,
+  UserSystem,
+  SystemTemplate,
+} from "../../store/store";
 
 import { SelectInput, SelectInputOption } from "../shared/SelectInput";
 
 function Schedules() {
-  const userSystems = useStore((state) => state.getUserSystems());
+  const template = useStore((state) => state.getActiveTemplate());
+  const configs = useStore((state) => state.getConfigs());
+  // Order of attempting to get a currently active template:
+  // 1. try the 'activeTemplate' from the store
+  // 2. otherwise get the first config found and get its template
+  // 3. leave undefined - no configs or user systems will show
+  const [firstConf, ..._rest] = configs;
+  const activeTemplate = template ? template : firstConf?.template;
+  const templateConfigs = activeTemplate
+    ? configs.filter((c) => c.template.id === activeTemplate.id)
+    : configs;
+  const userSystems = useStore((state) => state.getUserSystems(template));
   const removeUserSystem = useStore((state) => state.removeUserSystem);
 
   return (
     <Fragment>
       <PageHeader headerText="Schedules" />
-      <AddUserSystemsWidget />
+      <AddUserSystemsWidget configs={templateConfigs} />
       <button onClick={() => userSystems.map((s) => removeUserSystem(s))}>
-        DEBUG - Remove Systems
+        Remove Systems
       </button>
       <UserSystems userSystems={userSystems} />
     </Fragment>
@@ -46,19 +62,22 @@ function addSystemsFormSubmit(
   addUserSystems(formValues.tag, formValues.start, formValues.quantity, config);
 }
 
-function AddUserSystemsWidget() {
+interface AddUserSystemsWidget {
+  configs: Configuration[];
+}
+
+function AddUserSystemsWidget({ configs }: AddUserSystemsWidget) {
   const addUserSystems = useStore((state) => state.addUserSystems);
-  const configs = useStore((state) => state.getConfigs());
-  const multiZoneConfigs = configs.filter((c) => c.template.id === 1); // multi-zone VAV
-  const [firstConfig, ...others] = multiZoneConfigs;
+  const [config, ..._rest] = configs;
   const initValues = {
     tag: "",
     start: 1,
     quantity: 1,
-    configID: firstConfig?.id || undefined,
+    configID: config?.id || undefined,
   };
   return (
     <Formik
+      enableReinitialize={true}
       initialValues={initValues}
       onSubmit={(values) =>
         addSystemsFormSubmit(
@@ -77,8 +96,8 @@ function AddUserSystemsWidget() {
           id="configID"
           name="configID"
           label="Configuration"
-          options={multiZoneConfigs as SelectInputOption[]}
-          defaultOption={firstConfig as SelectInputOption}
+          options={configs as SelectInputOption[]}
+          defaultOption={config as SelectInputOption}
         />
         <label htmlFor="quantity">Quantity</label>
         <Field id="quantity" name="quantity" type="number" placeholder="1" />
