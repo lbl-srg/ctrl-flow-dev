@@ -49,11 +49,16 @@ interface SystemWidgetForm {
 function onWidgetSubmit(
   configs: Configuration[],
   formValues: SystemWidgetForm,
+  addUserSystems: (
+    tag: string,
+    start: number,
+    quantity: number,
+    config: Configuration,
+  ) => void,
 ) {
   const config = configs.find(
     (c) => c.id === Number(formValues.configID),
   ) as Configuration;
-  const addUserSystems = useStore((state) => state.addUserSystems);
   addUserSystems(formValues.tag, formValues.start, formValues.quantity, config);
 }
 
@@ -69,6 +74,8 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidget) {
     quantity: 1,
     configID: config?.id || undefined,
   };
+  const addUserSystems = useStore((state) => state.addUserSystems);
+
   return (
     <Formik
       enableReinitialize={true}
@@ -77,6 +84,7 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidget) {
         onWidgetSubmit(
           configs,
           values as SystemWidgetForm, // TODO: remove cast once we have proper form valildation
+          addUserSystems,
         )
       }
     >
