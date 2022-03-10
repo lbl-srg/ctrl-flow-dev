@@ -11,6 +11,12 @@ import {
 } from "../../store/store";
 
 import { SelectInput, SelectInputOption } from "../shared/SelectInput";
+import {
+  AddUserSystemsAction,
+  SystemWidgetForm,
+  AddUserSystemsWidgetProps,
+  UserSystemsProps,
+} from "./Schedules/Types";
 
 function Schedules() {
   const template = useStore((state) => state.getActiveTemplate());
@@ -39,22 +45,10 @@ function Schedules() {
   );
 }
 
-interface SystemWidgetForm {
-  tag: string;
-  start: number;
-  quantity: number;
-  configID: number;
-}
-
 function onWidgetSubmit(
   configs: Configuration[],
   formValues: SystemWidgetForm,
-  addUserSystems: (
-    tag: string,
-    start: number,
-    quantity: number,
-    config: Configuration,
-  ) => void,
+  addUserSystems: AddUserSystemsAction,
 ) {
   const config = configs.find(
     (c) => c.id === Number(formValues.configID),
@@ -62,11 +56,7 @@ function onWidgetSubmit(
   addUserSystems(formValues.tag, formValues.start, formValues.quantity, config);
 }
 
-interface AddUserSystemsWidget {
-  configs: Configuration[];
-}
-
-function AddUserSystemsWidget({ configs }: AddUserSystemsWidget) {
+function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
   const [config, ..._rest] = configs;
   const initValues = {
     tag: "",
@@ -106,10 +96,6 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidget) {
       </Form>
     </Formik>
   );
-}
-
-interface UserSystemsProps {
-  userSystems: UserSystem[];
 }
 
 const UserSystems = ({ userSystems }: UserSystemsProps) => {
