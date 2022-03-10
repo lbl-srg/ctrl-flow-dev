@@ -4,8 +4,10 @@ import { produce } from "immer";
 
 export interface uiSliceInterface {
   setLeftColWidth: (width: number) => void;
-  setActiveTemplate: (template: SystemTemplate) => void;
+  setActiveTemplate: (template: SystemTemplate | null) => void;
   getActiveTemplate: () => SystemTemplate | undefined;
+  setActiveSystemId: (id: number) => void;
+  activeSystemId: number | null;
   leftColWidth: number;
   activeTemplate: number | null;
 }
@@ -17,6 +19,7 @@ export default function (
   return {
     leftColWidth: 300,
     activeTemplate: null,
+    activeSystemId: null,
     setLeftColWidth: (width) => {
       set(
         produce((state: State) => {
@@ -24,7 +27,9 @@ export default function (
         }),
       );
     },
-    setActiveTemplate: (template) => set({ activeTemplate: template?.id }),
+    setActiveSystemId: (id) => set({ activeSystemId: id }),
+    setActiveTemplate: (template) =>
+      set({ activeTemplate: template?.id || null }),
     getActiveTemplate: () =>
       get()
         .getTemplates()

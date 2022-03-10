@@ -17,12 +17,11 @@ function Modal({ isOpen, close, className, children }: ModalInterface) {
       <dialog open={isOpen}>
         <div className="underlay" onClick={close}></div>
         <article>
-          <a
-            href="#close"
+          <button
             aria-label="Close"
-            className="close"
+            className="close outline"
             onClick={close}
-          ></a>
+          ></button>
 
           {children}
         </article>

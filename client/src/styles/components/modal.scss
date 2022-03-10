@@ -12,10 +12,11 @@ dialog {
       width: 100%;
       padding: var(--spacing-lg) var(--spacing-xl);
 
-      a.close {
+      .close {
         width: 2rem;
         height: 2rem;
         opacity: 0.7;
+        border: none;
         background-size: auto 2rem;
         position: absolute;
         top: var(--spacing-lg);

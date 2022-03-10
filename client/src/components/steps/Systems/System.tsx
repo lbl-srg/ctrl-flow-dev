@@ -3,10 +3,11 @@ import { findIcon } from "../../LeftNavigation/icon-mappings";
 
 interface SystemProps {
   title: string;
-  options: { text: string; checked: boolean }[];
+  id: number;
+  options: { id: number; text: string; checked: boolean }[];
 }
 
-function System({ title, options }: SystemProps) {
+function System({ id, title, options }: SystemProps) {
   const { getTemplates, addConfig, removeAllTemplateConfigs } = useStore(
     (state) => state,
   );
@@ -24,18 +25,18 @@ function System({ title, options }: SystemProps) {
   }
 
   return (
-    <li className="system" key={title}>
-      <h2 id={title}>
+    <li className="system">
+      <h2 id={`system-${id}`}>
         {iconClass && <i className={iconClass} />}
         {title}
       </h2>
 
       <ul>
-        {options.map(({ text, checked }) => {
-          const id = text;
+        {options.map((option) => {
+          const { text, checked, id } = option;
 
           return (
-            <li className="template" key={id} id={id}>
+            <li className="template" key={id} id={`template-${id}`}>
               <label>
                 <input
                   type="checkbox"

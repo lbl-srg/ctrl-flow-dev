@@ -7,12 +7,12 @@
     margin-bottom: 1rem;
   }
 
-  details {
+  .system {
     font-size: 1.2rem;
     margin: 0;
     padding: 0;
 
-    summary {
+    .title-bar {
       font-size: 1.1rem;
       font-weight: var(--font-weight-medium);
       padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm)
@@ -21,58 +21,40 @@
       transition: all 0.3s ease;
       position: relative;
 
-      > a {
+      .toggle {
+        position: absolute;
+        right: 0.5rem;
+        top: 0.7rem;
+        transition: transform 0.3s ease-out;
+        cursor: pointer;
+      }
+
+      .title {
+        cursor: pointer;
         color: var(--color-grey-dark);
         position: relative;
         padding-left: var(--spacing-lg);
-        display: flex;
-        pointer-events: none;
 
         i {
           color: inherit;
           position: absolute;
           left: 0;
-          top: -3px;
+          top: 0.1rem;
           font-size: 1.4rem;
         }
       }
+    }
 
-      &:after {
-        content: "\e906";
-        background-image: none;
-        font-family: "icomoon";
-        width: 1.5rem;
-        text-align: center;
-        font-size: 0.8rem;
-        position: absolute;
-        right: var(--spacing-xs);
-        top: 0.5rem;
+    &.open {
+      .toggle {
+        transform: rotate(180deg);
       }
     }
 
-    &.empty {
-      pointer-events: none;
-
-      summary {
-        background: none;
-        &:after {
-          display: none;
-        }
-      }
-
-      &[open] summary {
-        margin: 0;
-      }
-
-      ul {
-        display: none;
-      }
-    }
-
-    &[open] summary {
+    &.active .title-bar {
       background-color: var(--color-blue-dark);
 
-      &:after {
+      .toggle {
         color: white !important;
       }
 
@@ -80,13 +62,36 @@
         color: white;
       }
     }
+
+    &.empty {
+      .title-bar {
+        pointer-events: none;
+        background: none;
+      }
+
+      .toggle {
+        display: none;
+      }
+    }
   }
 
   ul.templates {
-    padding-left: calc(var(--spacing-lg) + 1.4rem);
+    padding-top: var(--spacing-sm);
+    padding-left: 0;
 
     > li {
       list-style: none;
+      padding-left: calc(var(--spacing-lg) + 1.4rem);
+      padding-right: var(--spacing-md);
+
+      &.active {
+        color: white;
+        background-color: var(--color-blue-dark);
+
+        a {
+          color: inherit;
+        }
+      }
     }
   }
 
@@ -97,6 +102,11 @@
       padding-left: var(--spacing-md);
       list-style: none;
       position: relative;
+      font-size: 0.8rem;
+
+      a {
+        cursor: pointer;
+      }
 
       &:before {
         content: " ";

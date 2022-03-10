@@ -1,51 +1,57 @@
-import {
-  SystemTemplate,
-  SystemType,
-  Configuration,
-  MetaConfiguration,
-} from "../../store/store";
-import Template from "./Template";
+import SystemTemplate from "./SystemTemplate";
 import { findIcon } from "./icon-mappings";
-export interface SystemProps {
-  systemType: SystemType;
-  templates: SystemTemplate[];
-  meta: MetaConfiguration[];
-  setActiveTemplate: (template: SystemTemplate) => void;
-}
+import { SystemProps } from "./Types";
+import { useStore } from "../../store/store";
+import { useState } from "react";
 
-function System({
-  systemType,
-  templates,
-  meta,
-  setActiveTemplate,
-}: SystemProps) {
+function System({ systemType, templates, meta }: SystemProps) {
+  const { activeSystemId, setActiveSystemId, setActiveTemplate } = useStore(
+    (state) => state,
+  );
+
   const classes = ["system"];
-  if (!templates.length) classes.push("empty");
+  const isActive = systemType.id === activeSystemId;
+  const [isOpen, setIsOpen] = useState(isActive);
 
-  const icon = findIcon(systemType.name);
+  if (!templates.length) classes.push("empty");
+  if (isActive) classes.push("active");
+  if (isOpen) classes.push("open");
+
+  const icon = findIcon(systemType.name) || "";
+
+  function setActive() {
+    setActiveTemplate(null);
+    setActiveSystemId(systemType.id);
+    setIsOpen(true);
+  }
 
   return (
-    <details className={classes.join(" ")}>
-      <summary>
-        <a href={`#${systemType.name}`}>
-          <div className="truncate">
-            {icon && <i className={icon} />}
-            {systemType.name}
-          </div>
+    <div className={classes.join(" ")}>
+      <div className="title-bar">
+        <a className="title truncate" onClick={setActive}>
+          <i className={icon} />
+          {systemType.name}
         </a>
-      </summary>
 
-      <ul className="templates">
-        {templates.map((t) => (
-          <Template
-            key={t.id}
-            template={t}
-            meta={meta.filter((m) => m.config.template.id === t.id)}
-            setActiveTemplate={setActiveTemplate}
-          />
-        ))}
-      </ul>
-    </details>
+        <i
+          onClick={() => setIsOpen(!isOpen)}
+          className={"toggle icon-down-open"}
+        />
+      </div>
+
+      {isOpen && (
+        <ul className="templates">
+          {templates.map((tpl) => (
+            <SystemTemplate
+              systemId={systemType.id}
+              key={tpl.id}
+              template={tpl}
+              meta={meta.filter((m) => m.config.template.id === tpl.id)}
+            />
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
