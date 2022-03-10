@@ -1,9 +1,4 @@
-import {
-  useStore,
-  Configuration,
-  UserSystem,
-  SystemTemplate,
-} from "../../../store/store";
+import { Configuration, UserSystem } from "../../../store/store";
 
 export interface SystemWidgetForm {
   tag: string;
