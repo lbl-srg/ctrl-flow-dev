@@ -46,19 +46,14 @@ interface SystemWidgetForm {
   configID: number;
 }
 
-function addSystemsFormSubmit(
+function onWidgetSubmit(
   configs: Configuration[],
   formValues: SystemWidgetForm,
-  addUserSystems: (
-    tag: string,
-    start: number,
-    quantity: number,
-    config: Configuration,
-  ) => void,
 ) {
   const config = configs.find(
     (c) => c.id === Number(formValues.configID),
   ) as Configuration;
+  const addUserSystems = useStore((state) => state.addUserSystems);
   addUserSystems(formValues.tag, formValues.start, formValues.quantity, config);
 }
 
@@ -67,7 +62,6 @@ interface AddUserSystemsWidget {
 }
 
 function AddUserSystemsWidget({ configs }: AddUserSystemsWidget) {
-  const addUserSystems = useStore((state) => state.addUserSystems);
   const [config, ..._rest] = configs;
   const initValues = {
     tag: "",
@@ -80,10 +74,9 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidget) {
       enableReinitialize={true}
       initialValues={initValues}
       onSubmit={(values) =>
-        addSystemsFormSubmit(
+        onWidgetSubmit(
           configs,
           values as SystemWidgetForm, // TODO: remove cast once we have proper form valildation
-          addUserSystems,
         )
       }
     >
