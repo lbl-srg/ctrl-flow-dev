@@ -1,16 +1,17 @@
 import { Fragment } from "react";
-import Button from "../Button";
 
 import { Formik, Field, Form } from "formik";
-import PageHeader from "../PageHeader";
-import {
-  useStore,
-  Configuration,
-  UserSystem,
-  SystemTemplate,
-} from "../../store/store";
+import PageHeader from "../../PageHeader";
+import { useStore, Configuration, UserSystem } from "../../../store/store";
 
-import { SelectInput, SelectInputOption } from "../shared/SelectInput";
+import {
+  SystemWidgetForm,
+  AddUserSystemsWidgetProps,
+  UserSystemsProps,
+  AddUserSystemsAction,
+} from "./Types";
+
+import { SelectInput, SelectInputOption } from "../../shared/SelectInput";
 
 function Schedules() {
   const template = useStore((state) => state.getActiveTemplate());
@@ -39,29 +40,18 @@ function Schedules() {
   );
 }
 
-interface SystemWidgetForm {
-  tag: string;
-  start: number;
-  quantity: number;
-  configID: number;
-}
-
 function onWidgetSubmit(
   configs: Configuration[],
   formValues: SystemWidgetForm,
+  addUserSystems: AddUserSystemsAction,
 ) {
   const config = configs.find(
     (c) => c.id === Number(formValues.configID),
   ) as Configuration;
-  const addUserSystems = useStore((state) => state.addUserSystems);
   addUserSystems(formValues.tag, formValues.start, formValues.quantity, config);
 }
 
-interface AddUserSystemsWidget {
-  configs: Configuration[];
-}
-
-function AddUserSystemsWidget({ configs }: AddUserSystemsWidget) {
+function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
   const [config, ..._rest] = configs;
   const initValues = {
     tag: "",
@@ -69,6 +59,8 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidget) {
     quantity: 1,
     configID: config?.id || undefined,
   };
+  const addUserSystems = useStore((state) => state.addUserSystems);
+
   return (
     <Formik
       enableReinitialize={true}
@@ -77,6 +69,7 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidget) {
         onWidgetSubmit(
           configs,
           values as SystemWidgetForm, // TODO: remove cast once we have proper form valildation
+          addUserSystems,
         )
       }
     >
@@ -98,10 +91,6 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidget) {
       </Form>
     </Formik>
   );
-}
-
-interface UserSystemsProps {
-  userSystems: UserSystem[];
 }
 
 const UserSystems = ({ userSystems }: UserSystemsProps) => {

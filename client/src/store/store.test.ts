@@ -1,4 +1,11 @@
-import { useStore, Option, Selection, SystemTemplate } from "../store/store";
+import {
+  useStore,
+  Configuration,
+  MetaConfiguration,
+  Option,
+  Selection,
+  SystemTemplate,
+} from "../store/store";
 
 jest.mock("./mock-data");
 
@@ -208,18 +215,22 @@ test("Metaconfigs are correctly generated based on systems added", () => {
     .getState()
     .getTemplates();
 
-  useStore.getState().addConfig(template1);
-  useStore.getState().addConfig(template2);
+  useStore.getState().addConfig(template1, { name: prefix });
+  useStore.getState().addConfig(template2, { name: prefix2 });
 
-  let [config1, config2, ...rest] = useStore.getState().getConfigs();
+  const [config1, config2, ..._rest] = useStore.getState().getConfigs();
+
   useStore.getState().addUserSystems(prefix, start, quantity1, config1);
-  useStore.getState().addUserSystems(prefix, start, quantity2, config2);
-  useStore.getState().addUserSystems(prefix2, start, quantity1, config1);
+  useStore.getState().addUserSystems(prefix2, start, quantity2, config2);
+  useStore.getState().addUserSystems(prefix, start, quantity1, config1);
 
   const metaConfigs = useStore.getState().getMetaConfigs();
-
   expect(metaConfigs.length).toBe(2);
+
   const [metaConfig1, metaConfig2] = metaConfigs;
+
+  expect(metaConfig1).toBeTruthy();
+  expect(metaConfig2).toBeTruthy();
 
   expect(metaConfig1.quantity).toBe(quantity1 + quantity1);
   expect(metaConfig2.quantity).toBe(quantity2);

@@ -405,25 +405,37 @@ const _getMetaConfigs = (
   template: SystemTemplate | undefined,
   get: GetState<State>,
 ) => {
-  const systemMap: { [key: string]: UserSystem[] } = {};
+  const systemMap: { [key: string]: { systems: UserSystem[]; order: number } } =
+    {};
   const systems = get().getUserSystems();
 
   const filteredSystems = template
     ? systems.filter((system) => system.config?.template.id === template.id)
     : systems;
 
+  // Order is tracked to make sure metaconfigs are output in the declarative
+  // order of the user systems
+  let order = 0;
+
   filteredSystems.map((s) => {
     const key = `${s.config.id}`;
-    const metaConfigList = systemMap[key] || [];
-    systemMap[key] = [...metaConfigList, s];
+    const entry = systemMap[key];
+    if (entry) {
+      entry.systems = [...entry.systems, s];
+    } else {
+      systemMap[key] = { systems: [s], order: order };
+      order += 1;
+    }
   });
 
   const metaConfigList: MetaConfiguration[] = [];
 
-  Object.entries(systemMap).map(([key, systemList]) => {
-    const [system, ...rest] = systemList;
-    const start = Math.min(...systemList.map((s) => s.number));
-    const sortedList = systemList.sort((s1, s2) => s1.number - s2.number);
+  Object.entries(systemMap).map(([key, systemEntry]) => {
+    const [system, ...rest] = systemEntry.systems;
+    const start = Math.min(...systemEntry.systems.map((s) => s.number));
+    const sortedList = systemEntry.systems.sort(
+      (s1, s2) => s1.number - s2.number,
+    );
 
     const metaConfig: MetaConfiguration = {
       tagPrefix: system.prefix,
@@ -433,7 +445,7 @@ const _getMetaConfigs = (
       systems: sortedList,
     };
 
-    metaConfigList.push(metaConfig);
+    metaConfigList[systemEntry.order] = metaConfig;
   });
 
   return metaConfigList;
