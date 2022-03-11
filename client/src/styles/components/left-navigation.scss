@@ -83,6 +83,8 @@
       list-style: none;
       padding-left: calc(var(--spacing-lg) + 1.4rem);
       padding-right: var(--spacing-md);
+      margin: 0;
+      padding-bottom: var(--spacing-xs);
 
       &.active {
         color: white;
