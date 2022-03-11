@@ -2,7 +2,6 @@ import { Fragment } from "react";
 import PageHeader from "../../PageHeader";
 import { useStore } from "../../../store/store";
 import System from "./System";
-import { useEffect } from "react";
 
 import "../../../styles/steps/systems.scss";
 
@@ -15,14 +14,6 @@ const Systems = () => {
       activeTemplate: state.getActiveTemplate(),
     };
   });
-
-  // useEffect(() => {
-  //   let $el;
-  //   if (scrollToTemplateId)
-  //     $el = document.querySelector(`#template-${scrollToTemplateId}`);
-
-  //   if ($el) $el?.scrollIntoView({ behavior: "smooth" });
-  // }, [scrollToTemplateId]);
 
   return (
     <Fragment>
