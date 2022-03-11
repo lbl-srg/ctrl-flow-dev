@@ -1,6 +1,7 @@
-import { ReactNode, MouseEvent, useState } from "react";
+import { ReactNode, MouseEvent, useState, UIEvent } from "react";
 import { useStore } from "../../store/store";
 import StepNavigation from "../StepNavigation";
+import { isInViewPort, getAll } from "../../utils/dom-utils";
 
 import "../../styles/components/sidebar-layout.scss";
 
@@ -10,25 +11,41 @@ export interface SidebarLayoutProps {
   isFullScreen?: boolean;
 }
 
-const MIN_WIDTH = 300;
+const MIN_WIDTH = 400;
 
-const Sidebarlayout = ({
+function Sidebarlayout({
   contentLeft,
   contentRight,
   isFullScreen = true,
-}: SidebarLayoutProps) => {
-  const { projectDetails, leftColWidth, setLeftColWidth } = useStore(
-    (state) => {
-      return {
-        leftColWidth: state.leftColWidth,
-        setLeftColWidth: state.setLeftColWidth,
-        projectDetails: state.getActiveProject()?.projectDetails,
-      };
-    },
-  );
+}: SidebarLayoutProps) {
+  const {
+    projectDetails,
+    leftColWidth,
+    setLeftColWidth,
+    setActiveTemplateId,
+    setActiveSystemId,
+    watchScroll,
+  } = useStore((state) => {
+    return {
+      ...state,
+      projectDetails: state.getActiveProject()?.projectDetails,
+    };
+  });
 
   const projectName = projectDetails?.name;
   const [isDragging, setIsDragging] = useState<boolean>(false);
+
+  function spy() {
+    if (!watchScroll) return;
+
+    const [$firstTpl] = getAll("[data-spy='template']").filter(isInViewPort);
+
+    if ($firstTpl) {
+      setActiveTemplateId(
+        Number($firstTpl.getAttribute("id")?.replace("template-", "")),
+      );
+    }
+  }
 
   function recordDrag(ev: MouseEvent): void {
     if (isDragging) {
@@ -37,15 +54,22 @@ const Sidebarlayout = ({
     }
   }
 
+  const classes = ["sidebar-layout"];
+  if (isDragging) classes.push("dragging");
+  if (isFullScreen) classes.push("fullscreen");
+
   return (
     <main
-      className={isDragging ? "sidebar-layout dragging" : "sidebar-layout"}
+      className={classes.join(" ")}
       onMouseUp={() => setIsDragging(false)}
       onMouseMove={recordDrag}
     >
       <div className="col-container">
         {!isFullScreen && (
-          <section className="left-col" style={{ width: leftColWidth }}>
+          <section
+            className="left-col"
+            style={{ width: isFullScreen ? "100vw" : leftColWidth }}
+          >
             <header>
               All Projects &gt; &nbsp;
               <strong>{projectName}</strong>
@@ -62,7 +86,10 @@ const Sidebarlayout = ({
 
         <section
           className="right-col"
-          style={{ width: `calc(100vw - ${leftColWidth}px)` }}
+          onScroll={spy}
+          style={{
+            width: isFullScreen ? "100vw" : `calc(100vw - ${leftColWidth}px)`,
+          }}
         >
           {contentRight}
         </section>
@@ -71,6 +98,6 @@ const Sidebarlayout = ({
       {!isFullScreen && <StepNavigation />}
     </main>
   );
-};
+}
 
 export default Sidebarlayout;

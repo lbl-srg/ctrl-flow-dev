@@ -3,6 +3,10 @@
   flex-direction: column;
   height: calc(100vh - var(--footer-height));
 
+  &.fullscreen {
+    height: 100vh;
+  }
+
   &.dragging {
     user-select: none;
 
@@ -77,7 +81,7 @@
     .right-col {
       flex-grow: 1;
       overflow: auto;
-      margin: 0 var(--spacing-lg) var(--spacing-md) var(--spacing-lg);
+      padding: 0 var(--spacing-lg) var(--spacing-md) var(--spacing-lg);
 
       > header {
         border-bottom: 1px solid var(--color-gray);

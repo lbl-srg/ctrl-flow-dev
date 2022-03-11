@@ -4,13 +4,11 @@ import System from "./System";
 import "../../styles/components/left-navigation.scss";
 
 const LeftNav = () => {
-  const { systemTypes, meta, getActiveTemplates } = useStore((state) => ({
+  const { systemTypes, meta, templates } = useStore((state) => ({
+    ...state,
     meta: state.getMetaConfigs(),
-    systemTypes: state.systemTypes,
-    getActiveTemplates: state.getActiveTemplates,
+    templates: state.getActiveTemplates(),
   }));
-
-  const templates = getActiveTemplates();
 
   return (
     <div className="left-nav">
