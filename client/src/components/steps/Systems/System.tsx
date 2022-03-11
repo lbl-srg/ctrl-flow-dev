@@ -25,8 +25,8 @@ function System({ id, title, options }: SystemProps) {
   }
 
   return (
-    <li className="system">
-      <h2 id={`system-${id}`} data-spy="system">
+    <li className="system" id={`system-${id}`} data-spy="system">
+      <h2>
         {iconClass && <i className={iconClass} />}
         {title}
       </h2>

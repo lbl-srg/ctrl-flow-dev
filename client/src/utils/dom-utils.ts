@@ -23,3 +23,9 @@ export function scrollToSelector(selector: string): void {
 export function getAll(selector: string): HTMLElement[] {
   return Array.from(document.querySelectorAll(selector));
 }
+
+export function getNumericId($el: Element): number | null {
+  const idStr = $el.getAttribute("id") || "";
+  const [str, val] = idStr.split("-");
+  return val ? Number(val) : null;
+}

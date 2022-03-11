@@ -1,7 +1,7 @@
 import { ReactNode, MouseEvent, useState, UIEvent } from "react";
 import { useStore } from "../../store/store";
 import StepNavigation from "../StepNavigation";
-import { isInViewPort, getAll } from "../../utils/dom-utils";
+import { isInViewPort, getAll, getNumericId } from "../../utils/dom-utils";
 
 import "../../styles/components/sidebar-layout.scss";
 
@@ -41,9 +41,12 @@ function Sidebarlayout({
     const [$firstTpl] = getAll("[data-spy='template']").filter(isInViewPort);
 
     if ($firstTpl) {
-      setActiveTemplateId(
-        Number($firstTpl.getAttribute("id")?.replace("template-", "")),
-      );
+      setActiveTemplateId(getNumericId($firstTpl));
+      const $system = $firstTpl.closest("[data-spy='system']");
+      if ($system) {
+        const id = getNumericId($system);
+        if (id) setActiveSystemId(id);
+      }
     }
   }
 
