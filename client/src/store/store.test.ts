@@ -61,6 +61,23 @@ test("Adding configs adds active system templates", () => {
   expect(activeTemplates.length).toEqual(2);
 });
 
+test("Active templates are returned alphabetized by name", () => {
+  const templates = useStore.getState().getTemplates();
+
+  const [t1, t2, ..._rest] = templates;
+  useStore.getState().addConfig(t1);
+  useStore.getState().addConfig(t2);
+  const activeTemplates = useStore.getState().getActiveTemplates();
+  const alphabetizedNames = activeTemplates.map((t) => t.name).sort();
+  expect(activeTemplates.map((t) => t.name)).toEqual(alphabetizedNames);
+
+  const notSortedActiveTemplates = useStore.getState().getActiveTemplates(null);
+
+  expect(activeTemplates.map((t) => t.name)).not.toEqual(
+    notSortedActiveTemplates.map((t) => t.name),
+  );
+});
+
 test("Template/Option Denormalization", () => {
   const [templateN, ...templatesN] = useStore.getState().templates;
   const template = useStore

@@ -64,6 +64,8 @@ export type SelectionN = {
   value?: number | boolean | string;
 };
 
+export type CompareFunction<T> = (a: T, b: T) => 0 | 1 | -1;
+
 export interface Selection extends Omit<SelectionN, "parent" | "option"> {
   parent: Option;
   option: Option; // TODO: remove this 'option' key and add 'Option' as a possible type for value
@@ -72,7 +74,7 @@ export interface Selection extends Omit<SelectionN, "parent" | "option"> {
 export interface ConfigurationN {
   id: number;
   template: number; // ID of SystemTemplate
-  name: string | undefined;
+  name: string;
   selections: SelectionN[];
 }
 
@@ -464,16 +466,25 @@ const initialUserProject: UserProjectN = {
   id: getID(),
 };
 
+type SortableByName = Required<{ name: string }>;
+const sortByName = (a: SortableByName, b: SortableByName) =>
+  a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+
 export interface UserSliceInterface {
   saveProjectDetails: (projectDetails: Partial<ProjectDetails>) => void;
   configurations: ConfigurationN[];
   userProjects: UserProjectN[];
   userSystems: UserSystemN[];
   activeProject: number;
-  getActiveTemplates: () => SystemTemplate[];
+  getActiveTemplates: (
+    sort?: CompareFunction<SortableByName> | null | undefined,
+  ) => SystemTemplate[];
   getActiveProject: () => UserProject;
   setActiveProject: SetAction<UserProject>;
-  getConfigs: (template?: SystemTemplate) => Configuration[];
+  getConfigs: (
+    template?: SystemTemplate,
+    sort?: CompareFunction<SortableByName> | null | undefined,
+  ) => Configuration[];
   addConfig: (
     template: SystemTemplate,
     attrs?: Partial<ConfigurationN>,
@@ -485,7 +496,10 @@ export interface UserSliceInterface {
   ) => void;
   removeConfig: (config: Configuration) => void;
   removeAllTemplateConfigs: (template: SystemTemplate) => void;
-  getUserSystems: (template?: SystemTemplate) => UserSystem[];
+  getUserSystems: (
+    template?: SystemTemplate,
+    sort?: CompareFunction<UserSystem> | null | undefined,
+  ) => UserSystem[];
   addUserSystems: (
     prefix: string,
     start: number,
@@ -493,7 +507,10 @@ export interface UserSliceInterface {
     config: Configuration,
   ) => void;
   removeUserSystem: (system: UserSystem | UserSystemN) => void;
-  getMetaConfigs: (template?: SystemTemplate) => MetaConfiguration[];
+  getMetaConfigs: (
+    template?: SystemTemplate,
+    sort?: CompareFunction<MetaConfiguration> | null | undefined,
+  ) => MetaConfiguration[];
 }
 
 export default function (
@@ -510,8 +527,10 @@ export default function (
     getActiveProject: () => _getActiveProject(get),
     setActiveProject: (userProject: UserProject) =>
       set({ activeProject: userProject.id }),
-    getActiveTemplates: () => _getActiveTemplates(get),
-    getConfigs: (template = undefined) => _getConfigs(template, get),
+    getActiveTemplates: (sort = sortByName) =>
+      sort ? _getActiveTemplates(get).sort(sort) : _getActiveTemplates(get),
+    getConfigs: (template = undefined, sort = sortByName) =>
+      sort ? _getConfigs(template, get).sort(sort) : _getConfigs(template, get),
     addConfig: (template: SystemTemplate, attrs = {}) =>
       _addConfig(template, attrs, set),
     updateConfig: (
@@ -528,9 +547,13 @@ export default function (
       quantity: number,
       config: Configuration,
     ) => _addUserSystems(prefix, start, quantity, config, set),
-    getUserSystems: (template = undefined) => _getUserSystems(template, get),
+    getUserSystems: (template = undefined, sort?) =>
+      _getUserSystems(template, get),
     removeUserSystem: (userSystem: UserSystem | UserSystemN) =>
       _removeUserSystem(userSystem, set),
-    getMetaConfigs: (template = undefined) => _getMetaConfigs(template, get),
+    getMetaConfigs: (template = undefined, sort) =>
+      sort
+        ? _getMetaConfigs(template, get).sort(sort)
+        : _getMetaConfigs(template, get),
   };
 }
