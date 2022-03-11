@@ -218,25 +218,16 @@ test("Metaconfigs are correctly generated based on systems added", () => {
   useStore.getState().addConfig(template1, { name: prefix });
   useStore.getState().addConfig(template2, { name: prefix2 });
 
-  let configs = useStore.getState().getConfigs();
-
-  const config1 = configs.find((c) => c.name === prefix) as Configuration;
-  const config2 = configs.find((c) => c.name === prefix2) as Configuration;
+  const [config1, config2, ..._rest] = useStore.getState().getConfigs();
 
   useStore.getState().addUserSystems(prefix, start, quantity1, config1);
   useStore.getState().addUserSystems(prefix2, start, quantity2, config2);
   useStore.getState().addUserSystems(prefix, start, quantity1, config1);
 
   const metaConfigs = useStore.getState().getMetaConfigs();
-  console.log(metaConfigs);
   expect(metaConfigs.length).toBe(2);
 
-  const metaConfig1 = metaConfigs.find(
-    (m) => m.config.id == config1.id,
-  ) as MetaConfiguration;
-  const metaConfig2 = metaConfigs.find(
-    (m) => m.config.id == config2.id,
-  ) as MetaConfiguration;
+  const [metaConfig1, metaConfig2] = metaConfigs;
 
   expect(metaConfig1).toBeTruthy();
   expect(metaConfig2).toBeTruthy();
