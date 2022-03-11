@@ -32,12 +32,12 @@ test("Changing active template should update widget", () => {
   act(() => {
     useStore.getState().addConfig(template1, { name: configName1 });
     useStore.getState().addConfig(template2, { name: configName2 });
-    useStore.getState().setActiveTemplate(template2);
+    useStore.getState().setActiveTemplateId(template2.id);
   });
   expect(screen.getByText(configName2)).toBeInTheDocument();
 
   act(() => {
-    useStore.getState().setActiveTemplate(template1);
+    useStore.getState().setActiveTemplateId(template1.id);
   });
 
   expect(screen.getByText(configName1)).toBeInTheDocument();

@@ -25,8 +25,8 @@ function System({ id, title, options }: SystemProps) {
   }
 
   return (
-    <li className="system">
-      <h2 id={`system-${id}`}>
+    <li className="system" id={`system-${id}`} data-spy="system">
+      <h2>
         {iconClass && <i className={iconClass} />}
         {title}
       </h2>
@@ -36,7 +36,12 @@ function System({ id, title, options }: SystemProps) {
           const { text, checked, id } = option;
 
           return (
-            <li className="template" key={id} id={`template-${id}`}>
+            <li
+              className="template"
+              key={id}
+              id={`template-${id}`}
+              data-spy={checked ? "template" : "disabled"}
+            >
               <label>
                 <input
                   type="checkbox"

@@ -2,32 +2,18 @@ import { Fragment } from "react";
 import PageHeader from "../../PageHeader";
 import { useStore } from "../../../store/store";
 import System from "./System";
-import { useEffect } from "react";
 
 import "../../../styles/steps/systems.scss";
 
 const Systems = () => {
-  const {
-    getTemplates,
-    systemTypes,
-    getActiveTemplate,
-    getActiveTemplates,
-    activeSystemId,
-  } = useStore((state) => state);
-
-  const templates = getTemplates();
-  const activeTemplates = getActiveTemplates();
-  const activeTemplate = getActiveTemplate();
-
-  useEffect(() => {
-    let $el;
-    if (activeTemplate)
-      $el = document.querySelector(`#template-${activeTemplate.id}`);
-    else if (activeSystemId)
-      $el = document.querySelector(`#system-${activeSystemId}`);
-
-    if ($el) $el?.scrollIntoView({ behavior: "smooth" });
-  }, [activeSystemId, activeTemplate]);
+  const { systemTypes, activeTemplates, templates } = useStore((state) => {
+    return {
+      ...state,
+      templates: state.getTemplates(),
+      activeTemplates: state.getActiveTemplates(),
+      activeTemplate: state.getActiveTemplate(),
+    };
+  });
 
   return (
     <Fragment>

@@ -1,12 +1,18 @@
 import { SystemTemplateProps } from "./Types";
 import { useStore } from "../../store/store";
 import { useRef, MouseEvent } from "react";
+import { scrollToSelector } from "../../utils/dom-utils";
 
 function Template({ template, meta, systemId }: SystemTemplateProps) {
-  const { getActiveTemplate, setActiveTemplate, setActiveSystemId } = useStore(
-    (state) => state,
-  );
-  const active = getActiveTemplate()?.id === template.id;
+  const {
+    activeTemplateId,
+    setActiveTemplateId,
+    setActiveSystemId,
+    timeoutScroll,
+  } = useStore((state) => state);
+
+  const active = activeTemplateId === template.id;
+
   const ref = useRef(null);
   const rootClass = active ? "active" : "";
 
@@ -14,7 +20,9 @@ function Template({ template, meta, systemId }: SystemTemplateProps) {
     // prevent default since its a <a> with no valid href
     ev.preventDefault();
     setActiveSystemId(systemId);
-    setActiveTemplate(template);
+    setActiveTemplateId(template.id);
+    timeoutScroll();
+    scrollToSelector(`#template-${template.id}`);
   }
 
   return (

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import EditDetailsModal from "../modal/EditDetailsModal";
-import { useState } from "react";
+import { useState, Fragment } from "react";
 
 import "../../styles/steps/landing.scss";
 
@@ -10,7 +10,7 @@ function Landing() {
   const navigate = useNavigate();
 
   return (
-    <div className="container-fluid">
+    <Fragment>
       <EditDetailsModal
         close={() => setModalOpen(false)}
         isOpen={modalOpen}
@@ -76,7 +76,7 @@ function Landing() {
           </div>
         </div>
       </main>
-    </div>
+    </Fragment>
   );
 }
 

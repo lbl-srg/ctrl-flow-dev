@@ -2,10 +2,11 @@ import SystemTemplate from "./SystemTemplate";
 import { findIcon } from "./icon-mappings";
 import { SystemProps } from "./Types";
 import { useStore } from "../../store/store";
+import { scrollToSelector } from "../../utils/dom-utils";
 import { useState } from "react";
 
 function System({ systemType, templates, meta }: SystemProps) {
-  const { activeSystemId, setActiveSystemId, setActiveTemplate } = useStore(
+  const { activeSystemId, setActiveSystemId, timeoutScroll } = useStore(
     (state) => state,
   );
 
@@ -20,9 +21,10 @@ function System({ systemType, templates, meta }: SystemProps) {
   const icon = findIcon(systemType.name) || "";
 
   function setActive() {
-    setActiveTemplate(null);
     setActiveSystemId(systemType.id);
+    scrollToSelector(`#system-${systemType.id}`);
     setIsOpen(true);
+    timeoutScroll();
   }
 
   return (
