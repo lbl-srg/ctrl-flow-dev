@@ -11,7 +11,7 @@ import { SetState, GetState } from "zustand";
 import { State, Option, SystemTemplate, GetAction, SetAction } from "../store";
 import { produce } from "immer";
 
-import { deduplicate } from "../../utils/utils";
+import { deduplicate, sortByName, SortableByName } from "../../utils/utils";
 
 export interface ProjectDetails {
   name: string;
@@ -64,7 +64,7 @@ export type SelectionN = {
   value?: number | boolean | string;
 };
 
-export type CompareFunction<T> = (a: T, b: T) => 0 | 1 | -1;
+export type CompareFunction<T> = (a: T, b: T) => number;
 
 export interface Selection extends Omit<SelectionN, "parent" | "option"> {
   parent: Option;
@@ -465,10 +465,6 @@ const initialUserProject: UserProjectN = {
   projectDetails: {},
   id: getID(),
 };
-
-type SortableByName = Required<{ name: string }>;
-const sortByName = (a: SortableByName, b: SortableByName) =>
-  a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
 
 export interface UserSliceInterface {
   saveProjectDetails: (projectDetails: Partial<ProjectDetails>) => void;

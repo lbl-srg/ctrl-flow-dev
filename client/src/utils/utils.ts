@@ -1,3 +1,5 @@
+export type SortableByName = Required<{ name: string }>;
+
 /**
  * Returns changed object values (does NOT do nested comparisons)
  */
@@ -20,3 +22,6 @@ export const getChangedValues = (
  *
  */
 export const deduplicate = (arr: any[]) => Array.from(new Set(arr).values());
+
+export const sortByName = (a: SortableByName, b: SortableByName): number =>
+  a.name.localeCompare(b.name);

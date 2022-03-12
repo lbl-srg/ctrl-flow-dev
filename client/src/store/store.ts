@@ -8,6 +8,7 @@ import { persist } from "zustand/middleware";
 import getMockData from "./mock-data";
 import uiSlice, { uiSliceInterface } from "./slices/ui-slice";
 import userSlice, { UserSliceInterface } from "./slices/user-slice";
+import { sortByName } from "../utils/utils";
 
 export * from "./slices/user-slice";
 
@@ -47,11 +48,11 @@ export interface SystemTemplate
 export type GetAction<T> = (get: GetState<State>) => T;
 export type SetAction<T> = (payload: T, set: SetState<State>) => void;
 
-const _getTemplates: GetAction<SystemTemplate[]> = (get) => {
+const _getTemplates: GetAction<SystemTemplate[]> = (get, sort = sortByName) => {
   const templatesN = get().templates;
   const options = _getAllOptions(get);
 
-  return templatesN.map((t) => ({
+  const tpls = templatesN.map((t) => ({
     id: t.id,
     systemType: get().systemTypes.find(
       (sType) => sType.id === t.systemType,
@@ -61,6 +62,8 @@ const _getTemplates: GetAction<SystemTemplate[]> = (get) => {
       ? t.options?.map((oID) => options.find((o) => oID === o.id) as Option)
       : [],
   }));
+
+  return sort ? tpls.sort(sort) : tpls;
 };
 
 const _getAllOptions: (get: GetState<State>) => Option[] = (get) => {
