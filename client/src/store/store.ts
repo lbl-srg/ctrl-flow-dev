@@ -3,6 +3,7 @@
  */
 
 import create, { SetState, GetState } from "zustand";
+import { devtools } from "zustand/middleware";
 import { persist } from "zustand/middleware";
 
 import getMockData from "./mock-data";
@@ -128,20 +129,22 @@ export interface State extends uiSliceInterface, UserSliceInterface {
 }
 
 export const useStore = create<State>(
-  persist(
-    (set, get) => ({
-      ...uiSlice(set, get),
-      ...userSlice(set, get),
-      systemTypes: getMockData()["systemTypes"],
-      templates: getMockData()["templates"],
-      options: getMockData()["options"],
-      getOptions: () => _getAllOptions(get),
-      getTemplates: () => _getTemplates(get),
-      getTemplateOptions: (template: SystemTemplate) =>
-        _getOptions(template, get),
-    }),
-    {
-      name: "linkage-storage",
-    },
+  devtools(
+    persist(
+      (set, get) => ({
+        ...uiSlice(set, get),
+        ...userSlice(set, get),
+        systemTypes: getMockData()["systemTypes"],
+        templates: getMockData()["templates"],
+        options: getMockData()["options"],
+        getOptions: () => _getAllOptions(get),
+        getTemplates: () => _getTemplates(get),
+        getTemplateOptions: (template: SystemTemplate) =>
+          _getOptions(template, get),
+      }),
+      {
+        name: "linkage-storage",
+      },
+    ),
   ),
 );

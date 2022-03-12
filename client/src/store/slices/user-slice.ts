@@ -11,7 +11,12 @@ import { SetState, GetState } from "zustand";
 import { State, Option, SystemTemplate, GetAction, SetAction } from "../store";
 import { produce } from "immer";
 
-import { deduplicate, sortByName, SortableByName } from "../../utils/utils";
+import {
+  trace,
+  deduplicate,
+  sortByName,
+  SortableByName,
+} from "../../utils/utils";
 
 export interface ProjectDetails {
   name: string;

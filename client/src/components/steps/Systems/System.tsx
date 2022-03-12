@@ -47,7 +47,7 @@ function System({ id, title, options }: SystemProps) {
                   type="checkbox"
                   checked={checked}
                   onChange={(e) => onSelect(text, e.target.checked)}
-                ></input>
+                />
                 {text}
                 <i className="icon-info-circled" />
               </label>

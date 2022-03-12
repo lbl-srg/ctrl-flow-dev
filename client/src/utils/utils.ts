@@ -25,3 +25,6 @@ export const deduplicate = (arr: any[]) => Array.from(new Set(arr).values());
 
 export const sortByName = (a: SortableByName, b: SortableByName): number =>
   a.name.localeCompare(b.name);
+
+export const trace = (target: any): any =>
+  console.log(JSON.parse(JSON.stringify(target)));
