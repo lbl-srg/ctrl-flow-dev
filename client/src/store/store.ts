@@ -137,7 +137,7 @@ export const useStore = create<State>(
       (set, get) => {
         const {
           state: { version = null },
-        } = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{state: {}}");
+        } = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"state":{}}');
 
         if (version && version !== packageJSON.version) {
           console.warn(
