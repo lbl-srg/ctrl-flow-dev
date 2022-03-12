@@ -1,6 +1,6 @@
 {
   "name": "lbl-linkage",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "private": true,
   "homepage": "https://devetry.github.io/LBL-Linkage-Widget-v2",
   "dependencies": {
@@ -24,7 +24,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm version patch && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint .",

@@ -3,13 +3,15 @@
  */
 
 import create, { SetState, GetState } from "zustand";
-import { devtools } from "zustand/middleware";
-import { persist } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 
 import getMockData from "./mock-data";
 import uiSlice, { uiSliceInterface } from "./slices/ui-slice";
 import userSlice, { UserSliceInterface } from "./slices/user-slice";
 import { sortByName } from "../utils/utils";
+import packageJSON from "../../package.json";
+
+const STORAGE_KEY = "linkage-storage";
 
 export * from "./slices/user-slice";
 
@@ -123,6 +125,7 @@ export interface State extends uiSliceInterface, UserSliceInterface {
   systemTypes: SystemType[];
   templates: SystemTemplateN[];
   options: OptionN[];
+  version: string;
   getOptions: () => Option[];
   getTemplates: () => SystemTemplate[];
   getTemplateOptions: (template: SystemTemplate) => [Option[], Option[]];
@@ -131,19 +134,32 @@ export interface State extends uiSliceInterface, UserSliceInterface {
 export const useStore = create<State>(
   devtools(
     persist(
-      (set, get) => ({
-        ...uiSlice(set, get),
-        ...userSlice(set, get),
-        systemTypes: getMockData()["systemTypes"],
-        templates: getMockData()["templates"],
-        options: getMockData()["options"],
-        getOptions: () => _getAllOptions(get),
-        getTemplates: () => _getTemplates(get),
-        getTemplateOptions: (template: SystemTemplate) =>
-          _getOptions(template, get),
-      }),
+      (set, get) => {
+        const {
+          state: { version = null },
+        } = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{state: {}}");
+
+        if (version && version !== packageJSON.version) {
+          console.warn(
+            `Old schema version ${version} found. Clearing localStorage. Using schema version ${packageJSON.version}`,
+          );
+        }
+
+        return {
+          version: packageJSON.version,
+          ...uiSlice(set, get),
+          ...userSlice(set, get),
+          systemTypes: getMockData()["systemTypes"],
+          templates: getMockData()["templates"],
+          options: getMockData()["options"],
+          getOptions: () => _getAllOptions(get),
+          getTemplates: () => _getTemplates(get),
+          getTemplateOptions: (template: SystemTemplate) =>
+            _getOptions(template, get),
+        };
+      },
       {
-        name: "linkage-storage",
+        name: STORAGE_KEY,
       },
     ),
   ),
