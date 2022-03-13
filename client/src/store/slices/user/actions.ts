@@ -1,0 +1,422 @@
+import { UserActionsInterface } from "./Types";
+import { SetState, GetState } from "zustand";
+import {
+  State,
+  Option,
+  SystemTemplate,
+  GetAction,
+  SetAction,
+} from "../../store";
+
+import { deduplicate } from "../../../utils/utils";
+
+import {
+  ProjectDetails,
+  UserProjectN,
+  UserProject,
+  Configuration,
+  ConfigurationN,
+  UserSystem,
+  UserSystemN,
+  MetaConfiguration,
+} from "./Types";
+import { produce } from "immer";
+
+const _saveProjectDetails: SetAction<Partial<ProjectDetails>> = (
+  projectDetails,
+  set,
+) =>
+  set(
+    produce((state: State) => {
+      const activeProject = state.userProjects.find(
+        (project) => project.id === state.activeProject,
+      );
+      if (activeProject) {
+        activeProject.projectDetails = {
+          ...activeProject?.projectDetails,
+          ...projectDetails,
+        };
+      }
+    }),
+  );
+
+const _getActiveProjectN: (state: State) => UserProjectN = (state) => {
+  return state.userProjects.find(
+    (proj) => proj.id === state.activeProject,
+  ) as UserProjectN;
+};
+
+/**
+ * Returns a denormalized user project
+ */
+const _getActiveProject: GetAction<UserProject> = (get) => {
+  const activeProjectN = _getActiveProjectN(get());
+  const activeProject = {};
+
+  return {
+    id: activeProjectN.id,
+    configs: get().getConfigs(),
+    userSystems: get().getUserSystems(),
+    projectDetails: activeProjectN.projectDetails,
+  };
+};
+
+const _getActiveTemplates: GetAction<SystemTemplate[]> = (get) => {
+  const configs = get().getConfigs();
+
+  return deduplicate(configs.map((c) => c.template));
+};
+
+/**
+ * Maps ConfigurationN to denormalized Configuration
+ */
+const _getConfigsHelper: (
+  configs: ConfigurationN[],
+  get: GetState<State>,
+) => Configuration[] = (configs, get) => {
+  const templates = get().getTemplates();
+  const options = get().getOptions();
+  return configs.map((config) => ({
+    id: config.id,
+    template: templates.find((t) => t.id === config.template) as SystemTemplate,
+    name: config.name,
+    selections: config.selections.map((s) => ({
+      parent: options.find((o) => o.id === s.parent) as Option,
+      option: options.find((o) => o.id === s.option) as Option,
+      value: s.value,
+    })),
+  }));
+};
+
+const _getConfigs: (
+  template: SystemTemplate | undefined,
+  get: GetState<State>,
+) => Configuration[] = (template, get) => {
+  const allConfigs = get().configurations;
+  const activeProject = get().userProjects.find(
+    (proj) => proj.id === get().activeProject,
+  ) as UserProjectN;
+  // get only active project configs, if a template has been provided
+  // just return configs that match that template
+  const configs = allConfigs
+    .filter((c) => activeProject.configs.indexOf(c.id) >= 0)
+    .filter((c) => (template ? c.template === template.id : true));
+
+  return _getConfigsHelper(configs, get);
+};
+
+const _addConfig = (
+  template: SystemTemplate,
+  attrs: Partial<ConfigurationN>,
+  set: SetState<State>,
+) => {
+  set(
+    produce((state: State) => {
+      const activeProject = state.userProjects.find(
+        (proj) => proj.id === state.activeProject,
+      );
+      if (activeProject) {
+        const configDefaults = {
+          id: getID(),
+          template: template.id,
+          name: "",
+          selections: [],
+        };
+        const config = { ...configDefaults, ...attrs };
+        state.configurations.push(config);
+        activeProject.configs.push(config.id);
+      }
+    }),
+  );
+};
+
+/**
+ * Helper method that given a set of new selections, makes sure no-longer relevant child
+ * selections are removed from the provided config, then combines that filtered list
+ * of previous selections with the new ones
+ */
+const getFilteredSelectionList = (
+  state: State,
+  selections: Selection[],
+  newSelections: Selection[],
+) => {
+  const nodeList = newSelections.map((s) => s.parent);
+  const filterList: number[] = [];
+
+  while (nodeList.length > 0) {
+    const parentOption = nodeList.pop() as Option;
+    if (parentOption) {
+      const children = parentOption.options;
+      if (children) {
+        nodeList.push(...children);
+      }
+      filterList.push(parentOption.id);
+    }
+  }
+
+  const previousSelections = selections
+    ? selections.filter((s) => !filterList.includes(s.parent.id))
+    : [];
+
+  // combine the filtered list of old selections + the new selections
+  return [...previousSelections, ...newSelections];
+};
+
+const _updateConfig = (
+  config: Configuration,
+  configName: string,
+  selections: Selection[],
+  set: SetState<State>,
+) =>
+  set(
+    produce((state: State) => {
+      const conf = state.configurations.find(
+        (c) => c.id === config.id,
+      ) as ConfigurationN;
+
+      conf.name = configName;
+      const updatedSelections = getFilteredSelectionList(
+        state,
+        config.selections,
+        selections,
+      );
+      // convert to normalized format
+      conf.selections = updatedSelections.map((s) => ({
+        parent: s.parent.id,
+        option: s.option.id,
+        value: s.value,
+      }));
+    }),
+  );
+
+const _removeConfig: SetAction<Configuration> = (config, set) => {
+  set(
+    produce((state: State) => {
+      const activeProject = state.userProjects.find(
+        (proj) => proj.id === state.activeProject,
+      );
+
+      if (activeProject) {
+        activeProject.configs = activeProject.configs.filter(
+          (cID) => cID !== config.id,
+        );
+      }
+
+      state.configurations = state.configurations.filter(
+        (c) => c.id !== config.id,
+      );
+    }),
+  );
+};
+
+const _removeAllTemplateConfigs: SetAction<SystemTemplate> = (
+  template,
+  set,
+) => {
+  set(
+    produce((state: State) => {
+      const configs = state.configurations;
+      const activeProject = _getActiveProjectN(state);
+
+      const configsToRemove = activeProject.configs
+        .map((cID) => configs.find((c) => c.id === cID) as ConfigurationN)
+        .filter((c) => c.template === template.id)
+        .map((c) => c.id);
+
+      const systemsToRemove = state.userSystems
+        .filter((s) => configsToRemove.includes(s.config))
+        .map((s) => s.id);
+
+      state.userSystems = state.userSystems.filter((s) =>
+        systemsToRemove.includes(s.id),
+      );
+
+      activeProject.userSystems = activeProject.userSystems.filter(
+        (sID) => !systemsToRemove.includes(sID),
+      );
+
+      activeProject.configs = activeProject.configs.filter(
+        (cID) => !configsToRemove.includes(cID),
+      );
+      state.configurations = configs.filter(
+        (c) => !configsToRemove.includes(c.id),
+      );
+    }),
+  );
+};
+
+const _getUserSystems: (
+  template: SystemTemplate | undefined,
+  get: GetState<State>,
+) => UserSystem[] = (template, get) => {
+  const configs = get().getConfigs();
+  const systems = get().userSystems;
+  const userProject = get().userProjects.find(
+    (proj) => proj.id === get().activeProject,
+  ) as UserProjectN;
+  const projectSystems = systems.filter(
+    (system) => userProject.userSystems.indexOf(system.id) >= 0,
+  );
+
+  const filteredSystems = template
+    ? projectSystems.filter((system) => {
+        const config = configs.find((c) => c.id === system.config);
+        return config?.template.id === template.id;
+      })
+    : projectSystems;
+
+  return filteredSystems.map((system) => ({
+    id: system.id,
+    tag: system.tag,
+    prefix: system.prefix,
+    number: system.number,
+    config: configs.find((c) => c.id === system.config) as Configuration,
+    data: system.data,
+  }));
+};
+
+const _addUserSystems = (
+  prefix: string,
+  start: number,
+  quantity: number,
+  config: Configuration,
+  set: SetState<State>,
+) => {
+  set(
+    produce((state: State) => {
+      const activeProject = state.userProjects.find(
+        (proj) => proj.id === state.activeProject,
+      );
+      if (activeProject) {
+        const newSystems: UserSystemN[] = [];
+
+        for (let i = 0; i < quantity; i += 1) {
+          const system: UserSystemN = {
+            id: getID(),
+            tag: `${prefix} - ${start + i}`,
+            prefix: prefix,
+            number: start + i,
+            config: config.id,
+            data: [],
+          };
+          newSystems.push(system);
+        }
+
+        state.userSystems.push(...newSystems);
+        activeProject.userSystems.push(...newSystems.map((s) => s.id));
+      }
+    }),
+  );
+};
+
+const _removeUserSystem = (
+  system: UserSystem | UserSystemN,
+  set: SetState<State>,
+) => {
+  set(
+    produce((state: State) => {
+      const activeProject = state.userProjects.find(
+        (proj) => proj.id === state.activeProject,
+      );
+      if (activeProject) {
+        activeProject.userSystems = activeProject.userSystems.filter(
+          (sID) => sID !== system.id,
+        );
+      }
+      state.userSystems = state.userSystems.filter((s) => s.id !== system.id);
+    }),
+  );
+};
+
+// calculates 'MetaConfiguration' values based on current user systems
+// in the active project
+const _getMetaConfigs = (
+  template: SystemTemplate | undefined,
+  get: GetState<State>,
+) => {
+  const systemMap: { [key: string]: { systems: UserSystem[]; order: number } } =
+    {};
+  const systems = get().getUserSystems();
+
+  const filteredSystems = template
+    ? systems.filter((system) => system.config?.template.id === template.id)
+    : systems;
+
+  // Order is tracked to make sure metaconfigs are output in the declarative
+  // order of the user systems
+  let order = 0;
+
+  filteredSystems.map((s) => {
+    const key = `${s.config.id}`;
+    const entry = systemMap[key];
+    if (entry) {
+      entry.systems = [...entry.systems, s];
+    } else {
+      systemMap[key] = { systems: [s], order: order };
+      order += 1;
+    }
+  });
+
+  const metaConfigList: MetaConfiguration[] = [];
+
+  Object.entries(systemMap).map(([key, systemEntry]) => {
+    const [system, ...rest] = systemEntry.systems;
+    const start = Math.min(...systemEntry.systems.map((s) => s.number));
+    const sortedList = systemEntry.systems.sort(
+      (s1, s2) => s1.number - s2.number,
+    );
+
+    const metaConfig: MetaConfiguration = {
+      tagPrefix: system.prefix,
+      tagStartIndex: start,
+      quantity: sortedList.length,
+      config: system.config,
+      systems: sortedList,
+    };
+
+    metaConfigList[systemEntry.order] = metaConfig;
+  });
+
+  return metaConfigList;
+};
+
+export default function (get, set) {
+
+  return {
+
+
+    saveProjectDetails: (projectDetails) =>
+      _saveProjectDetails(projectDetails, set),
+    getActiveProject: () => _getActiveProject(get),
+    setActiveProject: (userProject: UserProject) =>
+      set({ activeProject: userProject.id }),
+    getActiveTemplates: (sort = sortByName) =>
+      sort ? _getActiveTemplates(get).sort(sort) : _getActiveTemplates(get),
+    getConfigs: (template = undefined, sort = sortByName) =>
+      sort ? _getConfigs(template, get).sort(sort) : _getConfigs(template, get),
+    addConfig: (template: SystemTemplate, attrs = {}) =>
+      _addConfig(template, attrs, set),
+    updateConfig: (
+      config: Configuration,
+      configName: string,
+      selections: Selection[],
+    ) => _updateConfig(config, configName, selections, set),
+    removeConfig: (config: Configuration) => _removeConfig(config, set),
+    removeAllTemplateConfigs: (template: SystemTemplate) =>
+      _removeAllTemplateConfigs(template, set),
+    addUserSystems: (
+      prefix: string,
+      start: number,
+      quantity: number,
+      config: Configuration,
+    ) => _addUserSystems(prefix, start, quantity, config, set),
+    getUserSystems: (template = undefined, sort?) =>
+      _getUserSystems(template, get),
+    removeUserSystem: (userSystem: UserSystem | UserSystemN) =>
+      _removeUserSystem(userSystem, set),
+    getMetaConfigs: (template = undefined, sort) =>
+      sort
+        ? _getMetaConfigs(template, get).sort(sort)
+        : _getMetaConfigs(template, get),
+  }
+} as UserActionsInterface;
