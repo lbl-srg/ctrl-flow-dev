@@ -143,6 +143,7 @@ export const useStore = create<State>(
           console.warn(
             `Old schema version ${version} found. Clearing localStorage. Using schema version ${packageJSON.version}`,
           );
+          localStorage.clear();
         }
 
         return {
