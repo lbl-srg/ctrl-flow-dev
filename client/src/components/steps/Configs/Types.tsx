@@ -17,4 +17,5 @@ export interface TemplateProps {
 
 export interface ConfigProps {
   config: Configuration;
+  template: SystemTemplate;
 }
