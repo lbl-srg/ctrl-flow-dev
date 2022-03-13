@@ -8,6 +8,11 @@ header h2 {
   font-size: 1.8rem;
 }
 
+p.lead {
+  font-size: 1.2rem;
+  margin-bottom: var(--spacing-md);
+}
+
 header h2 {
   font-weight: var(--font-weight-light);
 }

@@ -12,20 +12,22 @@ function Config({ config, template }: ConfigProps) {
   }
 
   return (
-    <div className="row">
-      <div className="col-xs-11">
+    <div className="config">
+      <div className="input-container">
         <input
           type="text"
           placeholder="Enter Configuration Name"
           value={config.name}
         />
-        <ConfigSlideOut template={template} config={config} />
+
+        <div className="config-actions">
+          <ConfigSlideOut template={template} config={config} />
+        </div>
       </div>
-      <div className="col-xs-1">
-        <a href="#" onClick={remove}>
-          <i className="icon-cross" />
-        </a>
-      </div>
+
+      <a href="#" className="remove" onClick={remove}>
+        <i className="icon-cross" />
+      </a>
     </div>
   );
 }

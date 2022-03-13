@@ -14,23 +14,29 @@ function Template({ template, configs }: TemplateProps) {
   }
 
   return (
-    <div data-spy="template" id={`template-${template.id}`}>
-      <div>
-        <div>{template.name}</div>
+    <article
+      className="template"
+      data-spy="template"
+      id={`template-${template.id}`}
+    >
+      <h4>
+        {template.name}
         {/* <UploadDownload path=""></UploadDownload> */}
+      </h4>
+
+      <strong className="uppercase">Configuration(s):</strong>
+
+      <div className="config-container">
+        {configs.map((config) => (
+          <Config key={config.id} config={config} template={template} />
+        ))}
       </div>
-
-      <div>Configuration(s):</div>
-
-      {configs.map((config) => (
-        <Config key={config.id} config={config} template={template} />
-      ))}
 
       <a href="#" onClick={add}>
         <i className="icon-plus" />
         Add Configuration
       </a>
-    </div>
+    </article>
   );
 }
 

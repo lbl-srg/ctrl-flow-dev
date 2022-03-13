@@ -1,2 +1,46 @@
 .configs-page {
+  h2.system-header {
+    margin: var(--spacing-md) 0;
+  }
+
+  .system article.template {
+    background-color: var(--color-blue-x-light);
+    border-radius: 0.5rem;
+    padding: var(--spacing-md);
+    margin: 0;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .config-container {
+    margin: var(--spacing-sm) 0;
+  }
+
+  .config {
+    display: flex;
+    align-items: center;
+
+    .input-container {
+      flex-grow: 1;
+      position: relative;
+      margin-bottom: var(--spacing-sm);
+      margin-right: var(--spacing-md);
+
+      input[type="text"] {
+        margin: 0;
+
+        &::placeholder {
+          color: var(--text-sub-color);
+        }
+      }
+
+      .config-actions {
+        display: flex;
+        height: 100%;
+        align-items: center;
+        position: absolute;
+        right: var(--spacing-sm);
+        top: 0;
+      }
+    }
+  }
 }

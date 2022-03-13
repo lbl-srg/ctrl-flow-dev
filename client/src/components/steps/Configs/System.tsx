@@ -13,15 +13,13 @@ const System = ({ systemType, templates, configs }: SystemProps) => {
         {systemType.name}
       </h2>
 
-      <article>
-        {templates.map((template) => (
-          <Template
-            key={template.id}
-            template={template}
-            configs={configs.filter((c) => c.template.id === template.id)}
-          />
-        ))}
-      </article>
+      {templates.map((template) => (
+        <Template
+          key={template.id}
+          template={template}
+          configs={configs.filter((c) => c.template.id === template.id)}
+        />
+      ))}
     </div>
   );
 };
