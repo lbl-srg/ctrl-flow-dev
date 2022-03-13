@@ -8,21 +8,6 @@
     display: block;
     margin-bottom: var(--spacing-md);
 
-    h2 {
-      margin-bottom: var(--spacing-sm);
-      font-size: 1.7rem;
-      padding-left: var(--spacing-lg);
-      position: relative;
-
-      i {
-        position: absolute;
-        left: 0;
-        top: 0.2rem;
-        color: var(--color-blue-dark);
-        font-size: 2rem;
-      }
-    }
-
     ul {
       padding-left: var(--spacing-lg);
     }

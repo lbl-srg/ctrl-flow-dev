@@ -1,7 +1,6 @@
 import { Fragment, useState } from "react";
 import { Field, Form, Formik, FormikProps } from "formik";
 
-import Button from "../Button";
 import Modal from "./Modal";
 
 import { SelectInput } from "../shared/SelectInput";
@@ -44,9 +43,9 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
 
   return (
     <Fragment>
-      <Button variant="filledSmall" onClick={() => setOpen(true)}>
+      <button className="small" onClick={() => setOpen(true)}>
         Edit
-      </Button>
+      </button>
       <Modal
         close={() => setOpen(false)}
         isOpen={isOpen}
@@ -97,7 +96,7 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
                 />
               ))}
 
-              <Button type="submit">Save</Button>
+              <button type="submit">Save</button>
             </Form>
           )}
         </Formik>

@@ -11,7 +11,7 @@ function System({ systemType, templates, meta }: SystemProps) {
   );
 
   const classes = ["system"];
-  const isActive = systemType.id === activeSystemId;
+  const isActive = systemType.id === activeSystemId && templates.length > 0;
   const [isOpen, setIsOpen] = useState(isActive);
 
   if (!templates.length) classes.push("empty");

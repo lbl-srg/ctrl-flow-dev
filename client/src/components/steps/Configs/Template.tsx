@@ -14,7 +14,7 @@ function Template({ template, configs }: TemplateProps) {
   }
 
   return (
-    <div>
+    <div data-spy="template" id={`template-${template.id}`}>
       <div>
         <div>{template.name}</div>
         {/* <UploadDownload path=""></UploadDownload> */}
