@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Field, Form, Formik, FormikProps } from "formik";
 
 import Modal from "./Modal";
@@ -40,6 +40,11 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
     configName: config.name || "",
     ...initSelections,
   });
+
+  // grabs the updates if the name has changed since initialized
+  useEffect(() => {
+    setInitialValues({ ...initialValues, configName: config.name });
+  }, [config]);
 
   return (
     <Fragment>

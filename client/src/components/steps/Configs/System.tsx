@@ -3,7 +3,7 @@ import { SystemProps } from "./Types";
 import Template from "./Template";
 import { findIcon } from "../../LeftNavigation/icon-mappings";
 
-const System = ({ systemType, templates, configs }: SystemProps) => {
+const System = ({ systemType, templates }: SystemProps) => {
   const icon = findIcon(systemType.name) || "";
 
   return (
@@ -14,11 +14,7 @@ const System = ({ systemType, templates, configs }: SystemProps) => {
       </h2>
 
       {templates.map((template) => (
-        <Template
-          key={template.id}
-          template={template}
-          configs={configs.filter((c) => c.template.id === template.id)}
-        />
+        <Template key={template.id} template={template} />
       ))}
     </div>
   );

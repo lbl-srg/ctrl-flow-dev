@@ -25,16 +25,12 @@ function Configs() {
           const systemTypeTemplates = templates.filter(
             (t) => t.systemType.id === systemT.id,
           );
-          const confs = configs.filter((c) =>
-            systemTypeTemplates.map((s) => s.id).includes(c.template.id),
-          );
 
           return (
             <System
               key={systemT.id}
               systemType={systemT}
               templates={systemTypeTemplates}
-              configs={confs}
             />
           );
         })}

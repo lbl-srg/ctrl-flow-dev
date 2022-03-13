@@ -1,14 +1,19 @@
-import { MouseEvent } from "react";
+import { MouseEvent, ChangeEvent, useState } from "react";
 import { ConfigProps } from "./Types";
 import { useStore } from "../../../store/store";
 import ConfigSlideOut from "../../modal/ConfigSlideOut";
 
 function Config({ config, template }: ConfigProps) {
-  const { removeConfig } = useStore((state) => state);
+  const { removeConfig, updateConfig } = useStore((state) => state);
 
   function remove(ev: MouseEvent) {
     ev.preventDefault();
     removeConfig(config);
+  }
+
+  function updateName(ev: ChangeEvent<HTMLInputElement>) {
+    const configName = ev.target.value;
+    updateConfig(config, configName, config.selections);
   }
 
   return (
@@ -16,6 +21,7 @@ function Config({ config, template }: ConfigProps) {
       <div className="input-container">
         <input
           type="text"
+          onInput={updateName}
           placeholder="Enter Configuration Name"
           value={config.name}
         />

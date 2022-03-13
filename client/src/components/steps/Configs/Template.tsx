@@ -1,11 +1,13 @@
 import { MouseEvent } from "react";
 import { useStore } from "../../../store/store";
 import { TemplateProps } from "./Types";
+import { sortByName } from "../../../utils/utils";
 import Config from "./Config";
 
-function Template({ template, configs }: TemplateProps) {
-  const { addConfig } = useStore((state) => ({
+function Template({ template }: TemplateProps) {
+  const { addConfig, configs } = useStore((state) => ({
     ...state,
+    configs: state.getConfigs(template).sort(sortByName).reverse(),
   }));
 
   function add(ev: MouseEvent) {

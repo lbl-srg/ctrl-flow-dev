@@ -7,12 +7,10 @@ import {
 export interface SystemProps {
   systemType: SystemType;
   templates: SystemTemplate[];
-  configs: Configuration[];
 }
 
 export interface TemplateProps {
   template: SystemTemplate;
-  configs: Configuration[];
 }
 
 export interface ConfigProps {
