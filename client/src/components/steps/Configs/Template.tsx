@@ -21,9 +21,18 @@ function Template({ template }: TemplateProps) {
       data-spy="template"
       id={`template-${template.id}`}
     >
-      <h4>
+      <h4 className="with-links">
         {template.name}
-        {/* <UploadDownload path=""></UploadDownload> */}
+        <div className="links">
+          <a>
+            <i className="icon-upload" />
+            Upload
+          </a>
+          <a>
+            <i className="icon-download" />
+            Download
+          </a>
+        </div>
       </h4>
 
       <strong className="uppercase">Configuration(s):</strong>
