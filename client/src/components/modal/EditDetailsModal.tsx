@@ -28,9 +28,7 @@ function EditDetailsModal({
   isOpen,
   close,
 }: EditDetailsModalProps) {
-  const { saveProjectDetails } = useStore((state) => ({
-    saveProjectDetails: state.saveProjectDetails,
-  }));
+  const { saveProjectDetails } = useStore((state) => state);
 
   return (
     <Modal close={close} isOpen={isOpen}>

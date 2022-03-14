@@ -3,7 +3,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap");
 /* npm modules */
 @import "~flexboxgrid";
-@import "~@picocss/pico";
+@import "~@picocss/pico/css/pico.css";
 
 @import "./vars";
 // themeing pico
@@ -18,4 +18,19 @@ html,
 body,
 #root {
   height: 100%;
+}
+
+h2.system-header {
+  margin-bottom: var(--spacing-sm);
+  font-size: 1.5rem;
+  padding-left: var(--spacing-lg);
+  position: relative;
+
+  i {
+    position: absolute;
+    left: 0;
+    top: 0.2rem;
+    color: var(--color-blue-dark);
+    font-size: 2rem;
+  }
 }

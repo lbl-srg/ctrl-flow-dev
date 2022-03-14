@@ -26,7 +26,7 @@ function System({ id, title, options }: SystemProps) {
 
   return (
     <li className="system" id={`system-${id}`} data-spy="system">
-      <h2>
+      <h2 className="system-header">
         {iconClass && <i className={iconClass} />}
         {title}
       </h2>
@@ -47,7 +47,7 @@ function System({ id, title, options }: SystemProps) {
                   type="checkbox"
                   checked={checked}
                   onChange={(e) => onSelect(text, e.target.checked)}
-                ></input>
+                />
                 {text}
                 <i className="icon-info-circled" />
               </label>

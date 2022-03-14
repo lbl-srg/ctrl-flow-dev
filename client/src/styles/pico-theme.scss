@@ -18,3 +18,7 @@ https://github.com/picocss/pico/blob/master/css/pico.css
 h2 {
   --typography-spacing-vertical: var(--spacing-lg);
 }
+
+a:focus {
+  background: transparent !important;
+}

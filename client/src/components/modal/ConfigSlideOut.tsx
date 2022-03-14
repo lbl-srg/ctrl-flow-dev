@@ -1,7 +1,6 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Field, Form, Formik, FormikProps } from "formik";
 
-import Button from "../Button";
 import Modal from "./Modal";
 
 import { SelectInput } from "../shared/SelectInput";
@@ -20,9 +19,10 @@ import {
 interface SlideOutProps {
   template: SystemTemplate;
   config: Configuration;
+  disabled: boolean;
 }
 
-const SlideOut = ({ template, config }: SlideOutProps) => {
+const SlideOut = ({ template, config, disabled = true }: SlideOutProps) => {
   const [isOpen, setOpen] = useState(false);
   const updateConfig = useStore((state) => state.updateConfig);
   const getTemplateOptions = useStore((state) => state.getTemplateOptions);
@@ -42,11 +42,20 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
     ...initSelections,
   });
 
+  // grabs the updates if the name has changed since initialized
+  useEffect(() => {
+    setInitialValues({ ...initialValues, configName: config.name });
+  }, [config]);
+
   return (
     <Fragment>
-      <Button variant="filledSmall" onClick={() => setOpen(true)}>
+      <button
+        disabled={disabled}
+        className="small"
+        onClick={() => setOpen(true)}
+      >
         Edit
-      </Button>
+      </button>
       <Modal
         close={() => setOpen(false)}
         isOpen={isOpen}
@@ -97,7 +106,7 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
                 />
               ))}
 
-              <Button type="submit">Save</Button>
+              <button type="submit">Save</button>
             </Form>
           )}
         </Formik>

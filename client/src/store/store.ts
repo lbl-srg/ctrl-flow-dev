@@ -5,15 +5,16 @@
  */
 
 import create, { SetState, GetState } from "zustand";
-import { persist } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 
 import getMockData from "./mock-data";
 import uiSlice, { uiSliceInterface } from "./slices/ui-slice";
 import userSlice, { UserSliceInterface } from "./slices/user-slice";
+import npmPackage from "../../package.json";
 
 export * from "./slices/user-slice";
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = parseFloat(npmPackage.version);
 
 export interface SystemType {
   id: number;
@@ -129,21 +130,23 @@ export interface State extends uiSliceInterface, UserSliceInterface {
 }
 
 export const useStore = create<State>(
-  persist(
-    (set, get) => ({
-      ...uiSlice(set, get),
-      ...userSlice(set, get),
-      systemTypes: getMockData()["systemTypes"],
-      templates: getMockData()["templates"],
-      options: getMockData()["options"],
-      getOptions: () => _getAllOptions(get),
-      getTemplates: () => _getTemplates(get),
-      getTemplateOptions: (template: SystemTemplate) =>
-        _getOptions(template, get),
-    }),
-    {
-      name: "linkage-storage",
-      version: SCHEMA_VERSION,
-    },
+  devtools(
+    persist(
+      (set, get) => ({
+        ...uiSlice(set, get),
+        ...userSlice(set, get),
+        systemTypes: getMockData()["systemTypes"],
+        templates: getMockData()["templates"],
+        options: getMockData()["options"],
+        getOptions: () => _getAllOptions(get),
+        getTemplates: () => _getTemplates(get),
+        getTemplateOptions: (template: SystemTemplate) =>
+          _getOptions(template, get),
+      }),
+      {
+        name: "linkage-storage",
+        version: SCHEMA_VERSION,
+      },
+    ),
   ),
 );

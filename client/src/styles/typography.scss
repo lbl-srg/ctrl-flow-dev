@@ -8,6 +8,11 @@ header h2 {
   font-size: 1.8rem;
 }
 
+p.lead {
+  font-size: 1.2rem;
+  margin-bottom: var(--spacing-md);
+}
+
 header h2 {
   font-weight: var(--font-weight-light);
 }
@@ -18,6 +23,30 @@ h3 {
 
 p {
   line-height: 1.5rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  &.with-links {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .links {
+    font-size: 1rem;
+
+    a,
+    button {
+      margin-right: var(--spacing-md);
+      &:last-child {
+        margin: none;
+      }
+    }
+  }
 }
 
 /* icons */
