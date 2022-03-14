@@ -1,5 +1,7 @@
 /**
  * Store for linkage widget
+ *
+ * If there are any updates to the store schema increment SCHEMA_VERSION
  */
 
 import create, { SetState, GetState } from "zustand";
@@ -10,6 +12,8 @@ import uiSlice, { uiSliceInterface } from "./slices/ui-slice";
 import userSlice, { UserSliceInterface } from "./slices/user-slice";
 
 export * from "./slices/user-slice";
+
+const SCHEMA_VERSION = 1;
 
 export interface SystemType {
   id: number;
@@ -139,6 +143,7 @@ export const useStore = create<State>(
     }),
     {
       name: "linkage-storage",
+      version: SCHEMA_VERSION,
     },
   ),
 );
