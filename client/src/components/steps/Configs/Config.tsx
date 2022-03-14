@@ -53,7 +53,7 @@ function Config({ config, template }: ConfigProps) {
       </div>
 
       <a href="#" className="remove" onClick={remove}>
-        <i className="icon-cross" />
+        <i className="icon-close" />
       </a>
     </div>
   );

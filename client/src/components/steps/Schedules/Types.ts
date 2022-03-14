@@ -11,8 +11,12 @@ export interface AddUserSystemsWidgetProps {
   configs: Configuration[];
 }
 
-export interface UserSystemsProps {
+export interface UserSystemTableProps {
   userSystems: UserSystem[];
+}
+
+export interface UserSystemRowProps {
+  userSystem: UserSystem;
 }
 
 export type AddUserSystemsAction = (

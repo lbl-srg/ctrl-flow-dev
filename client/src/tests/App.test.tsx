@@ -7,7 +7,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 
-import App from "./App";
+import App from "../App";
 
 beforeEach(() => render(<App />, { wrapper: MemoryRouter }));
 
