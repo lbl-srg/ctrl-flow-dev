@@ -18,11 +18,15 @@
   .config {
     display: flex;
     align-items: center;
+    margin-bottom: var(--spacing-sm);
+
+    &:last-of-type {
+      margin-bottom: var(--spacing-md);
+    }
 
     .input-container {
       flex-grow: 1;
       position: relative;
-      margin-bottom: var(--spacing-sm);
       margin-right: var(--spacing-md);
 
       input[type="text"] {
@@ -40,6 +44,13 @@
         position: absolute;
         right: var(--spacing-sm);
         top: 0;
+
+        .lock-toggle {
+          color: var(--color-blue-dark);
+          font-size: 1.6rem;
+          cursor: pointer;
+          margin-right: var(--spacing);
+        }
       }
     }
   }

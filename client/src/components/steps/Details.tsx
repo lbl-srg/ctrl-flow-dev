@@ -33,6 +33,7 @@ function Details() {
         initialState={projectDetails}
         modalTitle="Edit Project Details"
         submitText="Save Project Details"
+        afterSubmit={() => setIsOpen(false)}
       />
 
       <ul className="styled-ul">

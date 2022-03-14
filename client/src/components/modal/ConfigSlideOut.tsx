@@ -19,9 +19,10 @@ import {
 interface SlideOutProps {
   template: SystemTemplate;
   config: Configuration;
+  disabled: boolean;
 }
 
-const SlideOut = ({ template, config }: SlideOutProps) => {
+const SlideOut = ({ template, config, disabled = true }: SlideOutProps) => {
   const [isOpen, setOpen] = useState(false);
   const updateConfig = useStore((state) => state.updateConfig);
   const getTemplateOptions = useStore((state) => state.getTemplateOptions);
@@ -48,7 +49,11 @@ const SlideOut = ({ template, config }: SlideOutProps) => {
 
   return (
     <Fragment>
-      <button className="small" onClick={() => setOpen(true)}>
+      <button
+        disabled={disabled}
+        className="small"
+        onClick={() => setOpen(true)}
+      >
         Edit
       </button>
       <Modal

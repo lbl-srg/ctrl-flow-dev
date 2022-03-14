@@ -80,6 +80,7 @@ export interface ConfigurationN {
   id: number;
   template: number; // ID of SystemTemplate
   name: string;
+  isLocked: boolean;
   selections: SelectionN[];
 }
 
@@ -155,9 +156,9 @@ const _getConfigsHelper: (
   const templates = get().getTemplates();
   const options = get().getOptions();
   return configs.map((config) => ({
-    id: config.id,
+    ...config,
     template: templates.find((t) => t.id === config.template) as SystemTemplate,
-    name: config.name,
+
     selections: config.selections.map((s) => ({
       parent: options.find((o) => o.id === s.parent) as Option,
       option: options.find((o) => o.id === s.option) as Option,
@@ -198,6 +199,7 @@ const _addConfig = (
           id: getID(),
           template: template.id,
           name: "",
+          isLocked: false,
           selections: [],
         };
         const config = { ...configDefaults, ...attrs };
@@ -496,6 +498,7 @@ export interface UserSliceInterface {
     selections: Selection[],
   ) => void;
   removeConfig: (config: Configuration) => void;
+  toggleConfigLock: (configId: number) => void;
   removeAllTemplateConfigs: (template: SystemTemplate) => void;
   getUserSystems: (
     template?: SystemTemplate,
@@ -540,6 +543,14 @@ export default function (
       selections: Selection[],
     ) => _updateConfig(config, configName, selections, set),
     removeConfig: (config: Configuration) => _removeConfig(config, set),
+    toggleConfigLock: (configId) => {
+      set(
+        produce((state: State) => {
+          const config = state.configurations.find(({ id }) => id === configId);
+          if (config) config.isLocked = !config.isLocked;
+        }),
+      );
+    },
     removeAllTemplateConfigs: (template: SystemTemplate) =>
       _removeAllTemplateConfigs(template, set),
     addUserSystems: (

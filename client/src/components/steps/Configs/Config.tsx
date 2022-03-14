@@ -4,7 +4,10 @@ import { useStore } from "../../../store/store";
 import ConfigSlideOut from "../../modal/ConfigSlideOut";
 
 function Config({ config, template }: ConfigProps) {
-  const { removeConfig, updateConfig } = useStore((state) => state);
+  const { removeConfig, updateConfig, toggleConfigLock } = useStore((state) => {
+    // debugger;
+    return state;
+  });
 
   function remove(ev: MouseEvent) {
     ev.preventDefault();
@@ -13,7 +16,11 @@ function Config({ config, template }: ConfigProps) {
 
   function updateName(ev: ChangeEvent<HTMLInputElement>) {
     const configName = ev.target.value;
-    updateConfig(config, configName, config.selections);
+    updateConfig(
+      { ...config, name: ev.target.value },
+      configName,
+      config.selections,
+    );
   }
 
   return (
@@ -24,10 +31,24 @@ function Config({ config, template }: ConfigProps) {
           onInput={updateName}
           placeholder="Enter Configuration Name"
           value={config.name}
+          disabled={config.isLocked}
         />
 
         <div className="config-actions">
-          <ConfigSlideOut template={template} config={config} />
+          <i
+            className={
+              config.isLocked
+                ? "lock-toggle icon-lock"
+                : "lock-toggle icon-lock-open"
+            }
+            onClick={() => toggleConfigLock(config.id)}
+          />
+
+          <ConfigSlideOut
+            disabled={config.isLocked}
+            template={template}
+            config={config}
+          />
         </div>
       </div>
 
