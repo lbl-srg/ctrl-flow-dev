@@ -1,6 +1,5 @@
 import { Field } from "formik";
 import { Fragment } from "react";
-import styled from "@emotion/styled";
 
 export interface SelectInputOption {
   id: number;
@@ -25,7 +24,7 @@ export const SelectInput = ({
   const defaultVal = defaultOption ? defaultOption.id : null;
   return (
     <Fragment>
-      <Label htmlFor={name}>{label}</Label>
+      <label htmlFor={name}>{label}</label>
       <Field
         as="select"
         id={id}
@@ -42,8 +41,3 @@ export const SelectInput = ({
     </Fragment>
   );
 };
-
-const Label = styled.label`
-  display: block;
-  font-weight: bold;
-`;
