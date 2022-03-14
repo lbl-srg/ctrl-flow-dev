@@ -10,12 +10,11 @@ import { devtools, persist } from "zustand/middleware";
 import getMockData from "./mock-data";
 import uiSlice, { uiSliceInterface } from "./slices/ui-slice";
 import userSlice, { UserSliceInterface } from "./slices/user-slice";
-import { sortByName } from "../utils/utils";
-import packageJSON from "../../package.json";
+import npmPackage from "../../package.json";
 
-const STORAGE_KEY = "linkage-storage";
+export * from "./slices/user-slice";
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = parseFloat(npmPackage.version);
 
 export interface SystemType {
   id: number;
@@ -53,11 +52,11 @@ export interface SystemTemplate
 export type GetAction<T> = (get: GetState<State>) => T;
 export type SetAction<T> = (payload: T, set: SetState<State>) => void;
 
-const _getTemplates: GetAction<SystemTemplate[]> = (get, sort = sortByName) => {
+const _getTemplates: GetAction<SystemTemplate[]> = (get) => {
   const templatesN = get().templates;
   const options = _getAllOptions(get);
 
-  const tpls = templatesN.map((t) => ({
+  return templatesN.map((t) => ({
     id: t.id,
     systemType: get().systemTypes.find(
       (sType) => sType.id === t.systemType,
@@ -67,8 +66,6 @@ const _getTemplates: GetAction<SystemTemplate[]> = (get, sort = sortByName) => {
       ? t.options?.map((oID) => options.find((o) => oID === o.id) as Option)
       : [],
   }));
-
-  return sort ? tpls.sort(sort) : tpls;
 };
 
 const _getAllOptions: (get: GetState<State>) => Option[] = (get) => {
@@ -127,7 +124,6 @@ export interface State extends uiSliceInterface, UserSliceInterface {
   systemTypes: SystemType[];
   templates: SystemTemplateN[];
   options: OptionN[];
-  version: string;
   getOptions: () => Option[];
   getTemplates: () => SystemTemplate[];
   getTemplateOptions: (template: SystemTemplate) => [Option[], Option[]];
@@ -136,33 +132,20 @@ export interface State extends uiSliceInterface, UserSliceInterface {
 export const useStore = create<State>(
   devtools(
     persist(
-      (set, get) => {
-        const {
-          state: { version = null },
-        } = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"state":{}}');
-
-        if (version && version !== packageJSON.version) {
-          console.warn(
-            `Old schema version ${version} found. Clearing localStorage. Using schema version ${packageJSON.version}`,
-          );
-          localStorage.clear();
-        }
-
-        return {
-          version: packageJSON.version,
-          ...uiSlice(set, get),
-          ...userSlice(set, get),
-          systemTypes: getMockData()["systemTypes"],
-          templates: getMockData()["templates"],
-          options: getMockData()["options"],
-          getOptions: () => _getAllOptions(get),
-          getTemplates: () => _getTemplates(get),
-          getTemplateOptions: (template: SystemTemplate) =>
-            _getOptions(template, get),
-        };
-      },
+      (set, get) => ({
+        ...uiSlice(set, get),
+        ...userSlice(set, get),
+        systemTypes: getMockData()["systemTypes"],
+        templates: getMockData()["templates"],
+        options: getMockData()["options"],
+        getOptions: () => _getAllOptions(get),
+        getTemplates: () => _getTemplates(get),
+        getTemplateOptions: (template: SystemTemplate) =>
+          _getOptions(template, get),
+      }),
       {
-        name: STORAGE_KEY,
+        name: "linkage-storage",
+        version: SCHEMA_VERSION,
       },
     ),
   ),
