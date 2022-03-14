@@ -1,5 +1,7 @@
 /**
  * Store for linkage widget
+ *
+ * If there are any updates to the store schema increment SCHEMA_VERSION
  */
 
 import create, { SetState, GetState } from "zustand";
@@ -13,7 +15,7 @@ import packageJSON from "../../package.json";
 
 const STORAGE_KEY = "linkage-storage";
 
-export * from "./slices/user-slice";
+const SCHEMA_VERSION = 1;
 
 export interface SystemType {
   id: number;
