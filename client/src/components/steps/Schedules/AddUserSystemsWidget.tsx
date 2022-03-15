@@ -8,15 +8,18 @@ import { SelectInput, SelectInputOption } from "../../shared/SelectInput";
 import { Formik, Field, Form } from "formik";
 
 function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
-  const [config] = configs;
+  const { addUserSystems, activeConfig } = useStore((state) => {
+    return { ...state, activeConfig: state.getActiveConfig() };
+  });
+
+  const config = activeConfig || configs[0];
+
   const initValues = {
     tag: "",
     start: 1,
     quantity: 1,
     configID: config?.id || undefined,
   };
-
-  const { addUserSystems } = useStore((state) => state);
 
   function onWidgetSubmit(
     configs: Configuration[],

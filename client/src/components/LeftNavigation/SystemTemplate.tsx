@@ -9,6 +9,9 @@ function Template({ template, meta, systemId }: SystemTemplateProps) {
     setActiveTemplateId,
     setActiveSystemId,
     timeoutScroll,
+    setActiveConfigId,
+    activeConfigId,
+    clearNavState,
   } = useStore((state) => state);
 
   const active = activeTemplateId === template.id;
@@ -19,10 +22,21 @@ function Template({ template, meta, systemId }: SystemTemplateProps) {
   function selectTemplate(ev: MouseEvent) {
     // prevent default since its a <a> with no valid href
     ev.preventDefault();
+    clearNavState();
     setActiveSystemId(systemId);
     setActiveTemplateId(template.id);
     timeoutScroll();
     scrollToSelector(`#template-${template.id}`);
+  }
+
+  function chooseConfig(configId: number, ev: MouseEvent) {
+    ev.preventDefault();
+    clearNavState();
+    setActiveSystemId(systemId);
+    setActiveTemplateId(template.id);
+    setActiveConfigId(configId);
+    timeoutScroll();
+    scrollToSelector(`#config-${configId}`);
   }
 
   return (
@@ -39,9 +53,15 @@ function Template({ template, meta, systemId }: SystemTemplateProps) {
       <ul className="configs">
         {meta.map((m) => (
           <li key={m.config.name}>
-            <a className="grid template">
-              <span>{`${m.config.name}`}</span>
-              <span>{`qty.${m.quantity}`}</span>
+            <a
+              href="#"
+              className={
+                m.config.id === activeConfigId ? "grid active" : "grid"
+              }
+              onClick={chooseConfig.bind(null, m.config.id)}
+            >
+              <div className="truncate">{`${m.config.name}`}</div>
+              <div>{`qty.${m.quantity}`}</div>
             </a>
           </li>
         ))}

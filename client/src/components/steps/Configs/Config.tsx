@@ -24,7 +24,7 @@ function Config({ config, template }: ConfigProps) {
   }
 
   return (
-    <div className="config">
+    <div className="config" id={`config-${config.id}`} data-spy="config">
       <div className="input-container">
         <input
           type="text"
