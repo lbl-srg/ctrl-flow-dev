@@ -37,7 +37,6 @@ export interface UserSystemN {
   prefix: string;
   number: number;
   config: number;
-  data: any[]; // TODO: how we get the types for the rest of the table data is still being defined
   scheduleList?: {
     group: string;
     children: { name: string; value: string }[];
@@ -348,7 +347,7 @@ const _getUserSystems: (
     prefix: system.prefix,
     number: system.number,
     config: configs.find((c) => c.id === system.config) as Configuration,
-    data: system.data,
+    scheduleList: system.scheduleList,
   }));
 };
 
@@ -374,7 +373,6 @@ const _addUserSystems = (
             prefix: prefix,
             number: start + i,
             config: config.id,
-            data: [],
             scheduleList: getMockData()["scheduleList"],
           };
           newSystems.push(system);
