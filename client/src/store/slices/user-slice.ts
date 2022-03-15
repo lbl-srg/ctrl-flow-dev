@@ -31,16 +31,18 @@ export interface ProjectDetails {
   id: number;
 }
 
+export interface ScheduleGroup {
+  group: string;
+  children: { name: string; value: string }[];
+}
+
 export interface UserSystemN {
   id: number;
   tag: string;
   prefix: string;
   number: number;
   config: number;
-  scheduleList?: {
-    group: string;
-    children: { name: string; value: string }[];
-  }[];
+  scheduleList: ScheduleGroup[];
 }
 
 export interface UserSystem extends Omit<UserSystemN, "config"> {
@@ -93,10 +95,6 @@ export interface Configuration
   extends Omit<ConfigurationN, "template" | "selections"> {
   template: SystemTemplate;
   selections: Selection[];
-}
-
-export interface UserSystem extends Omit<UserSystemN, "config"> {
-  config: Configuration;
 }
 
 const _saveProjectDetails: SetAction<Partial<ProjectDetails>> = (
@@ -385,6 +383,25 @@ const _addUserSystems = (
   );
 };
 
+const _updateUserSystem = (
+  system: UserSystem,
+  tag: string,
+  config: Configuration,
+  scheduleList: ScheduleGroup[],
+  set: SetState<State>,
+) => {
+  set(
+    produce((state: State) => {
+      const userSystem = state.userSystems.find((s) => s.id === system.id);
+      if (userSystem) {
+        userSystem.config = config.id;
+        userSystem.scheduleList = scheduleList;
+        userSystem.tag = tag;
+      }
+    }),
+  );
+};
+
 const _removeUserSystem = (
   system: UserSystem | UserSystemN,
   set: SetState<State>,
@@ -506,6 +523,12 @@ export interface UserSliceInterface {
     quantity: number,
     config: Configuration,
   ) => void;
+  updateUserSystem: (
+    system: UserSystem,
+    tag: string,
+    config: Configuration,
+    scheduleList: ScheduleGroup[],
+  ) => void;
   removeUserSystem: (system: UserSystem | UserSystemN) => void;
   getMetaConfigs: (
     template?: SystemTemplate,
@@ -557,6 +580,8 @@ export default function (
     ) => _addUserSystems(prefix, start, quantity, config, set),
     getUserSystems: (template = undefined, sort?) =>
       _getUserSystems(template, get),
+    updateUserSystem: (system, tag, config, scheduleList) =>
+      _updateUserSystem(system, tag, config, scheduleList, set),
     removeUserSystem: (userSystem: UserSystem | UserSystemN) =>
       _removeUserSystem(userSystem, set),
     getMetaConfigs: (template = undefined, sort) =>
