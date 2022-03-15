@@ -171,13 +171,11 @@ const _getConfigs: (
   get: GetState<State>,
 ) => Configuration[] = (template, get) => {
   const allConfigs = get().configurations;
-  const activeProject = get().userProjects.find(
-    (proj) => proj.id === get().activeProject,
-  ) as UserProjectN;
+  const activeProject = _getActiveProjectN(get());
   // get only active project configs, if a template has been provided
   // just return configs that match that template
   const configs = allConfigs
-    .filter((c) => activeProject.configs.indexOf(c.id) >= 0)
+    .filter(({ id }) => activeProject.configs.includes(id))
     .filter((c) => (template ? c.template === template.id : true));
 
   return _getConfigsHelper(configs, get);
