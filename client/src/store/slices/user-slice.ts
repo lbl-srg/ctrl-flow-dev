@@ -18,6 +18,8 @@ import {
   SortableByName,
 } from "../../utils/utils";
 
+import getMockData from "../mock-data";
+
 export interface ProjectDetails {
   name: string;
   address: string;
@@ -36,6 +38,10 @@ export interface UserSystemN {
   number: number;
   config: number;
   data: any[]; // TODO: how we get the types for the rest of the table data is still being defined
+  scheduleList?: {
+    group: string;
+    children: { name: string; value: string }[];
+  }[];
 }
 
 export interface UserSystem extends Omit<UserSystemN, "config"> {
@@ -88,13 +94,6 @@ export interface Configuration
   extends Omit<ConfigurationN, "template" | "selections"> {
   template: SystemTemplate;
   selections: Selection[];
-}
-
-export interface UserSystemN {
-  id: number;
-  tag: string;
-  config: number;
-  data: any[]; // placeholder for whatever else will populate schedule table
 }
 
 export interface UserSystem extends Omit<UserSystemN, "config"> {
@@ -378,6 +377,7 @@ const _addUserSystems = (
             number: start + i,
             config: config.id,
             data: [],
+            scheduleList: getMockData()["scheduleList"],
           };
           newSystems.push(system);
         }

@@ -512,6 +512,116 @@ const mockData = {
     { id: 118, type: "final", name: "Modulating" },
     { id: 119, type: "final", name: "Two-position" },
   ],
+  scheduleList: [
+    { group: "", children: [{ name: "Economizer Type", value: "" }] },
+    { group: "", children: [{ name: "HHW Supply", value: "" }] },
+    { group: "", children: [{ name: "CHW Supply", value: "" }] },
+    {
+      group: "Supply Air Temperature",
+      children: [
+        { name: "Lowest Cooling Set Point", value: "" },
+        { name: "Highest Cooling Set Point", value: "" },
+        { name: "Lower Value of OAT Reset Range", value: "" },
+        { name: "Higher Value of OAT Reset Range", value: "" },
+      ],
+    },
+    {
+      group: "Ventilation",
+      children: [
+        { name: "Design OA flow rate", value: "" },
+        { name: "Uncorrect design OA flow rate", value: "" },
+        { name: "Absolute minimum OA flow rate", value: "" },
+      ],
+    },
+    {
+      group: "Airflow",
+      children: [
+        { name: "Duct design Max Static Pressure", value: "" },
+        { name: "Supply Fan MIN fan speed", value: "" },
+        { name: "Supply Fan MAX fan speed", value: "" },
+        { name: "Return Fan MIN fan speed", value: "" },
+      ],
+    },
+    {
+      group: "Economizer",
+      children: [
+        { name: "MIN Outdoor Air Mass Flow Rate", value: "" },
+        { name: "MIN Outdoor Air Damper Pressure Drop", value: "" },
+        { name: "Outdoor air damper pressure drop", value: "" },
+        { name: "Return air damper pressure drop", value: "" },
+        { name: "Relief air damper pressure drop", value: "" },
+      ],
+    },
+    {
+      group: "Filter",
+      children: [{ name: "Pressure Drop", value: "" }],
+    },
+    {
+      group: "Heating Coil",
+      children: [
+        { name: "Capactiy", value: "" },
+        { name: "Liquid Mass Flow Rate", value: "" },
+        { name: "Entering Liquid Temp", value: "" },
+        { name: "Liquid Pressure Drop", value: "" },
+        { name: "Air Mass Flow Rate", value: "" },
+        { name: "Entering Air Temperature", value: "" },
+        { name: "Air Pressure Drop", value: "" },
+      ],
+    },
+    {
+      group: "Heating Coil Valve",
+      children: [{ name: "Pressure Drop", value: "" }],
+    },
+    {
+      group: "Cooling Coil",
+      children: [
+        { name: "Capacity", value: "" },
+        { name: "Liquid Mass Flow Rate", value: "" },
+        { name: "Entering Liquid Temp", value: "" },
+        { name: "Liquid Pressure Drop", value: "" },
+        { name: "Air Mass Flow Rate", value: "" },
+        { name: "Entering Air Temperature", value: "" },
+        { name: "Entering Air Relative Humidity", value: "" },
+        { name: "Air Pressure Drop", value: "" },
+      ],
+    },
+    {
+      group: "Cooling Coil Valve",
+      children: [{ name: "Pressure Drop", value: "" }],
+    },
+    {
+      group: "Reheat Coil",
+      children: [
+        { name: "Capacity", value: "" },
+        { name: "Liquid Mass Flow Rate", value: "" },
+        { name: "Entering Liquid Temp", value: "" },
+        { name: "Liquid Pressure Drop", value: "" },
+        { name: "Air Mass Flow Rate", value: "" },
+        { name: "Entering Air Temperature", value: "" },
+        { name: "Air Pressure Drop", value: "" },
+      ],
+    },
+    {
+      group: "Reheat Coil Valve",
+      children: [{ name: "Pressure Drop", value: "" }],
+    },
+    {
+      group: "Supply Fan",
+      children: [
+        { name: "Total Pressure Rise", value: "" },
+        { name: "Fan Efficiency", value: "" },
+        { name: "Pressure Curve", value: "" },
+      ],
+    },
+    {
+      group: "Return Fan",
+      children: [
+        { name: "Total Pressure Rise", value: "" },
+        { name: "Fan Efficiency", value: "" },
+        { name: "Pressure Curve", value: "" },
+      ],
+    },
+  ],
 };
 
 export default () => mockData;
