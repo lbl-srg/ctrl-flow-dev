@@ -217,7 +217,6 @@ test("Use 'addUserSystems' to batch add user systems", () => {
     expect(s.number).toEqual(start + i);
     expect(s.tag).toEqual(`${prefix} - ${start + i}`);
     expect(s.config).toEqual(config);
-    expect(s.data).toEqual([]);
   });
 });
 
