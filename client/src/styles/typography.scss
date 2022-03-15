@@ -43,7 +43,7 @@ h6 {
     button {
       margin-right: var(--spacing-md);
       &:last-child {
-        margin: none;
+        margin-right: 0;
       }
     }
   }

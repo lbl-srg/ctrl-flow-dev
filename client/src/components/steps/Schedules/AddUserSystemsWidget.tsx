@@ -38,35 +38,37 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
   }
 
   return (
-    <Formik
-      enableReinitialize={true}
-      initialValues={initValues}
-      onSubmit={(values) =>
-        onWidgetSubmit(
-          configs,
-          values as SystemWidgetForm, // TODO: remove cast once we have proper form valildation
-          addUserSystems,
-        )
-      }
-    >
-      <Form>
-        <label htmlFor="tag">System Tag</label>
+    <div className="add-user-systems-widget">
+      <Formik
+        enableReinitialize={true}
+        initialValues={initValues}
+        onSubmit={(values) =>
+          onWidgetSubmit(
+            configs,
+            values as SystemWidgetForm, // TODO: remove cast once we have proper form valildation
+            addUserSystems,
+          )
+        }
+      >
+        <Form>
+          <label htmlFor="tag">System Tag</label>
 
-        <Field id="tag" name="tag" placeholder="" />
-        <label htmlFor="start">ID #</label>
-        <Field id="start" name="start" type="number" placeholder="1" />
-        <SelectInput
-          id="configID"
-          name="configID"
-          label="Configuration"
-          options={configs as SelectInputOption[]}
-          defaultOption={config as SelectInputOption}
-        />
-        <label htmlFor="quantity">Quantity</label>
-        <Field id="quantity" name="quantity" type="number" placeholder="1" />
-        <button type="submit">Apply</button>
-      </Form>
-    </Formik>
+          <Field id="tag" name="tag" placeholder="" />
+          <label htmlFor="start">ID #</label>
+          <Field id="start" name="start" type="number" placeholder="1" />
+          <SelectInput
+            id="configID"
+            name="configID"
+            label="Configuration"
+            options={configs as SelectInputOption[]}
+            defaultOption={config as SelectInputOption}
+          />
+          <label htmlFor="quantity">Quantity</label>
+          <Field id="quantity" name="quantity" type="number" placeholder="1" />
+          <button type="submit">Apply</button>
+        </Form>
+      </Formik>
+    </div>
   );
 }
 

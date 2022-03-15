@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import PageHeader from "../../PageHeader";
 import { useStore } from "../../../store/store";
 import AddUserSystemsWidget from "./AddUserSystemsWidget";
@@ -23,14 +22,29 @@ function Schedules() {
   const userSystems = getUserSystems(template);
 
   return (
-    <Fragment>
-      <PageHeader headerText="Schedules" />
+    <div className="schedules-page">
+      <PageHeader headerText="Equipment Schedules" />
+
+      <h3 className="with-links">
+        {template?.name}
+        <div className="links">
+          <a>
+            <i className="icon-upload" />
+            Upload
+          </a>
+          <a>
+            <i className="icon-download" />
+            Download
+          </a>
+        </div>
+      </h3>
+
       <AddUserSystemsWidget configs={templateConfigs} />
       <button onClick={() => userSystems.map((s) => removeUserSystem(s))}>
         Remove Systems
       </button>
       <UserSystemTable userSystems={userSystems} />
-    </Fragment>
+    </div>
   );
 }
 
