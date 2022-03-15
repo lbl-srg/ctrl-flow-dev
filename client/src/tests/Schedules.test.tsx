@@ -11,7 +11,7 @@ beforeEach(() => render(<Schedules />, { wrapper: MemoryRouter }));
 afterEach(() => cleanup());
 
 test("renders schedule page", () => {
-  const title = screen.getByRole("heading", { name: "Schedules" });
+  const title = screen.getByRole("heading", { name: "Equipment Schedules" });
   expect(title).toBeInTheDocument();
 });
 
