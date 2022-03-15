@@ -1,0 +1,24 @@
+.schedules-page {
+  .add-user-systems-widget {
+    border-radius: 2rem;
+    background-color: var(--color-blue-light);
+    padding: var(--spacing-md);
+
+    form {
+      display: flex;
+
+      .input-container {
+        width: 90%;
+        background-color: var(--color-blue-x-light);
+        padding: var(--spacing-sm);
+        border-radius: 1rem;
+      }
+
+      .submit-container {
+        display: flex;
+        align-items: center;
+        margin-left: var(--spacing-md);
+      }
+    }
+  }
+}

@@ -2,6 +2,9 @@ import PageHeader from "../../PageHeader";
 import { useStore } from "../../../store/store";
 import AddUserSystemsWidget from "./AddUserSystemsWidget";
 import UserSystemTable from "./UserSystemTable";
+import { Fragment } from "react";
+
+import "../../../styles/steps/schedules.scss";
 
 function Schedules() {
   const { getConfigs, getUserSystems, removeUserSystem, template, configs } =
@@ -22,29 +25,31 @@ function Schedules() {
   const userSystems = getUserSystems(template);
 
   return (
-    <div className="schedules-page">
+    <Fragment>
       <PageHeader headerText="Equipment Schedules" />
 
-      <h3 className="with-links">
-        {template?.name}
-        <div className="links">
-          <a>
-            <i className="icon-upload" />
-            Upload
-          </a>
-          <a>
-            <i className="icon-download" />
-            Download
-          </a>
-        </div>
-      </h3>
+      <div className="schedules-page">
+        <h3 className="with-links">
+          {template?.name}
+          <div className="links">
+            <a>
+              <i className="icon-upload" />
+              Upload
+            </a>
+            <a>
+              <i className="icon-download" />
+              Download
+            </a>
+          </div>
+        </h3>
 
-      <AddUserSystemsWidget configs={templateConfigs} />
-      <button onClick={() => userSystems.map((s) => removeUserSystem(s))}>
-        Remove Systems
-      </button>
-      <UserSystemTable userSystems={userSystems} />
-    </div>
+        <AddUserSystemsWidget configs={templateConfigs} />
+        <button onClick={() => userSystems.map((s) => removeUserSystem(s))}>
+          Remove Systems
+        </button>
+        <UserSystemTable userSystems={userSystems} />
+      </div>
+    </Fragment>
   );
 }
 

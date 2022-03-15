@@ -62,6 +62,7 @@ const SlideOut = ({ template, config, disabled = true }: SlideOutProps) => {
         className="config-slide-out"
       >
         <h3>{template.name}</h3>
+
         <Formik
           initialValues={initialValues}
           enableReinitialize={true}

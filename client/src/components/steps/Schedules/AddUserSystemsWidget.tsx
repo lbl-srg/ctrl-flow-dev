@@ -1,16 +1,14 @@
-import { useStore, Configuration } from "../../../store/store";
-import {
-  AddUserSystemsWidgetProps,
-  SystemWidgetForm,
-  AddUserSystemsAction,
-} from "./Types";
-import { SelectInput, SelectInputOption } from "../../shared/SelectInput";
-import { Formik, Field, Form } from "formik";
+import { useStore } from "../../../store/store";
+import { AddUserSystemsWidgetProps, AddUserSystemFormData } from "./Types";
+import { ChangeEvent, FormEvent } from "react";
+import { getFormData } from "../../../utils/dom-utils";
 
 function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
-  const { addUserSystems, activeConfig } = useStore((state) => {
-    return { ...state, activeConfig: state.getActiveConfig() };
-  });
+  const { addUserSystems, activeConfig, setActiveConfigId } = useStore(
+    (state) => {
+      return { ...state, activeConfig: state.getActiveConfig() };
+    },
+  );
 
   const config = activeConfig || configs[0];
 
@@ -18,56 +16,82 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
     tag: "",
     start: 1,
     quantity: 1,
-    configID: config?.id || undefined,
+    configId: config?.id || undefined,
   };
 
-  function onWidgetSubmit(
-    configs: Configuration[],
-    formValues: SystemWidgetForm,
-    addUserSystems: AddUserSystemsAction,
-  ) {
-    const config = configs.find(
-      (c) => c.id === Number(formValues.configID),
-    ) as Configuration;
+  function configChange(ev: ChangeEvent<HTMLSelectElement>) {
+    setActiveConfigId(Number(ev.target.value));
+  }
+
+  function onWidgetSubmit(ev: FormEvent<HTMLFormElement>) {
+    ev.preventDefault();
+    const formValues = getFormData(ev.currentTarget) as AddUserSystemFormData;
+
     addUserSystems(
       formValues.tag,
-      formValues.start,
-      formValues.quantity,
+      Number(formValues.start),
+      Number(formValues.quantity),
       config,
     );
   }
 
   return (
     <div className="add-user-systems-widget">
-      <Formik
-        enableReinitialize={true}
-        initialValues={initValues}
-        onSubmit={(values) =>
-          onWidgetSubmit(
-            configs,
-            values as SystemWidgetForm, // TODO: remove cast once we have proper form valildation
-            addUserSystems,
-          )
-        }
-      >
-        <Form>
-          <label htmlFor="tag">System Tag</label>
+      <form onSubmit={onWidgetSubmit}>
+        <div className="row input-container">
+          <label className="col-xs-4">
+            System Tag
+            <input
+              type="text"
+              name="tag"
+              defaultValue={initValues.tag}
+              placeholder=""
+            />
+          </label>
 
-          <Field id="tag" name="tag" placeholder="" />
-          <label htmlFor="start">ID #</label>
-          <Field id="start" name="start" type="number" placeholder="1" />
-          <SelectInput
-            id="configID"
-            name="configID"
-            label="Configuration"
-            options={configs as SelectInputOption[]}
-            defaultOption={config as SelectInputOption}
-          />
-          <label htmlFor="quantity">Quantity</label>
-          <Field id="quantity" name="quantity" type="number" placeholder="1" />
-          <button type="submit">Apply</button>
-        </Form>
-      </Formik>
+          <label className="col-xs-2">
+            ID #
+            <input
+              name="start"
+              type="number"
+              defaultValue={initValues.start}
+              placeholder="1"
+            />
+          </label>
+
+          <label className="col-xs-4">
+            Configuration
+            <select
+              name="config"
+              defaultValue={initValues.configId}
+              disabled={configs.length === 0}
+              onChange={configChange}
+            >
+              {configs.map(({ id, name }) => (
+                <option key={id} value={id}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="col-xs-2">
+            Quantity
+            <input
+              name="quantity"
+              type="number"
+              defaultValue={initValues.quantity}
+              placeholder="1"
+            />
+          </label>
+        </div>
+
+        <div className="submit-container">
+          <button type="submit" className="small inline">
+            Apply
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

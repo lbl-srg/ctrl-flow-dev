@@ -19,6 +19,13 @@ export interface UserSystemRowProps {
   userSystem: UserSystem;
 }
 
+export type AddUserSystemFormData = {
+  tag: string;
+  start: string;
+  quantity: string;
+  configId: string;
+};
+
 export type AddUserSystemsAction = (
   tag: string,
   start: number,
