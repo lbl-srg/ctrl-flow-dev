@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/LBL-Linkage-Widget-v2/static/css/main.80f10d35.css",
-    "main.js": "/LBL-Linkage-Widget-v2/static/js/main.c8c30b70.js",
+    "main.css": "/LBL-Linkage-Widget-v2/static/css/main.bd252176.css",
+    "main.js": "/LBL-Linkage-Widget-v2/static/js/main.46b54fb9.js",
     "static/js/787.8322627b.chunk.js": "/LBL-Linkage-Widget-v2/static/js/787.8322627b.chunk.js",
     "index.html": "/LBL-Linkage-Widget-v2/index.html",
-    "main.80f10d35.css.map": "/LBL-Linkage-Widget-v2/static/css/main.80f10d35.css.map",
-    "main.c8c30b70.js.map": "/LBL-Linkage-Widget-v2/static/js/main.c8c30b70.js.map",
+    "main.bd252176.css.map": "/LBL-Linkage-Widget-v2/static/css/main.bd252176.css.map",
+    "main.46b54fb9.js.map": "/LBL-Linkage-Widget-v2/static/js/main.46b54fb9.js.map",
     "787.8322627b.chunk.js.map": "/LBL-Linkage-Widget-v2/static/js/787.8322627b.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.80f10d35.css",
-    "static/js/main.c8c30b70.js"
+    "static/css/main.bd252176.css",
+    "static/js/main.46b54fb9.js"
   ]
 }
