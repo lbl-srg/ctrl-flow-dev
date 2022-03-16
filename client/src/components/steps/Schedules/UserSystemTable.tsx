@@ -1,21 +1,37 @@
 import { UserSystemTableProps } from "./Types";
 import UserSystemRow from "./UserSystemRow";
+import { groupFields } from "./helpers";
 
 function UserSystems({ userSystems }: UserSystemTableProps) {
+  const groups = groupFields(userSystems[0]);
+
   return (
-    <table role="grid">
-      <thead>
-        <tr>
-          <th>Tag</th>
-          <th>Config</th>
-        </tr>
-      </thead>
-      <tbody>
-        {userSystems.map((userSystem) => {
-          return <UserSystemRow key={userSystem.id} userSystem={userSystem} />;
-        })}
-      </tbody>
-    </table>
+    <div className="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th className="sticky index-col">&nbsp;</th>
+            <th className="sticky">Tag</th>
+            <th className="sticky">Config</th>
+            {groups.map((group) => {
+              return group.fields.map((field) => <th key={field}>{field}</th>);
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {userSystems.map((userSystem, index) => {
+            return (
+              <UserSystemRow
+                key={userSystem.id}
+                index={index}
+                userSystem={userSystem}
+                groups={groups}
+              />
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

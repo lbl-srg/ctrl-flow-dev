@@ -1,15 +1,21 @@
+import { findValue } from "./helpers";
 import { UserSystemRowProps } from "./Types";
 
-function UserSystemRow({ userSystem }: UserSystemRowProps) {
+function UserSystemRow({ userSystem, index, groups }: UserSystemRowProps) {
   return (
     <tr>
-      <td>
-        {userSystem.tag}
-
-        {/* <pre>{JSON.stringify(userSystem, null, 2)}</pre> */}
-      </td>
+      <td className="index-col">{index + 1}</td>
+      <td>{userSystem.tag}</td>
 
       <td>{userSystem.config.name}</td>
+
+      {groups.map((group) => {
+        return group.fields.map((field) => (
+          <td key={`${group.groupName}-${field}`}>
+            {findValue(userSystem, group.groupName, field)}
+          </td>
+        ));
+      })}
     </tr>
   );
 }

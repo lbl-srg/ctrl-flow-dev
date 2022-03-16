@@ -44,9 +44,9 @@ function Schedules() {
         </h3>
 
         <AddUserSystemsWidget configs={templateConfigs} />
-        <button onClick={() => userSystems.map((s) => removeUserSystem(s))}>
+        {/* <button onClick={() => userSystems.map((s) => removeUserSystem(s))}>
           Remove Systems
-        </button>
+        </button> */}
         <UserSystemTable userSystems={userSystems} />
       </div>
     </Fragment>
