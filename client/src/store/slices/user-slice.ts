@@ -18,6 +18,8 @@ import {
   SortableByName,
 } from "../../utils/utils";
 
+import getMockData from "../mock-data";
+
 export interface ProjectDetails {
   name: string;
   address: string;
@@ -29,13 +31,18 @@ export interface ProjectDetails {
   id: number;
 }
 
+export interface ScheduleGroup {
+  group: string;
+  children: { name: string; value: string }[];
+}
+
 export interface UserSystemN {
   id: number;
   tag: string;
   prefix: string;
   number: number;
   config: number;
-  data: any[]; // TODO: how we get the types for the rest of the table data is still being defined
+  scheduleList: ScheduleGroup[];
 }
 
 export interface UserSystem extends Omit<UserSystemN, "config"> {
@@ -88,17 +95,6 @@ export interface Configuration
   extends Omit<ConfigurationN, "template" | "selections"> {
   template: SystemTemplate;
   selections: Selection[];
-}
-
-export interface UserSystemN {
-  id: number;
-  tag: string;
-  config: number;
-  data: any[]; // placeholder for whatever else will populate schedule table
-}
-
-export interface UserSystem extends Omit<UserSystemN, "config"> {
-  config: Configuration;
 }
 
 const _saveProjectDetails: SetAction<Partial<ProjectDetails>> = (
@@ -172,13 +168,11 @@ const _getConfigs: (
   get: GetState<State>,
 ) => Configuration[] = (template, get) => {
   const allConfigs = get().configurations;
-  const activeProject = get().userProjects.find(
-    (proj) => proj.id === get().activeProject,
-  ) as UserProjectN;
+  const activeProject = _getActiveProjectN(get());
   // get only active project configs, if a template has been provided
   // just return configs that match that template
   const configs = allConfigs
-    .filter((c) => activeProject.configs.indexOf(c.id) >= 0)
+    .filter(({ id }) => activeProject.configs.includes(id))
     .filter((c) => (template ? c.template === template.id : true));
 
   return _getConfigsHelper(configs, get);
@@ -351,7 +345,7 @@ const _getUserSystems: (
     prefix: system.prefix,
     number: system.number,
     config: configs.find((c) => c.id === system.config) as Configuration,
-    data: system.data,
+    scheduleList: system.scheduleList,
   }));
 };
 
@@ -377,13 +371,32 @@ const _addUserSystems = (
             prefix: prefix,
             number: start + i,
             config: config.id,
-            data: [],
+            scheduleList: getMockData()["scheduleList"],
           };
           newSystems.push(system);
         }
 
         state.userSystems.push(...newSystems);
         activeProject.userSystems.push(...newSystems.map((s) => s.id));
+      }
+    }),
+  );
+};
+
+const _updateUserSystem = (
+  system: UserSystem,
+  tag: string,
+  config: Configuration,
+  scheduleList: ScheduleGroup[],
+  set: SetState<State>,
+) => {
+  set(
+    produce((state: State) => {
+      const userSystem = state.userSystems.find((s) => s.id === system.id);
+      if (userSystem) {
+        userSystem.config = config.id;
+        userSystem.scheduleList = scheduleList;
+        userSystem.tag = tag;
       }
     }),
   );
@@ -510,6 +523,12 @@ export interface UserSliceInterface {
     quantity: number,
     config: Configuration,
   ) => void;
+  updateUserSystem: (
+    system: UserSystem,
+    tag: string,
+    config: Configuration,
+    scheduleList: ScheduleGroup[],
+  ) => void;
   removeUserSystem: (system: UserSystem | UserSystemN) => void;
   getMetaConfigs: (
     template?: SystemTemplate,
@@ -561,6 +580,8 @@ export default function (
     ) => _addUserSystems(prefix, start, quantity, config, set),
     getUserSystems: (template = undefined, sort?) =>
       _getUserSystems(template, get),
+    updateUserSystem: (system, tag, config, scheduleList) =>
+      _updateUserSystem(system, tag, config, scheduleList, set),
     removeUserSystem: (userSystem: UserSystem | UserSystemN) =>
       _removeUserSystem(userSystem, set),
     getMetaConfigs: (template = undefined, sort) =>

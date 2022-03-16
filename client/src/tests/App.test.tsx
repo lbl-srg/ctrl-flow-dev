@@ -7,7 +7,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 
-import App from "./App";
+import App from "../App";
 
 beforeEach(() => render(<App />, { wrapper: MemoryRouter }));
 
@@ -107,7 +107,9 @@ test("navigate through steps", async () => {
   expect(screen.getByText("Next Step: Schedules")).toBeInTheDocument();
 
   userEvent.click(screen.getByText("Next Step: Schedules"));
-  expect(screen.getByText("Schedules", { selector: "h1" })).toBeInTheDocument();
+  expect(
+    screen.getByText("Equipment Schedules", { selector: "h1" }),
+  ).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Back" })).toBeInTheDocument();
   expect(screen.getByText("Next Step: Results")).toBeInTheDocument();
 

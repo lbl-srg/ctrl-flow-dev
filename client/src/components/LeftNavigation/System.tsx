@@ -6,9 +6,8 @@ import { scrollToSelector } from "../../utils/dom-utils";
 import { useState } from "react";
 
 function System({ systemType, templates, meta }: SystemProps) {
-  const { activeSystemId, setActiveSystemId, timeoutScroll } = useStore(
-    (state) => state,
-  );
+  const { activeSystemId, clearNavState, setActiveSystemId, timeoutScroll } =
+    useStore((state) => state);
 
   const classes = ["system"];
   const isActive = systemType.id === activeSystemId && templates.length > 0;
@@ -21,6 +20,7 @@ function System({ systemType, templates, meta }: SystemProps) {
   const icon = findIcon(systemType.name) || "";
 
   function setActive() {
+    clearNavState();
     setActiveSystemId(systemType.id);
     scrollToSelector(`#system-${systemType.id}`);
     setIsOpen(true);

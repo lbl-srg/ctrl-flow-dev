@@ -29,3 +29,10 @@ export function getNumericId($el: Element): number | null {
   const [str, val] = idStr.split("-");
   return val ? Number(val) : null;
 }
+
+export function getFormData($form: HTMLFormElement): object {
+  const formData = Array.from(new FormData($form).entries());
+  return formData.reduce((ret, [key, val]) => {
+    return { ...ret, [key]: val };
+  }, {});
+}

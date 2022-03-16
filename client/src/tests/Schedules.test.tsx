@@ -3,15 +3,15 @@ import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 
-import { useStore } from "../../../store/store";
-import Schedules from "../Schedules";
+import { useStore } from "../store/store";
+import Schedules from "../components/steps/Schedules";
 
 beforeEach(() => render(<Schedules />, { wrapper: MemoryRouter }));
 
 afterEach(() => cleanup());
 
 test("renders schedule page", () => {
-  const title = screen.getByRole("heading", { name: "Schedules" });
+  const title = screen.getByRole("heading", { name: "Equipment Schedules" });
   expect(title).toBeInTheDocument();
 });
 

@@ -31,6 +31,26 @@ const mockData = {
     { id: 6, type: "final", name: "Option Branch 2" },
     { id: 7, type: "final", name: "Option Branch 2" },
   ],
+  scheduleList: [
+    { group: "", children: [{ name: "Economizer Type", value: "" }] },
+    {
+      group: "Supply Air Temperature",
+      children: [
+        { name: "Lowest Cooling Set Point", value: "" },
+        { name: "Highest Cooling Set Point", value: "" },
+        { name: "Lower Value of OAT Reset Range", value: "" },
+        { name: "Higher Value of OAT Reset Range", value: "" },
+      ],
+    },
+    {
+      group: "Ventilation",
+      children: [
+        { name: "Design OA flow rate", value: "" },
+        { name: "Uncorrect design OA flow rate", value: "" },
+        { name: "Absolute minimum OA flow rate", value: "" },
+      ],
+    },
+  ],
 };
 
 export default () => mockData;

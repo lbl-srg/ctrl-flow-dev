@@ -5,6 +5,7 @@ import {
   Option,
   Selection,
   SystemTemplate,
+  UserSystem,
 } from "../store/store";
 
 jest.mock("./mock-data");
@@ -213,12 +214,83 @@ test("Use 'addUserSystems' to batch add user systems", () => {
 
   // check that tag, prefix, number, and config are as expected
   allSystems.forEach((s, i) => {
-    expect(s.prefix).toEqual(prefix);
-    expect(s.number).toEqual(start + i);
     expect(s.tag).toEqual(`${prefix} - ${start + i}`);
     expect(s.config).toEqual(config);
-    expect(s.data).toEqual([]);
   });
+});
+
+test("Updating a user system", () => {
+  const prefix = "TEST";
+  const start = 1;
+  const quantity = 10;
+  const [template1, _templates] = useStore.getState().getTemplates();
+
+  useStore.getState().addConfig(template1);
+  useStore.getState().addConfig(template1);
+
+  const [config, config2, ..._configs] = useStore.getState().getConfigs();
+  useStore.getState().addUserSystems(prefix, start, quantity, config);
+
+  let [userSystem, ..._userSystems] = useStore
+    .getState()
+    .getUserSystems(template1);
+
+  // update config
+  useStore
+    .getState()
+    .updateUserSystem(
+      userSystem,
+      userSystem.tag,
+      config2,
+      userSystem.scheduleList,
+    );
+
+  userSystem = useStore
+    .getState()
+    .getUserSystems()
+    .find((s) => s.id === userSystem.id) as UserSystem;
+  expect(userSystem.config).toEqual(config2);
+  // update tag
+  const newTag = "test-tag 5";
+  useStore
+    .getState()
+    .updateUserSystem(userSystem, newTag, config2, userSystem.scheduleList);
+
+  userSystem = useStore
+    .getState()
+    .getUserSystems()
+    .find((s) => s.id === userSystem.id) as UserSystem;
+  expect(userSystem.tag).toEqual(newTag);
+
+  // update scheduleList
+  const testScheduleValue = "Test Schedule Entry";
+  const [firstGroup, ...otherGroups] = userSystem.scheduleList;
+  const children = firstGroup.children.map((c) => ({
+    name: c.name,
+    value: testScheduleValue,
+  }));
+  const testScheduleList = [
+    { group: firstGroup.group, children },
+    ...otherGroups,
+  ];
+
+  useStore
+    .getState()
+    .updateUserSystem(
+      userSystem,
+      userSystem.tag,
+      userSystem.config,
+      testScheduleList,
+    );
+
+  userSystem = useStore
+    .getState()
+    .getUserSystems()
+    .find((s) => s.id === userSystem.id) as UserSystem;
+
+  expect(userSystem.scheduleList[0].children[0].value).toEqual(
+    testScheduleValue,
+  );
 });
 
 test("Metaconfigs are correctly generated based on systems added", () => {

@@ -1,6 +1,6 @@
 import { SetState, GetState } from "zustand";
 import { State, SystemTemplate } from "../store";
-import { produce } from "immer";
+import { Configuration } from "./user-slice";
 
 export interface uiSliceInterface {
   leftColWidth: number;
@@ -13,8 +13,14 @@ export interface uiSliceInterface {
   setActiveSystemId: (activeSystemId: number) => void;
   activeSystemId: number | null;
 
+  setActiveConfigId: (activeConfigId: number) => void;
+  activeConfigId: number | null;
+
   timeoutScroll: () => void;
   watchScroll: boolean;
+
+  getActiveConfig: () => Configuration | undefined;
+  clearNavState: () => void;
 }
 
 export default function (
@@ -35,13 +41,24 @@ export default function (
     activeTemplateId: null,
     setActiveTemplateId: (activeTemplateId) => set({ activeTemplateId }),
 
+    activeConfigId: null,
+    setActiveConfigId: (activeConfigId) => set({ activeConfigId }),
+
     leftColWidth: 300,
-    setLeftColWidth: (width) => {
-      set(
-        produce((state: State) => {
-          state.leftColWidth = width;
-        }),
-      );
+    setLeftColWidth: (leftColWidth) => set({ leftColWidth }),
+
+    clearNavState: () => {
+      set({
+        activeTemplateId: null,
+        activeSystemId: null,
+        activeConfigId: null,
+      });
+    },
+
+    getActiveConfig: () => {
+      return get()
+        .getConfigs()
+        .find(({ id }) => id === get().activeConfigId);
     },
 
     getActiveTemplate: () =>

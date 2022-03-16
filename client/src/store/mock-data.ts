@@ -4,8 +4,6 @@ const mockData = {
     { id: 2, name: "Zone Equipment" },
     { id: 3, name: "Chilled Water Plants" },
     { id: 4, name: "Heating Plants" },
-    { id: 5, name: "Domestic Hot Water (DHW)" },
-    { id: 6, name: "DHC Consumer Interface" },
   ],
   templates: [
     {
@@ -146,49 +144,25 @@ const mockData = {
       id: 22,
       name: "Water-cooled",
       systemType: 3,
-      options: [92, 95, 99, 102, 105, 109, 114, 117],
+      options: [92, 95, 99, 102, 105, 120, 123, 109, 114, 117],
     },
     {
       id: 23,
       name: "Air-cooled",
       systemType: 3,
-      options: [],
+      options: [92, 95, 99, 102, 105, 120, 123, 109, 114, 117],
     },
     {
       id: 24,
       name: "Hot Water Plants",
       systemType: 4,
-      options: [],
+      options: [126],
     },
     {
       id: 25,
       name: "Steam Plants",
       systemType: 4,
-      options: [],
-    },
-    {
-      id: 26,
-      name: "Chilled Water Heat Echanger",
-      systemType: 6,
-      options: [],
-    },
-    {
-      id: 27,
-      name: "Hot Water Heat Exchanger",
-      systemType: 6,
-      options: [],
-    },
-    {
-      id: 28,
-      name: "Steam to Hot Water Heat Exchanger",
-      systemType: 6,
-      options: [],
-    },
-    {
-      id: 29,
-      name: "Direct Connection",
-      systemType: 6,
-      options: [],
+      options: [126],
     },
   ],
   options: [
@@ -254,8 +228,8 @@ const mockData = {
       options: [19, 20, 21, 22],
     },
     { id: 19, type: "final", name: "No heat recovery" },
-    { id: 20, type: "final", name: "Plate heat exchanger" },
-    { id: 21, type: "final", name: "Enthalpy wheel" },
+    { id: 20, type: "final", name: "Fixed plate heat exchanger" },
+    { id: 21, type: "final", name: "Rotary air to air" },
     { id: 22, type: "final", name: "Run-around coil" },
     {
       id: 23,
@@ -305,7 +279,7 @@ const mockData = {
     {
       id: 32,
       type: "final",
-      name: "Return fan with pressure control - Modulated relief damper",
+      name: "Return fan with building pressure control - Modulated relief damper",
     },
     {
       id: 33,
@@ -315,13 +289,13 @@ const mockData = {
     {
       id: 34,
       type: "dropdown",
-      name: "Blow-through fan",
+      name: "Supply fan blow-through",
       group: "Fan Type",
       options: [35, 36, 37],
     },
-    { id: 35, type: "final", name: "No fan" },
+    { id: 35, type: "final", name: "No fan (i.e. Draw Through)" },
     { id: 36, type: "final", name: "Single fan" },
-    { id: 37, type: "final", name: "Multiple fans (identical)" },
+    { id: 37, type: "final", name: "Multiple fans (array)" },
     {
       id: 39,
       type: "dropdown",
@@ -367,12 +341,12 @@ const mockData = {
     {
       id: 59,
       type: "dropdown",
-      name: "Draw-through fan",
+      name: "Supply fan draw-through",
       options: [60, 61, 62],
     },
-    { id: 60, type: "final", name: "No fan" },
+    { id: 60, type: "final", name: "No fan (i.e. blow through)" },
     { id: 61, type: "final", name: "Single fan" },
-    { id: 62, type: "final", name: "Multiple fans (identical)" },
+    { id: 62, type: "final", name: "Multiple fans (array)" },
     { id: 63, type: "dropdown", name: "Controller", options: [64] },
     {
       id: 64,
@@ -463,11 +437,11 @@ const mockData = {
     {
       id: 99,
       type: "dropdown",
-      name: "Chilled water return section",
+      name: "Waterside Economizer",
       options: [100, 101],
     },
     { id: 100, type: "final", name: "None (Passthrough)" },
-    { id: 101, type: "final", name: "Waterside Economizer" },
+    { id: 101, type: "final", name: "Waterside Economizer " }, // TODO: duplicate names break forms!
     {
       id: 102,
       type: "dropdown",
@@ -479,8 +453,9 @@ const mockData = {
     {
       id: 105,
       type: "dropdown",
-      name: "Cooling Towers",
+      name: "Tower Fan",
       options: [106, 107, 108],
+      group: "Cooling Towers",
     },
     { id: 106, type: "final", name: "Single speed" },
     { id: 107, type: "final", name: "Two speed" },
@@ -511,6 +486,137 @@ const mockData = {
     },
     { id: 118, type: "final", name: "Modulating" },
     { id: 119, type: "final", name: "Two-position" },
+    {
+      id: 120,
+      type: "dropdown",
+      name: "Bypass valve",
+      options: [121, 122],
+      group: "Cooling Towers",
+    },
+    { id: 121, type: "final", name: "None" },
+    { id: 122, type: "final", name: "Two-position" },
+    {
+      id: 123,
+      type: "dropdown",
+      name: "Basin Heater",
+      options: [124, 125],
+      group: "Cooling Towers",
+    },
+    { id: 124, type: "final", name: "None" },
+    { id: 125, type: "final", name: "Heater" },
+    { id: 126, type: "dropdown", name: "Hot Water Pump", options: [127, 128] },
+    { id: 127, type: "final", name: "None" },
+    { id: 128, type: "final", name: "Variable speed" },
+  ],
+  scheduleList: [
+    { group: "", children: [{ name: "Economizer Type", value: "" }] },
+    { group: "", children: [{ name: "HHW Supply", value: "" }] },
+    { group: "", children: [{ name: "CHW Supply", value: "" }] },
+    {
+      group: "Supply Air Temperature",
+      children: [
+        { name: "Lowest Cooling Set Point", value: "" },
+        { name: "Highest Cooling Set Point", value: "" },
+        { name: "Lower Value of OAT Reset Range", value: "" },
+        { name: "Higher Value of OAT Reset Range", value: "" },
+      ],
+    },
+    {
+      group: "Ventilation",
+      children: [
+        { name: "Design OA flow rate", value: "" },
+        { name: "Uncorrect design OA flow rate", value: "" },
+        { name: "Absolute minimum OA flow rate", value: "" },
+      ],
+    },
+    {
+      group: "Airflow",
+      children: [
+        { name: "Duct design Max Static Pressure", value: "" },
+        { name: "Supply Fan MIN fan speed", value: "" },
+        { name: "Supply Fan MAX fan speed", value: "" },
+        { name: "Return Fan MIN fan speed", value: "" },
+      ],
+    },
+    {
+      group: "Economizer",
+      children: [
+        { name: "MIN Outdoor Air Mass Flow Rate", value: "" },
+        { name: "MIN Outdoor Air Damper Pressure Drop", value: "" },
+        { name: "Outdoor air damper pressure drop", value: "" },
+        { name: "Return air damper pressure drop", value: "" },
+        { name: "Relief air damper pressure drop", value: "" },
+      ],
+    },
+    {
+      group: "Filter",
+      children: [{ name: "Pressure Drop", value: "" }],
+    },
+    {
+      group: "Heating Coil",
+      children: [
+        { name: "Capactiy", value: "" },
+        { name: "Liquid Mass Flow Rate", value: "" },
+        { name: "Entering Liquid Temp", value: "" },
+        { name: "Liquid Pressure Drop", value: "" },
+        { name: "Air Mass Flow Rate", value: "" },
+        { name: "Entering Air Temperature", value: "" },
+        { name: "Air Pressure Drop", value: "" },
+      ],
+    },
+    {
+      group: "Heating Coil Valve",
+      children: [{ name: "Pressure Drop", value: "" }],
+    },
+    {
+      group: "Cooling Coil",
+      children: [
+        { name: "Capacity", value: "" },
+        { name: "Liquid Mass Flow Rate", value: "" },
+        { name: "Entering Liquid Temp", value: "" },
+        { name: "Liquid Pressure Drop", value: "" },
+        { name: "Air Mass Flow Rate", value: "" },
+        { name: "Entering Air Temperature", value: "" },
+        { name: "Entering Air Relative Humidity", value: "" },
+        { name: "Air Pressure Drop", value: "" },
+      ],
+    },
+    {
+      group: "Cooling Coil Valve",
+      children: [{ name: "Pressure Drop", value: "" }],
+    },
+    {
+      group: "Reheat Coil",
+      children: [
+        { name: "Capacity", value: "" },
+        { name: "Liquid Mass Flow Rate", value: "" },
+        { name: "Entering Liquid Temp", value: "" },
+        { name: "Liquid Pressure Drop", value: "" },
+        { name: "Air Mass Flow Rate", value: "" },
+        { name: "Entering Air Temperature", value: "" },
+        { name: "Air Pressure Drop", value: "" },
+      ],
+    },
+    {
+      group: "Reheat Coil Valve",
+      children: [{ name: "Pressure Drop", value: "" }],
+    },
+    {
+      group: "Supply Fan",
+      children: [
+        { name: "Total Pressure Rise", value: "" },
+        { name: "Fan Efficiency", value: "" },
+        { name: "Pressure Curve", value: "" },
+      ],
+    },
+    {
+      group: "Return Fan",
+      children: [
+        { name: "Total Pressure Rise", value: "" },
+        { name: "Fan Efficiency", value: "" },
+        { name: "Pressure Curve", value: "" },
+      ],
+    },
   ],
 };
 

@@ -24,7 +24,7 @@ function Config({ config, template }: ConfigProps) {
   }
 
   return (
-    <div className="config">
+    <div className="config" id={`config-${config.id}`} data-spy="config">
       <div className="input-container">
         <input
           type="text"
@@ -53,7 +53,7 @@ function Config({ config, template }: ConfigProps) {
       </div>
 
       <a href="#" className="remove" onClick={remove}>
-        <i className="icon-cross" />
+        <i className="icon-close" />
       </a>
     </div>
   );
