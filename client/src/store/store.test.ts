@@ -72,11 +72,13 @@ test("Active templates are returned alphabetized by name", () => {
   const alphabetizedNames = activeTemplates.map((t) => t.name).sort();
   expect(activeTemplates.map((t) => t.name)).toEqual(alphabetizedNames);
 
-  const notSortedActiveTemplates = useStore.getState().getActiveTemplates(null);
+  // TODO: figure out a better to determine sort order. This test is non-deterministic
+  // because the IDs are randomized
+  // const notSortedActiveTemplates = useStore.getState().getActiveTemplates(null);
 
-  expect(activeTemplates.map((t) => t.name)).not.toEqual(
-    notSortedActiveTemplates.map((t) => t.name),
-  );
+  // expect(activeTemplates.map((t) => t.name)).not.toEqual(
+  //   notSortedActiveTemplates.map((t) => t.name),
+  // );
 });
 
 test("Template/Option Denormalization", () => {
