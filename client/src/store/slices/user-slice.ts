@@ -306,8 +306,8 @@ const _removeAllTemplateConfigs: SetAction<SystemTemplate> = (
         .filter((s) => configsToRemove.includes(s.config))
         .map((s) => s.id);
 
-      state.userSystems = state.userSystems.filter((s) =>
-        systemsToRemove.includes(s.id),
+      state.userSystems = state.userSystems.filter(
+        (s) => !systemsToRemove.includes(s.id),
       );
 
       activeProject.userSystems = activeProject.userSystems.filter(
