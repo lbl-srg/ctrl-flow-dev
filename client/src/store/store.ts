@@ -12,9 +12,13 @@ import uiSlice, { uiSliceInterface } from "./slices/ui-slice";
 import userSlice, { UserSliceInterface } from "./slices/user-slice";
 import npmPackage from "../../package.json";
 
+import { sortByName, SortableByName } from "../utils/utils";
+
 export * from "./slices/user-slice";
 
 const SCHEMA_VERSION = parseFloat(npmPackage.version);
+
+export type CompareFunction<T> = (a: T, b: T) => number;
 
 export interface SystemType {
   id: number;
@@ -125,7 +129,9 @@ export interface State extends uiSliceInterface, UserSliceInterface {
   templates: SystemTemplateN[];
   options: OptionN[];
   getOptions: () => Option[];
-  getTemplates: () => SystemTemplate[];
+  getTemplates: (
+    sort?: CompareFunction<SortableByName> | null | undefined,
+  ) => SystemTemplate[];
   getTemplateOptions: (template: SystemTemplate) => [Option[], Option[]];
 }
 
@@ -139,7 +145,8 @@ export const useStore = create<State>(
         templates: getMockData()["templates"],
         options: getMockData()["options"],
         getOptions: () => _getAllOptions(get),
-        getTemplates: () => _getTemplates(get),
+        getTemplates: (sort = sortByName) =>
+          sort ? _getTemplates(get).sort(sort) : _getTemplates(get),
         getTemplateOptions: (template: SystemTemplate) =>
           _getOptions(template, get),
       }),
