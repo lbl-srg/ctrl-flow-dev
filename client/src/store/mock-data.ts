@@ -66,7 +66,7 @@ const mockData = {
       id: 10,
       name: "VAV Parallel Fan Powered",
       systemType: 2,
-      options: [13, 87, 66],
+      options: [13, 87, 90],
     },
     {
       id: 31,
