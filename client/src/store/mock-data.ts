@@ -10,7 +10,7 @@ const mockData = {
       id: 1,
       name: "Multiple Zone VAV Air Handler",
       systemType: 1,
-      options: [1, 12, 18, 28],
+      options: [23, 1, 47, 39, 34, 59, 28, 12, 18],
     },
     {
       id: 2,
@@ -26,7 +26,7 @@ const mockData = {
       id: 4,
       name: "Single Zone VAV Air Handler",
       systemType: 1,
-      options: [],
+      options: [23, 1, 47, 39, 34, 59, 28, 12, 18],
     },
     {
       id: 30,
@@ -168,7 +168,7 @@ const mockData = {
   options: [
     {
       id: 1,
-      name: "Heating Coil",
+      name: "Heating Coil (preheat position)",
       type: "dropdown",
       group: "Heating coil (preheat position)",
       options: [2, 3, 4],
