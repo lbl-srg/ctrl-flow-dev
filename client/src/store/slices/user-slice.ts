@@ -8,7 +8,14 @@
  */
 
 import { SetState, GetState } from "zustand";
-import { State, Option, SystemTemplate, GetAction, SetAction } from "../store";
+import {
+  State,
+  Option,
+  SystemTemplate,
+  GetAction,
+  SetAction,
+  CompareFunction,
+} from "../store";
 import { produce } from "immer";
 
 import {
@@ -75,8 +82,6 @@ export type SelectionN = {
   option: number;
   value?: number | boolean | string;
 };
-
-export type CompareFunction<T> = (a: T, b: T) => number;
 
 export interface Selection extends Omit<SelectionN, "parent" | "option"> {
   parent: Option;
@@ -584,7 +589,11 @@ export default function (
       _updateUserSystem(system, tag, config, scheduleList, set),
     removeUserSystem: (userSystem: UserSystem | UserSystemN) =>
       _removeUserSystem(userSystem, set),
-    getMetaConfigs: (template = undefined, sort) =>
+    getMetaConfigs: (
+      template = undefined,
+      sort = (m1: MetaConfiguration, m2: MetaConfiguration) =>
+        m1.config.name.localeCompare(m2.config.name),
+    ) =>
       sort
         ? _getMetaConfigs(template, get).sort(sort)
         : _getMetaConfigs(template, get),
