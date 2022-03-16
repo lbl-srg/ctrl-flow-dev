@@ -235,7 +235,6 @@ test("Updating a user system", () => {
     .getState()
     .getUserSystems(template1);
 
-  console.log(userSystem);
   // update config
   useStore
     .getState()
@@ -265,8 +264,15 @@ test("Updating a user system", () => {
 
   // update scheduleList
   const testScheduleValue = "Test Schedule Entry";
-  const scheduleList = userSystem.scheduleList;
-  scheduleList[0].children[0].value = testScheduleValue;
+  const [firstGroup, ...otherGroups] = userSystem.scheduleList;
+  const children = firstGroup.children.map((c) => ({
+    name: c.name,
+    value: testScheduleValue,
+  }));
+  const testScheduleList = [
+    { group: firstGroup.group, children },
+    ...otherGroups,
+  ];
 
   useStore
     .getState()
@@ -274,13 +280,14 @@ test("Updating a user system", () => {
       userSystem,
       userSystem.tag,
       userSystem.config,
-      scheduleList,
+      testScheduleList,
     );
 
   userSystem = useStore
     .getState()
     .getUserSystems()
     .find((s) => s.id === userSystem.id) as UserSystem;
+
   expect(userSystem.scheduleList[0].children[0].value).toEqual(
     testScheduleValue,
   );
