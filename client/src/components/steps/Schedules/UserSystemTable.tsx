@@ -3,7 +3,7 @@ import UserSystemRow from "./UserSystemRow";
 import { groupFields } from "./helpers";
 
 function UserSystems({ userSystems }: UserSystemTableProps) {
-  const groups = groupFields(userSystems[0]);
+  const groups = userSystems.length > 0 ? groupFields(userSystems[0]) : [];
 
   return (
     <div className="table-container">
