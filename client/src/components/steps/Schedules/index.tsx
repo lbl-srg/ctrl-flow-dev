@@ -22,7 +22,7 @@ function Schedules() {
   const activeTemplate = template ? template : firstConf?.template;
 
   const templateConfigs = getConfigs(activeTemplate);
-  const userSystems = getUserSystems(template);
+  const userSystems = getUserSystems(activeTemplate);
 
   return (
     <Fragment>
@@ -30,7 +30,7 @@ function Schedules() {
 
       <div className="schedules-page">
         <h3 className="with-links">
-          {template?.name}
+          {activeTemplate?.name}
           <div className="links">
             <a>
               <i className="icon-upload" />
