@@ -19,6 +19,6 @@ h2 {
   --typography-spacing-vertical: var(--spacing-lg);
 }
 
-a:focus {
+a:focus:not([role="button"]) {
   background: transparent;
 }
