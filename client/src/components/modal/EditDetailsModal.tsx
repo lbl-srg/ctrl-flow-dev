@@ -12,10 +12,10 @@ interface EditDetailsModalProps extends ModalInterface {
 const defaultState = {
   name: "",
   address: "",
-  type: "",
+  type: "Multi-Story Office",
   size: 0,
-  units: "",
-  code: "",
+  units: "IP",
+  code: "ashrae 90.1 20201",
   notes: "",
 } as unknown as ProjectDetails;
 

@@ -30,11 +30,22 @@ function Landing() {
             <div className="col-md-7 col-xs-12">
               <h3>HVAC Controls Design Tool</h3>
               <p>
-                The controls design tool allows you to model the complete HVAC
-                system for your buildings project. Simply select the system
-                components, configure those systems, create relationshops, and
-                then export the final model into the open source Modelica
-                language for siumulation and control.
+                The Controls Design Tool allows you to design high performance
+                building control systems. By inputting your design selections
+                and settings, the tool will provide you with the files you need
+                for your project including:
+              </p>
+
+              <ul>
+                <li>Detailed sequence</li>
+                <li>Points lists</li>
+                <li>Controls diagrams</li>
+                <li>Additional files to assist with modeling and deployment</li>
+              </ul>
+
+              <p>
+                This tool has been developed for the US Department of Energy and
+                includes use of the sequence from ASHRAE Guideline 36.
               </p>
             </div>
 
