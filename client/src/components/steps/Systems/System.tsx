@@ -39,7 +39,7 @@ function System({ id, title, options }: SystemProps) {
         {title}
       </h2>
 
-      <ul>
+      <ul className="check-list">
         {options.map((option) => {
           const { text, checked, id } = option;
 

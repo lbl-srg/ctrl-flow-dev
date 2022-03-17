@@ -1,5 +1,6 @@
 .results-page {
   margin: calc(var(--spacing-lg) * -1);
+  height: 100%;
 
   nav.tab-list {
     background-color: var(--color-blue-x-light);
@@ -29,6 +30,7 @@
     display: block;
     overflow: hidden;
     user-select: none;
+    height: 100%;
 
     .controls {
       z-index: 3;
@@ -51,7 +53,7 @@
     img {
       pointer-events: none;
       width: 100%;
-      height: auto;
+      height: 100%;
     }
   }
 }

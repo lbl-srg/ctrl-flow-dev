@@ -16,6 +16,11 @@
     align-items: center;
     width: 20rem;
     padding: var(--spacing);
+
+    a[role="button"],
+    button {
+      margin: 0;
+    }
   }
 
   .next-container {

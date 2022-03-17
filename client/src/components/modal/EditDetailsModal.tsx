@@ -10,14 +10,13 @@ interface EditDetailsModalProps extends ModalInterface {
 }
 
 const defaultState = {
-  name: "Test project",
-  address: "5330 SE 38th ave",
-  type: "multi-story office",
-  size: 33,
-  units: "ip",
-  code: "ashrae 90.1 20201",
-  notes:
-    "Offal tattooed ramps bicycle rights 8-bit green juice XOXO, etsy brunch semiotics scenester umami mumblecore actually cronut. Kombucha iPhone normcore, fashion axe paleo meh scenester synth selfies mlkshk keytar polaroid. Sustainable vaporware vice hoodie brooklyn. Kinfolk semiotics scenester, next level unicorn umami wayfarers man bun.",
+  name: "",
+  address: "",
+  type: "",
+  size: 0,
+  units: "",
+  code: "",
+  notes: "",
 } as unknown as ProjectDetails;
 
 function EditDetailsModal({

@@ -83,3 +83,41 @@ ul.styled-ul {
     }
   }
 }
+
+ul.check-list {
+  padding: 0;
+
+  li.template {
+    list-style: none;
+    border: 1px solid var(--color-gray);
+    padding: calc(var(--spacing-md) * 0.5) var(--spacing-md);
+
+    label {
+      font-size: 1.3rem;
+      margin: 0;
+      position: relative;
+      cursor: pointer;
+
+      i,
+      .info {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        margin-top: -0.8rem;
+        color: var(--color-gray-dark);
+      }
+
+      i {
+        color: var(--color-gray-medium);
+      }
+
+      input[type="checkbox"] {
+        border-radius: 2rem;
+        height: 32px;
+        width: 32px;
+        margin-right: calc(var(--spacing) * 0.8);
+        border: 2px solid var(--color-blue-light);
+      }
+    }
+  }
+}
