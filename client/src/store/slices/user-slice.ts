@@ -268,21 +268,33 @@ const _updateConfig = (
     }),
   );
 
-const _removeConfig: SetAction<Configuration> = (config, set) => {
+const _removeConfig = (
+  config: Configuration | ConfigurationN,
+  set: SetState<State>,
+) => {
   set(
     produce((state: State) => {
-      const activeProject = state.userProjects.find(
-        (proj) => proj.id === state.activeProject,
+      const activeProject = _getActiveProjectN(state);
+      activeProject.configs = activeProject.configs.filter(
+        (cID) => cID !== config.id,
+      );
+      const configsToRemove = state.configurations
+        .filter((c) => c.id === config.id)
+        .map((c) => c.id);
+      state.configurations = state.configurations.filter(
+        (c) => !configsToRemove.includes(c.id),
       );
 
-      if (activeProject) {
-        activeProject.configs = activeProject.configs.filter(
-          (cID) => cID !== config.id,
-        );
-      }
+      const systemsToRemove = state.userSystems
+        .filter((s) => configsToRemove.includes(s.config))
+        .map((s) => s.id);
 
-      state.configurations = state.configurations.filter(
-        (c) => c.id !== config.id,
+      activeProject.userSystems = activeProject.userSystems.filter(
+        (sID) => !systemsToRemove.includes(sID),
+      );
+
+      state.userSystems = state.userSystems.filter(
+        (s) => !systemsToRemove.includes(s.id),
       );
     }),
   );
@@ -297,6 +309,9 @@ const _removeAllTemplateConfigs: SetAction<SystemTemplate> = (
       const configs = state.configurations;
       const activeProject = _getActiveProjectN(state);
 
+      // remove all dependent entities (configs, user systems)
+      // TODO: logic for how to remove these things should be in
+      // on place however there is a problem around nested state update calls
       const configsToRemove = activeProject.configs
         .map((cID) => configs.find((c) => c.id === cID) as ConfigurationN)
         .filter((c) => c.template === template.id)
@@ -363,9 +378,7 @@ const _addUserSystems = (
 ) => {
   set(
     produce((state: State) => {
-      const activeProject = state.userProjects.find(
-        (proj) => proj.id === state.activeProject,
-      );
+      const activeProject = _getActiveProjectN(state);
       if (activeProject) {
         const newSystems: UserSystemN[] = [];
 
@@ -413,14 +426,12 @@ const _removeUserSystem = (
 ) => {
   set(
     produce((state: State) => {
-      const activeProject = state.userProjects.find(
-        (proj) => proj.id === state.activeProject,
+      const activeProject = _getActiveProjectN(state);
+
+      activeProject.userSystems = activeProject.userSystems.filter(
+        (sID) => sID !== system.id,
       );
-      if (activeProject) {
-        activeProject.userSystems = activeProject.userSystems.filter(
-          (sID) => sID !== system.id,
-        );
-      }
+
       state.userSystems = state.userSystems.filter((s) => s.id !== system.id);
     }),
   );
