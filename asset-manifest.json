@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/LBL-Linkage-Widget-v2/static/css/main.c355272e.css",
-    "main.js": "/LBL-Linkage-Widget-v2/static/js/main.81937028.js",
+    "main.js": "/LBL-Linkage-Widget-v2/static/js/main.282f4fa9.js",
     "static/js/787.8322627b.chunk.js": "/LBL-Linkage-Widget-v2/static/js/787.8322627b.chunk.js",
     "static/media/schematics-example.png": "/LBL-Linkage-Widget-v2/static/media/schematics-example.16ce403f7b95d823d558.png",
     "index.html": "/LBL-Linkage-Widget-v2/index.html",
     "main.c355272e.css.map": "/LBL-Linkage-Widget-v2/static/css/main.c355272e.css.map",
-    "main.81937028.js.map": "/LBL-Linkage-Widget-v2/static/js/main.81937028.js.map",
+    "main.282f4fa9.js.map": "/LBL-Linkage-Widget-v2/static/js/main.282f4fa9.js.map",
     "787.8322627b.chunk.js.map": "/LBL-Linkage-Widget-v2/static/js/787.8322627b.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.c355272e.css",
-    "static/js/main.81937028.js"
+    "static/js/main.282f4fa9.js"
   ]
 }
