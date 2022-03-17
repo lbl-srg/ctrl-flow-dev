@@ -23,3 +23,27 @@
 .uppercase {
   text-transform: uppercase;
 }
+
+.margin-top-xl {
+  margin-top: var(--spacing-xl);
+}
+
+.margin-top-lg {
+  margin-top: var(--spacing-lg);
+}
+
+.margin-top-md {
+  margin-top: var(--spacing-md);
+}
+
+.margin-top {
+  margin-top: var(--spacing);
+}
+
+.margin-top-sm {
+  margin-top: var(--spacing-sm);
+}
+
+.margin-top-xs {
+  margin-top: var(--spacing-xs);
+}

@@ -8,19 +8,27 @@ interface SystemProps {
 }
 
 function System({ id, title, options }: SystemProps) {
-  const { getTemplates, addConfig, removeAllTemplateConfigs } = useStore(
-    (state) => state,
-  );
+  const {
+    getTemplates,
+    addConfig,
+    getConfigs,
+    removeAllTemplateConfigs,
+    addUserSystems,
+  } = useStore((state) => state);
 
   const templates = getTemplates();
   const iconClass = findIcon(title);
 
   function onSelect(selection: string, checked: boolean) {
-    const system = templates.find((s) => s.name === selection);
-    if (system) {
-      checked
-        ? addConfig(system, { name: "Default" })
-        : removeAllTemplateConfigs(system);
+    const template = templates.find((s) => s.name === selection);
+    if (template) {
+      if (checked) {
+        addConfig(template, { name: "Default" });
+        const [config, ..._rest] = getConfigs(template);
+        addUserSystems(template.name, 1, 1, config);
+      } else {
+        removeAllTemplateConfigs(template);
+      }
     }
   }
 
@@ -31,7 +39,7 @@ function System({ id, title, options }: SystemProps) {
         {title}
       </h2>
 
-      <ul>
+      <ul className="check-list">
         {options.map((option) => {
           const { text, checked, id } = option;
 
