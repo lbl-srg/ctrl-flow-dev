@@ -38,7 +38,7 @@ function Landing() {
               </p>
             </div>
 
-            <div className="col-md-5 col-xs-12">
+            {/* <div className="col-md-5 col-xs-12">
               <ul className="components">
                 <li>
                   <i className="icon-th-list" />
@@ -53,7 +53,7 @@ function Landing() {
                   Create system relationships
                 </li>
               </ul>
-            </div>
+            </div> */}
           </div>
         </article>
 
