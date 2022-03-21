@@ -74,8 +74,10 @@ function Sidebarlayout({
             style={{ width: isFullScreen ? "100vw" : leftColWidth }}
           >
             <header>
-              All Projects &gt; &nbsp;
-              <strong>{projectName}</strong>
+              <div className="truncate">
+                All Projects &gt; &nbsp;
+                <strong>{projectName}</strong>
+              </div>
             </header>
 
             {contentLeft}
