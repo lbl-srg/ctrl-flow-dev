@@ -58,7 +58,7 @@ test("Test that the add systems widget adds systems", async () => {
     await screen.findByRole("spinbutton", { name: "Quantity" }),
     quantity,
   );
-  userEvent.click(screen.getByRole("button", { name: "Apply" }));
+  userEvent.click(screen.getByRole("button", { name: "Add" }));
 
   // When testing a formik submit, make sure to use 'waitFor'
   await waitFor(() => {
