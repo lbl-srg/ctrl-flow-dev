@@ -1,4 +1,10 @@
 .schedules-page {
+  .lead {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-grey-dark);
+    font-size: 1.3rem;
+  }
+
   .table-container {
     display: block;
     overflow-x: auto;

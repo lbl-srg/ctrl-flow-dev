@@ -40,7 +40,7 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
       <form onSubmit={onWidgetSubmit}>
         <div className="row input-container">
           <label className="col-xs-4">
-            System Tag
+            Equipment Tag
             <input
               type="text"
               name="tag"
@@ -88,7 +88,7 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
 
         <div className="submit-container">
           <button type="submit" className="small inline">
-            Apply
+            Add
           </button>
         </div>
       </form>
