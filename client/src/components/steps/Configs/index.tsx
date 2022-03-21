@@ -17,9 +17,7 @@ function Configs() {
       <PageHeader headerText="Configurations" />
 
       <div className="configs-page">
-        <p className="lead">
-          Add Configurations For The System Types You Selected
-        </p>
+        <h4>Add Configurations For The System Types You Selected</h4>
 
         {systemTypes.map((systemT) => {
           const systemTypeTemplates = templates.filter(
