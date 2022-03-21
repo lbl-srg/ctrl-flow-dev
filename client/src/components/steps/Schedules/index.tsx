@@ -29,6 +29,10 @@ function Schedules() {
       <PageHeader headerText="Equipment Schedules" />
 
       <div className="schedules-page">
+        <p className="lead">
+          Add tags, IDs, and quantities for your selected systems. Edit your
+          system&apos;s schedule directly from the table.
+        </p>
         <h3 className="with-links">
           {activeTemplate?.name}
           <div className="links">
