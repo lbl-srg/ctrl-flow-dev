@@ -9,6 +9,7 @@ function ImgControl() {
         initialScale={1}
         initialPositionX={0}
         initialPositionY={0}
+        wheel={{ disabled: true }}
       >
         {({ zoomIn, zoomOut, resetTransform }) => (
           <Fragment>

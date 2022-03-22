@@ -70,6 +70,7 @@ function EditDetailsModal({
               Units
               <Field as="select" name="units" data-testid="units-input">
                 <option value="ip">IP</option>
+                <option value="square feet">square ft</option>
                 <option value="something">Something</option>
               </Field>
             </label>

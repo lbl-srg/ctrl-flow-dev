@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import { SystemProps } from "./Types";
 import Template from "./Template";
 import { findIcon } from "../../LeftNavigation/icon-mappings";
