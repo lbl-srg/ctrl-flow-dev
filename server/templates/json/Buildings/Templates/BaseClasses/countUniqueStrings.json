@@ -1,0 +1,191 @@
+{
+  "within": "Buildings.Templates.BaseClasses",
+  "class_definition": [
+    {
+      "class_prefixes": "function",
+      "class_specifier": {
+        "long_class_specifier": {
+          "identifier": "countUniqueStrings",
+          "description_string": "Returns the number of unique elements in a string vector",
+          "composition": {
+            "element_list": [
+              { "extends_clause": { "name": "Modelica.Icons.Function" } },
+              {
+                "component_clause": {
+                  "type_prefix": "input",
+                  "type_specifier": "String",
+                  "component_list": [
+                    {
+                      "declaration": {
+                        "identifier": "arr",
+                        "array_subscripts": [{ "colon_op": true }]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "component_clause": {
+                  "type_prefix": "output",
+                  "type_specifier": "Integer",
+                  "component_list": [{ "declaration": { "identifier": "cou" } }]
+                }
+              }
+            ],
+            "element_sections": [
+              {
+                "protected_element_list": [
+                  {
+                    "component_clause": {
+                      "type_specifier": "String",
+                      "component_list": [
+                        {
+                          "declaration": {
+                            "identifier": "arr_sto",
+                            "array_subscripts": [
+                              {
+                                "expression": {
+                                  "simple_expression": "size(arr,1)"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "algorithm_section": {
+                  "statement": [
+                    {
+                      "assignment_statement": {
+                        "identifier": [
+                          { "dot_op": false, "identifier": "cou" }
+                        ],
+                        "value": { "simple_expression": "0" }
+                      }
+                    },
+                    {
+                      "if_statement": {
+                        "if_elseif": [
+                          {
+                            "condition": {
+                              "simple_expression": "size(arr,1) > 0"
+                            },
+                            "then": [
+                              {
+                                "assignment_statement": {
+                                  "identifier": [
+                                    { "dot_op": false, "identifier": "arr_sto" }
+                                  ],
+                                  "value": {
+                                    "simple_expression": "{arr[i] +\"_\" for i in 1:size(arr,1)}"
+                                  }
+                                }
+                              },
+                              {
+                                "for_statement": {
+                                  "for_indices": [
+                                    {
+                                      "identifier": "i",
+                                      "expression": {
+                                        "simple_expression": "1:size(arr,1)"
+                                      }
+                                    }
+                                  ],
+                                  "loop_statements": [
+                                    {
+                                      "if_statement": {
+                                        "if_elseif": [
+                                          {
+                                            "condition": {
+                                              "simple_expression": "not Modelica.Math.BooleanVectors.anyTrue({arr[i] == arr_sto[j] for j in 1:size(arr_sto,1)})"
+                                            },
+                                            "then": [
+                                              {
+                                                "assignment_statement": {
+                                                  "identifier": [
+                                                    {
+                                                      "dot_op": false,
+                                                      "identifier": "cou"
+                                                    }
+                                                  ],
+                                                  "value": {
+                                                    "simple_expression": "cou +1"
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "assignment_statement": {
+                                                  "identifier": [
+                                                    {
+                                                      "dot_op": false,
+                                                      "identifier": "arr_sto",
+                                                      "array_subscripts": [
+                                                        {
+                                                          "expression": {
+                                                            "simple_expression": "cou"
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  ],
+                                                  "value": {
+                                                    "simple_expression": "arr[i]"
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "annotation": [
+              {
+                "element_modification_or_replaceable": {
+                  "element_modification": {
+                    "name": "Documentation",
+                    "modification": {
+                      "class_modification": [
+                        {
+                          "element_modification_or_replaceable": {
+                            "element_modification": {
+                              "name": "info",
+                              "modification": {
+                                "equal": true,
+                                "expression": {
+                                  "simple_expression": "\"<html>\n<p>\nThis function takes a one-dimension string array as an \ninput and returns the number of unique elements in \nthat array.\n</p>\n</html>\""
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "modelicaFile": "Buildings/Templates/BaseClasses/countUniqueStrings.mo",
+  "fullMoFilePath": "dependencies/modelica-buildings/Buildings/Templates/BaseClasses/countUniqueStrings.mo",
+  "checksum": "f2862014663a5a4395d9e2188f63d45a"
+}

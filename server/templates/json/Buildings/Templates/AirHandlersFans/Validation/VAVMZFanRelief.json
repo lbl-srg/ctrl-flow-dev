@@ -1,0 +1,99 @@
+{
+  "within": "Buildings.Templates.AirHandlersFans.Validation",
+  "class_definition": [
+    {
+      "class_prefixes": "model",
+      "class_specifier": {
+        "long_class_specifier": {
+          "identifier": "VAVMZFanRelief",
+          "description_string": "Validation model for multiple-zone VAV",
+          "composition": {
+            "element_list": [
+              {
+                "extends_clause": {
+                  "name": "VAVMZNoEconomizer",
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "component_clause1": {
+                          "type_specifier": "UserProject.AirHandlersFans.VAVMZFanRelief",
+                          "component_declaration1": {
+                            "declaration": { "identifier": "VAV_1" }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "annotation": [
+              {
+                "element_modification_or_replaceable": {
+                  "element_modification": {
+                    "name": "experiment",
+                    "modification": {
+                      "class_modification": [
+                        {
+                          "element_modification_or_replaceable": {
+                            "element_modification": {
+                              "name": "Tolerance",
+                              "modification": {
+                                "equal": true,
+                                "expression": {
+                                  "simple_expression": "0.000001"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "element_modification_or_replaceable": {
+                            "element_modification": {
+                              "name": "StopTime",
+                              "modification": {
+                                "equal": true,
+                                "expression": { "simple_expression": "1" }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "element_modification_or_replaceable": {
+                  "element_modification": {
+                    "name": "Documentation",
+                    "modification": {
+                      "class_modification": [
+                        {
+                          "element_modification_or_replaceable": {
+                            "element_modification": {
+                              "name": "info",
+                              "modification": {
+                                "equal": true,
+                                "expression": {
+                                  "simple_expression": "\"<html>\n<p>\nThis is a validation model for the configuration represented by\n<a href=\\\"modelica://Buildings.Templates.AirHandlersFans.Validation.UserProject.AirHandlersFans.VAVMZFanRelief\\\">\nBuildings.Templates.AirHandlersFans.Validation.UserProject.AirHandlersFans.VAVMZFanRelief</a>\n</p>\n</html>\""
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "modelicaFile": "Buildings/Templates/AirHandlersFans/Validation/VAVMZFanRelief.mo",
+  "fullMoFilePath": "dependencies/modelica-buildings/Buildings/Templates/AirHandlersFans/Validation/VAVMZFanRelief.mo",
+  "checksum": "fe1232004c036d85248e052e30c20557"
+}

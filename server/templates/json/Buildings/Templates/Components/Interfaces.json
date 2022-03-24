@@ -1,0 +1,109 @@
+{
+  "within": "Buildings.Templates.Components",
+  "class_definition": [
+    {
+      "class_prefixes": "package",
+      "class_specifier": {
+        "long_class_specifier": {
+          "identifier": "Interfaces",
+          "description_string": "Interface classes",
+          "composition": {
+            "element_list": [
+              {
+                "extends_clause": { "name": "Modelica.Icons.InterfacesPackage" }
+              },
+              {
+                "class_definition": {
+                  "class_prefixes": "expandable connector",
+                  "class_specifier": {
+                    "long_class_specifier": {
+                      "identifier": "Bus",
+                      "description_string": "Control bus",
+                      "composition": {
+                        "element_list": [
+                          {
+                            "extends_clause": {
+                              "name": "Modelica.Icons.SignalBus"
+                            }
+                          }
+                        ],
+                        "annotation": [
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "defaultComponentName",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": {
+                                    "simple_expression": "\"bus\""
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "Documentation",
+                                "modification": {
+                                  "class_modification": [
+                                    {
+                                      "element_modification_or_replaceable": {
+                                        "element_modification": {
+                                          "name": "info",
+                                          "modification": {
+                                            "equal": true,
+                                            "expression": {
+                                              "simple_expression": "\"<html>\n<p>\nThis expandable connector provides a standard interface for \nall control signals of the component models. \n</p>\n</html>\""
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "annotation": [
+              {
+                "element_modification_or_replaceable": {
+                  "element_modification": {
+                    "name": "Documentation",
+                    "modification": {
+                      "class_modification": [
+                        {
+                          "element_modification_or_replaceable": {
+                            "element_modification": {
+                              "name": "info",
+                              "modification": {
+                                "equal": true,
+                                "expression": {
+                                  "simple_expression": "\"<html>\n<p>\nThis package contains interface classes.\n</p>\n</html>\""
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "modelicaFile": "Buildings/Templates/Components/Interfaces.mo",
+  "fullMoFilePath": "dependencies/modelica-buildings/Buildings/Templates/Components/Interfaces.mo",
+  "checksum": "a708f1c2c6ec24482c95f90463bc6b65"
+}

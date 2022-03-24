@@ -1,0 +1,179 @@
+{
+  "within": "Buildings.Templates.ZoneEquipment.Validation.UserProject.ZoneEquipment",
+  "class_definition": [
+    {
+      "class_prefixes": "model",
+      "class_specifier": {
+        "long_class_specifier": {
+          "identifier": "VAVBoxReheatControlG36",
+          "description_string": "Configuration of VAV terminal unit with reheat",
+          "composition": {
+            "element_list": [
+              {
+                "extends_clause": {
+                  "name": "Buildings.Templates.ZoneEquipment.VAVBoxReheat",
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "element_replaceable": {
+                          "component_clause1": {
+                            "type_specifier": "Buildings.Templates.Components.Coils.WaterBasedHeating",
+                            "component_declaration1": {
+                              "declaration": {
+                                "identifier": "coiHea",
+                                "modification": {
+                                  "class_modification": [
+                                    {
+                                      "element_redeclaration": {
+                                        "element_replaceable": {
+                                          "component_clause1": {
+                                            "type_specifier": "Buildings.Templates.Components.Valves.TwoWayModulating",
+                                            "component_declaration1": {
+                                              "declaration": {
+                                                "identifier": "val"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_redeclaration": {
+                        "element_replaceable": {
+                          "component_clause1": {
+                            "type_specifier": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat",
+                            "component_declaration1": {
+                              "declaration": { "identifier": "ctl" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "annotation": [
+              {
+                "element_modification_or_replaceable": {
+                  "element_modification": {
+                    "name": "defaultComponentName",
+                    "modification": {
+                      "equal": true,
+                      "expression": { "simple_expression": "\"ter\"" }
+                    }
+                  }
+                }
+              },
+              {
+                "element_modification_or_replaceable": {
+                  "element_modification": {
+                    "name": "Icon",
+                    "modification": {
+                      "class_modification": [
+                        {
+                          "element_modification_or_replaceable": {
+                            "element_modification": {
+                              "name": "coordinateSystem",
+                              "modification": {
+                                "class_modification": [
+                                  {
+                                    "element_modification_or_replaceable": {
+                                      "element_modification": {
+                                        "name": "preserveAspectRatio",
+                                        "modification": {
+                                          "equal": true,
+                                          "expression": {
+                                            "simple_expression": "false"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "element_modification_or_replaceable": {
+                  "element_modification": {
+                    "name": "Diagram",
+                    "modification": {
+                      "class_modification": [
+                        {
+                          "element_modification_or_replaceable": {
+                            "element_modification": {
+                              "name": "coordinateSystem",
+                              "modification": {
+                                "class_modification": [
+                                  {
+                                    "element_modification_or_replaceable": {
+                                      "element_modification": {
+                                        "name": "preserveAspectRatio",
+                                        "modification": {
+                                          "equal": true,
+                                          "expression": {
+                                            "simple_expression": "false"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "element_modification_or_replaceable": {
+                  "element_modification": {
+                    "name": "Documentation",
+                    "modification": {
+                      "class_modification": [
+                        {
+                          "element_modification_or_replaceable": {
+                            "element_modification": {
+                              "name": "info",
+                              "modification": {
+                                "equal": true,
+                                "expression": {
+                                  "simple_expression": "\"<html>\n<p>\nThis is a configuration model with the same default options as\n<a href=\\\"modelica://Buildings.Templates.ZoneEquipment.VAVBoxReheat\\\">\nBuildings.Templates.ZoneEquipment.VAVBoxReheat</a>\nexcept for the following options.<br/>\n</p>\n<table summary=\\\"summary\\\" border=\\\"1\\\">\n<tr><th>Component</th><th>Configuration</th></tr>\n<tr><td>Controller</td><td>Guideline 36 controller</td></tr>\n</table>\n</html>\""
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "modelicaFile": "Buildings/Templates/ZoneEquipment/Validation/UserProject/ZoneEquipment/VAVBoxReheatControlG36.mo",
+  "fullMoFilePath": "dependencies/modelica-buildings/Buildings/Templates/ZoneEquipment/Validation/UserProject/ZoneEquipment/VAVBoxReheatControlG36.mo",
+  "checksum": "15ee77a654ce84a9214129794ec0e773"
+}

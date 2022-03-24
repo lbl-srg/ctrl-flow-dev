@@ -1,0 +1,484 @@
+{
+  "within": "Buildings.Templates.Components",
+  "class_definition": [
+    {
+      "class_prefixes": "package",
+      "class_specifier": {
+        "long_class_specifier": {
+          "identifier": "Types",
+          "description_string": "Package with type definitions",
+          "composition": {
+            "element_list": [
+              { "extends_clause": { "name": "Modelica.Icons.TypesPackage" } },
+              {
+                "class_definition": {
+                  "class_prefixes": "type",
+                  "class_specifier": {
+                    "short_class_specifier": {
+                      "identifier": "Coil",
+                      "value": {
+                        "description": {
+                          "description_string": "Enumeration to configure the coil"
+                        },
+                        "enum_list": [
+                          {
+                            "identifier": "ElectricHeating",
+                            "description": {
+                              "description_string": "Modulating electric heating coil"
+                            }
+                          },
+                          {
+                            "identifier": "EvaporatorMultiStage",
+                            "description": {
+                              "description_string": "Evaporator coil with multi-stage compressor"
+                            }
+                          },
+                          {
+                            "identifier": "EvaporatorVariableSpeed",
+                            "description": {
+                              "description_string": "Evaporator coil with variable speed compressor"
+                            }
+                          },
+                          {
+                            "identifier": "None",
+                            "description": { "description_string": "No coil" }
+                          },
+                          {
+                            "identifier": "WaterBasedCooling",
+                            "description": {
+                              "description_string": "Chilled water coil"
+                            }
+                          },
+                          {
+                            "identifier": "WaterBasedHeating",
+                            "description": {
+                              "description_string": "Hot water coil"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "class_definition": {
+                  "class_prefixes": "type",
+                  "class_specifier": {
+                    "short_class_specifier": {
+                      "identifier": "Damper",
+                      "value": {
+                        "description": {
+                          "description_string": "Enumeration to configure the damper"
+                        },
+                        "enum_list": [
+                          {
+                            "identifier": "NoPath",
+                            "description": {
+                              "description_string": "No fluid path"
+                            }
+                          },
+                          {
+                            "identifier": "Barometric",
+                            "description": {
+                              "description_string": "Barometric damper"
+                            }
+                          },
+                          {
+                            "identifier": "Modulating",
+                            "description": {
+                              "description_string": "Modulating damper"
+                            }
+                          },
+                          {
+                            "identifier": "None",
+                            "description": { "description_string": "No damper" }
+                          },
+                          {
+                            "identifier": "PressureIndependent",
+                            "description": {
+                              "description_string": "Pressure independent damper"
+                            }
+                          },
+                          {
+                            "identifier": "TwoPosition",
+                            "description": {
+                              "description_string": "Two-position damper"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "class_definition": {
+                  "class_prefixes": "type",
+                  "class_specifier": {
+                    "short_class_specifier": {
+                      "identifier": "DamperBlades",
+                      "value": {
+                        "description": {
+                          "description_string": "Enumeration to specify the type of damper blades"
+                        },
+                        "enum_list": [
+                          {
+                            "identifier": "Opposed",
+                            "description": {
+                              "description_string": "Opposed blades"
+                            }
+                          },
+                          {
+                            "identifier": "Parallel",
+                            "description": {
+                              "description_string": "Parallel blades"
+                            }
+                          },
+                          {
+                            "identifier": "VAV",
+                            "description": {
+                              "description_string": "VAV damper"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "class_definition": {
+                  "class_prefixes": "type",
+                  "class_specifier": {
+                    "short_class_specifier": {
+                      "identifier": "Fan",
+                      "value": {
+                        "description": {
+                          "description_string": "Enumeration to configure the fan"
+                        },
+                        "enum_list": [
+                          {
+                            "identifier": "None",
+                            "description": { "description_string": "No fan" }
+                          },
+                          {
+                            "identifier": "SingleConstant",
+                            "description": {
+                              "description_string": "Single fan - Constant speed"
+                            }
+                          },
+                          {
+                            "identifier": "SingleVariable",
+                            "description": {
+                              "description_string": "Single fan - Variable speed"
+                            }
+                          },
+                          {
+                            "identifier": "ArrayVariable",
+                            "description": {
+                              "description_string": "Fan array - Variable speed"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "class_definition": {
+                  "class_prefixes": "type",
+                  "class_specifier": {
+                    "short_class_specifier": {
+                      "identifier": "FanSingle",
+                      "value": {
+                        "description": {
+                          "description_string": "Enumeration to specify the type of single fan"
+                        },
+                        "enum_list": [
+                          {
+                            "identifier": "Housed",
+                            "description": {
+                              "description_string": "Housed centrifugal fan"
+                            }
+                          },
+                          {
+                            "identifier": "Plug",
+                            "description": { "description_string": "Plug fan" }
+                          },
+                          {
+                            "identifier": "Propeller",
+                            "description": {
+                              "description_string": "Propeller fan"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "class_definition": {
+                  "class_prefixes": "type",
+                  "class_specifier": {
+                    "short_class_specifier": {
+                      "identifier": "Pump",
+                      "value": {
+                        "description": {
+                          "description_string": "Enumeration to configure the pump"
+                        },
+                        "enum_list": [
+                          {
+                            "identifier": "None",
+                            "description": { "description_string": "No pump" }
+                          },
+                          {
+                            "identifier": "ParallelVariable",
+                            "description": {
+                              "description_string": "Parallel pumps (identical) - Variable speed"
+                            }
+                          },
+                          {
+                            "identifier": "SingleConstant",
+                            "description": {
+                              "description_string": "Single pump - Constant speed"
+                            }
+                          },
+                          {
+                            "identifier": "SingleVariable",
+                            "description": {
+                              "description_string": "Single pump - Variable speed"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "class_definition": {
+                  "class_prefixes": "type",
+                  "class_specifier": {
+                    "short_class_specifier": {
+                      "identifier": "Sensor",
+                      "value": {
+                        "description": {
+                          "description_string": "Enumeration to configure the sensor"
+                        },
+                        "enum_list": [
+                          {
+                            "identifier": "DifferentialPressure",
+                            "description": {
+                              "description_string": "Differential pressure"
+                            }
+                          },
+                          {
+                            "identifier": "HumidityRatio",
+                            "description": {
+                              "description_string": "Humidity ratio"
+                            }
+                          },
+                          {
+                            "identifier": "None",
+                            "description": { "description_string": "None" }
+                          },
+                          {
+                            "identifier": "PPM",
+                            "description": { "description_string": "PPM" }
+                          },
+                          {
+                            "identifier": "RelativeHumidity",
+                            "description": {
+                              "description_string": "Relative humidity"
+                            }
+                          },
+                          {
+                            "identifier": "SpecificEnthalpy",
+                            "description": {
+                              "description_string": "Specific enthalpy"
+                            }
+                          },
+                          {
+                            "identifier": "Temperature",
+                            "description": {
+                              "description_string": "Temperature"
+                            }
+                          },
+                          {
+                            "identifier": "VolumeFlowRate",
+                            "description": {
+                              "description_string": "Volume flow rate"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "class_definition": {
+                  "class_prefixes": "type",
+                  "class_specifier": {
+                    "short_class_specifier": {
+                      "identifier": "SensorTemperature",
+                      "value": {
+                        "description": {
+                          "description_string": "Enumeration to specify the type of temperature sensor"
+                        },
+                        "enum_list": [
+                          {
+                            "identifier": "Standard",
+                            "description": {
+                              "description_string": "Standard sensor"
+                            }
+                          },
+                          {
+                            "identifier": "Averaging",
+                            "description": {
+                              "description_string": "Averaging sensor"
+                            }
+                          },
+                          {
+                            "identifier": "InWell",
+                            "description": {
+                              "description_string": "Sensor in well"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "class_definition": {
+                  "class_prefixes": "type",
+                  "class_specifier": {
+                    "short_class_specifier": {
+                      "identifier": "SensorVolumeFlowRate",
+                      "value": {
+                        "description": {
+                          "description_string": "Enumeration to specify the type of volume flow rate sensor"
+                        },
+                        "enum_list": [
+                          {
+                            "identifier": "AFMS",
+                            "description": {
+                              "description_string": "Airflow measuring station"
+                            }
+                          },
+                          {
+                            "identifier": "FlowCross",
+                            "description": {
+                              "description_string": "Averaging sensor"
+                            }
+                          },
+                          {
+                            "identifier": "FlowMeter",
+                            "description": {
+                              "description_string": "Flow meter"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "class_definition": {
+                  "class_prefixes": "type",
+                  "class_specifier": {
+                    "short_class_specifier": {
+                      "identifier": "Valve",
+                      "value": {
+                        "description": {
+                          "description_string": "Enumeration to configure the valve"
+                        },
+                        "enum_list": [
+                          {
+                            "identifier": "None",
+                            "description": { "description_string": "No valve" }
+                          },
+                          {
+                            "identifier": "PumpedCoilThreeWay",
+                            "description": {
+                              "description_string": "Pumped coil with three-way valve"
+                            }
+                          },
+                          {
+                            "identifier": "PumpedCoilTwoWay",
+                            "description": {
+                              "description_string": "Pumped coil with two-way valve"
+                            }
+                          },
+                          {
+                            "identifier": "ThreeWayModulating",
+                            "description": {
+                              "description_string": "Three-way modulating valve"
+                            }
+                          },
+                          {
+                            "identifier": "ThreeWayTwoPosition",
+                            "description": {
+                              "description_string": "Three-way two-position valve"
+                            }
+                          },
+                          {
+                            "identifier": "TwoWayModulating",
+                            "description": {
+                              "description_string": "Two-way modulating valve"
+                            }
+                          },
+                          {
+                            "identifier": "TwoWayTwoPosition",
+                            "description": {
+                              "description_string": "Two-way two-position valve"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "annotation": [
+              {
+                "element_modification_or_replaceable": {
+                  "element_modification": {
+                    "name": "Documentation",
+                    "modification": {
+                      "class_modification": [
+                        {
+                          "element_modification_or_replaceable": {
+                            "element_modification": {
+                              "name": "info",
+                              "modification": {
+                                "equal": true,
+                                "expression": {
+                                  "simple_expression": "\"<html>\n<p>\nThis package contains type definitions.\n</p>\n</html>\""
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "modelicaFile": "Buildings/Templates/Components/Types.mo",
+  "fullMoFilePath": "dependencies/modelica-buildings/Buildings/Templates/Components/Types.mo",
+  "checksum": "8fced4a0e19f468fc03279c45d0769a4"
+}

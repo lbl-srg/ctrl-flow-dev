@@ -1,0 +1,99 @@
+{
+  "within": "Buildings.Templates.ZoneEquipment.Validation",
+  "class_definition": [
+    {
+      "class_prefixes": "model",
+      "class_specifier": {
+        "long_class_specifier": {
+          "identifier": "VAVBoxReheatControlG36",
+          "description_string": "Validation model for VAV terminal unit with reheat",
+          "composition": {
+            "element_list": [
+              {
+                "extends_clause": {
+                  "name": "VAVBoxCoolingOnly",
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "component_clause1": {
+                          "type_specifier": "UserProject.ZoneEquipment.VAVBoxReheatControlG36",
+                          "component_declaration1": {
+                            "declaration": { "identifier": "ter" }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "annotation": [
+              {
+                "element_modification_or_replaceable": {
+                  "element_modification": {
+                    "name": "experiment",
+                    "modification": {
+                      "class_modification": [
+                        {
+                          "element_modification_or_replaceable": {
+                            "element_modification": {
+                              "name": "Tolerance",
+                              "modification": {
+                                "equal": true,
+                                "expression": {
+                                  "simple_expression": "0.000001"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "element_modification_or_replaceable": {
+                            "element_modification": {
+                              "name": "StopTime",
+                              "modification": {
+                                "equal": true,
+                                "expression": { "simple_expression": "1" }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "element_modification_or_replaceable": {
+                  "element_modification": {
+                    "name": "Documentation",
+                    "modification": {
+                      "class_modification": [
+                        {
+                          "element_modification_or_replaceable": {
+                            "element_modification": {
+                              "name": "info",
+                              "modification": {
+                                "equal": true,
+                                "expression": {
+                                  "simple_expression": "\"<html>\n<p>\nThis is a validation model for the configuration represented by\n<a href=\\\"modelica://Buildings.Templates.ZoneEquipment.Validation.UserProject.ZoneEquipment.VAVBoxReheatControlG36\\\">\nBuildings.Templates.ZoneEquipment.Validation.UserProject.ZoneEquipment.VAVBoxReheatControlG36</a>\n</p>\n</html>\""
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "modelicaFile": "Buildings/Templates/ZoneEquipment/Validation/VAVBoxReheatControlG36.mo",
+  "fullMoFilePath": "dependencies/modelica-buildings/Buildings/Templates/ZoneEquipment/Validation/VAVBoxReheatControlG36.mo",
+  "checksum": "8d70315ca6166efe47c39470141bd9cf"
+}

@@ -1,0 +1,97 @@
+{
+  "within": "Buildings.Templates.AirHandlersFans.Validation.UserProject.Data",
+  "class_definition": [
+    {
+      "class_prefixes": "record",
+      "class_specifier": {
+        "long_class_specifier": {
+          "identifier": "AllSystems",
+          "description_string": "Top-level (whole building) record for testing purposes",
+          "composition": {
+            "element_list": [
+              { "extends_clause": { "name": "Modelica.Icons.Record" } },
+              {
+                "component_clause": {
+                  "type_prefix": "parameter",
+                  "type_specifier": ".Buildings.Templates.AirHandlersFans.Data.VAVMultiZone",
+                  "component_list": [
+                    {
+                      "declaration": { "identifier": "VAV_1" },
+                      "description": {
+                        "description_string": "Multiple-zone VAV air handler",
+                        "annotation": [
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "Dialog",
+                                "modification": {
+                                  "class_modification": [
+                                    {
+                                      "element_modification_or_replaceable": {
+                                        "element_modification": {
+                                          "name": "group",
+                                          "modification": {
+                                            "equal": true,
+                                            "expression": {
+                                              "simple_expression": "\"Air handlers and fans\""
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "Placement",
+                                "modification": {
+                                  "class_modification": [
+                                    {
+                                      "element_modification_or_replaceable": {
+                                        "element_modification": {
+                                          "name": "transformation",
+                                          "modification": {
+                                            "class_modification": [
+                                              {
+                                                "element_modification_or_replaceable": {
+                                                  "element_modification": {
+                                                    "name": "extent",
+                                                    "modification": {
+                                                      "equal": true,
+                                                      "expression": {
+                                                        "simple_expression": "{{-10,-8},{10,12}}"
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "modelicaFile": "Buildings/Templates/AirHandlersFans/Validation/UserProject/Data/AllSystems.mo",
+  "fullMoFilePath": "dependencies/modelica-buildings/Buildings/Templates/AirHandlersFans/Validation/UserProject/Data/AllSystems.mo",
+  "checksum": "0242d68d2bd39e4152dd51a511f73648"
+}

@@ -1,0 +1,564 @@
+{
+  "within": "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces",
+  "class_definition": [
+    {
+      "class_prefixes": "partial block",
+      "class_specifier": {
+        "long_class_specifier": {
+          "identifier": "PartialVAVMultizone",
+          "description_string": "Interface class for multiple-zone VAV controller",
+          "composition": {
+            "element_list": [
+              {
+                "extends_clause": {
+                  "name": "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialController",
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "component_clause1": {
+                          "type_specifier": "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController",
+                          "component_declaration1": {
+                            "declaration": {
+                              "identifier": "dat",
+                              "modification": {
+                                "class_modification": [
+                                  {
+                                    "element_modification_or_replaceable": {
+                                      "element_modification": {
+                                        "name": "typSecRel",
+                                        "modification": {
+                                          "equal": true,
+                                          "expression": {
+                                            "simple_expression": "secOutRel.typSecRel"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "outer": true,
+                "replaceable": true,
+                "component_clause": {
+                  "type_specifier": "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection",
+                  "component_list": [
+                    {
+                      "declaration": { "identifier": "secOutRel" },
+                      "description": {
+                        "description_string": "Outdoor/relief/return air section"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "outer": true,
+                "replaceable": true,
+                "component_clause": {
+                  "type_specifier": "Buildings.Templates.Components.Coils.None",
+                  "component_list": [
+                    {
+                      "declaration": { "identifier": "coiCoo" },
+                      "description": { "description_string": "Cooling coil" }
+                    }
+                  ]
+                }
+              },
+              {
+                "outer": true,
+                "replaceable": true,
+                "component_clause": {
+                  "type_specifier": "Buildings.Templates.Components.Coils.None",
+                  "component_list": [
+                    {
+                      "declaration": { "identifier": "coiHeaPre" },
+                      "description": {
+                        "description_string": "Heating coil (preheat position)"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "outer": true,
+                "replaceable": true,
+                "component_clause": {
+                  "type_specifier": "Buildings.Templates.Components.Coils.None",
+                  "component_list": [
+                    {
+                      "declaration": { "identifier": "coiHeaReh" },
+                      "description": {
+                        "description_string": "Heating coil (reheat position)"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "component_clause": {
+                  "type_prefix": "parameter",
+                  "type_specifier": "Buildings.Templates.AirHandlersFans.Types.ControlEconomizer",
+                  "component_list": [
+                    {
+                      "declaration": {
+                        "identifier": "typCtlEco",
+                        "modification": {
+                          "equal": true,
+                          "expression": {
+                            "simple_expression": "Buildings.Templates.AirHandlersFans.Types.ControlEconomizer.FixedDryBulb"
+                          }
+                        }
+                      },
+                      "description": {
+                        "description_string": "Economizer control type",
+                        "annotation": [
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "Evaluate",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": { "simple_expression": "true" }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "Dialog",
+                                "modification": {
+                                  "class_modification": [
+                                    {
+                                      "element_modification_or_replaceable": {
+                                        "element_modification": {
+                                          "name": "tab",
+                                          "modification": {
+                                            "equal": true,
+                                            "expression": {
+                                              "simple_expression": "\"Economizer\""
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "element_modification_or_replaceable": {
+                                        "element_modification": {
+                                          "name": "enable",
+                                          "modification": {
+                                            "equal": true,
+                                            "expression": {
+                                              "simple_expression": "secOutRel.typ <> Buildings.Templates.AirHandlersFans.Types.OutdoorReliefReturnSection.NoEconomizer"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "component_clause": {
+                  "type_prefix": "parameter",
+                  "type_specifier": "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn",
+                  "component_list": [
+                    {
+                      "declaration": {
+                        "identifier": "typCtlFanRet",
+                        "modification": {
+                          "equal": true,
+                          "expression": {
+                            "simple_expression": "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowTracking"
+                          }
+                        }
+                      },
+                      "description": {
+                        "description_string": "Return fan control type",
+                        "annotation": [
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "Evaluate",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": { "simple_expression": "true" }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "Dialog",
+                                "modification": {
+                                  "class_modification": [
+                                    {
+                                      "element_modification_or_replaceable": {
+                                        "element_modification": {
+                                          "name": "group",
+                                          "modification": {
+                                            "equal": true,
+                                            "expression": {
+                                              "simple_expression": "\"System and building parameters\""
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "element_modification_or_replaceable": {
+                                        "element_modification": {
+                                          "name": "enable",
+                                          "modification": {
+                                            "equal": true,
+                                            "expression": {
+                                              "simple_expression": "typFanRet <> Buildings.Templates.Components.Types.Fan.None"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "component_clause": {
+                  "type_prefix": "parameter",
+                  "type_specifier": "Boolean",
+                  "component_list": [
+                    {
+                      "declaration": {
+                        "identifier": "use_TMix",
+                        "modification": {
+                          "equal": true,
+                          "expression": { "simple_expression": "true" }
+                        }
+                      },
+                      "description": {
+                        "description_string": "Set to true if mixed air temperature measurement is enabled",
+                        "annotation": [
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "Dialog",
+                                "modification": {
+                                  "class_modification": [
+                                    {
+                                      "element_modification_or_replaceable": {
+                                        "element_modification": {
+                                          "name": "group",
+                                          "modification": {
+                                            "equal": true,
+                                            "expression": {
+                                              "simple_expression": "\"Economizer freeze protection\""
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "element_modification_or_replaceable": {
+                                        "element_modification": {
+                                          "name": "enable",
+                                          "modification": {
+                                            "equal": true,
+                                            "expression": {
+                                              "simple_expression": "typ <> Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone and secOutRel.typ <> Buildings.Templates.AirHandlersFans.Types.OutdoorReliefReturnSection.NoEconomizer"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "final": true,
+                "component_clause": {
+                  "type_prefix": "parameter",
+                  "type_specifier": "Boolean",
+                  "component_list": [
+                    {
+                      "declaration": {
+                        "identifier": "use_enthalpy",
+                        "modification": {
+                          "equal": true,
+                          "expression": {
+                            "simple_expression": "typCtlEco == Buildings.Templates.AirHandlersFans.Types.ControlEconomizer.FixedEnthalpyWithFixedDryBulb"
+                          }
+                        }
+                      },
+                      "description": {
+                        "description_string": "Set to true if enthalpy measurement is used in addition to temperature measurement",
+                        "annotation": [
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "Dialog",
+                                "modification": {
+                                  "class_modification": [
+                                    {
+                                      "element_modification_or_replaceable": {
+                                        "element_modification": {
+                                          "name": "tab",
+                                          "modification": {
+                                            "equal": true,
+                                            "expression": {
+                                              "simple_expression": "\"Economizer\""
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "element_modification_or_replaceable": {
+                                        "element_modification": {
+                                          "name": "enable",
+                                          "modification": {
+                                            "equal": true,
+                                            "expression": {
+                                              "simple_expression": "secOutRel.typ <> Buildings.Templates.AirHandlersFans.Types.OutdoorReliefReturnSection.NoEconomizer"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "final": true,
+                "component_clause": {
+                  "type_prefix": "parameter",
+                  "type_specifier": "Buildings.Controls.OBC.ASHRAE.G36.Types.MultizoneAHUMinOADesigns",
+                  "component_list": [
+                    {
+                      "declaration": {
+                        "identifier": "minOADes",
+                        "modification": {
+                          "equal": true,
+                          "expression": {
+                            "if_expression": {
+                              "if_elseif": [
+                                {
+                                  "condition": {
+                                    "simple_expression": "secOutRel.typSecOut == Buildings.Templates.AirHandlersFans.Types.OutdoorSection.SingleDamper"
+                                  },
+                                  "then": {
+                                    "simple_expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.MultizoneAHUMinOADesigns.CommonDamper"
+                                  }
+                                },
+                                {
+                                  "condition": {
+                                    "simple_expression": "secOutRel.typSecOut == Buildings.Templates.AirHandlersFans.Types.OutdoorSection.DedicatedDampersAirflow"
+                                  },
+                                  "then": {
+                                    "simple_expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.MultizoneAHUMinOADesigns.SeparateDamper_AFMS"
+                                  }
+                                },
+                                {
+                                  "condition": {
+                                    "simple_expression": "secOutRel.typSecOut == Buildings.Templates.AirHandlersFans.Types.OutdoorSection.DedicatedDampersPressure"
+                                  },
+                                  "then": {
+                                    "simple_expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.MultizoneAHUMinOADesigns.SeparateDamper_DP"
+                                  }
+                                }
+                              ],
+                              "else_expression": {
+                                "simple_expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.MultizoneAHUMinOADesigns.CommonDamper"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "description": {
+                        "description_string": "Design of minimum outdoor air and economizer function",
+                        "annotation": [
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "Dialog",
+                                "modification": {
+                                  "class_modification": [
+                                    {
+                                      "element_modification_or_replaceable": {
+                                        "element_modification": {
+                                          "name": "group",
+                                          "modification": {
+                                            "equal": true,
+                                            "expression": {
+                                              "simple_expression": "\"Economizer design\""
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "final": true,
+                "component_clause": {
+                  "type_prefix": "parameter",
+                  "type_specifier": "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes",
+                  "component_list": [
+                    {
+                      "declaration": {
+                        "identifier": "buiPreCon",
+                        "modification": {
+                          "equal": true,
+                          "expression": {
+                            "if_expression": {
+                              "if_elseif": [
+                                {
+                                  "condition": {
+                                    "simple_expression": "secOutRel.typSecRel == Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReliefDamper"
+                                  },
+                                  "then": {
+                                    "simple_expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefDamper"
+                                  }
+                                },
+                                {
+                                  "condition": {
+                                    "simple_expression": "secOutRel.typSecRel == Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReliefFan"
+                                  },
+                                  "then": {
+                                    "simple_expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefFan"
+                                  }
+                                },
+                                {
+                                  "condition": {
+                                    "simple_expression": "secOutRel.typSecRel == Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReturnFan"
+                                  },
+                                  "then": {
+                                    "simple_expression": "(if typCtlFanRet == Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowTracking then Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanAir elseif typCtlFanRet == Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.BuildingPressure then Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanDp else Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefDamper)"
+                                  }
+                                }
+                              ],
+                              "else_expression": {
+                                "simple_expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefDamper"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "description": {
+                        "description_string": "Type of building pressure control system",
+                        "annotation": [
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "Dialog",
+                                "modification": {
+                                  "class_modification": [
+                                    {
+                                      "element_modification_or_replaceable": {
+                                        "element_modification": {
+                                          "name": "group",
+                                          "modification": {
+                                            "equal": true,
+                                            "expression": {
+                                              "simple_expression": "\"Economizer design\""
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "annotation": [
+              {
+                "element_modification_or_replaceable": {
+                  "element_modification": {
+                    "name": "Documentation",
+                    "modification": {
+                      "class_modification": [
+                        {
+                          "element_modification_or_replaceable": {
+                            "element_modification": {
+                              "name": "info",
+                              "modification": {
+                                "equal": true,
+                                "expression": {
+                                  "simple_expression": "\"<html>\n<p>\nThis partial class provides a standard interface for multiple-zone VAV controllers.\n</p>\n</html>\""
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "modelicaFile": "Buildings/Templates/AirHandlersFans/Components/Controls/Interfaces/PartialVAVMultizone.mo",
+  "fullMoFilePath": "dependencies/modelica-buildings/Buildings/Templates/AirHandlersFans/Components/Controls/Interfaces/PartialVAVMultizone.mo",
+  "checksum": "0862cd47c819b2faf5731751f63febc7"
+}
