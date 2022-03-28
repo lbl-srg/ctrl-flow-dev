@@ -26,7 +26,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "preparsetemplates": "node ../dependencies/modelica-json/app.js -f ../dependencies/modelica-buildings/Buildings/Templates -o json -d build/templates && prettier build/templates/json -w",
+    "preparsetemplates": "rm -rf build && mkdir build && node ../dependencies/modelica-json/app.js -f ../dependencies/modelica-buildings/Buildings/Templates -o json -d build/modelica-json",
     "parsetemplates": "node scripts/parse-templates.js",
     "start": "nodemon src/index.ts",
     "install-modelica-deps": "./bin/install-modelica-dependencies.sh",
