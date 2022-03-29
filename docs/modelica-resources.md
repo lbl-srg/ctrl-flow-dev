@@ -18,8 +18,6 @@ For additional details about template inputs Refer to the requirements website f
 
 ### Variables
 
-Template parameters that do not have the `final` keyword need to be exposed to the end user:
-
 ```modelica
 /*
 From Templates/AirHandlersFans/Interfaces/PartialAirHandler.mo
@@ -34,9 +32,13 @@ From this paramter to extract three things:
 - Input title is "Type of System"
 - This is put in the 'configuration' group
 - parameter type is an enum of type `Buildings.Templates.AirHandlersFans.Types.Configuration`
-- NOTE: `Dialog(tab=<config tab)` can also be specified
+- NOTE: tab can also be specified, e.g. `annotation (Dialog(tab="Assumptions", group="Heat transfer"))`
 
 Additional details on variables and how we translate into UI in [the requirements](https://lbl-srg.github.io/linkage.js/requirements.html#variables)
+
+`final` keyword:
+
+Parameters or replacablec omponents
 
 ### Replaceable Components ('Choices')
 
@@ -76,15 +78,17 @@ Upon selection, the previous 'replacable' block is replaced with a 'redeclare' b
         fanSupDra,
 ```
 
-TODO: `inner` keyword
+TODO: `inner` keyword - does this impact traversal?
 
 ### Option Discovery
 
-Available template selections are NOT all listed in a single file. To get the full tree of available options, inherited classes and subcomponents need to be traversed recursively.
+Available template selections are NOT all listed in a single file. To get the full tree of available options, extended models, subcomponents, and `record`s need to be traversed recursively.
+
+A `record` is
 
 Doing so will generate a tree of options for the model and subcomponents.
 
-NOTE: an example of extending a class, Multizone VAV extends PartialAirHandler
+NOTE: an example of extending a model, Multizone VAV extends PartialAirHandler
 
 ```
 within Buildings.Templates.AirHandlersFans;
@@ -92,17 +96,38 @@ model VAVMultiZone "Multiple-zone VAV"
   extends Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler(
 ```
 
-A pseudo code for this traversal is as follows:
+Below an example of what this recursive search could look like:
 
-```python
-files_to_traverse = [current_file]
+```typescript
+const filesToTraverse: String[] = [currentFile]
 
-def traverse_file(file):
-  ''' if this file extends another file, add the file
-      if a record is found, add it to files_to_traverse
-      if a replacable is found, add each 'choice' to files_to_traverse, add 'choices' as a selectable option
-      add each non-final parameter
-  '''
+
+function traverseFile(file):
+  const elementList = getFileElementList(file); // given a modelica path, get json and extract element list
+  elementList.map(element => {
+    if (isExtendClause(element)) {
+      const extendedModel = getExtendedModel(element); // like "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler"
+      filesToTraverse.push(extendedModel)
+    } else if (isRecord(element)) {
+      const record = getRecord(element)
+      filesToTraverse.push(record)
+    } else if (isChoices(element)) {
+      const choices = getChoices(element); // an array with each modelica path
+      filesToTraverse.push(...choices);
+      // construct linkage schema object from choices
+    } else {
+      // construct linkage schema object from parameter
+    }
+
+  });
+
+  for
+  /**
+   * if this file extends another file, add the file
+   * if a record is found, add it to files_to_traverse
+   * if a replacable is found, add each 'choice' to files_to_traverse, add 'choices' as a selectable option
+   * add each non-final parameter
+   */
 
 while len(files_to_traverse) > 0:
   traverse_file(files_to_traverse.pop(0))
