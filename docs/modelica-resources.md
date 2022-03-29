@@ -36,9 +36,7 @@ From this paramter to extract three things:
 
 Additional details on variables and how we translate into UI in [the requirements](https://lbl-srg.github.io/linkage.js/requirements.html#variables)
 
-`final` keyword:
-
-Parameters or replacablec omponents
+`final` keyword: TODO
 
 ### Replaceable Components ('Choices')
 
@@ -84,11 +82,21 @@ TODO: `inner` keyword - does this impact traversal?
 
 Available template selections are NOT all listed in a single file. To get the full tree of available options, extended models, subcomponents, and `record`s need to be traversed recursively.
 
-A `record` is
+Throughout the templates qualified names are used to reference other parameters in a modelica package. We can use these names as package relative paths to determine what other json files need to be traversed to get all available options.
+
+> NOTE: additional details about the [lookup rules](https://mbe.modelica.university/components/packages/lookup/) related to these qualified paths.
+
+An example modelica path:
+
+```
+"Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler"
+```
+
+> NOTE: A [`record`](https://mbe.modelica.university/behavior/equations/record_def/) is just a collection of parameters, like a class without functions.
 
 Doing so will generate a tree of options for the model and subcomponents.
 
-NOTE: an example of extending a model, Multizone VAV extends PartialAirHandler
+An example of extending a model - Multizone VAV extends PartialAirHandler:
 
 ```
 within Buildings.Templates.AirHandlersFans;
@@ -99,8 +107,7 @@ model VAVMultiZone "Multiple-zone VAV"
 Below an example of what this recursive search could look like:
 
 ```typescript
-const filesToTraverse: String[] = [currentFile]
-
+const filesToTraverse: String[] = [currentFile] // a list of modelica paths
 
 function traverseFile(file):
   const elementList = getFileElementList(file); // given a modelica path, get json and extract element list
@@ -115,23 +122,18 @@ function traverseFile(file):
       const choices = getChoices(element); // an array with each modelica path
       filesToTraverse.push(...choices);
       // construct linkage schema object from choices
+      constructChoice(element);
     } else {
       // construct linkage schema object from parameter
+      constructParameter(element);
     }
-
   });
 
-  for
-  /**
-   * if this file extends another file, add the file
-   * if a record is found, add it to files_to_traverse
-   * if a replacable is found, add each 'choice' to files_to_traverse, add 'choices' as a selectable option
-   * add each non-final parameter
-   */
-
-while len(files_to_traverse) > 0:
-  traverse_file(files_to_traverse.pop(0))
+while (filesToTraverse.len > 0)
+  traverseFile(filesToTraverse.pop(0))
 ```
+
+### Expressions (TODO)
 
 ## Modelica-Json Tool
 
