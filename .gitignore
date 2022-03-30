@@ -6,7 +6,7 @@ server/build/**
 .env*
 !.env.example
 .DS_Store
-
+server/scripts/tmp.json
 
 # Dependencies
 dependencies/*
