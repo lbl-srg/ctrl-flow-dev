@@ -39,15 +39,26 @@ model TestTemplate "Test Template"
     );
 
   /*
-    Test that other modules are ignored
+    Test Record
   */
+  parameter TestPackage.Data.TestRecord dat
+    "Record with additional parameters";
 
   /*
     Test ignore 'Final' keyword
   */
+  final parameter String should_ignore="ignore me"
+    "Final parameter that should be ignored"
+    annotation(Dialog(group="Configuration"));
 
   /*
     Test boolean
   */
+  parameter Boolean nullable_bool=false
+    "Test boolean"
+    annotation (Evaluate=true, Dialog(group="Configuration", enable=false));
+
+  // TODO: add values for annotation variations
+  // TODO: add parameters with a value assigned and for those without
 
 end TestTemplate;
