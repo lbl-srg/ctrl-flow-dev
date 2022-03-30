@@ -1,0 +1,3807 @@
+[
+  {
+    "name": "Multiple-zone VAV",
+    "id": "VAVMultiZone",
+    "elements": [
+      {
+        "final": true,
+        "component_clause": {
+          "type_prefix": "parameter",
+          "type_specifier": "String",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "id",
+                "modification": {
+                  "equal": true,
+                  "expression": {
+                    "simple_expression": "dat.id"
+                  }
+                }
+              },
+              "description": {
+                "description_string": "System tag",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Dialog",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "group",
+                                  "modification": {
+                                    "equal": true,
+                                    "expression": {
+                                      "simple_expression": "\"Configuration\""
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "final": true,
+        "component_clause": {
+          "type_prefix": "parameter",
+          "type_specifier": "Modelica.Units.SI.MassFlowRate",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "mAirSup_flow_nominal",
+                "modification": {
+                  "equal": true,
+                  "expression": {
+                    "simple_expression": "dat.mAirSup_flow_nominal"
+                  }
+                }
+              },
+              "description": {
+                "description_string": "Supply air mass flow rate",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Dialog",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "group",
+                                  "modification": {
+                                    "equal": true,
+                                    "expression": {
+                                      "simple_expression": "\"Nominal condition\""
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "final": true,
+        "component_clause": {
+          "type_prefix": "parameter",
+          "type_specifier": "Modelica.Units.SI.MassFlowRate",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "mAirRet_flow_nominal",
+                "modification": {
+                  "equal": true,
+                  "expression": {
+                    "simple_expression": "dat.mAirRet_flow_nominal"
+                  }
+                }
+              },
+              "description": {
+                "description_string": "Return air mass flow rate",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Dialog",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "group",
+                                  "modification": {
+                                    "equal": true,
+                                    "expression": {
+                                      "simple_expression": "\"Nominal condition\""
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "extends_clause": {
+          "name": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler",
+          "class_modification": [
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "nZon",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "final": true,
+                          "element_modification": {
+                            "name": "min",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "2"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "element_redeclaration": {
+                "component_clause1": {
+                  "type_specifier": "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone",
+                  "component_declaration1": {
+                    "declaration": {
+                      "identifier": "dat",
+                      "modification": {
+                        "class_modification": [
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "typCoiHeaPre",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": {
+                                    "simple_expression": "coiHeaPre.typ"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "typCoiCoo",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": {
+                                    "simple_expression": "coiCoo.typ"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "typCoiHeaReh",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": {
+                                    "simple_expression": "coiHeaReh.typ"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "typValCoiHeaPre",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": {
+                                    "simple_expression": "coiHeaPre.typVal"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "typValCoiCoo",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": {
+                                    "simple_expression": "coiCoo.typVal"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "typValCoiHeaReh",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": {
+                                    "simple_expression": "coiHeaReh.typVal"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "typDamOut",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": {
+                                    "simple_expression": "secOutRel.typDamOut"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "typDamOutMin",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": {
+                                    "simple_expression": "secOutRel.typDamOutMin"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "typDamRet",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": {
+                                    "simple_expression": "secOutRel.typDamRet"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "typDamRel",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": {
+                                    "simple_expression": "secOutRel.typDamRel"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "typCtl",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": {
+                                    "simple_expression": "ctl.typ"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "typSecRel",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": {
+                                    "simple_expression": "secOutRel.typSecRel"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "minOADes",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": {
+                                    "simple_expression": "ctl.minOADes"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "element_modification_or_replaceable": {
+                              "element_modification": {
+                                "name": "buiPreCon",
+                                "modification": {
+                                  "equal": true,
+                                  "expression": {
+                                    "simple_expression": "ctl.buiPreCon"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "typ",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "Buildings.Templates.AirHandlersFans.Types.Configuration.SingleDuct"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "have_porRel",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "secOutRel.typ <> Types.OutdoorReliefReturnSection.EconomizerNoRelief"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "have_souChiWat",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "coiCoo.have_sou"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "have_souHeaWat",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "coiHeaPre.have_sou or coiHeaReh.have_sou"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "typFanSup",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "if_expression": {
+                        "if_elseif": [
+                          {
+                            "condition": {
+                              "simple_expression": "fanSupDra.typ <> Buildings.Templates.Components.Types.Fan.None"
+                            },
+                            "then": {
+                              "simple_expression": "fanSupDra.typ"
+                            }
+                          },
+                          {
+                            "condition": {
+                              "simple_expression": "fanSupBlo.typ <> Buildings.Templates.Components.Types.Fan.None"
+                            },
+                            "then": {
+                              "simple_expression": "fanSupBlo.typ"
+                            }
+                          }
+                        ],
+                        "else_expression": {
+                          "simple_expression": "Buildings.Templates.Components.Types.Fan.None"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "typFanRel",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "secOutRel.typFanRel"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "typFanRet",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "secOutRel.typFanRet"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "mChiWat_flow_nominal",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "if_expression": {
+                        "if_elseif": [
+                          {
+                            "condition": {
+                              "simple_expression": "coiCoo.have_sou"
+                            },
+                            "then": {
+                              "simple_expression": "dat.coiCoo.mWat_flow_nominal"
+                            }
+                          }
+                        ],
+                        "else_expression": {
+                          "simple_expression": "0"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "mHeaWat_flow_nominal",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "(if coiHeaPre.have_sou then dat.coiHeaPre.mWat_flow_nominal else 0) +(if coiHeaReh.have_sou then dat.coiHeaReh.mWat_flow_nominal else 0)"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "QChiWat_flow_nominal",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "if_expression": {
+                        "if_elseif": [
+                          {
+                            "condition": {
+                              "simple_expression": "coiCoo.have_sou"
+                            },
+                            "then": {
+                              "simple_expression": "dat.coiCoo.Q_flow_nominal"
+                            }
+                          }
+                        ],
+                        "else_expression": {
+                          "simple_expression": "0"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "QHeaWat_flow_nominal",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "(if coiHeaPre.have_sou then dat.coiHeaPre.Q_flow_nominal else 0) +(if coiHeaReh.have_sou then dat.coiHeaReh.Q_flow_nominal else 0)"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "final": true,
+        "component_clause": {
+          "type_prefix": "parameter",
+          "type_specifier": "Modelica.Units.SI.MassFlowRate",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "mAirRet_flow_nominal",
+                "modification": {
+                  "equal": true,
+                  "expression": {
+                    "simple_expression": "dat.mAirRet_flow_nominal"
+                  }
+                }
+              },
+              "description": {
+                "description_string": "Return air mass flow rate",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Dialog",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "group",
+                                  "modification": {
+                                    "equal": true,
+                                    "expression": {
+                                      "simple_expression": "\"Nominal condition\""
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "final": true,
+        "component_clause": {
+          "type_prefix": "parameter",
+          "type_specifier": "Boolean",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "have_senPreBui",
+                "modification": {
+                  "equal": true,
+                  "expression": {
+                    "simple_expression": "secOutRel.typSecRel == Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReliefDamper or secOutRel.typSecRel == Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReliefFan or secOutRel.typSecRel == Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReturnFan and secOutRel.typCtlFanRet == Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.BuildingPressure"
+                  }
+                }
+              },
+              "description": {
+                "description_string": "Set to true if building static pressure sensor is used",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Evaluate",
+                        "modification": {
+                          "equal": true,
+                          "expression": {
+                            "simple_expression": "true"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Dialog",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "group",
+                                  "modification": {
+                                    "equal": true,
+                                    "expression": {
+                                      "simple_expression": "\"Configuration\""
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "inner": true,
+        "replaceable": true,
+        "constraining_clause": {
+          "name": "Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection",
+          "class_modification": [
+            {
+              "element_redeclaration": {
+                "final": true,
+                "short_class_definition": {
+                  "class_prefixes": "package",
+                  "short_class_specifier": {
+                    "identifier": "MediumAir",
+                    "value": {
+                      "name": "MediumAir"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "typCtlFanRet",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "ctl.typCtlFanRet"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "typCtlEco",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "ctl.typCtlEco"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "dat",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "final": true,
+                          "element_modification": {
+                            "name": "mOutMin_flow_nominal",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "dat.mOutMin_flow_nominal"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "final": true,
+                          "element_modification": {
+                            "name": "damOut",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "dat.damOut"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "final": true,
+                          "element_modification": {
+                            "name": "damOutMin",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "dat.damOutMin"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "final": true,
+                          "element_modification": {
+                            "name": "damRel",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "dat.damRel"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "final": true,
+                          "element_modification": {
+                            "name": "damRet",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "dat.damRet"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "final": true,
+                          "element_modification": {
+                            "name": "fanRel",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "dat.fanRel"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "final": true,
+                          "element_modification": {
+                            "name": "fanRet",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "dat.fanRet"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "component_clause": {
+          "type_specifier": "Components.OutdoorReliefReturnSection.Economizer",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "secOutRel"
+              }
+            }
+          ]
+        },
+        "description": {
+          "description_string": "Outdoor/relief/return air section",
+          "annotation": [
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "Dialog",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "group",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "\"Outdoor/relief/return air section\""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "Placement",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "transformation",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_modification_or_replaceable": {
+                                    "element_modification": {
+                                      "name": "extent",
+                                      "modification": {
+                                        "equal": true,
+                                        "expression": {
+                                          "simple_expression": "{{-280,-220},{-120,-60}}"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "component_clause": {
+          "type_specifier": "Buildings.Templates.Components.Sensors.Temperature",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "TAirMix",
+                "modification": {
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "final": true,
+                        "short_class_definition": {
+                          "class_prefixes": "package",
+                          "short_class_specifier": {
+                            "identifier": "Medium",
+                            "value": {
+                              "name": "MediumAir"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "have_sen",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "ctl.use_TMix"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "typ",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "Buildings.Templates.Components.Types.SensorTemperature.Averaging"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "m_flow_nominal",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "mAirSup_flow_nominal"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "description": {
+                "description_string": "Mixed air temperature sensor",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Dialog",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "group",
+                                  "modification": {
+                                    "equal": true,
+                                    "expression": {
+                                      "simple_expression": "\"Supply air section\""
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "enable",
+                                  "modification": {
+                                    "equal": true,
+                                    "expression": {
+                                      "simple_expression": "false"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Placement",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "transformation",
+                                  "modification": {
+                                    "class_modification": [
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "extent",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{{-110,-210},{-90,-190}}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "inner": true,
+        "replaceable": true,
+        "constraining_clause": {
+          "name": "Buildings.Templates.Components.Fans.Interfaces.PartialFan",
+          "class_modification": [
+            {
+              "element_redeclaration": {
+                "final": true,
+                "short_class_definition": {
+                  "class_prefixes": "package",
+                  "short_class_specifier": {
+                    "identifier": "Medium",
+                    "value": {
+                      "name": "MediumAir"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "dat",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "dat.fanSup"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "have_senFlo",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "ctl.typCtlFanRet == Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowTracking"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "component_clause": {
+          "type_specifier": "Buildings.Templates.Components.Fans.None",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "fanSupBlo"
+              }
+            }
+          ]
+        },
+        "description": {
+          "description_string": "Supply fan - Blow through",
+          "annotation": [
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "choices",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.Components.Fans.None",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "fanSupBlo"
+                                          },
+                                          "description": {
+                                            "description_string": "No fan"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.Components.Fans.SingleVariable",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "fanSupBlo"
+                                          },
+                                          "description": {
+                                            "description_string": "Single fan - Variable speed"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.Components.Fans.ArrayVariable",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "fanSupBlo"
+                                          },
+                                          "description": {
+                                            "description_string": "Fan array - Variable speed"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "Dialog",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "group",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "\"Supply air section\""
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "enable",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "fanSupDra.typ == Buildings.Templates.Components.Types.Fan.None"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "Placement",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "transformation",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_modification_or_replaceable": {
+                                    "element_modification": {
+                                      "name": "extent",
+                                      "modification": {
+                                        "equal": true,
+                                        "expression": {
+                                          "simple_expression": "{{-50,-210},{-30,-190}}"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "component_clause": {
+          "type_specifier": "Buildings.Templates.Components.Sensors.Temperature",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "TAirCoiHeaLvg",
+                "modification": {
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "final": true,
+                        "short_class_definition": {
+                          "class_prefixes": "package",
+                          "short_class_specifier": {
+                            "identifier": "Medium",
+                            "value": {
+                              "name": "MediumAir"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "have_sen",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "coiHeaPre.typ <> Buildings.Templates.Components.Types.Coil.None and coiCoo.typ <> Buildings.Templates.Components.Types.Coil.None"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "typ",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "Buildings.Templates.Components.Types.SensorTemperature.Averaging"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "m_flow_nominal",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "mAirSup_flow_nominal"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "description": {
+                "description_string": "Heating coil leaving air temperature sensor",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Dialog",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "group",
+                                  "modification": {
+                                    "equal": true,
+                                    "expression": {
+                                      "simple_expression": "\"Supply air section\""
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Placement",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "transformation",
+                                  "modification": {
+                                    "class_modification": [
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "extent",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{{40,-210},{60,-190}}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "component_clause": {
+          "type_specifier": "Buildings.Templates.Components.Sensors.Temperature",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "TAirCoiCooLvg",
+                "modification": {
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "final": true,
+                        "short_class_definition": {
+                          "class_prefixes": "package",
+                          "short_class_specifier": {
+                            "identifier": "Medium",
+                            "value": {
+                              "name": "MediumAir"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "have_sen",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "coiCoo.typ <> Buildings.Templates.Components.Types.Coil.None and coiHeaReh.typ <> Buildings.Templates.Components.Types.Coil.None"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "typ",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "Buildings.Templates.Components.Types.SensorTemperature.Averaging"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "m_flow_nominal",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "mAirSup_flow_nominal"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "description": {
+                "description_string": "Cooling coil leaving air temperature sensor",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Dialog",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "group",
+                                  "modification": {
+                                    "equal": true,
+                                    "expression": {
+                                      "simple_expression": "\"Supply air section\""
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Placement",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "transformation",
+                                  "modification": {
+                                    "class_modification": [
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "extent",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{{100,-210},{120,-190}}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "inner": true,
+        "replaceable": true,
+        "constraining_clause": {
+          "name": "Buildings.Templates.Components.Fans.Interfaces.PartialFan",
+          "class_modification": [
+            {
+              "element_redeclaration": {
+                "final": true,
+                "short_class_definition": {
+                  "class_prefixes": "package",
+                  "short_class_specifier": {
+                    "identifier": "Medium",
+                    "value": {
+                      "name": "MediumAir"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "dat",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "dat.fanSup"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "have_senFlo",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "ctl.typCtlFanRet == Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowTracking"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "component_clause": {
+          "type_specifier": "Buildings.Templates.Components.Fans.SingleVariable",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "fanSupDra"
+              }
+            }
+          ]
+        },
+        "description": {
+          "description_string": "Supply fan - Draw through",
+          "annotation": [
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "choices",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.Components.Fans.None",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "fanSupDra"
+                                          },
+                                          "description": {
+                                            "description_string": "No fan"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.Components.Fans.SingleVariable",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "fanSupDra"
+                                          },
+                                          "description": {
+                                            "description_string": "Single fan - Variable speed"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.Components.Fans.ArrayVariable",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "fanSupDra"
+                                          },
+                                          "description": {
+                                            "description_string": "Fan array - Variable speed"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "Dialog",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "group",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "\"Supply air section\""
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "enable",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "fanSupBlo.typ == Buildings.Templates.Components.Types.Fan.None"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "Placement",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "transformation",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_modification_or_replaceable": {
+                                    "element_modification": {
+                                      "name": "extent",
+                                      "modification": {
+                                        "equal": true,
+                                        "expression": {
+                                          "simple_expression": "{{172,-210},{192,-190}}"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "inner": true,
+        "replaceable": true,
+        "constraining_clause": {
+          "name": "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone",
+          "class_modification": [
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "dat",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "dat.ctl"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "nZon",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "nZon"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "component_clause": {
+          "type_specifier": "Components.Controls.OpenLoop",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "ctl"
+              }
+            }
+          ]
+        },
+        "description": {
+          "description_string": "AHU controller",
+          "annotation": [
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "choices",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "ctl"
+                                          },
+                                          "description": {
+                                            "description_string": "Guideline 36 controller"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.AirHandlersFans.Components.Controls.OpenLoop",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "ctl"
+                                          },
+                                          "description": {
+                                            "description_string": "Open loop controller"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "Dialog",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "group",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "\"Controls\""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "Placement",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "transformation",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_modification_or_replaceable": {
+                                    "element_modification": {
+                                      "name": "extent",
+                                      "modification": {
+                                        "equal": true,
+                                        "expression": {
+                                          "simple_expression": "{{-220,-10},{-200,10}}"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "component_clause": {
+          "type_specifier": "Buildings.Templates.Components.Sensors.Temperature",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "TAirSup",
+                "modification": {
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "final": true,
+                        "short_class_definition": {
+                          "class_prefixes": "package",
+                          "short_class_specifier": {
+                            "identifier": "Medium",
+                            "value": {
+                              "name": "MediumAir"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "have_sen",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "true"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "typ",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "Buildings.Templates.Components.Types.SensorTemperature.Standard"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "m_flow_nominal",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "mAirSup_flow_nominal"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "description": {
+                "description_string": "Supply air temperature sensor",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Dialog",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "group",
+                                  "modification": {
+                                    "equal": true,
+                                    "expression": {
+                                      "simple_expression": "\"Supply air section\""
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Placement",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "transformation",
+                                  "modification": {
+                                    "class_modification": [
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "extent",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{{210,-210},{230,-190}}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "component_clause": {
+          "type_specifier": "Buildings.Templates.Components.Sensors.DifferentialPressure",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "pAirSup_rel",
+                "modification": {
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "final": true,
+                        "short_class_definition": {
+                          "class_prefixes": "package",
+                          "short_class_specifier": {
+                            "identifier": "Medium",
+                            "value": {
+                              "name": "MediumAir"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "have_sen",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "true"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "description": {
+                "description_string": "Duct static pressure sensor",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Dialog",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "group",
+                                  "modification": {
+                                    "equal": true,
+                                    "expression": {
+                                      "simple_expression": "\"Supply air section\""
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Placement",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "transformation",
+                                  "modification": {
+                                    "class_modification": [
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "extent",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{{250,-230},{270,-210}}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "component_clause": {
+          "type_specifier": "Buildings.Templates.Components.Sensors.DifferentialPressure",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "pBui_rel",
+                "modification": {
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "final": true,
+                        "short_class_definition": {
+                          "class_prefixes": "package",
+                          "short_class_specifier": {
+                            "identifier": "Medium",
+                            "value": {
+                              "name": "MediumAir"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "have_sen",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "have_senPreBui"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "text_flip",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "true"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "description": {
+                "description_string": "Building static pressure",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Placement",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "transformation",
+                                  "modification": {
+                                    "class_modification": [
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "extent",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{{10,30},{-10,50}}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "component_clause": {
+          "type_specifier": "Buildings.Fluid.Sources.Outside",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "out",
+                "modification": {
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "final": true,
+                        "short_class_definition": {
+                          "class_prefixes": "package",
+                          "short_class_specifier": {
+                            "identifier": "Medium",
+                            "value": {
+                              "name": "MediumAir"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "nPorts",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "3"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "description": {
+                "description_string": "Outdoor conditions",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Placement",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "transformation",
+                                  "modification": {
+                                    "class_modification": [
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "extent",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{{-10,-10},{10,10}}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "rotation",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "-90"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "origin",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{-40,90}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "component_clause": {
+          "type_specifier": "Buildings.Fluid.Sources.Boundary_pT",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "bui",
+                "modification": {
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "final": true,
+                        "short_class_definition": {
+                          "class_prefixes": "package",
+                          "short_class_specifier": {
+                            "identifier": "Medium",
+                            "value": {
+                              "name": "MediumAir"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "use_p_in",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "have_senPreBui"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "nPorts",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "1"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "description": {
+                "description_string": "Building absolute pressure in representative space",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Placement",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "transformation",
+                                  "modification": {
+                                    "class_modification": [
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "extent",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{{-10,-10},{10,10}}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "rotation",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "-90"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "origin",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{40,60}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "component_clause": {
+          "type_specifier": "Buildings.Templates.Components.Sensors.Temperature",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "TAirRet",
+                "modification": {
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "final": true,
+                        "short_class_definition": {
+                          "class_prefixes": "package",
+                          "short_class_specifier": {
+                            "identifier": "Medium",
+                            "value": {
+                              "name": "MediumAir"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "have_sen",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "ctl.typCtlEco == Buildings.Templates.AirHandlersFans.Types.ControlEconomizer.DifferentialDryBulb or ctl.typCtlEco == Buildings.Templates.AirHandlersFans.Types.ControlEconomizer.FixedDryBulbWithDifferentialDryBulb"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "typ",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "Buildings.Templates.Components.Types.SensorTemperature.Standard"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "m_flow_nominal",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "mAirRet_flow_nominal"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "description": {
+                "description_string": "Return air temperature sensor",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Dialog",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "group",
+                                  "modification": {
+                                    "equal": true,
+                                    "expression": {
+                                      "simple_expression": "\"Exhaust/relief/return section\""
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Placement",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "transformation",
+                                  "modification": {
+                                    "class_modification": [
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "extent",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{{220,-90},{200,-70}}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "component_clause": {
+          "type_specifier": "Buildings.Templates.Components.Sensors.SpecificEnthalpy",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "hAirRet",
+                "modification": {
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "final": true,
+                        "short_class_definition": {
+                          "class_prefixes": "package",
+                          "short_class_specifier": {
+                            "identifier": "Medium",
+                            "value": {
+                              "name": "MediumAir"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "have_sen",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "ctl.typCtlEco == Buildings.Templates.AirHandlersFans.Types.ControlEconomizer.DifferentialEnthalpyWithFixedDryBulb"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "m_flow_nominal",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "mAirRet_flow_nominal"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "description": {
+                "description_string": "Return air enthalpy sensor",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Dialog",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "group",
+                                  "modification": {
+                                    "equal": true,
+                                    "expression": {
+                                      "simple_expression": "\"Exhaust/relief/return section\""
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Placement",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "transformation",
+                                  "modification": {
+                                    "class_modification": [
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "extent",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{{250,-90},{230,-70}}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "inner": true,
+        "replaceable": true,
+        "constraining_clause": {
+          "name": "Buildings.Templates.Components.Coils.Interfaces.PartialCoil",
+          "class_modification": [
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "dat",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "dat.coiHeaPre"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_redeclaration": {
+                "final": true,
+                "short_class_definition": {
+                  "class_prefixes": "package",
+                  "short_class_specifier": {
+                    "identifier": "MediumAir",
+                    "value": {
+                      "name": "MediumAir"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "component_clause": {
+          "type_specifier": "Buildings.Templates.Components.Coils.None",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "coiHeaPre"
+              }
+            }
+          ]
+        },
+        "description": {
+          "description_string": "Heating coil in preheat position",
+          "annotation": [
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "choices",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.Components.Coils.None",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "coiHeaPre"
+                                          },
+                                          "description": {
+                                            "description_string": "No coil"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.Components.Coils.WaterBasedHeating",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "coiHeaPre",
+                                            "modification": {
+                                              "class_modification": [
+                                                {
+                                                  "element_redeclaration": {
+                                                    "final": true,
+                                                    "short_class_definition": {
+                                                      "class_prefixes": "package",
+                                                      "short_class_specifier": {
+                                                        "identifier": "MediumHeaWat",
+                                                        "value": {
+                                                          "name": "MediumHeaWat"
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          "description": {
+                                            "description_string": "Hot water coil"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.Components.Coils.ElectricHeating",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "coiHeaPre"
+                                          },
+                                          "description": {
+                                            "description_string": "Modulating electric heating coil"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "Dialog",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "group",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "\"Heating coil\""
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "enable",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "coiHeaReh.typ == Buildings.Templates.Components.Types.Coil.None"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "Placement",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "transformation",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_modification_or_replaceable": {
+                                    "element_modification": {
+                                      "name": "extent",
+                                      "modification": {
+                                        "equal": true,
+                                        "expression": {
+                                          "simple_expression": "{{10,-210},{30,-190}}"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "inner": true,
+        "replaceable": true,
+        "constraining_clause": {
+          "name": "Buildings.Templates.Components.Coils.Interfaces.PartialCoil",
+          "class_modification": [
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "dat",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "dat.coiCoo"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_redeclaration": {
+                "final": true,
+                "short_class_definition": {
+                  "class_prefixes": "package",
+                  "short_class_specifier": {
+                    "identifier": "MediumAir",
+                    "value": {
+                      "name": "MediumAir"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "component_clause": {
+          "type_specifier": "Buildings.Templates.Components.Coils.None",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "coiCoo"
+              }
+            }
+          ]
+        },
+        "description": {
+          "description_string": "Cooling coil",
+          "annotation": [
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "choices",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.Components.Coils.None",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "coiCoo"
+                                          },
+                                          "description": {
+                                            "description_string": "No coil"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.Components.Coils.WaterBasedCooling",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "coiCoo",
+                                            "modification": {
+                                              "class_modification": [
+                                                {
+                                                  "element_redeclaration": {
+                                                    "final": true,
+                                                    "short_class_definition": {
+                                                      "class_prefixes": "package",
+                                                      "short_class_specifier": {
+                                                        "identifier": "MediumChiWat",
+                                                        "value": {
+                                                          "name": "MediumChiWat"
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          "description": {
+                                            "description_string": "Chilled water coil"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.Components.Coils.EvaporatorVariableSpeed",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "coiCoo"
+                                          },
+                                          "description": {
+                                            "description_string": "Evaporator coil with variable speed compressor"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "Dialog",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "group",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "\"Cooling coil\""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "Placement",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "transformation",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_modification_or_replaceable": {
+                                    "element_modification": {
+                                      "name": "extent",
+                                      "modification": {
+                                        "equal": true,
+                                        "expression": {
+                                          "simple_expression": "{{70,-210},{90,-190}}"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "inner": true,
+        "replaceable": true,
+        "constraining_clause": {
+          "name": "Buildings.Templates.Components.Coils.Interfaces.PartialCoil",
+          "class_modification": [
+            {
+              "element_modification_or_replaceable": {
+                "final": true,
+                "element_modification": {
+                  "name": "dat",
+                  "modification": {
+                    "equal": true,
+                    "expression": {
+                      "simple_expression": "dat.coiHeaReh"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "element_redeclaration": {
+                "final": true,
+                "short_class_definition": {
+                  "class_prefixes": "package",
+                  "short_class_specifier": {
+                    "identifier": "MediumAir",
+                    "value": {
+                      "name": "MediumAir"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "component_clause": {
+          "type_specifier": "Buildings.Templates.Components.Coils.None",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "coiHeaReh"
+              }
+            }
+          ]
+        },
+        "description": {
+          "description_string": "Heating coil in reheat position",
+          "annotation": [
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "choices",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.Components.Coils.None",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "coiHeaReh"
+                                          },
+                                          "description": {
+                                            "description_string": "No coil"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.Components.Coils.WaterBasedHeating",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "coiHeaReh",
+                                            "modification": {
+                                              "class_modification": [
+                                                {
+                                                  "element_redeclaration": {
+                                                    "final": true,
+                                                    "short_class_definition": {
+                                                      "class_prefixes": "package",
+                                                      "short_class_specifier": {
+                                                        "identifier": "MediumHeaWat",
+                                                        "value": {
+                                                          "name": "MediumHeaWat"
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          "description": {
+                                            "description_string": "Hot water coil"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "choice",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_redeclaration": {
+                                    "element_replaceable": {
+                                      "component_clause1": {
+                                        "type_specifier": "Buildings.Templates.Components.Coils.ElectricHeating",
+                                        "component_declaration1": {
+                                          "declaration": {
+                                            "identifier": "coiHeaReh"
+                                          },
+                                          "description": {
+                                            "description_string": "Modulating electric heating coil"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "Dialog",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "group",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "\"Heating coil\""
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "enable",
+                            "modification": {
+                              "equal": true,
+                              "expression": {
+                                "simple_expression": "coiHeaPre.typ == Buildings.Templates.Components.Types.Coil.None"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "element_modification_or_replaceable": {
+                "element_modification": {
+                  "name": "Placement",
+                  "modification": {
+                    "class_modification": [
+                      {
+                        "element_modification_or_replaceable": {
+                          "element_modification": {
+                            "name": "transformation",
+                            "modification": {
+                              "class_modification": [
+                                {
+                                  "element_modification_or_replaceable": {
+                                    "element_modification": {
+                                      "name": "extent",
+                                      "modification": {
+                                        "equal": true,
+                                        "expression": {
+                                          "simple_expression": "{{130,-210},{150,-190}}"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "component_clause": {
+          "type_specifier": "Fluid.FixedResistances.Junction",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "junHeaWatSup",
+                "modification": {
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "final": true,
+                        "short_class_definition": {
+                          "class_prefixes": "package",
+                          "short_class_specifier": {
+                            "identifier": "Medium",
+                            "value": {
+                              "name": "MediumHeaWat"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "m_flow_nominal",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "mHeaWat_flow_nominal*{1,-1,-1}"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "element_modification": {
+                          "name": "energyDynamics",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "Modelica.Fluid.Types.Dynamics.FixedInitial"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "element_modification": {
+                          "name": "dp_nominal",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "fill(0,3)"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "condition_attribute": {
+                "simple_expression": "have_souHeaWat"
+              },
+              "description": {
+                "description_string": "HHW supply junction",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Placement",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "transformation",
+                                  "modification": {
+                                    "class_modification": [
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "extent",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{{-10,-10},{10,10}}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "rotation",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "90"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "origin",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{20,-260}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "component_clause": {
+          "type_specifier": "Fluid.FixedResistances.Junction",
+          "component_list": [
+            {
+              "declaration": {
+                "identifier": "junHeaWatSup1",
+                "modification": {
+                  "class_modification": [
+                    {
+                      "element_redeclaration": {
+                        "final": true,
+                        "short_class_definition": {
+                          "class_prefixes": "package",
+                          "short_class_specifier": {
+                            "identifier": "Medium",
+                            "value": {
+                              "name": "MediumHeaWat"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "final": true,
+                        "element_modification": {
+                          "name": "m_flow_nominal",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "mHeaWat_flow_nominal*{1,-1,1}"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "element_modification": {
+                          "name": "energyDynamics",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "Modelica.Fluid.Types.Dynamics.FixedInitial"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "element_modification_or_replaceable": {
+                        "element_modification": {
+                          "name": "dp_nominal",
+                          "modification": {
+                            "equal": true,
+                            "expression": {
+                              "simple_expression": "fill(0,3)"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "condition_attribute": {
+                "simple_expression": "have_souHeaWat"
+              },
+              "description": {
+                "description_string": "HHW return junction",
+                "annotation": [
+                  {
+                    "element_modification_or_replaceable": {
+                      "element_modification": {
+                        "name": "Placement",
+                        "modification": {
+                          "class_modification": [
+                            {
+                              "element_modification_or_replaceable": {
+                                "element_modification": {
+                                  "name": "transformation",
+                                  "modification": {
+                                    "class_modification": [
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "extent",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{{10,-10},{-10,10}}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "rotation",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "90"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "element_modification_or_replaceable": {
+                                          "element_modification": {
+                                            "name": "origin",
+                                            "modification": {
+                                              "equal": true,
+                                              "expression": {
+                                                "simple_expression": "{-20,-240}"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+]
