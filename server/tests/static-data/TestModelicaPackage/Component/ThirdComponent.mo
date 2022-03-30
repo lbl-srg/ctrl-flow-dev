@@ -1,4 +1,4 @@
-within TestModelicaPackage.Component;
+within TestPackage.Component;
 model ThirdComponent "Third Component"
   parameter String component_param="Third Component Param"
     annotation (Evaluate=true, Dialog(group="TestGroup"));
@@ -8,3 +8,5 @@ model ThirdComponent "Third Component"
     annotation (
       Evaluate=true,
       Dialog(group="Configuration"));
+
+end ThirdComponent;

@@ -1,18 +1,18 @@
-within TestModelicaPackage.Template;
+within TestPackage.Template;
 model TestTemplate "Test Template"
   /*
     Test that extends work as expected
   */
   extends Interface.TestInterface(
     interface_param="Updated Value"
-  )
+  );
 
   /*
     Test that a subcomponent's options are added
   */
-  TestModelicaPackage.Component.FirstComponent first(
+  TestPackage.Component.FirstComponent first(
     component_param="First Component Template Override"
-  )
+  );
 
   /*
     Test a replacable
@@ -29,3 +29,5 @@ model TestTemplate "Test Template"
   /*
     Test boolean
   */
+
+end TestTemplate;

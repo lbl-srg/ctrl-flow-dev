@@ -9,3 +9,5 @@ package Types "Package with type definitions"
       Strawberry
       "Strawberry")
     "Enumeration for ice cream types";
+
+end Types;
