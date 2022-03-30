@@ -10,4 +10,13 @@ package Types "Package with type definitions"
       "Strawberry")
     "Enumeration for ice cream types";
 
+  type Container = enumeration(
+    Hand
+    "Hand",
+    Bowl
+    "Bowl",
+    Cone
+    "Cone")
+    "Enumeration for container types";
+
 end Types;
