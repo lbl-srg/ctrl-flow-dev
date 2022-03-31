@@ -161,6 +161,8 @@ node app.js -f /dependencies/modelica-buildings/Buildings/Templates/AirHandlersF
 
 # References
 
+- [Modelica University](https://modelica.university/) - collection of resources for Modelica
+
 - [Modelica by Example](https://mbe.modelica.university) -
   Nice practical introduction to modelica that incrementally walks through features in the language
 
