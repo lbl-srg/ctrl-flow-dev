@@ -12,5 +12,6 @@ convert Fluid/Interfaces/PartialTwoPortInterface
 convert Templates/AirHandlersFans/Interfaces/PartialAirHandler
 convert Templates/Components/Sensors/Temperature
 convert Templates/Components/Sensors/Interfaces/PartialSensor
+convert Templates/AirHandlersFans/Types
 convert Fluid/Interfaces/PartialTwoPort
 convert Controls/OBC/CDL/Interfaces/RealOutput
