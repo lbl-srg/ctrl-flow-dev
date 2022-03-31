@@ -51,7 +51,7 @@ test("Adding and Removing a Configuration", () => {
   expect(config.name).toEqual(testName);
 });
 
-test("Removing all template configs and user systems", () => {
+test("Removing a system template removes all related configs and user systems", () => {
   const [template1, template2, ...templates] = useStore
     .getState()
     .getTemplates();
@@ -72,6 +72,28 @@ test("Removing all template configs and user systems", () => {
   expect(useStore.getState().getConfigs(template2).length).toBe(0);
   expect(useStore.getState().getUserSystems(template1).length).toBe(1);
   expect(useStore.getState().getUserSystems(template2).length).toBe(0);
+});
+
+test("Removing a config removes all related system templates", () => {
+  const [template1, template2, ..._templates] = useStore
+    .getState()
+    .getTemplates();
+  useStore.getState().addConfig(template1);
+  useStore.getState().addConfig(template2);
+
+  const [config1, ..._configs] = useStore.getState().getConfigs(template1);
+  const [config2, ..._configs2] = useStore.getState().getConfigs(template2);
+
+  useStore.getState().addUserSystems(template1.name, 1, 1, config1);
+  useStore.getState().addUserSystems(template2.name, 1, 1, config2);
+
+  useStore.getState().removeConfig(config1);
+
+  expect(useStore.getState().getUserSystems(template1).length).toBe(0);
+  expect(useStore.getState().getUserSystems(template2).length).toBe(1);
+  expect(
+    useStore.getState().userSystems.findIndex((s) => s.config === config1.id),
+  ).toBeLessThan(0);
 });
 
 test("Adding configs adds active system templates", () => {
