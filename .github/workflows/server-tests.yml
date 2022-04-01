@@ -5,10 +5,11 @@ name: Server Integration Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
-
+    branches: [main]
+env:
+  MODELICA_DEPENDENCIES: ../dependencies
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,19 +22,19 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: server/package-lock.json
-    - name: Build Modelica Dependencies
-      run: npm run install-modelica-deps
-    - name: Build Other Server Dependencies
-      run: npm ci
-    - name: Run integration tests
-      run: |
-        npx ts-node src/index.ts &
-        sleep 5 # wait for server to start
-        npm run integration-test
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: server/package-lock.json
+      - name: Build Modelica Dependencies
+        run: npm run install-modelica-deps
+      - name: Build Other Server Dependencies
+        run: npm ci
+      - name: Run integration tests
+        run: |
+          npx ts-node src/index.ts &
+          sleep 5 # wait for server to start
+          npm run integration-test
