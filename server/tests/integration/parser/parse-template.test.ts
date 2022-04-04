@@ -1,3 +1,4 @@
+import { notDeepEqual } from "assert";
 import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
@@ -8,33 +9,12 @@ const tempDirPath = "/tmp/test-linkage-widget";
 const templatePath =
   "json/tests/static-data/TestModelicaPackage/Template/TestTemplate.json";
 
-const MODELICA_LITERALS = ["String", "Boolean"]; // TODO: number types
+const EXTEND_NAME = "_extend";
 
 interface Model {
-  elementList: any[];
+  elementList: Element[];
   modelicaPath: string;
   name: string;
-}
-
-// element in ElementList
-interface Element {
-  elementType: "component" | "extends" | "record" | "parameter" | "replaceable";
-  path: string; // modelica path
-}
-
-interface Extends extends Element {
-  classModification: any[];
-}
-
-// interface Component extends Element {}
-
-// parameter is for literals
-interface Parameter extends Element {
-  type: string; // literal type... OR enum link!
-}
-
-interface UnknownParameter extends Element {
-  element: any;
 }
 
 const parseFile = (filePath: string) => {
@@ -44,41 +24,16 @@ const parseFile = (filePath: string) => {
   return JSON.parse(templateString);
 };
 
-const extractParameterDeclaration = (declaration: any) => {};
-
-const createLiteralParameter = (el: any) => {
-  const param = { type: el.component_clause.type_specifier };
-  const componentList = el.component_clause.component_list;
-
-  const declaration = componentList.declaration;
-};
-
-interface Declaration {
-  identifier: string;
-  modification: any;
-}
-
-interface Description {
-  description_string: string;
-  annotation: any[];
-}
-
-interface Component {
-  path: string; // modelica path
-  component_list: (Declaration | Description)[];
-}
-
-// generically have 'components'
-
-// component contents will either be completed (if a literal) or
-// need to be resolved
-
-const componentContents = (component: any) => {};
-
-// holds the modelica path (uniqe identifier)
-// any modifiers (args)
+// An entry in the 'Element List'
+// can be of type:
+// Extends clause
+// literal parameter (string, boolean, number(TODO: types?), enum)
+// record
+// replacable (another model, with choices for other models)
+// component (another model)
 interface Element {
   modelicaPath: string;
+  type: string; // modelica path or literal type
   modifications: any[];
   label: string;
 }
@@ -94,32 +49,24 @@ const constructElement = (el: any, modelicaRoot: string) => {
     const componentClause = el.component_clause;
     const declarationBlock = componentClause.component_list.find(
       (c: any) => "declaration" in c,
-    );
+    ).declaration;
     const name = declarationBlock.identifier;
     element.modifications =
       declarationBlock.modification?.class_modification || [];
-    element.modelicaPath =
-      componentClause.type_specifier in MODELICA_LITERALS
-        ? `${modelicaRoot}.${name}`
-        : componentClause.type_specifier;
+    element.modelicaPath = `${modelicaRoot}.${name}`;
+    element.type = componentClause.type_specifier;
   } else if ("extends_clause" in el) {
     const extends_clause = el.extends_clause;
-    element.modelicaPath = extends_clause.name;
+    element.type = extends_clause.name;
+    element.modelicaPath = `${modelicaRoot}.${EXTEND_NAME}`;
     element.modifications = extends_clause.class_modification || [];
   }
 
   return element;
 };
 
-// converts each element in the element list into its wrapped type
-// 'parameter', 'extends', 'record', 'component', 'selectable'
-const getModelContents = (model: Model) => {
-  model.elementList.map((el) => constructElement(el, model.modelicaPath));
-};
-
 // Extracts models/packages
 const getFileContents = (template: any) => {
-  // const models: { [key: string]: any } = {};
   const models: Model[] = [];
   template.class_definition.map((cd: any) => {
     if (cd.class_prefixes === "model") {
@@ -129,7 +76,7 @@ const getFileContents = (template: any) => {
         cd.class_specifier.long_class_specifier.composition.element_list;
       const elementList = elementListAll.map((el: any) =>
         constructElement(el, modelicaPath),
-      );
+      ) as Element[];
       models.push({ name, elementList, modelicaPath });
     } else if (cd.class_prefixes === "package") {
       // TODO: handle package files as expected
@@ -158,12 +105,17 @@ describe("Basic parser functionality", () => {
     parseFile(templatePath);
   });
 
-  it("Finds option directly in the template", () => {
+  it("Finds elements in the template", () => {
     const templateFile = <any>parseFile(templatePath);
     const templateContents = getFileContents(templateFile);
+    const expectedElements = 7;
 
     templateContents.map((m) => {
-      console.log(m.elementList);
+      expect(m.elementList.length).toBe(expectedElements);
+      m.elementList.map((e) => {
+        expect(e.modelicaPath).not.toBeFalsy();
+        expect(e.type).not.toBeFalsy();
+      });
     });
   });
 });
