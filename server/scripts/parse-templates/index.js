@@ -1,5 +1,4 @@
 const jp = require("jsonpath");
-
 const fs = require("fs");
 const parseClass = require("./support/parse-class.js");
 

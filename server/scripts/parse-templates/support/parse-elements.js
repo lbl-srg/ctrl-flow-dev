@@ -1,4 +1,6 @@
-const { getFile } = require("./files.js");
+const _ = require("lodash");
+const parseComponents = require("./parse-components.js");
+
 const {
   extendsElement,
   extendsComponent,
@@ -6,21 +8,30 @@ const {
   notFinal,
 } = require("./util.js");
 
-function parseElements(filePath) {
-  const {
-    composition: { element_list: elements },
-  } = getClassDef(getFile(filePath));
+function parseElements(elements) {
+  const ret = elements;
 
   const extendClass = elements.find(extendsElement);
 
-  const ret = extendClass
-    ? parseElements(extendClass.extends_clause.name).concat(elements)
-    : elements;
+  // extendClass
+  //   ? parseElements(extendClass.extends_clause.name).concat(elements)
+  //   : elements;
 
-  return ret.filter(notFinal).map(_parseElement);
+  return ret
+    .filter(notFinal)
+    .filter((el) => !extendsElement(el))
+    .map(_parseElement);
+  // .map(_parseElement);
 }
 
 function _parseElement(el) {
+  return {
+    description: el?.description?.description_string,
+    components: parseComponents(el?.component_clause?.component_list),
+    // constraints: el?.constraining_clause,
+    orig: el,
+  };
+
   let element = { ...el, components: [] };
   let additionalElements = [];
 

@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const pathPrefix = path.join(__dirname, "../../../build/modelica-json/json/");
+const chalk = require("chalk");
 
 module.exports = {
   pathPrefix,
@@ -9,11 +10,20 @@ module.exports = {
     const desiredFile = path.join(pathPrefix, jsonFile);
     const { name, dir } = path.parse(desiredFile);
 
-    if (fs.existsSync(desiredFile)) return require(desiredFile);
-    else {
+    if (fs.existsSync(desiredFile)) {
+      // console.log(chalk.green(jsonFile));
+      return require(desiredFile);
+    } else {
+      const defFile = dir + ".json";
+
+      if (!fs.existsSync(defFile)) {
+        // console.log(chalk.red(jsonFile));
+        return {};
+      }
+
       const data = require(dir + ".json");
 
-      console.log(dir + "json");
+      // console.log(dir + "json");
 
       const elements =
         data.class_definition[0].class_specifier.long_class_specifier
@@ -25,8 +35,6 @@ module.exports = {
             ?.identifier === name
         );
       });
-
-      // debugger;
 
       return data;
     }
