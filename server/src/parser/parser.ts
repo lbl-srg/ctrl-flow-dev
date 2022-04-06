@@ -6,6 +6,17 @@ const MODELICA_LITERALS = ["String", "Boolean"];
 
 const store: { [key: string]: any } = {};
 
+// TODO: remove this once types are shared between FE and BE
+export interface OptionN {
+  // id: number;
+  type: string;
+  name: string;
+  modelicaPath: string;
+  options?: number[];
+  group?: string;
+  value?: number | boolean;
+}
+
 export class Element {
   modelicaPath = "";
   name = "";
@@ -103,7 +114,11 @@ export class Component extends Element {
 }
 
 export class Enum extends Element {
-  enumList: any = [];
+  enumList: {
+    modelicaPath: string;
+    identifier: string;
+    description: string;
+  }[] = [];
   description: string = "";
 
   constructor(definition: any, basePath: string) {
@@ -114,6 +129,29 @@ export class Enum extends Element {
     this.enumList = specifier.value.enum_list;
     this.description = specifier.value.description.description_string;
     store[this.modelicaPath] = this;
+    specifier.value.enum_list.map(
+      (e: {
+        identifier: string;
+        description: { description_string: string };
+      }) => {
+        const modelicaPath = `${this.modelicaPath}.${e.identifier}`;
+        const identifier = e.identifier;
+        const description = e.description.description_string;
+        this.enumList.push({ modelicaPath, identifier, description });
+      },
+    );
+  }
+
+  getOptions() {
+    // outputs a parent option, then an option for each enum type
+    const optionList: any = this.enumList.map((e) => ({
+      modelicaPath: e.modelicaPath,
+      name: e.description,
+      type: "final",
+      options: null,
+    }));
+
+    return optionList;
   }
 }
 
