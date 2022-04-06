@@ -35,6 +35,18 @@ describe("Basic parser functionality", () => {
     const expectedPath = "TestPackage.Template.TestTemplate";
     expect(template.modelicaPath).toEqual(expectedPath);
   });
+
+  it("Extracts model elements", () => {
+    const file = parser.getFile(fullTemplatePath);
+    const template = file.entries[0] as parser.Model;
+    expect(template.elementList.length).toBe(7);
+    template.elementList.map((e: parser.Element) =>
+      expect(e.modelicaPath).not.toBeFalsy(),
+    );
+    template.elementList.map((e: parser.Element) =>
+      expect(e.name).not.toBeFalsy(),
+    );
+  });
 });
 
 describe("Expected Options are extracted", () => {
