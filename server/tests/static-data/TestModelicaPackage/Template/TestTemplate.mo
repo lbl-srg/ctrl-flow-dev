@@ -61,4 +61,10 @@ model TestTemplate "Test Template"
   // TODO: add values for annotation variations
   // TODO: add parameters with a value assigned and for those without
 
+  parameter TestModelicaPackage.Types.IceCream typ = TestModelicaPackage.Types.IceCream.Chocolate
+    "Test Enum"
+    annotation (
+      Evaluate=true,
+      Dialog(group="Configuration"));
+
 end TestTemplate;
