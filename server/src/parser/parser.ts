@@ -4,25 +4,24 @@ import path from "path";
 const EXTEND_NAME = "__extend";
 const MODELICA_LITERALS = ["String", "Boolean"];
 
-const store: { [key: string]: Element } = {};
+const store: { [key: string]: any } = {};
 
 export class Element {
-  // TODO: modelica path and type are very similar concepts...
-  constructor(public modelicaPath: string, public name: string) {
-    store[modelicaPath] = this;
-  }
+  modelicaPath = "";
+  name = "";
 }
 
 export class Record extends Element {
   elementList: any[];
   description: string;
   constructor(definition: any, basePath: string) {
+    super();
     const specifier = definition.class_specifier.long_class_specifier;
-    const name = specifier.identifer;
-    const modelicaPath = `${basePath}.${name}`;
-    super(modelicaPath, name);
+    this.name = specifier.identifer;
+    this.modelicaPath = `${basePath}.${this.name}`;
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list;
+    store[this.modelicaPath] = self;
   }
 }
 
@@ -31,10 +30,10 @@ export class Package extends Element {
   description: string;
 
   constructor(definition: any, basePath: string) {
+    super();
     const specifier = definition.class_specifier.long_class_specifier;
-    const name = specifier.identifer;
-    const modelicaPath = `${basePath}.${name}`;
-    super(modelicaPath, name);
+    this.name = specifier.identifer;
+    this.modelicaPath = `${basePath}.${this.name}`;
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list;
   }
@@ -45,21 +44,31 @@ export class Model extends Element {
   description: string;
 
   constructor(definition: any, basePath: string) {
+    super();
     const specifier = definition.class_specifier.long_class_specifier;
-    const name = specifier.identifier;
-    const modelicaPath = `${basePath}.${name}`;
-    super(modelicaPath, name);
+    this.name = specifier.identifier;
+    this.modelicaPath = `${basePath}.${this.name}`;
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list.map((e: any) =>
       _constructElement(e, basePath),
     );
+    store[this.modelicaPath] = self;
   }
 
   getOptions() {
-    // for each element in element list
-    // lookup element type in lookup store
-    // if element type is not found lookup the file and construct the necessary classes and put in lookup store
-    // if element 'type' is record, model, calls 'getOptions' on that element
+    const optionList: any[] = [];
+
+    this.elementList.map((el: any) => {
+      const type = el.type; // TODO: may not have a type!
+      if (type in MODELICA_LITERALS) {
+        // or maybe we manually make modelica literal types and add to store?
+      } else {
+        const instance = store[type];
+        optionList.push(...el.getOptions());
+      }
+    });
+
+    return optionList;
   }
 }
 
@@ -72,13 +81,13 @@ export class Component extends Element {
   annotation: any; // TODO
 
   constructor(definition: any, basePath: string) {
+    super();
     const componentClause = definition.component_clause;
     const declarationBlock = componentClause.component_list.find(
       (c: any) => "declaration" in c,
     ).declaration;
-    const name = declarationBlock.identifier;
-    const modelicaPath = `${basePath}.${name}`;
-    super(modelicaPath, name);
+    this.name = declarationBlock.identifier;
+    this.modelicaPath = `${basePath}.${this.name}`;
 
     this.type = componentClause.type_specifier;
     const descriptionBlock = componentClause.component_list.find(
@@ -89,6 +98,7 @@ export class Component extends Element {
       this.description = descriptionBlock?.description_string || "";
       this.annotation = descriptionBlock?.annotation;
     }
+    store[this.modelicaPath] = self;
   }
 }
 
@@ -97,13 +107,13 @@ export class Enum extends Element {
   description: string = "";
 
   constructor(definition: any, basePath: string) {
+    super();
     const specifier = definition.class_specifier.short_class_specifier;
-    const name = specifier.identifier;
-    const modelicaPath = `${basePath}.${name}`;
-    super(modelicaPath, name);
-
+    this.name = specifier.identifier;
+    this.modelicaPath = `${basePath}.${this.name}`;
     this.enumList = specifier.value.enum_list;
     this.description = specifier.value.description.description_string;
+    store[this.modelicaPath] = self;
   }
 }
 
@@ -111,10 +121,11 @@ export class ExtendClause extends Element {
   modifications: any[] = [];
   type: string; // modelica path
   constructor(definition: any, basePath: string) {
-    const name = "__extend"; // arbitrary name. Important that this will not collide with other param names
-    const modelicaPath = `${basePath}.${definition.extends_clause.name}`;
-    super(modelicaPath, name);
+    super();
+    this.name = "__extend"; // arbitrary name. Important that this will not collide with other param names
+    this.modelicaPath = `${basePath}.${definition.extends_clause.name}`;
     this.type = definition.extends_clause.name;
+    store[this.modelicaPath] = self;
   }
 }
 
