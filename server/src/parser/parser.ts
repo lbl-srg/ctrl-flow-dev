@@ -2,6 +2,9 @@ import fs from "fs";
 import path from "path";
 
 const EXTEND_NAME = "__extend";
+// TODO: there are many literals defined in the modelica standard library
+// e.g. 'Modelica.Units.SI.PressureDifference'. We'll have to account for these types
+// as well
 const MODELICA_LITERALS = ["String", "Boolean"];
 
 const store: { [key: string]: any } = {};
