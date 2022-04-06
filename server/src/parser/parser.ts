@@ -21,7 +21,7 @@ export class Record extends Element {
     this.modelicaPath = `${basePath}.${this.name}`;
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list;
-    store[this.modelicaPath] = self;
+    store[this.modelicaPath] = this;
   }
 }
 
@@ -52,7 +52,7 @@ export class Model extends Element {
     this.elementList = specifier.composition.element_list.map((e: any) =>
       _constructElement(e, basePath),
     );
-    store[this.modelicaPath] = self;
+    store[this.modelicaPath] = this;
   }
 
   getOptions() {
@@ -98,7 +98,7 @@ export class Component extends Element {
       this.description = descriptionBlock?.description_string || "";
       this.annotation = descriptionBlock?.annotation;
     }
-    store[this.modelicaPath] = self;
+    store[this.modelicaPath] = this;
   }
 }
 
@@ -113,7 +113,7 @@ export class Enum extends Element {
     this.modelicaPath = `${basePath}.${this.name}`;
     this.enumList = specifier.value.enum_list;
     this.description = specifier.value.description.description_string;
-    store[this.modelicaPath] = self;
+    store[this.modelicaPath] = this;
   }
 }
 
@@ -125,7 +125,7 @@ export class ExtendClause extends Element {
     this.name = "__extend"; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${definition.extends_clause.name}`;
     this.type = definition.extends_clause.name;
-    store[this.modelicaPath] = self;
+    store[this.modelicaPath] = this;
   }
 }
 
