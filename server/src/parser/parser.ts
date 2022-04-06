@@ -5,7 +5,7 @@ const EXTEND_NAME = "__extend";
 // TODO: there are many literals defined in the modelica standard library
 // e.g. 'Modelica.Units.SI.PressureDifference'. We'll have to account for these types
 // as well
-const MODELICA_LITERALS = ["String", "Boolean"];
+const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 
 const store: { [key: string]: any } = {};
 
@@ -17,12 +17,17 @@ export interface OptionN {
   modelicaPath: string;
   options?: number[];
   group?: string;
-  value?: number | boolean;
+  value?: any;
 }
 
 export class Element {
   modelicaPath = "";
   name = "";
+}
+
+export class Literal extends Element {
+  value: any;
+  constructor(definition, public type: string) {}
 }
 
 export class Record extends Element {
@@ -112,7 +117,22 @@ export class Component extends Element {
       this.description = descriptionBlock?.description_string || "";
       this.annotation = descriptionBlock?.annotation;
     }
+
     store[this.modelicaPath] = this;
+  }
+
+  getOptions() {
+    const option: OptionN = {
+      modelicaPath: this.modelicaPath,
+      type: this.type,
+      value: null,
+      name: this.description,
+    };
+    const type = store[this.type] || null;
+
+    if (type) {
+      option.options = type.getOptions();
+    }
   }
 }
 
