@@ -103,7 +103,7 @@ function Sidebarlayout({
               )}
             </header>
 
-            {contentLeft}
+            {modalOpen ? null : contentLeft}
 
             <div
               className="dragger"
