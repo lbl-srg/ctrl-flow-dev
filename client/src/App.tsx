@@ -21,7 +21,6 @@ const App = () => {
       contentRight={
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/details" element={<Details />} />
           <Route path="/systems" element={<Systems />} />
           <Route path="/configs" element={<Configs />} />
           <Route path="/schedules" element={<Schedules />} />

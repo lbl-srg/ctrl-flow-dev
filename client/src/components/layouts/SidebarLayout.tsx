@@ -2,8 +2,8 @@ import { ReactNode, MouseEvent, useState, UIEvent } from "react";
 import { useStore } from "../../store/store";
 import StepNavigation from "../StepNavigation";
 import { isInViewPort, getAll, getNumericId } from "../../utils/dom-utils";
-
 import "../../styles/components/sidebar-layout.scss";
+import EditDetailsModal from "../modal/EditDetailsModal";
 
 export interface SidebarLayoutProps {
   contentLeft: ReactNode;
@@ -34,6 +34,7 @@ function Sidebarlayout({
 
   const projectName = projectDetails?.name;
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   function spy() {
     if (!watchScroll) return;
@@ -73,11 +74,29 @@ function Sidebarlayout({
             className="left-col"
             style={{ width: isFullScreen ? "100vw" : leftColWidth }}
           >
+            <EditDetailsModal
+              isOpen={modalOpen}
+              close={() => setModalOpen(false)}
+              initialState={projectDetails}
+              modalTitle=""
+              submitText="Save"
+              cancelText="Discard"
+              afterSubmit={() => setModalOpen(false)}
+            />
+
             <header>
               <div className="truncate">
                 All Projects &gt; &nbsp;
                 <strong>{projectName}</strong>
               </div>
+              {modalOpen ? null : (
+                <button
+                  className="small inline"
+                  onClick={() => setModalOpen(true)}
+                >
+                  Edit
+                </button>
+              )}
             </header>
 
             {contentLeft}

@@ -6,7 +6,6 @@ import "../styles/components/step-navigation.scss";
 
 const steps = [
   { label: "Landing", path: "/" },
-  { label: "Details", path: "/details" },
   { label: "Systems", path: "/systems" },
   { label: "Configs", path: "/configs" },
   { label: "Schedules", path: "/schedules" },
