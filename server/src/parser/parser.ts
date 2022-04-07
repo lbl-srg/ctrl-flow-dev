@@ -5,7 +5,7 @@ const EXTEND_NAME = "__extend";
 // TODO: there are many literals defined in the modelica standard library
 // e.g. 'Modelica.Units.SI.PressureDifference'. We'll have to account for these types
 // as well
-const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
+export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 
 const store: { [key: string]: any } = {};
 
@@ -20,14 +20,12 @@ export interface OptionN {
   value?: any;
 }
 
-export class Element {
+export abstract class Element {
   modelicaPath = "";
   name = "";
-}
+  type = "";
 
-export class Literal extends Element {
-  value: any;
-  constructor(definition, public type: string) {}
+  abstract getOptions(): OptionN[];
 }
 
 export class Record extends Element {
@@ -42,6 +40,14 @@ export class Record extends Element {
     this.elementList = specifier.composition.element_list;
     store[this.modelicaPath] = this;
   }
+
+  getOptions() {
+    return this.elementList.reduce(
+      (previousValue: OptionN[], currentValue: Element) =>
+        previousValue.push(...currentValue.getOptions()),
+      [],
+    );
+  }
 }
 
 export class Package extends Element {
@@ -55,6 +61,10 @@ export class Package extends Element {
     this.modelicaPath = `${basePath}.${this.name}`;
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list;
+  }
+
+  getOptions() {
+    return [];
   }
 }
 
@@ -133,6 +143,8 @@ export class Component extends Element {
     if (type) {
       option.options = type.getOptions();
     }
+
+    return [option];
   }
 }
 
@@ -170,7 +182,7 @@ export class Enum extends Element {
     const optionList: any = this.enumList.map((e) => ({
       modelicaPath: e.modelicaPath,
       name: e.description,
-      type: "final",
+      type: "dropdown",
       options: null,
     }));
 
@@ -178,6 +190,7 @@ export class Enum extends Element {
   }
 }
 
+// TODO: this almost entirely overlaps with 'Component'
 export class ExtendClause extends Element {
   modifications: any[] = [];
   type: string; // modelica path
@@ -187,6 +200,10 @@ export class ExtendClause extends Element {
     this.modelicaPath = `${basePath}.${definition.extends_clause.name}`;
     this.type = definition.extends_clause.name;
     store[this.modelicaPath] = this;
+  }
+
+  getOptions() {
+    return [];
   }
 }
 
