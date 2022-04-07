@@ -9,6 +9,18 @@ export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 
 const store: { [key: string]: any } = {};
 
+type ModificationBlock = {
+  equal: boolean;
+  expression?: {
+    simple_expression: string; // JSON value
+  };
+};
+
+type DeclarationBlock = {
+  identifier: string;
+  modification?: ModificationBlock;
+};
+
 // TODO: remove this once types are shared between FE and BE
 export interface OptionN {
   // id: number;
@@ -29,7 +41,7 @@ export abstract class Element {
 }
 
 export class Record extends Element {
-  elementList: any[];
+  elementList: Element[];
   description: string;
   constructor(definition: any, basePath: string) {
     super();
@@ -42,16 +54,12 @@ export class Record extends Element {
   }
 
   getOptions() {
-    return this.elementList.reduce(
-      (previousValue: OptionN[], currentValue: Element) =>
-        previousValue.push(...currentValue.getOptions()),
-      [],
-    );
+    return this.elementList.flatMap((el) => el.getOptions());
   }
 }
 
 export class Package extends Element {
-  elementList: any[];
+  elementList: Element[];
   description: string;
 
   constructor(definition: any, basePath: string) {
@@ -64,12 +72,12 @@ export class Package extends Element {
   }
 
   getOptions() {
-    return [];
+    return this.elementList.flatMap((el) => el.getOptions());
   }
 }
 
 export class Model extends Element {
-  elementList: any;
+  elementList: Element[];
   description: string;
 
   constructor(definition: any, basePath: string) {
@@ -85,19 +93,7 @@ export class Model extends Element {
   }
 
   getOptions() {
-    const optionList: any[] = [];
-
-    this.elementList.map((el: any) => {
-      const type = el.type; // TODO: may not have a type!
-      if (type in MODELICA_LITERALS) {
-        // or maybe we manually make modelica literal types and add to store?
-      } else {
-        const instance = store[type];
-        optionList.push(...el.getOptions());
-      }
-    });
-
-    return optionList;
+    return this.elementList.flatMap((el) => el.getOptions());
   }
 }
 
@@ -114,9 +110,14 @@ export class Component extends Element {
     const componentClause = definition.component_clause;
     const declarationBlock = componentClause.component_list.find(
       (c: any) => "declaration" in c,
-    ).declaration;
+    ).declaration as DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
+
+    // check if there's a value
+    this.value = declarationBlock.modification?.expression
+      ? declarationBlock.modification.expression.simple_expression
+      : null;
 
     this.type = componentClause.type_specifier;
     const descriptionBlock = componentClause.component_list.find(
@@ -135,13 +136,13 @@ export class Component extends Element {
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
-      value: null,
+      value: this.value,
       name: this.description,
     };
-    const type = store[this.type] || null;
+    const typeInstance = store[this.type] || null;
 
-    if (type) {
-      option.options = type.getOptions();
+    if (typeInstance) {
+      option.options = typeInstance.getOptions();
     }
 
     return [option];
@@ -251,11 +252,14 @@ function _constructElement(
 //
 export class File {
   public modelicaPath = ""; // only important part of a file
-  public entries: any[] = [];
+  public entries: Element[] = [];
   constructor(obj: any) {
     this.modelicaPath = obj.within;
     obj.class_definition.map((cd: any) => {
-      this.entries.push(_constructElement(cd, this.modelicaPath));
+      const element = _constructElement(cd, this.modelicaPath);
+      if (element) {
+        this.entries.push(element);
+      }
     });
   }
 }

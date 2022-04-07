@@ -60,17 +60,17 @@ describe("Expected Options are extracted", () => {
 
   it("Generates Options for literal types", () => {
     const file = parser.getFile(fullTemplatePath);
-    const [template, ..._rest] = file.entries;
+    const template = file.entries[0] as parser.Model;
     // get elements that match literal types: Boolean, String, Real, Integer, Enum
-    template.elementList.map((el: parser.Element) => {
-      if (el.type in parser.MODELICA_LITERALS) {
-        const options = el.getOptions();
-        options.map((o) => {
-          expect(o.name).not.toBeFalsy();
-          expect(o.modelicaPath).not.toBeFalsy();
-        });
+    const templateOptions = template.getOptions();
+    templateOptions.map((o) => {
+      if (o.type in parser.MODELICA_LITERALS) {
+        expect(o.name).not.toBeFalsy();
+        expect(o.modelicaPath).not.toBeFalsy();
       }
     });
+
+    // check that when a parameter has an initial value it is set
   });
   it("Extracts the expected number of template options", () => {});
   it("Ignore 'final' parameters", () => {});
