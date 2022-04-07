@@ -87,7 +87,7 @@ export class Model extends Element {
     this.modelicaPath = `${basePath}.${this.name}`;
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list.map((e: any) =>
-      _constructElement(e, basePath),
+      _constructElement(e, this.modelicaPath),
     );
     store[this.modelicaPath] = this;
   }
@@ -114,11 +114,6 @@ export class Component extends Element {
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
 
-    // check if there's a value
-    this.value = declarationBlock.modification?.expression
-      ? declarationBlock.modification.expression.simple_expression
-      : null;
-
     this.type = componentClause.type_specifier;
     const descriptionBlock = componentClause.component_list.find(
       (c: any) => "description" in c,
@@ -127,6 +122,15 @@ export class Component extends Element {
     if (descriptionBlock) {
       this.description = descriptionBlock?.description_string || "";
       this.annotation = descriptionBlock?.annotation;
+    }
+
+    this.value = declarationBlock.modification?.expression
+      ? declarationBlock.modification.expression.simple_expression
+      : null;
+
+    // if type is a literal type we can convert it from a string
+    if(MODELICA_LITERALS.includes(this.type)) {
+      this.value = JSON.parse(this.value);
     }
 
     store[this.modelicaPath] = this;
