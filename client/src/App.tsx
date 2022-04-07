@@ -1,6 +1,5 @@
 import { Route, Routes, useLocation } from "react-router-dom";
 import Configs from "./components/steps/Configs/index";
-import Details from "./components/steps/Details";
 import Landing from "./components/steps/Landing";
 import Results from "./components/steps/Results/index";
 import Schedules from "./components/steps/Schedules";

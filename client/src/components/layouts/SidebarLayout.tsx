@@ -1,10 +1,10 @@
-import { ReactNode, MouseEvent, useState, UIEvent } from "react";
+import { ReactNode, MouseEvent, useState, UIEvent, useEffect } from "react";
 import { useStore } from "../../store/store";
 import StepNavigation from "../StepNavigation";
 import { isInViewPort, getAll, getNumericId } from "../../utils/dom-utils";
 import "../../styles/components/sidebar-layout.scss";
 import EditDetailsModal from "../modal/EditDetailsModal";
-
+import { useLocation } from "react-router-dom";
 export interface SidebarLayoutProps {
   contentLeft: ReactNode;
   contentRight: ReactNode;
@@ -35,12 +35,16 @@ function Sidebarlayout({
   const projectName = projectDetails?.name;
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const $rightCol = document.querySelector(".right-col");
+    if ($rightCol) $rightCol.scrollTo(0, 0);
+  }, [location]);
 
   function spy() {
     if (!watchScroll) return;
-
     const [$firstTpl] = getAll("[data-spy='template']").filter(isInViewPort);
-
     if ($firstTpl) {
       setActiveTemplateId(getNumericId($firstTpl));
       const $system = $firstTpl.closest("[data-spy='system']");
