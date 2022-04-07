@@ -23,13 +23,13 @@
     "prettier": "^2.5.1",
     "supertest": "^6.2.2",
     "ts-jest": "^27.1.3",
-    "ts-node": "^10.4.0",
-    "typescript": "^4.5.4"
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
   },
   "scripts": {
     "build": "tsc",
     "preparseTemplates": "sh ./bin/convert-modelica-to-json.sh",
-    "parseTemplates": "node scripts/parse-templates.js",
+    "parseTemplates": "npmx ts-node scripts/parse-templates.ts",
     "start": "nodemon src/index.ts",
     "install-modelica-deps": "./bin/install-modelica-dependencies.sh",
     "docker:start": "docker-compose -f docker/docker-compose.yaml --env-file ./.env up -d",
