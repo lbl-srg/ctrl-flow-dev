@@ -41,13 +41,15 @@ describe("Basic parser functionality", () => {
   });
 
   it("Builds up modelica paths for subcomponents", () => {
-    const paramName = 'dat';
-  
+    const paramName = "dat";
+
     const file = parser.getFile(fullTemplatePath);
     const template = file.entries[0] as parser.Model;
-    const expectedPath = `${template.modelicaPath}.${paramName}`
+    const expectedPath = `${template.modelicaPath}.${paramName}`;
 
-    expect(template.elementList.find(e => e.modelicaPath === expectedPath)).not.toBeFalsy();
+    expect(
+      template.elementList.find((e) => e.modelicaPath === expectedPath),
+    ).not.toBeFalsy();
   });
 
   it("Extracts model elements", () => {
@@ -72,11 +74,9 @@ describe("Expected Options are extracted", () => {
     const file = parser.getFile(fullTemplatePath);
     const template = file.entries[0] as parser.Model;
 
-
     // get elements that match literal types: Boolean, String, Real, Integer, Enum
     const templateOptions = template.getOptions();
     templateOptions.map((o) => {
-      console.log(o);
       if (o.type in parser.MODELICA_LITERALS) {
         expect(o.name).not.toBeFalsy();
         expect(o.modelicaPath).not.toBeFalsy();
@@ -88,20 +88,30 @@ describe("Expected Options are extracted", () => {
     const expectedValue = "I'm all set";
 
     // check that when a parameter has an initial value it is set, when it is not it is null
-    const unInitializedOption = templateOptions.find(o => o.modelicaPath === uninitializedParamPath);
+    const unInitializedOption = templateOptions.find(
+      (o) => o.modelicaPath === uninitializedParamPath,
+    );
     expect(unInitializedOption?.value).toBeNull();
-    const initiazedOption = templateOptions.find(o => o.modelicaPath === initializedParamPath);
+    const initiazedOption = templateOptions.find(
+      (o) => o.modelicaPath === initializedParamPath,
+    );
     expect(initiazedOption?.value).toEqual(expectedValue);
 
     // check that other literals are extracted to a good value
     const boolPath = `${template.modelicaPath}.nullable_bool`;
-    expect(templateOptions.find(o => o.modelicaPath === boolPath)?.value).toBe(false);
-  
+    expect(
+      templateOptions.find((o) => o.modelicaPath === boolPath)?.value,
+    ).toBe(false);
+
     const realNumPath = `${template.modelicaPath}.test_real`;
-    expect(templateOptions.find(o => o.modelicaPath === realNumPath)?.value).toBe(1);
+    expect(
+      templateOptions.find((o) => o.modelicaPath === realNumPath)?.value,
+    ).toBe(1);
 
     const intPath = `${template.modelicaPath}.test_int`;
-    expect(templateOptions.find(o => o.modelicaPath === intPath)?.value).toBe(2);
+    expect(templateOptions.find((o) => o.modelicaPath === intPath)?.value).toBe(
+      2,
+    );
   });
   it("Extracts the expected number of template options", () => {});
   it("Ignore 'final' parameters", () => {});
