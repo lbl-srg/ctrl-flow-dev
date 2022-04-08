@@ -1,7 +1,17 @@
 .schedules-page {
   .table-container {
     display: block;
-    overflow-x: auto;
+    overflow: scroll;
+
+    &::-webkit-scrollbar {
+      -webkit-appearance: none;
+      width: 7px;
+      height: 10px;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 1rem;
+      background-color: var(--color-gray-medium);
+    }
 
     table {
       th {
