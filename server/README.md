@@ -53,3 +53,12 @@
    }
    ```
 1. With the `Run and Debug` column open, at the top click play to run `Docker: Attach`. At this point you should be able to set and hit breakpoints in the server source code.
+
+## Debugging Jest Tests in the Container with VS Code
+
+1. Install the 'Remote Containers' extension
+1. A new icon will show in the left hand column with a hover tip of 'Remote Explorer'. Select it.
+1. Existing containers on your machine should be shown. If it isn't already started, make sure the linkage container is running: `npm run docker:start`. Hover over the 'linkage-widget' container and click the 'Attach to Container' button (a folder with a '+').
+1. A new VS code window will open that is attached and reading from the `linkage-widget` container. It'll be blank though as you'll need to specify which directory you'd like to open in the container. Open the `/app` directory (where the `server` folder is mounted).
+1. The VS Code instance running in the container will have its own unique set of extensions. To run tests, install the `Jest` extension. This should create a new entry in the left hand column of VS Code that looks like a Erlenmeyer Flask (beaker) (If it doesn't show you may need to close and re-open VS Code).
+1. The extension will take a moment to discover tests, but after that is done you should be up and running to set breakpoints and debug tests.
