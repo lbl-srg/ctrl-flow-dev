@@ -54,6 +54,7 @@
       flex-grow: 1;
       background-color: var(--color-gray-light);
       position: relative;
+      box-sizing: border-box;
 
       dialog[open] {
         position: absolute;
@@ -122,6 +123,29 @@
       flex-grow: 1;
       overflow: auto;
       padding: 0 var(--spacing-lg) var(--spacing-md) var(--spacing-lg);
+
+      position: relative;
+
+      .left-pane-toggle {
+        position: absolute;
+        left: 0;
+        top: 88px;
+        background-color: var(--color-gray-light);
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: none;
+        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        border-top-right-radius: 0.3rem;
+        border-bottom-right-radius: 0.3rem;
+
+        i {
+          margin: 0;
+        }
+      }
 
       > header {
         border-bottom: 1px solid var(--color-gray);

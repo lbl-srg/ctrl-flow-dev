@@ -11,7 +11,7 @@ export interface SidebarLayoutProps {
   isFullScreen?: boolean;
 }
 
-const MIN_WIDTH = 400;
+const MIN_WIDTH = 0;
 
 function Sidebarlayout({
   contentLeft,
@@ -35,6 +35,7 @@ function Sidebarlayout({
   const projectName = projectDetails?.name;
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [leftPaneOpen, setLeftPaneOpen] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
@@ -62,6 +63,10 @@ function Sidebarlayout({
     }
   }
 
+  function toggle(): void {
+    setLeftPaneOpen(!leftPaneOpen);
+  }
+
   const classes = ["sidebar-layout"];
   if (isDragging) classes.push("dragging");
   if (isFullScreen) classes.push("fullscreen");
@@ -73,11 +78,8 @@ function Sidebarlayout({
       onMouseMove={recordDrag}
     >
       <div className="col-container">
-        {!isFullScreen && (
-          <section
-            className="left-col"
-            style={{ width: isFullScreen ? "100vw" : leftColWidth }}
-          >
+        {!isFullScreen && leftPaneOpen && (
+          <section className="left-col">
             <EditDetailsModal
               isOpen={modalOpen}
               close={() => setModalOpen(false)}
@@ -116,9 +118,21 @@ function Sidebarlayout({
           className="right-col"
           onScroll={spy}
           style={{
-            width: isFullScreen ? "100vw" : `calc(100vw - ${leftColWidth}px)`,
+            width:
+              isFullScreen || !leftPaneOpen
+                ? "100vw"
+                : `calc(100vw - ${leftColWidth}px)`,
           }}
         >
+          <div
+            className="left-pane-toggle"
+            title="toggle left nav"
+            onClick={toggle}
+          >
+            <i
+              className={leftPaneOpen ? "icon-left-open" : "icon-right-open"}
+            ></i>
+          </div>
           {contentRight}
         </section>
       </div>
