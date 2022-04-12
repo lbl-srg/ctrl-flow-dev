@@ -21,6 +21,11 @@ type DeclarationBlock = {
   modification?: ModificationBlock;
 };
 
+type DescriptionBlock = {
+  description_string: string;
+  annotation: any;
+};
+
 // TODO: remove this once types are shared between FE and BE
 export interface OptionN {
   // id: number;
@@ -103,7 +108,7 @@ export class Component extends Element {
   type = ""; // modelica path
   value: any; // TODO
   description = "";
-  annotation: any; // TODO
+  annotation: any[] = [];
 
   constructor(definition: any, basePath: string) {
     super();
@@ -129,7 +134,7 @@ export class Component extends Element {
       : null;
 
     // if type is a literal type we can convert it from a string
-    if(MODELICA_LITERALS.includes(this.type)) {
+    if (MODELICA_LITERALS.includes(this.type)) {
       this.value = JSON.parse(this.value);
     }
 
@@ -150,6 +155,40 @@ export class Component extends Element {
     }
 
     return [option];
+  }
+}
+
+export class Replaceable extends Component {
+  choices: { type: string; description: string }[] = [];
+  constructor(definition: any, basePath: string) {
+    super(definition, basePath);
+
+    // the default value is original type provided
+    this.value = this.type;
+
+    // extract choices from the annotation
+    const choicesBlock = this.annotation.find(
+      (entry: any) =>
+        entry?.element_modification_or_replacable?.element_modification
+          ?.name === "choices",
+    )?.element_modification_or_replacable?.element_modification;
+
+    if (choicesBlock) {
+      // iterate through each modification and get the choice
+      const choiceList = choicesBlock.modification.class_modification;
+      choiceList.map((c: any) => {
+        const [choiceMod, ..._rest] =
+          c.element_modification_or_replacable.element_modification
+            .class_modification;
+        const componentClause =
+          choiceMod.elementredeclaration.component_clause1;
+        const type = componentClause.type_specifier;
+        const description =
+          componentClause.component_declaration1.description.description_string;
+
+        this.choices.push({ type, description });
+      });
+    }
   }
 }
 
@@ -208,7 +247,7 @@ export class ExtendClause extends Element {
   }
 
   getOptions() {
-    return [];
+    return []; // TODO: return options from store
   }
 }
 
