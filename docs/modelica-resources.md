@@ -104,33 +104,40 @@ model VAVMultiZone "Multiple-zone VAV"
   extends Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler(
 ```
 
-Below an example of what this recursive search could look like:
+### Configuraiton Types
 
-```typescript
-const filesToTraverse: String[] = [currentFile] // a list of modelica paths
+The configuration will need to render three types of input fields:
 
-function traverseFile(file):
-  const elementList = getFileElementList(file); // given a modelica path, get json and extract element list
-  elementList.map(element => {
-    if (isExtendClause(element)) {
-      const extendedModel = getExtendedModel(element); // like "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler"
-      filesToTraverse.push(extendedModel)
-    } else if (isRecord(element)) {
-      const record = getRecord(element)
-      filesToTraverse.push(record)
-    } else if (isChoices(element)) {
-      const choices = getChoices(element); // an array with each modelica path
-      filesToTraverse.push(...choices);
-      // construct linkage schema object from choices
-      constructChoice(element);
-    } else {
-      // construct linkage schema object from parameter
-      constructParameter(element);
-    }
-  });
+- Replacables ('Choices')
+- Booleans
+- Enums
 
-while (filesToTraverse.len > 0)
-  traverseFile(filesToTraverse.pop(0))
+### Where to get Schedule Table Data
+
+Templates will have a parameter pointing to a `Record`. The general pattern being followed is to name this parameter `dat`. This record will contain all related control and mechanical points for the schedule(TODO: detail control vs. mechanical points).
+
+Within the `dat` `Record` parameters will be be structured in the following way:
+
+- `Record dat`
+  - `param1`
+  - `Record subgroup1`
+    - `param2`
+    - `param3`
+  - `Record Subgroup2`
+    - `param4`
+    - `param5`
+
+The `dat` `Record` will contain sub `Record`s that group parameters together, and these sub-groupings will be what we use to organize table headings in the schedules table.
+
+So the above listing of parameters and sub `Record`s would become:
+
+```
+                 |    subgroup1    |    subgroup2    |
+        |--------|-----------------|--------|--------|
+        | param1 | param2 | param3 | param4 | param5 |
+|-------|--------|--------|--------|--------|--------|
+| row1  |  val1  |  val2  |  val3  | val4   | val4   |
+| row2  |  ...
 ```
 
 ### Expressions (TODO)

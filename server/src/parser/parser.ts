@@ -5,9 +5,21 @@ const EXTEND_NAME = "__extend";
 // TODO: there are many literals defined in the modelica standard library
 // e.g. 'Modelica.Units.SI.PressureDifference'. We'll have to account for these types
 // as well
-const MODELICA_LITERALS = ["String", "Boolean"];
+export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 
 const store: { [key: string]: any } = {};
+
+type ModificationBlock = {
+  equal: boolean;
+  expression?: {
+    simple_expression: string; // JSON value
+  };
+};
+
+type DeclarationBlock = {
+  identifier: string;
+  modification?: ModificationBlock;
+};
 
 // TODO: remove this once types are shared between FE and BE
 export interface OptionN {
@@ -17,16 +29,19 @@ export interface OptionN {
   modelicaPath: string;
   options?: number[];
   group?: string;
-  value?: number | boolean;
+  value?: any;
 }
 
-export class Element {
+export abstract class Element {
   modelicaPath = "";
   name = "";
+  type = "";
+
+  abstract getOptions(): OptionN[];
 }
 
 export class Record extends Element {
-  elementList: any[];
+  elementList: Element[];
   description: string;
   constructor(definition: any, basePath: string) {
     super();
@@ -37,10 +52,14 @@ export class Record extends Element {
     this.elementList = specifier.composition.element_list;
     store[this.modelicaPath] = this;
   }
+
+  getOptions() {
+    return this.elementList.flatMap((el) => el.getOptions());
+  }
 }
 
 export class Package extends Element {
-  elementList: any[];
+  elementList: Element[];
   description: string;
 
   constructor(definition: any, basePath: string) {
@@ -51,10 +70,14 @@ export class Package extends Element {
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list;
   }
+
+  getOptions() {
+    return this.elementList.flatMap((el) => el.getOptions());
+  }
 }
 
 export class Model extends Element {
-  elementList: any;
+  elementList: Element[];
   description: string;
 
   constructor(definition: any, basePath: string) {
@@ -64,25 +87,13 @@ export class Model extends Element {
     this.modelicaPath = `${basePath}.${this.name}`;
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list.map((e: any) =>
-      _constructElement(e, basePath),
+      _constructElement(e, this.modelicaPath),
     );
     store[this.modelicaPath] = this;
   }
 
   getOptions() {
-    const optionList: any[] = [];
-
-    this.elementList.map((el: any) => {
-      const type = el.type; // TODO: may not have a type!
-      if (type in MODELICA_LITERALS) {
-        // or maybe we manually make modelica literal types and add to store?
-      } else {
-        const instance = store[type];
-        optionList.push(...el.getOptions());
-      }
-    });
-
-    return optionList;
+    return this.elementList.flatMap((el) => el.getOptions());
   }
 }
 
@@ -99,7 +110,7 @@ export class Component extends Element {
     const componentClause = definition.component_clause;
     const declarationBlock = componentClause.component_list.find(
       (c: any) => "declaration" in c,
-    ).declaration;
+    ).declaration as DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
 
@@ -112,7 +123,33 @@ export class Component extends Element {
       this.description = descriptionBlock?.description_string || "";
       this.annotation = descriptionBlock?.annotation;
     }
+
+    this.value = declarationBlock.modification?.expression
+      ? declarationBlock.modification.expression.simple_expression
+      : null;
+
+    // if type is a literal type we can convert it from a string
+    if(MODELICA_LITERALS.includes(this.type)) {
+      this.value = JSON.parse(this.value);
+    }
+
     store[this.modelicaPath] = this;
+  }
+
+  getOptions() {
+    const option: OptionN = {
+      modelicaPath: this.modelicaPath,
+      type: this.type,
+      value: this.value,
+      name: this.description,
+    };
+    const typeInstance = store[this.type] || null;
+
+    if (typeInstance) {
+      option.options = typeInstance.getOptions();
+    }
+
+    return [option];
   }
 }
 
@@ -150,7 +187,7 @@ export class Enum extends Element {
     const optionList: any = this.enumList.map((e) => ({
       modelicaPath: e.modelicaPath,
       name: e.description,
-      type: "final",
+      type: "dropdown",
       options: null,
     }));
 
@@ -158,6 +195,7 @@ export class Enum extends Element {
   }
 }
 
+// TODO: this almost entirely overlaps with 'Component'
 export class ExtendClause extends Element {
   modifications: any[] = [];
   type: string; // modelica path
@@ -167,6 +205,10 @@ export class ExtendClause extends Element {
     this.modelicaPath = `${basePath}.${definition.extends_clause.name}`;
     this.type = definition.extends_clause.name;
     store[this.modelicaPath] = this;
+  }
+
+  getOptions() {
+    return [];
   }
 }
 
@@ -214,11 +256,14 @@ function _constructElement(
 //
 export class File {
   public modelicaPath = ""; // only important part of a file
-  public entries: any[] = [];
+  public entries: Element[] = [];
   constructor(obj: any) {
     this.modelicaPath = obj.within;
     obj.class_definition.map((cd: any) => {
-      this.entries.push(_constructElement(cd, this.modelicaPath));
+      const element = _constructElement(cd, this.modelicaPath);
+      if (element) {
+        this.entries.push(element);
+      }
     });
   }
 }

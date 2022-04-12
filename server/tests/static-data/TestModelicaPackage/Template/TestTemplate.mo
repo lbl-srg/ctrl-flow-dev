@@ -59,7 +59,18 @@ model TestTemplate "Test Template"
     annotation (Evaluate=true, Dialog(group="Configuration", enable=false));
 
   // TODO: add values for annotation variations
-  // TODO: add parameters with a value assigned and for those without
+
+  parameter String test_string_uninitialized
+    "Test String that is uninitialized";
+
+  parameter String test_string_initialized="I'm all set"
+    "Test string that is initialized";
+
+  parameter Real test_real=1.0
+    "Test real number";
+
+  parameter Integer test_int=2
+    "Test Integer";
 
   parameter TestModelicaPackage.Types.IceCream typ = TestModelicaPackage.Types.IceCream.Chocolate
     "Test Enum"
