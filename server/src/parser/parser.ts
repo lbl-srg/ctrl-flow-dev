@@ -10,14 +10,14 @@ export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 // const store: { [key: string]: any } = {};
 
 class Store {
-  _store: Map<{ path: string; type: string }, any> = new Map();
+  _store: Map<string, any> = new Map();
 
-  set(path: string, type: string, element: any) {
-    this._store.set({ path, type }, element);
+  set(path: string, element: any) {
+    this._store.set(path, element);
   }
 
-  get(path: string, type: string) {
-    return this._store.get({ path, type });
+  get(path: string) {
+    return this._store.get(path);
   }
 }
 
@@ -46,7 +46,7 @@ export interface OptionN {
   type: string;
   name: string;
   modelicaPath: string;
-  options?: number[];
+  options?: OptionN[]; // TODO flatten things
   group?: string;
   value?: any;
 }
@@ -70,7 +70,7 @@ export class Record extends Element {
     this.type = "Record";
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list;
-    store.set(this.modelicaPath, this.type, this);
+    store.set(this.modelicaPath, this);
   }
 
   getOptions() {
@@ -110,7 +110,7 @@ export class Model extends Element {
     this.elementList = specifier.composition.element_list.map((e: any) =>
       _constructElement(e, this.modelicaPath),
     );
-    store.set(this.modelicaPath, this.type, this);
+    store.set(this.modelicaPath, this);
   }
 
   getOptions() {
@@ -154,7 +154,7 @@ export class Component extends Element {
       this.value = JSON.parse(this.value);
     }
 
-    store.set(this.modelicaPath, this.type, this);
+    store.set(this.modelicaPath, this);
   }
 
   getOptions() {
@@ -164,7 +164,7 @@ export class Component extends Element {
       value: this.value,
       name: this.description,
     };
-    const typeInstance = store.get(this.modelicaPath, this.type) || null;
+    const typeInstance = store.get(this.type) || null;
 
     if (typeInstance) {
       option.options = typeInstance.getOptions();
@@ -206,6 +206,25 @@ export class Replaceable extends Component {
       });
     }
   }
+
+  getOptions() {
+    const option: OptionN = {
+      modelicaPath: this.modelicaPath,
+      type: this.type,
+      value: this.value,
+      name: this.description,
+      options: [],
+    };
+
+    this.choices.map((c) => {
+      const typeInstance = store.get(c.type) || null;
+      if (typeInstance) {
+        option.options?.push(...typeInstance.getOptions());
+      }
+    });
+
+    return [option];
+  }
 }
 
 export class Enum extends Element {
@@ -224,7 +243,7 @@ export class Enum extends Element {
     this.type = "Enum";
     this.enumList = specifier.value.enum_list;
     this.description = specifier.value.description.description_string;
-    store.set(this.modelicaPath, this.type, this);
+    store.set(this.modelicaPath, this);
 
     specifier.value.enum_list.map(
       (e: {
@@ -262,7 +281,7 @@ export class ExtendClause extends Element {
     this.modelicaPath = `${basePath}.${definition.extends_clause.name}`;
     this.type = definition.extends_clause.name;
 
-    store.set(this.modelicaPath, this.type, this);
+    store.set(this.modelicaPath, this);
   }
 
   getOptions() {
