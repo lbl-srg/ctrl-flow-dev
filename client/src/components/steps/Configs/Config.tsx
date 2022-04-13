@@ -1,39 +1,38 @@
-import { MouseEvent, ChangeEvent, useState } from "react";
+import { MouseEvent, ChangeEvent } from "react";
 import { ConfigProps } from "./Types";
 import { useStore } from "../../../store/store";
 import ConfigSlideOut from "../../modal/ConfigSlideOut";
 import { useDebouncedCallback } from "use-debounce";
-import { updateNamedExports } from "typescript";
 
 function Config({ config, template }: ConfigProps) {
   const { removeConfig, updateConfig, toggleConfigLock } = useStore(
     (state) => state,
   );
 
-  const [configName, setConfigName] = useState(config.name);
-
   function remove(ev: MouseEvent) {
     ev.preventDefault();
     removeConfig(config);
   }
 
-  const updateName = useDebouncedCallback((newName) => {
-    updateConfig({ ...config, name: newName }, newName, config.selections);
-  }, 500);
-
-  function onChange(ev: ChangeEvent<HTMLInputElement>) {
-    setConfigName(ev.target.value);
-    updateName(ev.target.value);
-  }
+  const updateName = useDebouncedCallback(
+    (ev: ChangeEvent<HTMLInputElement>) => {
+      updateConfig(
+        { ...config, name: ev.target.value },
+        ev.target.value,
+        config.selections,
+      );
+    },
+    400,
+  );
 
   return (
     <div className="config" id={`config-${config.id}`} data-spy="config">
       <div className="input-container">
         <input
           type="text"
-          onInput={onChange}
+          onChange={updateName}
           placeholder="Enter Configuration Name"
-          defaultValue={configName}
+          defaultValue={config.name}
           disabled={config.isLocked}
         />
 
