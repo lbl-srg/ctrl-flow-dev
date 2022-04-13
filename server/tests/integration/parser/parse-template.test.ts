@@ -113,6 +113,20 @@ describe("Expected Options are extracted", () => {
       2,
     );
   });
-  it("Extracts the expected number of template options", () => {});
+  it("Extracts 'choices'", () => {
+    const file = parser.getFile(fullTemplatePath);
+    const template = file.entries[0] as parser.Model;
+    const component = template.elementList.find(
+      (e) => e.name === "selectable_component",
+    ) as parser.Element;
+    const options = component.getOptions();
+    expect(options.length).toBe(1);
+    const choices = options[0].options as parser.OptionN[];
+    expect(choices.length).toBe(2);
+    const [choice1, choice2] = choices;
+
+    expect(choice1.value).toBe("TestPackage.Component.SecondComponent");
+    expect(choice2.value).toBe("TestPackage.Component.ThirdComponent");
+  });
   it("Ignore 'final' parameters", () => {});
 });
