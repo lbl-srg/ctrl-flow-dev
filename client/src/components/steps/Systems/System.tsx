@@ -14,17 +14,20 @@ function System({ id, title, options }: SystemProps) {
     getConfigs,
     removeAllTemplateConfigs,
     addUserSystems,
+    setOpenSystemId,
   } = useStore((state) => state);
 
   const templates = getTemplates();
   const iconClass = findIcon(title);
 
   function onSelect(selection: string, checked: boolean) {
+    setOpenSystemId(id);
+
     const template = templates.find((s) => s.name === selection);
     if (template) {
       if (checked) {
         addConfig(template, { name: "Default" });
-        const [config, ..._rest] = getConfigs(template);
+        const [config] = getConfigs(template);
         addUserSystems(template.name, 1, 1, config);
       } else {
         removeAllTemplateConfigs(template);

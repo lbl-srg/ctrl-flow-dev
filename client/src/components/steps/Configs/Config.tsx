@@ -2,25 +2,28 @@ import { MouseEvent, ChangeEvent, useState } from "react";
 import { ConfigProps } from "./Types";
 import { useStore } from "../../../store/store";
 import ConfigSlideOut from "../../modal/ConfigSlideOut";
+import { useDebouncedCallback } from "use-debounce";
+import { updateNamedExports } from "typescript";
 
 function Config({ config, template }: ConfigProps) {
-  const { removeConfig, updateConfig, toggleConfigLock } = useStore((state) => {
-    // debugger;
-    return state;
-  });
+  const { removeConfig, updateConfig, toggleConfigLock } = useStore(
+    (state) => state,
+  );
+
+  const [configName, setConfigName] = useState(config.name);
 
   function remove(ev: MouseEvent) {
     ev.preventDefault();
     removeConfig(config);
   }
 
-  function updateName(ev: ChangeEvent<HTMLInputElement>) {
-    const configName = ev.target.value;
-    updateConfig(
-      { ...config, name: ev.target.value },
-      configName,
-      config.selections,
-    );
+  const updateName = useDebouncedCallback((newName) => {
+    updateConfig({ ...config, name: newName }, newName, config.selections);
+  }, 500);
+
+  function onChange(ev: ChangeEvent<HTMLInputElement>) {
+    setConfigName(ev.target.value);
+    updateName(ev.target.value);
   }
 
   return (
@@ -28,9 +31,9 @@ function Config({ config, template }: ConfigProps) {
       <div className="input-container">
         <input
           type="text"
-          onInput={updateName}
+          onInput={onChange}
           placeholder="Enter Configuration Name"
-          value={config.name}
+          defaultValue={configName}
           disabled={config.isLocked}
         />
 
