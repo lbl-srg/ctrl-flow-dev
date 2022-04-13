@@ -5,6 +5,10 @@
 
   &.fullscreen {
     height: 100vh;
+
+    .left-pane-toggle {
+      display: none !important;
+    }
   }
 
   &.dragging {
