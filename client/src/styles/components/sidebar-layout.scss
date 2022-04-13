@@ -127,9 +127,9 @@
       position: relative;
 
       .left-pane-toggle {
-        position: absolute;
-        left: 0;
-        top: 88px;
+        position: fixed;
+        margin-left: calc(var(--spacing-lg) * -1);
+        margin-top: 88px;
         background-color: var(--color-gray-light);
         width: 2rem;
         height: 2rem;
