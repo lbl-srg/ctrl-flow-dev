@@ -7,7 +7,21 @@ const EXTEND_NAME = "__extend";
 // as well
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 
-const store: { [key: string]: any } = {};
+// const store: { [key: string]: any } = {};
+
+class Store {
+  _store: Map<{ path: string; type: string }, any> = new Map();
+
+  set(path: string, type: string, element: any) {
+    this._store.set({ path, type }, element);
+  }
+
+  get(path: string, type: string) {
+    return this._store.get({ path, type });
+  }
+}
+
+const store = new Store();
 
 type ModificationBlock = {
   equal: boolean;
@@ -53,9 +67,10 @@ export class Record extends Element {
     const specifier = definition.class_specifier.long_class_specifier;
     this.name = specifier.identifer;
     this.modelicaPath = `${basePath}.${this.name}`;
+    this.type = "Record";
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list;
-    store[this.modelicaPath] = this;
+    store.set(this.modelicaPath, this.type, this);
   }
 
   getOptions() {
@@ -90,11 +105,12 @@ export class Model extends Element {
     const specifier = definition.class_specifier.long_class_specifier;
     this.name = specifier.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
+    this.type = this.modelicaPath;
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list.map((e: any) =>
       _constructElement(e, this.modelicaPath),
     );
-    store[this.modelicaPath] = this;
+    store.set(this.modelicaPath, this.type, this);
   }
 
   getOptions() {
@@ -138,7 +154,7 @@ export class Component extends Element {
       this.value = JSON.parse(this.value);
     }
 
-    store[this.modelicaPath] = this;
+    store.set(this.modelicaPath, this.type, this);
   }
 
   getOptions() {
@@ -148,7 +164,7 @@ export class Component extends Element {
       value: this.value,
       name: this.description,
     };
-    const typeInstance = store[this.type] || null;
+    const typeInstance = store.get(this.modelicaPath, this.type) || null;
 
     if (typeInstance) {
       option.options = typeInstance.getOptions();
@@ -205,9 +221,11 @@ export class Enum extends Element {
     const specifier = definition.class_specifier.short_class_specifier;
     this.name = specifier.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
+    this.type = "Enum";
     this.enumList = specifier.value.enum_list;
     this.description = specifier.value.description.description_string;
-    store[this.modelicaPath] = this;
+    store.set(this.modelicaPath, this.type, this);
+
     specifier.value.enum_list.map(
       (e: {
         identifier: string;
@@ -243,7 +261,8 @@ export class ExtendClause extends Element {
     this.name = "__extend"; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${definition.extends_clause.name}`;
     this.type = definition.extends_clause.name;
-    store[this.modelicaPath] = this;
+
+    store.set(this.modelicaPath, this.type, this);
   }
 
   getOptions() {
