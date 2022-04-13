@@ -40,7 +40,7 @@ function Sidebarlayout({
 
   useEffect(() => {
     const $rightCol = document.querySelector(".right-col");
-    if ($rightCol) $rightCol.scrollTo(0, 0);
+    if ($rightCol?.scrollTo) $rightCol.scrollTo(0, 0);
   }, [location]);
 
   function spy() {
