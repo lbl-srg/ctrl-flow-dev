@@ -45,8 +45,8 @@ export interface OptionN {
   // id: number;
   type: string;
   name: string;
-  modelicaPath: string;
-  options?: OptionN[]; // TODO flatten things
+  modelicaPath: string; //
+  options?: OptionN[]; // TODO: flatten references
   group?: string;
   value?: any;
 }
@@ -263,7 +263,7 @@ export class Enum extends Element {
     const optionList: any = this.enumList.map((e) => ({
       modelicaPath: e.modelicaPath,
       name: e.description,
-      type: "dropdown",
+      type: this.type,
       options: null,
     }));
 
@@ -285,7 +285,8 @@ export class ExtendClause extends Element {
   }
 
   getOptions() {
-    return []; // TODO: return options from store
+    const typeInstance = store.get(this.type);
+    return typeInstance ? typeInstance.getOptions() : []; // TODO: return options from store
   }
 }
 
