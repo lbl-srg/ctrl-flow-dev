@@ -4,7 +4,7 @@ import { TemplateProps } from "./Types";
 import Config from "./Config";
 
 function Template({ template }: TemplateProps) {
-  const { addConfig, configs } = useStore((state) => ({
+  const { addConfig, configs, setOpenSystemId } = useStore((state) => ({
     ...state,
     configs: state.getConfigs(template, null),
   }));
@@ -12,6 +12,7 @@ function Template({ template }: TemplateProps) {
   function add(ev: MouseEvent) {
     ev.preventDefault();
     addConfig(template);
+    setOpenSystemId(template.systemType.id);
   }
 
   return (

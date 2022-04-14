@@ -1,17 +1,17 @@
-import { ReactNode, MouseEvent, useState, UIEvent } from "react";
+import { ReactNode, MouseEvent, useState, UIEvent, useEffect } from "react";
 import { useStore } from "../../store/store";
 import StepNavigation from "../StepNavigation";
 import { isInViewPort, getAll, getNumericId } from "../../utils/dom-utils";
-
 import "../../styles/components/sidebar-layout.scss";
-
+import EditDetailsModal from "../modal/EditDetailsModal";
+import { useLocation } from "react-router-dom";
 export interface SidebarLayoutProps {
   contentLeft: ReactNode;
   contentRight: ReactNode;
   isFullScreen?: boolean;
 }
 
-const MIN_WIDTH = 400;
+const MIN_WIDTH = 0;
 
 function Sidebarlayout({
   contentLeft,
@@ -34,12 +34,18 @@ function Sidebarlayout({
 
   const projectName = projectDetails?.name;
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [leftPaneOpen, setLeftPaneOpen] = useState(true);
+  const location = useLocation();
+
+  useEffect(() => {
+    const $rightCol = document.querySelector(".right-col");
+    if ($rightCol?.scrollTo) $rightCol.scrollTo(0, 0);
+  }, [location]);
 
   function spy() {
     if (!watchScroll) return;
-
     const [$firstTpl] = getAll("[data-spy='template']").filter(isInViewPort);
-
     if ($firstTpl) {
       setActiveTemplateId(getNumericId($firstTpl));
       const $system = $firstTpl.closest("[data-spy='system']");
@@ -57,6 +63,10 @@ function Sidebarlayout({
     }
   }
 
+  function toggle(): void {
+    setLeftPaneOpen(!leftPaneOpen);
+  }
+
   const classes = ["sidebar-layout"];
   if (isDragging) classes.push("dragging");
   if (isFullScreen) classes.push("fullscreen");
@@ -68,19 +78,34 @@ function Sidebarlayout({
       onMouseMove={recordDrag}
     >
       <div className="col-container">
-        {!isFullScreen && (
-          <section
-            className="left-col"
-            style={{ width: isFullScreen ? "100vw" : leftColWidth }}
-          >
+        {!isFullScreen && leftPaneOpen && (
+          <section className="left-col">
+            <EditDetailsModal
+              isOpen={modalOpen}
+              close={() => setModalOpen(false)}
+              initialState={projectDetails}
+              modalTitle=""
+              submitText="Save"
+              cancelText="Discard"
+              afterSubmit={() => setModalOpen(false)}
+            />
+
             <header>
               <div className="truncate">
                 All Projects &gt; &nbsp;
                 <strong>{projectName}</strong>
               </div>
+              {modalOpen ? null : (
+                <button
+                  className="small inline"
+                  onClick={() => setModalOpen(true)}
+                >
+                  Edit
+                </button>
+              )}
             </header>
 
-            {contentLeft}
+            {modalOpen ? null : contentLeft}
 
             <div
               className="dragger"
@@ -93,9 +118,21 @@ function Sidebarlayout({
           className="right-col"
           onScroll={spy}
           style={{
-            width: isFullScreen ? "100vw" : `calc(100vw - ${leftColWidth}px)`,
+            width:
+              isFullScreen || !leftPaneOpen
+                ? "100vw"
+                : `calc(100vw - ${leftColWidth}px)`,
           }}
         >
+          <div
+            className="left-pane-toggle"
+            title="toggle left nav"
+            onClick={toggle}
+          >
+            <i
+              className={leftPaneOpen ? "icon-left-open" : "icon-right-open"}
+            ></i>
+          </div>
           {contentRight}
         </section>
       </div>
