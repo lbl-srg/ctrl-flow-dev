@@ -269,9 +269,12 @@ export class File {
   }
 }
 
+let pathPrefix = "";
+export function setPathPrefix(prefix: string) {
+  pathPrefix = prefix;
+}
 // Extracts models/packages
 export const getFile = (filePath: string) => {
-  // const templateString = fs.readFileSync(filePath, { encoding: "utf8" });
-  const jsonData = loader(filePath);
+  const jsonData = loader(pathPrefix, filePath);
   return new File(jsonData);
 };
