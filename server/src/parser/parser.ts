@@ -48,7 +48,7 @@ type Assignment = {
 
 // Replacable
 type WrappedMod = {
-  element_modification_or_replacable: {
+  element_modification_or_replaceable: {
     element_modification: Mod;
   };
 };
@@ -60,7 +60,7 @@ type Mod = {
 
 type DeclarationBlock = {
   identifier: string;
-  modification?: Mod;
+  modification?: ClassMod | WrappedMod | Assignment | RedeclarationMod;
 };
 
 type DescriptionBlock = {
@@ -72,36 +72,46 @@ type Expression = {
   modelicaPath: string;
   expression: string;
 };
-
-// constructor pattern
+ 
 class Modification {
-  name: string | null;
-  value: string | undefined;
+  name?: string;
+  value?: string;
   mods: Modification[] = [];
-  constructor(definition: WrappedMod | Mod) {
+  empty=false; // TODO: we have to unpack things that may not have a modification
+  constructor(definition: WrappedMod | Mod | DeclarationBlock) {
     // determine if wrapped
     const modBlock =
-      "element_modification_or_replacable" in definition
-        ? definition.element_modification_or_replacable.element_modification
+      "element_modification_or_replaceable" in definition
+        ? definition.element_modification_or_replaceable.element_modification
         : definition;
-    this.name = modBlock["name"] || null;
+
+    if ("name" in modBlock) {
+      this.name = modBlock.name;
+    } else if ("identifier" in modBlock) {
+      this.name = modBlock.identifier;
+    }
+
     const mod = modBlock.modification;
 
-    // test if an assignment
-    if ("equals" in mod) {
-      // TODO: feed this into an expression parser to generate actual expression
-      // instances IF there is an expression. If it is a simple value keep the assignment
-      this.value = (mod as Assignment).expression.simple_expression;
-    } else if ("class_modification" in mod) {
-      this.mods = (mod as ClassMod).class_modification.map(
-        (m) => new Modification(m),
-      );
-    } else if ("element_redeclaration" in mod) {
-      // element_redeclarations don't have a name
-      this.name = "choice";
-      this.value = (
-        mod as RedeclarationMod
-      ).element_redeclaration.component_clause1.type_specifier;
+    if (mod) {
+      // test if an assignment
+      if ("equal" in mod) {
+        // TODO: feed this into an expression parser to generate actual expression
+        // instances IF there is an expression. If it is a simple value keep the assignment
+        this.value = (mod as Assignment).expression.simple_expression;
+      } else if ("class_modification" in mod) {
+        this.mods = (mod as ClassMod).class_modification.map(
+          (m) => new Modification(m),
+        );
+      } else if ("element_redeclaration" in mod) {
+        // element_redeclarations don't have a name
+        this.name = "choice";
+        this.value = (
+          mod as RedeclarationMod
+        ).element_redeclaration.component_clause1.type_specifier;
+      }
+    } else {
+      this.empty = true;
     }
   }
 }
@@ -116,6 +126,7 @@ export interface OptionN {
   group?: string;
   tab?: string;
   value?: any;
+  enable?: any;
 }
 
 export abstract class Element {
@@ -213,19 +224,21 @@ export class Component extends Element {
     if (descriptionBlock) {
       this.description = descriptionBlock?.description_string || "";
       this.annotation = descriptionBlock?.annotation;
-      this._setUIInfo(this.annotation);
+      if (this.annotation) {
+        this._setUIInfo(this.annotation);
+      }
     }
 
     const mod = declarationBlock.modification
-      ? new Modification(declarationBlock.modification)
+      ? new Modification(declarationBlock)
       : null;
 
-    if (mod) {
+    if (mod && !mod.empty) {
       this.value = mod.value;
     }
 
     // if type is a literal type we can convert it from a string
-    if (MODELICA_LITERALS.includes(this.type)) {
+    if (MODELICA_LITERALS.includes(this.type) && this.value !== undefined) {
       this.value = JSON.parse(this.value);
     }
 
@@ -241,9 +254,13 @@ export class Component extends Element {
 
     const dialog = mods.find((m) => m.name === "Dialog");
     if (dialog) {
-      this.group = dialog.mods.find((m) => m.name === "group")?.value;
-      this.tab = dialog.mods.find((m) => m.name === "tab")?.value;
+      const group = dialog.mods.find((m) => m.name === "group")?.value;
+      const tab = dialog.mods.find((m) => m.name === "tab")?.value;
       const expression = dialog.mods.find((m) => m.name === "enable")?.value;
+
+      this.group = (group) ? JSON.parse(group) : "";
+      this.tab = (tab) ? JSON.parse(tab) : "";
+
       this.enable = {
         modelicaPath: this.modelicaPath,
         expression: expression || "",
@@ -257,6 +274,9 @@ export class Component extends Element {
       type: this.type,
       value: this.value,
       name: this.description,
+      group: this.group,
+      tab: this.tab,
+      enable: this.enable
     };
     const typeInstance = store.get(this.type) || null;
 

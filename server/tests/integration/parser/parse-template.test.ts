@@ -91,7 +91,7 @@ describe("Expected Options are extracted", () => {
     const unInitializedOption = templateOptions.find(
       (o) => o.modelicaPath === uninitializedParamPath,
     );
-    expect(unInitializedOption?.value).toBeNull();
+    expect(unInitializedOption?.value).toBeUndefined();
     const initiazedOption = templateOptions.find(
       (o) => o.modelicaPath === initializedParamPath,
     );
@@ -129,7 +129,7 @@ describe("Expected Options are extracted", () => {
     // expect(choice1.value).toBe("TestPackage.Component.SecondComponent");
     // expect(choice2.value).toBe("TestPackage.Component.ThirdComponent");
   });
-  it("Gets parameter 'group' and 'tab'", () => {
+  it("Gets parameter UI info", () => {
     const expectedTab = "Tabby";
     const expectedGroup = "Groupy";
     const file = parser.getFile(fullTemplatePath);
@@ -137,10 +137,11 @@ describe("Expected Options are extracted", () => {
     const options = template.getOptions();
     const option = options.find(
       (o) =>
-        o.modelicaPath === `TestPackage.Template.TestTemplate.nullable_bool`,
+        o.modelicaPath === 'TestPackage.Template.TestTemplate.nullable_bool',
     );
     expect(option?.group).toEqual(expectedGroup);
     expect(option?.tab).toEqual(expectedTab);
+    expect(option?.enable).not.toBeFalsy();
   });
 
   it("Ignore 'final' parameters", () => {});
