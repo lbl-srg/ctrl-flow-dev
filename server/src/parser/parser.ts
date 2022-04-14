@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import loader from "./loader";
 
 const EXTEND_NAME = "__extend";
 // TODO: there are many literals defined in the modelica standard library
@@ -129,7 +130,7 @@ export class Component extends Element {
       : null;
 
     // if type is a literal type we can convert it from a string
-    if(MODELICA_LITERALS.includes(this.type)) {
+    if (MODELICA_LITERALS.includes(this.type)) {
       this.value = JSON.parse(this.value);
     }
 
@@ -268,9 +269,12 @@ export class File {
   }
 }
 
+let pathPrefix = "";
+export function setPathPrefix(prefix: string) {
+  pathPrefix = prefix;
+}
 // Extracts models/packages
 export const getFile = (filePath: string) => {
-  const templateString = fs.readFileSync(filePath, { encoding: "utf8" });
-
-  return new File(JSON.parse(templateString));
+  const jsonData = loader(pathPrefix, filePath);
+  return new File(jsonData);
 };
