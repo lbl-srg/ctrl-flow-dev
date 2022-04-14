@@ -129,5 +129,19 @@ describe("Expected Options are extracted", () => {
     // expect(choice1.value).toBe("TestPackage.Component.SecondComponent");
     // expect(choice2.value).toBe("TestPackage.Component.ThirdComponent");
   });
+  it("Gets parameter 'group' and 'tab'", () => {
+    const expectedTab = "Tabby";
+    const expectedGroup = "Groupy";
+    const file = parser.getFile(fullTemplatePath);
+    const template = file.entries[0] as parser.Model;
+    const options = template.getOptions();
+    const option = options.find(
+      (o) =>
+        o.modelicaPath === `TestPackage.Template.TestTemplate.nullable_bool`,
+    );
+    expect(option?.group).toEqual(expectedGroup);
+    expect(option?.tab).toEqual(expectedTab);
+  });
+
   it("Ignore 'final' parameters", () => {});
 });

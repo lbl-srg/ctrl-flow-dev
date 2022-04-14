@@ -23,22 +23,88 @@ class Store {
 
 const store = new Store();
 
-type ModificationBlock = {
-  equal: boolean;
-  expression?: {
-    simple_expression: string; // JSON value
+type RedeclarationMod = {
+  element_redeclaration: {
+    component_clause1: {
+      type_specifier: string; // Modelica Path
+      component_declaration1: {
+        declaration: DeclarationBlock;
+        description: DescriptionBlock;
+      };
+    };
   };
+};
+
+type ClassMod = {
+  class_modification: WrappedMod[];
+};
+
+type Assignment = {
+  equal: boolean;
+  expression: {
+    simple_expression: string; // JSON deserializable value
+  };
+};
+
+// Replacable
+type WrappedMod = {
+  element_modification_or_replacable: {
+    element_modification: Mod;
+  };
+};
+
+type Mod = {
+  name: string;
+  modification: ClassMod | WrappedMod | Assignment | RedeclarationMod;
 };
 
 type DeclarationBlock = {
   identifier: string;
-  modification?: ModificationBlock;
+  modification?: Mod;
 };
 
 type DescriptionBlock = {
   description_string: string;
-  annotation: any;
+  annotation?: any;
 };
+
+type Expression = {
+  modelicaPath: string;
+  expression: string;
+};
+
+// constructor pattern
+class Modification {
+  name: string | null;
+  value: string | undefined;
+  mods: Modification[] = [];
+  constructor(definition: WrappedMod | Mod) {
+    // determine if wrapped
+    const modBlock =
+      "element_modification_or_replacable" in definition
+        ? definition.element_modification_or_replacable.element_modification
+        : definition;
+    this.name = modBlock["name"] || null;
+    const mod = modBlock.modification;
+
+    // test if an assignment
+    if ("equals" in mod) {
+      // TODO: feed this into an expression parser to generate actual expression
+      // instances IF there is an expression. If it is a simple value keep the assignment
+      this.value = (mod as Assignment).expression.simple_expression;
+    } else if ("class_modification" in mod) {
+      this.mods = (mod as ClassMod).class_modification.map(
+        (m) => new Modification(m),
+      );
+    } else if ("element_redeclaration" in mod) {
+      // element_redeclarations don't have a name
+      this.name = "choice";
+      this.value = (
+        mod as RedeclarationMod
+      ).element_redeclaration.component_clause1.type_specifier;
+    }
+  }
+}
 
 // TODO: remove this once types are shared between FE and BE
 export interface OptionN {
@@ -48,6 +114,7 @@ export interface OptionN {
   modelicaPath: string; //
   options?: OptionN[]; // TODO: flatten references
   group?: string;
+  tab?: string;
   value?: any;
 }
 
@@ -125,6 +192,9 @@ export class Component extends Element {
   value: any; // TODO
   description = "";
   annotation: any[] = [];
+  tab? = "";
+  group? = "";
+  enable: Expression = { expression: "", modelicaPath: "" };
 
   constructor(definition: any, basePath: string) {
     super();
@@ -143,11 +213,16 @@ export class Component extends Element {
     if (descriptionBlock) {
       this.description = descriptionBlock?.description_string || "";
       this.annotation = descriptionBlock?.annotation;
+      this._setUIInfo(this.annotation);
     }
 
-    this.value = declarationBlock.modification?.expression
-      ? declarationBlock.modification.expression.simple_expression
+    const mod = declarationBlock.modification
+      ? new Modification(declarationBlock.modification)
       : null;
+
+    if (mod) {
+      this.value = mod.value;
+    }
 
     // if type is a literal type we can convert it from a string
     if (MODELICA_LITERALS.includes(this.type)) {
@@ -155,6 +230,25 @@ export class Component extends Element {
     }
 
     store.set(this.modelicaPath, this);
+  }
+
+  /**
+   * Sets tab and group if found
+   * assigns 'enable' expression
+   */
+  _setUIInfo(annotation: (Mod | WrappedMod)[]) {
+    const mods = annotation.map((mod) => new Modification(mod));
+
+    const dialog = mods.find((m) => m.name === "Dialog");
+    if (dialog) {
+      this.group = dialog.mods.find((m) => m.name === "group")?.value;
+      this.tab = dialog.mods.find((m) => m.name === "tab")?.value;
+      const expression = dialog.mods.find((m) => m.name === "enable")?.value;
+      this.enable = {
+        modelicaPath: this.modelicaPath,
+        expression: expression || "",
+      };
+    }
   }
 
   getOptions() {
@@ -182,6 +276,7 @@ export class Replaceable extends Component {
     // the default value is original type provided
     this.value = this.type;
 
+    // TODO: switch choices extraction to use 'Mod' class
     // extract choices from the annotation
     const choicesBlock = this.annotation.find(
       (entry: any) =>
