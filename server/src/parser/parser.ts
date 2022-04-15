@@ -18,6 +18,10 @@ class Store {
   }
 
   get(path: string) {
+    if (!this._store.has(path)) {
+      getFile(path);
+    }
+
     return this._store.get(path);
   }
 }
@@ -220,9 +224,9 @@ export class Component extends Element {
     this.modelicaPath = `${basePath}.${this.name}`;
 
     this.type = componentClause.type_specifier;
-    const descriptionBlock = componentClause.component_list.find(
-      (c: any) => "description" in c,
-    )?.description || definition['description']; // TODO: unsure why description block can be in different locations
+    const descriptionBlock =
+      componentClause.component_list.find((c: any) => "description" in c)
+        ?.description || definition["description"]; // TODO: unsure why description block can be in different locations
 
     if (descriptionBlock) {
       this.description = descriptionBlock?.description_string || "";
