@@ -127,6 +127,7 @@ export interface OptionN {
   group?: string;
   tab?: string;
   value?: any;
+  valueExpression?: any;
   enable?: any;
 }
 
@@ -250,6 +251,7 @@ export class Component extends Element {
             expression: this.value,
             modelicaPath: this.modelicaPath,
           };
+          this.value = null;
         } else {
           throw error;
         }
@@ -290,6 +292,7 @@ export class Component extends Element {
       name: this.description,
       group: this.group,
       tab: this.tab,
+      valueExpression: this.valueExpression,
       enable: this.enable,
     };
     const typeInstance = store.get(this.type) || null;
