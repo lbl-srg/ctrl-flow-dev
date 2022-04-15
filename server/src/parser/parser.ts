@@ -201,12 +201,13 @@ export class Model extends Element {
 export class Component extends Element {
   modifications: any[] = [];
   type = ""; // modelica path
-  value: any; // TODO
+  value: any;
   description = "";
   annotation: any[] = [];
   tab? = "";
   group? = "";
   enable: Expression = { expression: "", modelicaPath: "" };
+  valueExpression: Expression = { expression: "", modelicaPath: "" };
 
   constructor(definition: any, basePath: string) {
     super();
@@ -240,7 +241,19 @@ export class Component extends Element {
 
     // if type is a literal type we can convert it from a string
     if (MODELICA_LITERALS.includes(this.type) && this.value !== undefined) {
-      this.value = JSON.parse(this.value);
+      try {
+        this.value = JSON.parse(this.value);
+      } catch (error) {
+        if (error instanceof SyntaxError) {
+          // if parsing the value fails assume an expression
+          this.valueExpression = {
+            expression: this.value,
+            modelicaPath: this.modelicaPath,
+          };
+        } else {
+          throw error;
+        }
+      }
     }
 
     store.set(this.modelicaPath, this);
