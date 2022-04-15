@@ -78,7 +78,7 @@ class Modification {
   name?: string;
   value?: string;
   mods: Modification[] = [];
-  empty = false; // TODO: we have to unpack things that may not have a modification
+  empty = false;
   constructor(definition: WrappedMod | Mod | DeclarationBlock) {
     // determine if wrapped
     const modBlock =
@@ -221,7 +221,7 @@ export class Component extends Element {
     this.type = componentClause.type_specifier;
     const descriptionBlock = componentClause.component_list.find(
       (c: any) => "description" in c,
-    )?.description;
+    )?.description || definition['description']; // TODO: unsure why description block can be in different locations
 
     if (descriptionBlock) {
       this.description = descriptionBlock?.description_string || "";
@@ -400,7 +400,7 @@ export class Enum extends Element {
   }
 }
 
-// TODO: this almost entirely overlaps with 'Component'
+// TODO: this almost entirely overlaps with 'Component' - try and refactor
 export class ExtendClause extends Element {
   modifications: any[] = [];
   type: string; // modelica path
