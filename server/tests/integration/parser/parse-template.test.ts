@@ -61,6 +61,20 @@ describe("Basic parser functionality", () => {
     ).not.toBeFalsy();
   });
 
+  it("Generates type instances by for related files", () => {
+    const paramName = "dat";
+
+    const file = parser.getFile(testModelicaFile);
+    const template = file.entries[0] as parser.Model;
+    const expectedPath = `${template.modelicaPath}.${paramName}`;
+
+    const dat = template.elementList.find((e) => e.modelicaPath === expectedPath) as parser.Component;
+  
+    const option = dat.getOptions()[0]
+  
+    expect(option.options).toBeTruthy();
+  });
+
   it("Extracts model elements", () => {
     const file = parser.getFile(testModelicaFile);
     const template = file.entries[0] as parser.Model;
