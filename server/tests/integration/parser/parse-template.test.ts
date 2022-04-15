@@ -99,7 +99,7 @@ describe("Expected Options are extracted", () => {
     const unInitializedOption = templateOptions.find(
       (o) => o.modelicaPath === uninitializedParamPath,
     );
-    expect(unInitializedOption?.value).toBeNull();
+    expect(unInitializedOption?.value).toBeUndefined();
     const initiazedOption = templateOptions.find(
       (o) => o.modelicaPath === initializedParamPath,
     );
@@ -121,6 +121,36 @@ describe("Expected Options are extracted", () => {
       2,
     );
   });
-  it("Extracts the expected number of template options", () => {});
+  it("Extracts 'choices'", () => {
+    const file = parser.getFile(testModelicaFile);
+    const template = file.entries[0] as parser.Model;
+    const component = template.elementList.find(
+      (e) => e.name === "selectable_component",
+    ) as parser.Element;
+    const options = component.getOptions();
+    expect(options.length).toBe(1);
+    // TODO: run below tests when file loader is integrated
+    // const choices = options[0].options as parser.OptionN[];
+    // expect(choices.length).toBe(2);
+    // const [choice1, choice2] = choices;
+
+    // expect(choice1.value).toBe("TestPackage.Component.SecondComponent");
+    // expect(choice2.value).toBe("TestPackage.Component.ThirdComponent");
+  });
+  it("Gets parameter UI info", () => {
+    const expectedTab = "Tabby";
+    const expectedGroup = "Groupy";
+    const file = parser.getFile(testModelicaFile);
+    const template = file.entries[0] as parser.Model;
+    const options = template.getOptions();
+    const option = options.find(
+      (o) =>
+        o.modelicaPath === "TestPackage.Template.TestTemplate.nullable_bool",
+    );
+    expect(option?.group).toEqual(expectedGroup);
+    expect(option?.tab).toEqual(expectedTab);
+    expect(option?.enable).not.toBeFalsy();
+  });
+
   it("Ignore 'final' parameters", () => {});
 });

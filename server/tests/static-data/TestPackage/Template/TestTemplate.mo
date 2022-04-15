@@ -56,7 +56,7 @@ model TestTemplate "Test Template"
   */
   parameter Boolean nullable_bool=false
     "Test boolean"
-    annotation (Evaluate=true, Dialog(group="Configuration", enable=false));
+    annotation (Evaluate=true, Dialog(group="Groupy", tab="Tabby", enable=true));
 
   // TODO: add values for annotation variations
 
