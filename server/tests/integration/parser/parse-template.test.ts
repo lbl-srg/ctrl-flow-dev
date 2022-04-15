@@ -20,6 +20,7 @@ function createTestModelicaJson() {
     execSync(
       `node ${config.MODELICA_DEPENDENCIES}/modelica-json/app.js -f tests/static-data/TestPackage -o json -d ${tempDirPath}`,
     );
+    // TODO: maybe use spawnsync so when a process errors this throws instead of silently failing
   }
 }
 
@@ -76,6 +77,7 @@ describe("Basic parser functionality", () => {
 describe("Expected Options are extracted", () => {
   beforeAll(() => {
     createTestModelicaJson();
+    parser.setPathPrefix(tempDirPath + "json/tests/static-data/");
   });
 
   it("Generates Options for literal types", () => {
@@ -121,6 +123,25 @@ describe("Expected Options are extracted", () => {
       2,
     );
   });
+
+  /*
+  Literals can also be assigned expressions instead of a value.
+
+  Check that instead of a value, the option has a value expression
+  */
+  it("Extracts literal value expression", () => {
+    const file = parser.getFile(testModelicaFile);
+    const template = file.entries[0] as parser.Model;
+    const options = template.getOptions();
+    const option = options.find(
+      (o) =>
+        o.modelicaPath === "TestPackage.Template.TestTemplate.expression_bool",
+    ) as parser.OptionN;
+
+    expect(option.value).toBeNull();
+    expect(option.valueExpression).toBeTruthy();
+  })
+
   it("Extracts 'choices'", () => {
     const file = parser.getFile(testModelicaFile);
     const template = file.entries[0] as parser.Model;
@@ -137,6 +158,7 @@ describe("Expected Options are extracted", () => {
     // expect(choice1.value).toBe("TestPackage.Component.SecondComponent");
     // expect(choice2.value).toBe("TestPackage.Component.ThirdComponent");
   });
+
   it("Gets parameter UI info", () => {
     const expectedTab = "Tabby";
     const expectedGroup = "Groupy";
@@ -150,6 +172,16 @@ describe("Expected Options are extracted", () => {
     expect(option?.group).toEqual(expectedGroup);
     expect(option?.tab).toEqual(expectedTab);
     expect(option?.enable).not.toBeFalsy();
+
+    // also test a "constrainedby" component as this impacts where the annotation
+    // is placed
+    const selectablePath = "TestPackage.Template.TestTemplate.selectable_component";
+    const selectableGroup = "Selectable Component"
+    const selectable = options.find(
+      (o) =>
+        o.modelicaPath === selectablePath
+    );
+    expect(selectable?.group).toEqual(selectableGroup);
   });
 
   it("Ignore 'final' parameters", () => {});
