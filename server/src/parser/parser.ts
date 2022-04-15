@@ -78,7 +78,7 @@ class Modification {
   name?: string;
   value?: string;
   mods: Modification[] = [];
-  empty = false; // TODO: we have to unpack things that may not have a modification
+  empty = false;
   constructor(definition: WrappedMod | Mod | DeclarationBlock) {
     // determine if wrapped
     const modBlock =
@@ -127,6 +127,7 @@ export interface OptionN {
   group?: string;
   tab?: string;
   value?: any;
+  valueExpression?: any;
   enable?: any;
 }
 
@@ -201,12 +202,13 @@ export class Model extends Element {
 export class Component extends Element {
   modifications: any[] = [];
   type = ""; // modelica path
-  value: any; // TODO
+  value: any;
   description = "";
   annotation: any[] = [];
   tab? = "";
   group? = "";
   enable: Expression = { expression: "", modelicaPath: "" };
+  valueExpression: Expression = { expression: "", modelicaPath: "" };
 
   constructor(definition: any, basePath: string) {
     super();
@@ -220,7 +222,7 @@ export class Component extends Element {
     this.type = componentClause.type_specifier;
     const descriptionBlock = componentClause.component_list.find(
       (c: any) => "description" in c,
-    )?.description;
+    )?.description || definition['description']; // TODO: unsure why description block can be in different locations
 
     if (descriptionBlock) {
       this.description = descriptionBlock?.description_string || "";
@@ -240,7 +242,20 @@ export class Component extends Element {
 
     // if type is a literal type we can convert it from a string
     if (MODELICA_LITERALS.includes(this.type) && this.value !== undefined) {
-      this.value = JSON.parse(this.value);
+      try {
+        this.value = JSON.parse(this.value);
+      } catch (error) {
+        if (error instanceof SyntaxError) {
+          // if parsing the value fails assume an expression
+          this.valueExpression = {
+            expression: this.value,
+            modelicaPath: this.modelicaPath,
+          };
+          this.value = null;
+        } else {
+          throw error;
+        }
+      }
     }
 
     store.set(this.modelicaPath, this);
@@ -277,6 +292,7 @@ export class Component extends Element {
       name: this.description,
       group: this.group,
       tab: this.tab,
+      valueExpression: this.valueExpression,
       enable: this.enable,
     };
     const typeInstance = store.get(this.type) || null;
@@ -387,7 +403,7 @@ export class Enum extends Element {
   }
 }
 
-// TODO: this almost entirely overlaps with 'Component'
+// TODO: this almost entirely overlaps with 'Component' - try and refactor
 export class ExtendClause extends Element {
   modifications: any[] = [];
   type: string; // modelica path

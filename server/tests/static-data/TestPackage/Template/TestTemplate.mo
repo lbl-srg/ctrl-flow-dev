@@ -58,6 +58,11 @@ model TestTemplate "Test Template"
     "Test boolean"
     annotation (Evaluate=true, Dialog(group="Groupy", tab="Tabby", enable=true));
 
+  /*
+    Bool assigned by expression
+  */
+  final parameter Boolean expression_bool=dat.nested_bool;
+
   // TODO: add values for annotation variations
 
   parameter String test_string_uninitialized
