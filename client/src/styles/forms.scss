@@ -7,7 +7,15 @@
   button,
   a {
     margin: 0;
+    margin-left: var(--spacing-sm);
   }
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+  background-color: white;
 }
 
 label {

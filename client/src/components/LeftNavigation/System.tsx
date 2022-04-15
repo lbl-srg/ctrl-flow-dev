@@ -3,15 +3,20 @@ import { findIcon } from "./icon-mappings";
 import { SystemProps } from "./Types";
 import { useStore } from "../../store/store";
 import { scrollToSelector } from "../../utils/dom-utils";
-import { useState } from "react";
 
 function System({ systemType, templates, meta }: SystemProps) {
-  const { activeSystemId, clearNavState, setActiveSystemId, timeoutScroll } =
-    useStore((state) => state);
+  const {
+    openSystemId,
+    setOpenSystemId,
+    activeSystemId,
+    clearNavState,
+    setActiveSystemId,
+    timeoutScroll,
+  } = useStore((state) => state);
 
   const classes = ["system"];
   const isActive = systemType.id === activeSystemId && templates.length > 0;
-  const [isOpen, setIsOpen] = useState(isActive);
+  const isOpen = systemType.id === openSystemId && templates.length > 0;
 
   if (!templates.length) classes.push("empty");
   if (isActive) classes.push("active");
@@ -23,8 +28,11 @@ function System({ systemType, templates, meta }: SystemProps) {
     clearNavState();
     setActiveSystemId(systemType.id);
     scrollToSelector(`#system-${systemType.id}`);
-    setIsOpen(true);
     timeoutScroll();
+  }
+
+  function toggleOpen() {
+    setOpenSystemId(isOpen ? null : systemType.id);
   }
 
   return (
@@ -35,10 +43,7 @@ function System({ systemType, templates, meta }: SystemProps) {
           {systemType.name}
         </a>
 
-        <i
-          onClick={() => setIsOpen(!isOpen)}
-          className={"toggle icon-down-open"}
-        />
+        <i onClick={toggleOpen} className={"toggle icon-down-open"} />
       </div>
 
       {isOpen && (

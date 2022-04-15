@@ -2,7 +2,7 @@ import PageHeader from "../../PageHeader";
 import { useStore } from "../../../store/store";
 import AddUserSystemsWidget from "./AddUserSystemsWidget";
 import UserSystemTable from "./UserSystemTable";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 import "../../../styles/steps/schedules.scss";
 
@@ -24,6 +24,8 @@ function Schedules() {
   const templateConfigs = getConfigs(activeTemplate);
   const userSystems = getUserSystems(activeTemplate);
 
+  const [isFullscreen, setFullscreen] = useState(false);
+
   return (
     <Fragment>
       <PageHeader headerText="Equipment Schedules" />
@@ -33,25 +35,42 @@ function Schedules() {
           Add tags, IDs, and quantities for your selected systems. Edit your
           system&apos;s schedule directly from the table.
         </h4>
-        <h3 className="with-links">
-          {activeTemplate?.name}
-          <div className="links">
-            <a>
-              <i className="icon-upload" />
-              Upload
-            </a>
-            <a>
-              <i className="icon-download" />
-              Download
-            </a>
-          </div>
-        </h3>
 
-        <AddUserSystemsWidget configs={templateConfigs} />
-        {/* <button onClick={() => userSystems.map((s) => removeUserSystem(s))}>
+        <div
+          className={
+            isFullscreen
+              ? "schedule-container fullscreen"
+              : "schedule-container"
+          }
+        >
+          <h3 className="with-links">
+            {activeTemplate?.name}
+            <div className="links">
+              <a onClick={() => setFullscreen(!isFullscreen)}>
+                <i
+                  className={
+                    isFullscreen ? "icon-fullscreen-exit" : "icon-fullscreen"
+                  }
+                />
+                Toggle Fullscreen
+              </a>
+              <a>
+                <i className="icon-upload" />
+                Upload
+              </a>
+              <a>
+                <i className="icon-download" />
+                Download
+              </a>
+            </div>
+          </h3>
+
+          <AddUserSystemsWidget configs={templateConfigs} />
+          {/* <button onClick={() => userSystems.map((s) => removeUserSystem(s))}>
           Remove Systems
         </button> */}
-        <UserSystemTable userSystems={userSystems} />
+          <UserSystemTable userSystems={userSystems} />
+        </div>
       </div>
     </Fragment>
   );

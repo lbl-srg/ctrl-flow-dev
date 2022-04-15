@@ -1,6 +1,5 @@
 import { Route, Routes, useLocation } from "react-router-dom";
 import Configs from "./components/steps/Configs/index";
-import Details from "./components/steps/Details";
 import Landing from "./components/steps/Landing";
 import Results from "./components/steps/Results/index";
 import Schedules from "./components/steps/Schedules";
@@ -21,7 +20,6 @@ const App = () => {
       contentRight={
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/details" element={<Details />} />
           <Route path="/systems" element={<Systems />} />
           <Route path="/configs" element={<Configs />} />
           <Route path="/schedules" element={<Schedules />} />

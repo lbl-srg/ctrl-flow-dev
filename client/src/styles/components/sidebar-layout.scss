@@ -5,6 +5,10 @@
 
   &.fullscreen {
     height: 100vh;
+
+    .left-pane-toggle {
+      display: none !important;
+    }
   }
 
   &.dragging {
@@ -54,11 +58,51 @@
       flex-grow: 1;
       background-color: var(--color-gray-light);
       position: relative;
+      box-sizing: border-box;
+
+      dialog[open] {
+        position: absolute;
+        top: 80px;
+        left: 0;
+        margin: 0;
+        padding: 0;
+        display: block;
+        z-index: 5;
+
+        .close {
+          display: none;
+        }
+
+        .underlay {
+          display: none;
+        }
+
+        article {
+          background-color: var(--color-gray-dark);
+          display: block;
+          margin: 0;
+          height: 100%;
+          max-width: none;
+          padding: var(--spacing-md);
+          padding-top: 0;
+          padding-bottom: var(--spacing-md);
+
+          label {
+            color: white;
+          }
+
+          form .grid {
+            display: block;
+          }
+        }
+      }
 
       > header {
-        background-color: var(--color-grey-dark);
+        background-color: var(--color-gray-dark);
         color: var(--color-white);
         padding: 0 var(--spacing-md);
+        display: flex;
+        justify-content: space-between;
       }
 
       .dragger {
@@ -71,6 +115,7 @@
         height: 100%;
         cursor: col-resize;
         transition: opacity 0.2s ease-in;
+        z-index: 6;
 
         &:hover {
           opacity: 1;
@@ -82,6 +127,29 @@
       flex-grow: 1;
       overflow: auto;
       padding: 0 var(--spacing-lg) var(--spacing-md) var(--spacing-lg);
+
+      position: relative;
+
+      .left-pane-toggle {
+        position: fixed;
+        margin-left: calc(var(--spacing-lg) * -1);
+        margin-top: 88px;
+        background-color: var(--color-gray-light);
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: none;
+        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        border-top-right-radius: 0.3rem;
+        border-bottom-right-radius: 0.3rem;
+
+        i {
+          margin: 0;
+        }
+      }
 
       > header {
         border-bottom: 1px solid var(--color-gray);

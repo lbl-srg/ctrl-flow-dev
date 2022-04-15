@@ -25,7 +25,7 @@ interface SlideOutProps {
 const SlideOut = ({ template, config, disabled = true }: SlideOutProps) => {
   const [isOpen, setOpen] = useState(false);
   const updateConfig = useStore((state) => state.updateConfig);
-  const getTemplateOptions = useStore((state) => state.getTemplateOptions);
+  const { getTemplateOptions, setOpenSystemId } = useStore((state) => state);
   const [initTemplateOptions, fullTemplateOptions] =
     getTemplateOptions(template);
 
@@ -47,13 +47,14 @@ const SlideOut = ({ template, config, disabled = true }: SlideOutProps) => {
     setInitialValues({ ...initialValues, configName: config.name });
   }, [config]);
 
+  function openPanel() {
+    setOpen(true);
+    setOpenSystemId(template.systemType.id);
+  }
+
   return (
     <Fragment>
-      <button
-        disabled={disabled}
-        className="small"
-        onClick={() => setOpen(true)}
-      >
+      <button disabled={disabled} className="small" onClick={openPanel}>
         Edit
       </button>
       <Modal

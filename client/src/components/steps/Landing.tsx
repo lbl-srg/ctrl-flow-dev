@@ -16,7 +16,7 @@ function Landing() {
         isOpen={modalOpen}
         modalTitle="Create New Project"
         submitText="Create Project"
-        afterSubmit={() => navigate("/details")}
+        afterSubmit={() => navigate("/systems")}
       ></EditDetailsModal>
 
       <main className="landing">

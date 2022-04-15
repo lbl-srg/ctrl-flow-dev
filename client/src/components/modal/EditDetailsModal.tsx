@@ -7,6 +7,7 @@ interface EditDetailsModalProps extends ModalInterface {
   initialState?: Partial<ProjectDetails>;
   modalTitle: string;
   submitText: string;
+  cancelText?: string;
 }
 
 const defaultState = {
@@ -24,6 +25,7 @@ function EditDetailsModal({
   initialState = defaultState,
   modalTitle,
   submitText,
+  cancelText,
   isOpen,
   close,
 }: EditDetailsModalProps) {
@@ -43,12 +45,12 @@ function EditDetailsModal({
         <Form className="no-margin">
           <label htmlFor="name">
             Project Name:
-            <Field id="name" name="name" />
+            <Field id="name" name="name" type="text" />
           </label>
 
           <label htmlFor="address">
             Address:
-            <Field id="address" name="address" />
+            <Field id="address" name="address" type="text" />
           </label>
 
           <div className="grid">
@@ -88,6 +90,11 @@ function EditDetailsModal({
           <Field as="textarea" id="notes" name="notes" />
 
           <div className="action-bar">
+            {cancelText ? (
+              <button onClick={close} className="inline outline small">
+                {cancelText}
+              </button>
+            ) : null}
             <input type="submit" className="inline" value={submitText} />
           </div>
         </Form>

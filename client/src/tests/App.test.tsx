@@ -57,21 +57,18 @@ test("create new project modal opens and creates a new project", async () => {
 
   await waitForElementToBeRemoved(modal);
 
-  expect(screen.getByText("Project Details")).toBeInTheDocument();
+  userEvent.click(screen.getByText(/Edit/i));
 
-  const displayedProjNames = screen.getAllByText(projectName);
-  expect(displayedProjNames).toHaveLength(2);
-  displayedProjNames.map((element) => {
-    expect(element).toBeInTheDocument();
-  });
-
-  expect(screen.getByText(address)).toBeInTheDocument();
-  expect(screen.getByText(type)).toBeInTheDocument();
-  expect(screen.getByText(size)).toBeInTheDocument();
-  expect(screen.getByText(units)).toBeInTheDocument();
-  expect(screen.getByText(code)).toBeInTheDocument();
-  const [notes1, notes2] = screen.getAllByText(notes);
-  // TODO: notes is showing up twice - not sure why
+  expect(screen.getByDisplayValue(projectName)).toBeInTheDocument();
+  expect(screen.getByDisplayValue(address)).toBeInTheDocument();
+  expect(
+    (screen.getByTestId("units-input") as HTMLSelectElement).value,
+  ).toEqual(units);
+  expect(screen.getByDisplayValue(size)).toBeInTheDocument();
+  expect((screen.getByTestId("code-input") as HTMLSelectElement).value).toEqual(
+    code,
+  );
+  const [notes1] = screen.getAllByText(notes);
   expect(notes1).toBeInTheDocument();
 });
 
@@ -87,14 +84,8 @@ test("navigate through steps", async () => {
 
   await waitForElementToBeRemoved(modal);
 
-  expect(
-    screen.getByText("Project Details", { selector: "h1" }),
-  ).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Back" })).toBeInTheDocument();
-  expect(screen.getByText("Next Step: Systems")).toBeInTheDocument();
 
-  userEvent.click(screen.getByText("Next Step: Systems"));
-  expect(screen.getByText("Systems", { selector: "h1" })).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Back" })).toBeInTheDocument();
   expect(screen.getByText("Next Step: Configs")).toBeInTheDocument();
 

@@ -6,10 +6,11 @@ import path from "path";
 import config from "../../../src/config";
 import * as parser from "../../../src/parser/parser";
 
-const tempDirPath = "/tmp/test-linkage-widget";
-const templatePath =
-  "json/tests/static-data/TestModelicaPackage/Template/TestTemplate.json";
-const fullTemplatePath = path.resolve(tempDirPath, templatePath);
+const tempDirPath = "/tmp/test-linkage-widget/";
+const testModelicaFile = "TestPackage/Template/TestTemplate";
+// const templatePath =
+//   "json/tests/static-data/TestModelicaPackage/Template/TestTemplate";
+// const fullTemplatePath = path.resolve(tempDirPath, templatePath);
 
 // NOTE: if the test modelica package changes it will need to be
 // manually removed to update for tests
@@ -17,7 +18,7 @@ function createTestModelicaJson() {
   if (!fs.existsSync(tempDirPath)) {
     fs.mkdirSync(tempDirPath);
     execSync(
-      `node ${config.MODELICA_DEPENDENCIES}/modelica-json/app.js -f tests/static-data/TestModelicaPackage -o json -d ${tempDirPath}`,
+      `node ${config.MODELICA_DEPENDENCIES}/modelica-json/app.js -f tests/static-data/TestPackage -o json -d ${tempDirPath}`,
     );
   }
 }
@@ -25,16 +26,23 @@ function createTestModelicaJson() {
 describe("Basic parser functionality", () => {
   beforeAll(() => {
     createTestModelicaJson();
+    parser.setPathPrefix(tempDirPath + "json/tests/static-data/");
   });
 
   it("Extracts a 'file' object", () => {
-    const file = parser.getFile(fullTemplatePath);
+    const file = parser.getFile(testModelicaFile);
+    const expectedPath = "TestPackage.Template";
+    expect(file.modelicaPath).toEqual(expectedPath);
+  });
+
+  it("Supports loading with / syntax", () => {
+    const file = parser.getFile(testModelicaFile);
     const expectedPath = "TestPackage.Template";
     expect(file.modelicaPath).toEqual(expectedPath);
   });
 
   it("Extracts Template modelica path", () => {
-    const file = parser.getFile(fullTemplatePath);
+    const file = parser.getFile(testModelicaFile);
     const [template, ..._rest] = file.entries;
     const expectedPath = "TestPackage.Template.TestTemplate";
     expect(template.modelicaPath).toEqual(expectedPath);
@@ -43,7 +51,7 @@ describe("Basic parser functionality", () => {
   it("Builds up modelica paths for subcomponents", () => {
     const paramName = "dat";
 
-    const file = parser.getFile(fullTemplatePath);
+    const file = parser.getFile(testModelicaFile);
     const template = file.entries[0] as parser.Model;
     const expectedPath = `${template.modelicaPath}.${paramName}`;
 
@@ -53,7 +61,7 @@ describe("Basic parser functionality", () => {
   });
 
   it("Extracts model elements", () => {
-    const file = parser.getFile(fullTemplatePath);
+    const file = parser.getFile(testModelicaFile);
     const template = file.entries[0] as parser.Model;
     expect(template.elementList.length).not.toBe(0);
     template.elementList.map((e: parser.Element) =>
@@ -71,7 +79,7 @@ describe("Expected Options are extracted", () => {
   });
 
   it("Generates Options for literal types", () => {
-    const file = parser.getFile(fullTemplatePath);
+    const file = parser.getFile(testModelicaFile);
     const template = file.entries[0] as parser.Model;
 
     // get elements that match literal types: Boolean, String, Real, Integer, Enum
@@ -114,7 +122,7 @@ describe("Expected Options are extracted", () => {
     );
   });
   it("Extracts 'choices'", () => {
-    const file = parser.getFile(fullTemplatePath);
+    const file = parser.getFile(testModelicaFile);
     const template = file.entries[0] as parser.Model;
     const component = template.elementList.find(
       (e) => e.name === "selectable_component",
@@ -132,12 +140,12 @@ describe("Expected Options are extracted", () => {
   it("Gets parameter UI info", () => {
     const expectedTab = "Tabby";
     const expectedGroup = "Groupy";
-    const file = parser.getFile(fullTemplatePath);
+    const file = parser.getFile(testModelicaFile);
     const template = file.entries[0] as parser.Model;
     const options = template.getOptions();
     const option = options.find(
       (o) =>
-        o.modelicaPath === 'TestPackage.Template.TestTemplate.nullable_bool',
+        o.modelicaPath === "TestPackage.Template.TestTemplate.nullable_bool",
     );
     expect(option?.group).toEqual(expectedGroup);
     expect(option?.tab).toEqual(expectedTab);

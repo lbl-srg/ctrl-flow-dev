@@ -13,6 +13,9 @@ export interface uiSliceInterface {
   setActiveSystemId: (activeSystemId: number) => void;
   activeSystemId: number | null;
 
+  setOpenSystemId: (openSystemId: number | null) => void;
+  openSystemId: number | null;
+
   setActiveConfigId: (activeConfigId: number) => void;
   activeConfigId: number | null;
 
@@ -38,6 +41,10 @@ export default function (
     },
     activeSystemId: null,
     setActiveSystemId: (activeSystemId) => set({ activeSystemId }),
+
+    openSystemId: null,
+    setOpenSystemId: (openSystemId) => set({ openSystemId }),
+
     activeTemplateId: null,
     setActiveTemplateId: (activeTemplateId) => set({ activeTemplateId }),
 

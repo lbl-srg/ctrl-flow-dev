@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import loader from "./loader";
 
 const EXTEND_NAME = "__extend";
 // TODO: there are many literals defined in the modelica standard library
@@ -72,12 +73,12 @@ type Expression = {
   modelicaPath: string;
   expression: string;
 };
- 
+
 class Modification {
   name?: string;
   value?: string;
   mods: Modification[] = [];
-  empty=false; // TODO: we have to unpack things that may not have a modification
+  empty = false; // TODO: we have to unpack things that may not have a modification
   constructor(definition: WrappedMod | Mod | DeclarationBlock) {
     // determine if wrapped
     const modBlock =
@@ -258,8 +259,8 @@ export class Component extends Element {
       const tab = dialog.mods.find((m) => m.name === "tab")?.value;
       const expression = dialog.mods.find((m) => m.name === "enable")?.value;
 
-      this.group = (group) ? JSON.parse(group) : "";
-      this.tab = (tab) ? JSON.parse(tab) : "";
+      this.group = group ? JSON.parse(group) : "";
+      this.tab = tab ? JSON.parse(tab) : "";
 
       this.enable = {
         modelicaPath: this.modelicaPath,
@@ -276,7 +277,7 @@ export class Component extends Element {
       name: this.description,
       group: this.group,
       tab: this.tab,
-      enable: this.enable
+      enable: this.enable,
     };
     const typeInstance = store.get(this.type) || null;
 
@@ -461,9 +462,12 @@ export class File {
   }
 }
 
+let pathPrefix = "";
+export function setPathPrefix(prefix: string) {
+  pathPrefix = prefix;
+}
 // Extracts models/packages
 export const getFile = (filePath: string) => {
-  const templateString = fs.readFileSync(filePath, { encoding: "utf8" });
-
-  return new File(JSON.parse(templateString));
+  const jsonData = loader(pathPrefix, filePath);
+  return new File(jsonData);
 };
