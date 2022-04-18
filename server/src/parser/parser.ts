@@ -18,11 +18,13 @@ class Store {
   }
 
   get(path: string) {
-    if (!this._store.has(path)) {
-      getFile(path);
+    if (!(MODELICA_LITERALS.includes(path))) {
+      if (!this._store.has(path)) {
+        getFile(path);
+      }
+  
+      return this._store.get(path);
     }
-
-    return this._store.get(path);
   }
 }
 
@@ -149,7 +151,7 @@ export class Record extends Element {
   constructor(definition: any, basePath: string) {
     super();
     const specifier = definition.class_specifier.long_class_specifier;
-    this.name = specifier.identifer;
+    this.name = specifier.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = "Record";
     this.description = specifier.description_string;
@@ -171,7 +173,7 @@ export class Package extends Element {
   constructor(definition: any, basePath: string) {
     super();
     const specifier = definition.class_specifier.long_class_specifier;
-    this.name = specifier.identifer;
+    this.name = specifier.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list.map((e: any) =>
@@ -303,8 +305,8 @@ export class Component extends Element {
       valueExpression: this.valueExpression,
       enable: this.enable,
     };
-    const typeInstance = store.get(this.type) || null;
 
+    const typeInstance = store.get(this.type) || null;
     if (typeInstance) {
       option.options = typeInstance.getOptions();
     }
@@ -444,6 +446,10 @@ function _constructElement(
   const extend = "extends_clause";
   const component = "component_clause";
 
+  // TODO: iterating through a list of elements, 'class_definition'
+    // nested class definitions are wrapped in an additional 'class_definition' tag
+    // check if this is the case
+  definition = ("class_definition" in definition) ? definition.class_definition : definition;
   // either the element type is defined ('type', 'model', 'package', or 'record') or
   // 'extend_clause' or 'component_clause' is provided
   let elementType = null;
@@ -493,5 +499,7 @@ export function setPathPrefix(prefix: string) {
 // Extracts models/packages
 export const getFile = (filePath: string) => {
   const jsonData = loader(pathPrefix, filePath);
-  return new File(jsonData);
+  if (jsonData) {
+    return new File(jsonData);
+  }
 };

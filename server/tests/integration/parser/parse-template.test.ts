@@ -31,19 +31,19 @@ describe("Basic parser functionality", () => {
   });
 
   it("Extracts a 'file' object", () => {
-    const file = parser.getFile(testModelicaFile);
+    const file = parser.getFile(testModelicaFile) as parser.File;
     const expectedPath = "TestPackage.Template";
     expect(file.modelicaPath).toEqual(expectedPath);
   });
 
   it("Supports loading with / syntax", () => {
-    const file = parser.getFile(testModelicaFile);
+    const file = parser.getFile(testModelicaFile) as parser.File;
     const expectedPath = "TestPackage.Template";
     expect(file.modelicaPath).toEqual(expectedPath);
   });
 
   it("Extracts Template modelica path", () => {
-    const file = parser.getFile(testModelicaFile);
+    const file = parser.getFile(testModelicaFile) as parser.File;
     const [template, ..._rest] = file.entries;
     const expectedPath = "TestPackage.Template.TestTemplate";
     expect(template.modelicaPath).toEqual(expectedPath);
@@ -52,7 +52,7 @@ describe("Basic parser functionality", () => {
   it("Builds up modelica paths for subcomponents", () => {
     const paramName = "dat";
 
-    const file = parser.getFile(testModelicaFile);
+    const file = parser.getFile (testModelicaFile) as parser.File;
     const template = file.entries[0] as parser.Model;
     const expectedPath = `${template.modelicaPath}.${paramName}`;
 
@@ -64,7 +64,7 @@ describe("Basic parser functionality", () => {
   it("Generates type instances by for related files", () => {
     const paramName = "dat";
 
-    const file = parser.getFile(testModelicaFile);
+    const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.entries[0] as parser.Model;
     const expectedPath = `${template.modelicaPath}.${paramName}`;
 
@@ -76,7 +76,7 @@ describe("Basic parser functionality", () => {
   });
 
   it("Extracts model elements", () => {
-    const file = parser.getFile(testModelicaFile);
+    const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.entries[0] as parser.Model;
     expect(template.elementList.length).not.toBe(0);
     template.elementList.map((e: parser.Element) =>
@@ -95,7 +95,7 @@ describe("Expected Options are extracted", () => {
   });
 
   it("Generates Options for literal types", () => {
-    const file = parser.getFile(testModelicaFile);
+    const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.entries[0] as parser.Model;
 
     // get elements that match literal types: Boolean, String, Real, Integer, Enum
@@ -144,7 +144,7 @@ describe("Expected Options are extracted", () => {
   Check that instead of a value, the option has a value expression
   */
   it("Extracts literal value expression", () => {
-    const file = parser.getFile(testModelicaFile);
+    const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.entries[0] as parser.Model;
     const options = template.getOptions();
     const option = options.find(
@@ -157,7 +157,7 @@ describe("Expected Options are extracted", () => {
   })
 
   it("Extracts 'choices'", () => {
-    const file = parser.getFile(testModelicaFile);
+    const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.entries[0] as parser.Model;
     const component = template.elementList.find(
       (e) => e.name === "selectable_component",
@@ -176,7 +176,7 @@ describe("Expected Options are extracted", () => {
   it("Gets parameter UI info", () => {
     const expectedTab = "Tabby";
     const expectedGroup = "Groupy";
-    const file = parser.getFile(testModelicaFile);
+    const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.entries[0] as parser.Model;
     const options = template.getOptions();
     const option = options.find(
