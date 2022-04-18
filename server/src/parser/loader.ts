@@ -14,6 +14,10 @@ export default function (prefix: string, reference: string) {
   if (fs.existsSync(jsonFile)) {
     return require(jsonFile);
   } else {
-    throw new Error(`${jsonFile} could not be found!!`);
+    if (!reference.startsWith('Modelica')) { // TODO: how to handle modelica standard library
+      throw new Error(`${jsonFile} could not be found!!`);  
+    }
+    // TODO: check if a 'Modelica' path - we have nothing to import here
+    // The extend clause is failing because of this!
   }
 }
