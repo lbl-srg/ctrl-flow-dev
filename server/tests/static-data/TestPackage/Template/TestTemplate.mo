@@ -3,7 +3,7 @@ model TestTemplate "Test Template"
   /*
     Test that extends work as expected
   */
-  extends Interface.ExtendInterface(
+  extends TestPackage.Interface.ExtendInterface(
     interface_param="Updated Value"
   );
 
@@ -77,7 +77,7 @@ model TestTemplate "Test Template"
   parameter Integer test_int=2
     "Test Integer";
 
-  parameter TestModelicaPackage.Types.IceCream typ = TestModelicaPackage.Types.IceCream.Chocolate
+  parameter TestPackage.Types.IceCream typ = TestModelicaPackage.Types.IceCream.Chocolate
     "Test Enum"
     annotation (
       Evaluate=true,
