@@ -1,15 +1,39 @@
 import schematic from "./schematics-example.png";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState, createRef } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 function ImgControl() {
+  const $root = createRef<HTMLDivElement>();
+
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    function calcHeight() {
+      const $el = $root.current;
+      if (!$el) return;
+      const top = $el.getBoundingClientRect().top || 0;
+      setHeight(window.innerHeight - top - 80);
+      console.log("resized");
+    }
+
+    window.addEventListener("resize", calcHeight);
+    calcHeight();
+
+    return () => {
+      window.removeEventListener("resize", calcHeight);
+    };
+  });
+
   return (
-    <div className="drag-container">
+    <div
+      ref={$root}
+      style={{ height: `${height}px` }}
+      className="drag-container"
+    >
       <TransformWrapper
         initialScale={1}
         initialPositionX={0}
         initialPositionY={0}
-        wheel={{ disabled: true }}
       >
         {({ zoomIn, zoomOut, resetTransform }) => (
           <Fragment>
