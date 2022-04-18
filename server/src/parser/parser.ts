@@ -153,7 +153,9 @@ export class Record extends Element {
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = "Record";
     this.description = specifier.description_string;
-    this.elementList = specifier.composition.element_list;
+    this.elementList = specifier.composition.element_list.map((e: any) =>
+    _constructElement(e, this.modelicaPath),
+    );
     store.set(this.modelicaPath, this);
   }
 
@@ -172,7 +174,9 @@ export class Package extends Element {
     this.name = specifier.identifer;
     this.modelicaPath = `${basePath}.${this.name}`;
     this.description = specifier.description_string;
-    this.elementList = specifier.composition.element_list;
+    this.elementList = specifier.composition.element_list.map((e: any) =>
+      _constructElement(e, this.modelicaPath),
+    );
   }
 
   getOptions() {
