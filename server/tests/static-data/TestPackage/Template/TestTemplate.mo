@@ -41,7 +41,7 @@ model TestTemplate "Test Template"
   /*
     Test Record
   */
-  parameter TestPackage.Data.TestRecord dat
+  parameter TestPackage.Template.Data.TestRecord dat
     "Record with additional parameters";
 
   /*
