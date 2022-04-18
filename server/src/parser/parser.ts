@@ -20,9 +20,12 @@ class Store {
   get(path: string) {
     if (!(MODELICA_LITERALS.includes(path))) {
       if (!this._store.has(path)) {
-        getFile(path);
+        try {
+          getFile(path);
+        } catch (error) {
+          throw new Error(`Unable to find type ${path}`);
+        }
       }
-  
       return this._store.get(path);
     }
   }
