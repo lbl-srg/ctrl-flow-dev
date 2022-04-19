@@ -164,14 +164,13 @@ describe("Expected Options are extracted", () => {
     const component = template.elementList.find(
       (e) => e.name === "selectable_component",
     ) as parser.Element;
-    const options = component.getOptions();
+    const options = component.getOptions(false);
     expect(options.length).toBe(1);
-    const choices = options[0].options as parser.OptionN[];
-    expect(choices.length).toBe(2);
-    const [choice1, choice2] = choices;
-
-    expect(choice1.value).toBe("TestPackage.Component.SecondComponent");
-    expect(choice2.value).toBe("TestPackage.Component.ThirdComponent");
+    const [option] = options;
+    expect(option.options?.length).toBe(2);
+    const [choice1, choice2] = option.options as string[];
+    expect(choice1).toBe("TestPackage.Component.SecondComponent");
+    expect(choice2).toBe("TestPackage.Component.ThirdComponent");
   });
 
   it("Gets parameter UI info", () => {

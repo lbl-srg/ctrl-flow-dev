@@ -18,7 +18,7 @@ class Store {
   }
 
   get(path: string): Element | undefined {
-    if (!(MODELICA_LITERALS.includes(path))) {
+    if (!MODELICA_LITERALS.includes(path)) {
       if (!this._store.has(path)) {
         try {
           getFile(path);
@@ -46,7 +46,7 @@ type RedeclarationMod = {
 };
 
 type ClassMod = {
-  class_modification: WrappedMod[];
+  class_modification: (WrappedMod | RedeclarationMod)[];
 };
 
 type Assignment = {
@@ -109,16 +109,20 @@ class Modification {
         // TODO: feed this into an expression parser to generate actual expression
         // instances IF there is an expression. If it is a simple value keep the assignment
         this.value = (mod as Assignment).expression.simple_expression;
+      } else if (this.name == "choice") {
+        // element_redeclarations
+        // choice has the following structure:
+        // ClassMod -> RedeclarationMod
+        const choiceMod = (mod as ClassMod)
+          .class_modification[0] as RedeclarationMod;
+        this.value =
+          choiceMod.element_redeclaration.component_clause1.type_specifier;
       } else if ("class_modification" in mod) {
         this.mods = (mod as ClassMod).class_modification.map(
-          (m) => new Modification(m),
+          (m) => new Modification(m as WrappedMod),
         );
       } else if ("element_redeclaration" in mod) {
-        // element_redeclarations don't have a name
-        this.name = "choice";
-        this.value = (
-          mod as RedeclarationMod
-        ).element_redeclaration.component_clause1.type_specifier;
+        this.value = mod.element_redeclaration.component_clause1.type_specifier;
       }
     } else {
       this.empty = true;
@@ -159,12 +163,12 @@ export class Record extends Element {
     this.type = "Record";
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list.map((e: any) =>
-    _constructElement(e, this.modelicaPath),
+      _constructElement(e, this.modelicaPath),
     );
     store.set(this.modelicaPath, this);
   }
 
-  getOptions(recursive=true) {
+  getOptions(recursive = true) {
     return this.elementList.flatMap((el) => el.getOptions());
   }
 }
@@ -184,7 +188,7 @@ export class Package extends Element {
     );
   }
 
-  getOptions(recursive=true) {
+  getOptions(recursive = true) {
     return this.elementList.flatMap((el) => el.getOptions());
   }
 }
@@ -206,16 +210,18 @@ export class Model extends Element {
     store.set(this.modelicaPath, this);
   }
 
-  getOptions(recursive=true) {
+  getOptions(recursive = true) {
     // TODO: models are a separate structure. They just link to additional options
     // but do not need a UI element to represent it as selectable. May need to repesent this
     // with a different structure OR indicate it is a 'link'
-    const childOptions = this.elementList.flatMap((el) => el.getOptions()).map(o => o.modelicaPath);
+    const childOptions = this.elementList
+      .flatMap((el) => el.getOptions())
+      .map((o) => o.modelicaPath);
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       name: this.description,
-      options: childOptions
+      options: childOptions,
     };
 
     const options = [option];
@@ -231,7 +237,7 @@ export class Component extends Element {
   type = ""; // modelica path
   value: any;
   description = "";
-  annotation: any[] = [];
+  annotation: Modification[] = [];
   tab? = "";
   group? = "";
   enable: Expression = { expression: "", modelicaPath: "" };
@@ -255,9 +261,11 @@ export class Component extends Element {
 
     if (descriptionBlock) {
       this.description = descriptionBlock?.description_string || "";
-      this.annotation = descriptionBlock?.annotation;
-      if (this.annotation) {
-        this._setUIInfo(this.annotation);
+      if (descriptionBlock?.annotation) {
+        this.annotation = descriptionBlock.annotation.map(
+          (mod: Mod | WrappedMod) => new Modification(mod),
+        );
+        this._setUIInfo();
       }
     }
 
@@ -294,10 +302,8 @@ export class Component extends Element {
    * Sets tab and group if found
    * assigns 'enable' expression
    */
-  _setUIInfo(annotation: (Mod | WrappedMod)[]) {
-    const mods = annotation.map((mod) => new Modification(mod));
-
-    const dialog = mods.find((m) => m.name === "Dialog");
+  _setUIInfo() {
+    const dialog = this.annotation.find((m) => m.name === "Dialog");
     if (dialog) {
       const group = dialog.mods.find((m) => m.name === "group")?.value;
       const tab = dialog.mods.find((m) => m.name === "tab")?.value;
@@ -313,7 +319,7 @@ export class Component extends Element {
     }
   }
 
-  getOptions(recursive=true) {
+  getOptions(recursive = true) {
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
@@ -330,7 +336,7 @@ export class Component extends Element {
     if (recursive) {
       const typeInstance = store.get(this.type) || null;
       if (typeInstance) {
-        const childOptions = typeInstance.getOptions(recursive=false);
+        const childOptions = typeInstance.getOptions((recursive = false));
         option.options = childOptions.map((c: OptionN) => c.modelicaPath);
         options.push(...typeInstance.getOptions());
       }
@@ -341,54 +347,44 @@ export class Component extends Element {
 }
 
 export class Replaceable extends Component {
-  choices: { type: string; description: string }[] = [];
+  choices: string[] = [];
   constructor(definition: any, basePath: string) {
     super(definition, basePath);
 
     // the default value is original type provided
     this.value = this.type;
 
-    // TODO: switch choices extraction to use 'Mod' class
-    // extract choices from the annotation
-    const choicesBlock = this.annotation.find(
-      (entry: any) =>
-        entry?.element_modification_or_replacable?.element_modification
-          ?.name === "choices",
-    )?.element_modification_or_replacable?.element_modification;
+    const choices = this.annotation.find(
+      (m) => m.name === "choices",
+    ) as Modification;
 
-    if (choicesBlock) {
-      // iterate through each modification and get the choice
-      const choiceList = choicesBlock.modification.class_modification;
-      choiceList.map((c: any) => {
-        const [choiceMod, ..._rest] =
-          c.element_modification_or_replacable.element_modification
-            .class_modification;
-        const componentClause =
-          choiceMod.elementredeclaration.component_clause1;
-        const type = componentClause.type_specifier;
-        const description =
-          componentClause.component_declaration1.description.description_string;
-
-        this.choices.push({ type, description });
+    if (choices) {
+      choices.mods.map((choice) => {
+        if (choice.value) {
+          this.choices.push(choice.value as string);
+        } else {
+          throw new Error("Malformed 'Choices' specified");
+        }
       });
     }
   }
 
-  getOptions(recursive=true) {
-    const options: OptionN[] = [];
-    const option: OptionN = {
+  getOptions(recursive = true) {
+    const option = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       value: this.value,
       name: this.description,
-      options: [],
+      options: [] as string[],
     };
 
+    const options: OptionN[] = [option];
+
     this.choices.map((c) => {
-      option.options?.push(c.type);
+      option.options.push(c);
 
       if (recursive) {
-        const typeInstance = store.get(c.type) || null;
+        const typeInstance = store.get(c) || null;
         if (typeInstance) {
           options.push(...typeInstance.getOptions());
         }
@@ -430,7 +426,7 @@ export class Enum extends Element {
     );
   }
 
-  getOptions(recursive=true) {
+  getOptions(recursive = true) {
     // outputs a parent option, then an option for each enum type
     const optionList: any = this.enumList.map((e) => ({
       modelicaPath: e.modelicaPath,
@@ -456,7 +452,7 @@ export class ExtendClause extends Element {
     store.set(this.modelicaPath, this);
   }
 
-  getOptions(recursive=true) {
+  getOptions(recursive = true) {
     // TODO
     const typeInstance = store.get(this.type);
     return typeInstance ? typeInstance.getOptions() : [];
@@ -476,11 +472,13 @@ function _constructElement(
 ): Element | undefined {
   const extend = "extends_clause";
   const component = "component_clause";
+  const replaceable = "replaceable";
 
   // TODO: iterating through a list of elements, 'class_definition'
-    // nested class definitions are wrapped in an additional 'class_definition' tag
-    // check if this is the case
-  definition = ("class_definition" in definition) ? definition.class_definition : definition;
+  // nested class definitions are wrapped in an additional 'class_definition' tag
+  // check if this is the case
+  definition =
+    "class_definition" in definition ? definition.class_definition : definition;
   // either the element type is defined ('type', 'model', 'package', or 'record') or
   // 'extend_clause' or 'component_clause' is provided
   let elementType = null;
@@ -488,6 +486,8 @@ function _constructElement(
     elementType = definition.class_prefixes;
   } else if (extend in definition) {
     elementType = extend;
+  } else if (replaceable in definition && definition.replaceable) {
+    elementType = replaceable;
   } else if (component in definition) {
     elementType = component;
   }
@@ -505,6 +505,8 @@ function _constructElement(
       return new ExtendClause(definition, basePath);
     case component:
       return new Component(definition, basePath);
+    case replaceable:
+      return new Replaceable(definition, basePath);
   }
 }
 
