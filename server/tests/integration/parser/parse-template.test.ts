@@ -52,7 +52,7 @@ describe("Basic parser functionality", () => {
   it("Builds up modelica paths for subcomponents", () => {
     const paramName = "dat";
 
-    const file = parser.getFile (testModelicaFile) as parser.File;
+    const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.entries[0] as parser.Model;
     const expectedPath = `${template.modelicaPath}.${paramName}`;
 
@@ -68,10 +68,12 @@ describe("Basic parser functionality", () => {
     const template = file.entries[0] as parser.Model;
     const expectedPath = `${template.modelicaPath}.${paramName}`;
 
-    const dat = template.elementList.find((e) => e.modelicaPath === expectedPath) as parser.Component;
-  
-    const option = dat.getOptions()[0]
-  
+    const dat = template.elementList.find(
+      (e) => e.modelicaPath === expectedPath,
+    ) as parser.Component;
+
+    const option = dat.getOptions()[0];
+
     expect(option.options).toBeTruthy();
   });
 
@@ -154,7 +156,7 @@ describe("Expected Options are extracted", () => {
 
     expect(option.value).toBeNull();
     expect(option.valueExpression).toBeTruthy();
-  })
+  });
 
   it("Extracts 'choices'", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
@@ -164,13 +166,12 @@ describe("Expected Options are extracted", () => {
     ) as parser.Element;
     const options = component.getOptions();
     expect(options.length).toBe(1);
-    // TODO: run below tests when file loader is integrated
-    // const choices = options[0].options as parser.OptionN[];
-    // expect(choices.length).toBe(2);
-    // const [choice1, choice2] = choices;
+    const choices = options[0].options as parser.OptionN[];
+    expect(choices.length).toBe(2);
+    const [choice1, choice2] = choices;
 
-    // expect(choice1.value).toBe("TestPackage.Component.SecondComponent");
-    // expect(choice2.value).toBe("TestPackage.Component.ThirdComponent");
+    expect(choice1.value).toBe("TestPackage.Component.SecondComponent");
+    expect(choice2.value).toBe("TestPackage.Component.ThirdComponent");
   });
 
   it("Gets parameter UI info", () => {
@@ -189,12 +190,10 @@ describe("Expected Options are extracted", () => {
 
     // also test a "constrainedby" component as this impacts where the annotation
     // is placed
-    const selectablePath = "TestPackage.Template.TestTemplate.selectable_component";
-    const selectableGroup = "Selectable Component"
-    const selectable = options.find(
-      (o) =>
-        o.modelicaPath === selectablePath
-    );
+    const selectablePath =
+      "TestPackage.Template.TestTemplate.selectable_component";
+    const selectableGroup = "Selectable Component";
+    const selectable = options.find((o) => o.modelicaPath === selectablePath);
     expect(selectable?.group).toEqual(selectableGroup);
   });
 

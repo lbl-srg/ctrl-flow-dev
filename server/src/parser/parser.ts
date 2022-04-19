@@ -13,11 +13,11 @@ export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 class Store {
   _store: Map<string, any> = new Map();
 
-  set(path: string, element: any) {
+  set(path: string, element: Element) {
     this._store.set(path, element);
   }
 
-  get(path: string) {
+  get(path: string): Element | undefined {
     if (!(MODELICA_LITERALS.includes(path))) {
       if (!this._store.has(path)) {
         try {
@@ -131,8 +131,8 @@ export interface OptionN {
   // id: number;
   type: string;
   name: string;
-  modelicaPath: string; //
-  options?: OptionN[]; // TODO: flatten references
+  modelicaPath: string;
+  options?: string[];
   group?: string;
   tab?: string;
   value?: any;
@@ -145,7 +145,7 @@ export abstract class Element {
   name = "";
   type = "";
 
-  abstract getOptions(): OptionN[];
+  abstract getOptions(recursive?: boolean): OptionN[];
 }
 
 export class Record extends Element {
@@ -164,7 +164,7 @@ export class Record extends Element {
     store.set(this.modelicaPath, this);
   }
 
-  getOptions() {
+  getOptions(recursive=true) {
     return this.elementList.flatMap((el) => el.getOptions());
   }
 }
@@ -184,7 +184,7 @@ export class Package extends Element {
     );
   }
 
-  getOptions() {
+  getOptions(recursive=true) {
     return this.elementList.flatMap((el) => el.getOptions());
   }
 }
@@ -206,7 +206,21 @@ export class Model extends Element {
     store.set(this.modelicaPath, this);
   }
 
-  getOptions() {
+  getOptions(recursive=true) {
+    // TODO: models are a separate structure. They just link to additional options
+    // but do not need a UI element to represent it as selectable. May need to repesent this
+    // with a different structure OR indicate it is a 'link'
+    const childOptions = this.elementList.flatMap((el) => el.getOptions()).map(o => o.modelicaPath);
+    const option: OptionN = {
+      modelicaPath: this.modelicaPath,
+      type: this.type,
+      name: this.description,
+      options: childOptions
+    };
+
+    const options = [option];
+
+    // problem... we only want the first layer of options to relate
     return this.elementList.flatMap((el) => el.getOptions());
   }
 }
@@ -232,10 +246,12 @@ export class Component extends Element {
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
 
+    // description block (where the annotation is) can be in different locations
+    // constrainby changes this location
     this.type = componentClause.type_specifier;
     const descriptionBlock =
       componentClause.component_list.find((c: any) => "description" in c)
-        ?.description || definition["description"]; // TODO: unsure why description block can be in different locations
+        ?.description || definition["description"];
 
     if (descriptionBlock) {
       this.description = descriptionBlock?.description_string || "";
@@ -297,7 +313,7 @@ export class Component extends Element {
     }
   }
 
-  getOptions() {
+  getOptions(recursive=true) {
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
@@ -309,12 +325,18 @@ export class Component extends Element {
       enable: this.enable,
     };
 
-    const typeInstance = store.get(this.type) || null;
-    if (typeInstance) {
-      option.options = typeInstance.getOptions();
+    const options = [option];
+
+    if (recursive) {
+      const typeInstance = store.get(this.type) || null;
+      if (typeInstance) {
+        const childOptions = typeInstance.getOptions(recursive=false);
+        option.options = childOptions.map((c: OptionN) => c.modelicaPath);
+        options.push(...typeInstance.getOptions());
+      }
     }
 
-    return [option];
+    return options;
   }
 }
 
@@ -352,7 +374,8 @@ export class Replaceable extends Component {
     }
   }
 
-  getOptions() {
+  getOptions(recursive=true) {
+    const options: OptionN[] = [];
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
@@ -362,13 +385,17 @@ export class Replaceable extends Component {
     };
 
     this.choices.map((c) => {
-      const typeInstance = store.get(c.type) || null;
-      if (typeInstance) {
-        option.options?.push(...typeInstance.getOptions());
+      option.options?.push(c.type);
+
+      if (recursive) {
+        const typeInstance = store.get(c.type) || null;
+        if (typeInstance) {
+          options.push(...typeInstance.getOptions());
+        }
       }
     });
 
-    return [option];
+    return options;
   }
 }
 
@@ -403,7 +430,7 @@ export class Enum extends Element {
     );
   }
 
-  getOptions() {
+  getOptions(recursive=true) {
     // outputs a parent option, then an option for each enum type
     const optionList: any = this.enumList.map((e) => ({
       modelicaPath: e.modelicaPath,
@@ -429,9 +456,10 @@ export class ExtendClause extends Element {
     store.set(this.modelicaPath, this);
   }
 
-  getOptions() {
+  getOptions(recursive=true) {
+    // TODO
     const typeInstance = store.get(this.type);
-    return typeInstance ? typeInstance.getOptions() : []; // TODO: return options from store
+    return typeInstance ? typeInstance.getOptions() : [];
   }
 }
 
