@@ -196,5 +196,16 @@ describe("Expected Options are extracted", () => {
     expect(selectable?.group).toEqual(selectableGroup);
   });
 
-  it("Ignore 'final' parameters", () => {});
+  it("Ignore 'final' parameters", () => {
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.entries[0] as parser.Model;
+
+    const options = template.getOptions();  
+    const option = options.find(
+      (o) =>
+        o.modelicaPath === "TestPackage.Template.TestTemplate.should_ignore",
+    );
+
+    expect(option).toBeUndefined();
+  });
 });

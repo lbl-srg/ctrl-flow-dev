@@ -121,8 +121,6 @@ class Modification {
         this.mods = (mod as ClassMod).class_modification.map(
           (m) => new Modification(m as WrappedMod),
         );
-      } else if ("element_redeclaration" in mod) {
-        this.value = mod.element_redeclaration.component_clause1.type_specifier;
       }
     } else {
       this.empty = true;
@@ -237,6 +235,7 @@ export class Component extends Element {
   type = ""; // modelica path
   value: any;
   description = "";
+  final = false;
   annotation: Modification[] = [];
   tab? = "";
   group? = "";
@@ -251,10 +250,12 @@ export class Component extends Element {
     ).declaration as DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
+    this.final = definition.final ? definition.final : this.final;
+
+    this.type = componentClause.type_specifier;
 
     // description block (where the annotation is) can be in different locations
     // constrainby changes this location
-    this.type = componentClause.type_specifier;
     const descriptionBlock =
       componentClause.component_list.find((c: any) => "description" in c)
         ?.description || definition["description"];
@@ -331,7 +332,7 @@ export class Component extends Element {
       enable: this.enable,
     };
 
-    const options = [option];
+    const options = this.final ? [] : [option];
 
     if (recursive) {
       const typeInstance = store.get(this.type) || null;
@@ -376,6 +377,8 @@ export class Replaceable extends Component {
       value: this.value,
       name: this.description,
       options: [] as string[],
+      group: this.group,
+      tab: this.tab,
     };
 
     const options: OptionN[] = [option];

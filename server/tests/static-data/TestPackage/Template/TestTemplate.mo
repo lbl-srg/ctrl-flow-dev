@@ -23,7 +23,7 @@ model TestTemplate "Test Template"
     TestPackage.Interface.Partial(
       final container=TestPackage.Types.Container.Cone
     )
-    "Second Component"
+    "Replaceable Component"
     annotation (
       choices(
         choice(
@@ -61,7 +61,7 @@ model TestTemplate "Test Template"
   /*
     Bool assigned by expression
   */
-  final parameter Boolean expression_bool=dat.nested_bool;
+  parameter Boolean expression_bool=dat.nested_bool;
 
   // TODO: add values for annotation variations
 
