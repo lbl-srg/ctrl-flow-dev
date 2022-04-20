@@ -150,48 +150,7 @@ export abstract class Element {
   abstract getOptions(recursive?: boolean): OptionN[];
 }
 
-export class Record extends Element {
-  elementList: Element[];
-  description: string;
-  constructor(definition: any, basePath: string) {
-    super();
-    const specifier = definition.class_specifier.long_class_specifier;
-    this.name = specifier.identifier;
-    this.modelicaPath = `${basePath}.${this.name}`;
-    this.type = "Record";
-    this.description = specifier.description_string;
-    this.elementList = specifier.composition.element_list.map((e: any) =>
-      _constructElement(e, this.modelicaPath),
-    );
-    store.set(this.modelicaPath, this);
-  }
-
-  getOptions(recursive = true) {
-    return this.elementList.flatMap((el) => el.getOptions());
-  }
-}
-
-export class Package extends Element {
-  elementList: Element[];
-  description: string;
-
-  constructor(definition: any, basePath: string) {
-    super();
-    const specifier = definition.class_specifier.long_class_specifier;
-    this.name = specifier.identifier;
-    this.modelicaPath = `${basePath}.${this.name}`;
-    this.description = specifier.description_string;
-    this.elementList = specifier.composition.element_list.map((e: any) =>
-      _constructElement(e, this.modelicaPath),
-    );
-  }
-
-  getOptions(recursive = true) {
-    return this.elementList.flatMap((el) => el.getOptions());
-  }
-}
-
-export class Model extends Element {
+export class InputGroup extends Element {
   elementList: Element[];
   description: string;
 
@@ -209,28 +168,12 @@ export class Model extends Element {
   }
 
   getOptions(recursive = true) {
-    // TODO: models are a separate structure. They just link to additional options
-    // but do not need a UI element to represent it as selectable. May need to repesent this
-    // with a different structure OR indicate it is a 'link'
-    const childOptions = this.elementList
-      .flatMap((el) => el.getOptions())
-      .map((o) => o.modelicaPath);
-    const option: OptionN = {
-      modelicaPath: this.modelicaPath,
-      type: this.type,
-      name: this.description,
-      options: childOptions,
-    };
-
-    const options = [option];
-
-    // problem... we only want the first layer of options to relate
     return this.elementList.flatMap((el) => el.getOptions());
   }
 }
 
 // a parameter with a type
-export class Component extends Element {
+export class Input extends Element {
   modifications: any[] = [];
   type = ""; // modelica path
   value: any;
@@ -347,7 +290,7 @@ export class Component extends Element {
   }
 }
 
-export class Replaceable extends Component {
+export class ReplaceableInput extends Input {
   choices: string[] = [];
   constructor(definition: any, basePath: string) {
     super(definition, basePath);
@@ -434,15 +377,15 @@ export class Enum extends Element {
       modelicaPath: e.modelicaPath,
       name: e.description,
       type: this.type,
-      value: e.modelicaPath
+      value: e.modelicaPath,
     }));
 
     return optionList;
   }
 }
 
-// TODO: this almost entirely overlaps with 'Component' - try and refactor
-export class ExtendClause extends Element {
+// Inherited properties by type with modifications
+export class InputGroupExtend extends Element {
   modifications: any[] = [];
   type: string;
   constructor(definition: any, basePath: string) {
@@ -498,17 +441,15 @@ function _constructElement(
       return new Enum(definition, basePath);
     case "model":
     case "partial model":
-      return new Model(definition, basePath);
-    case "package":
-      return new Package(definition, basePath);
     case "record":
-      return new Record(definition, basePath);
+    case "package":
+      return new InputGroup(definition, basePath);
     case extend:
-      return new ExtendClause(definition, basePath);
+      return new InputGroupExtend(definition, basePath);
     case component:
-      return new Component(definition, basePath);
+      return new Input(definition, basePath);
     case replaceable:
-      return new Replaceable(definition, basePath);
+      return new ReplaceableInput(definition, basePath);
   }
 }
 

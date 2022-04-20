@@ -52,7 +52,7 @@ describe("Basic parser functionality", () => {
     const paramName = "dat";
 
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.entries[0] as parser.Model;
+    const template = file.entries[0] as parser.InputGroup;
     const expectedPath = `${template.modelicaPath}.${paramName}`;
 
     expect(
@@ -64,12 +64,12 @@ describe("Basic parser functionality", () => {
     const paramName = "dat";
 
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.entries[0] as parser.Model;
+    const template = file.entries[0] as parser.InputGroup;
     const expectedPath = `${template.modelicaPath}.${paramName}`;
 
     const dat = template.elementList.find(
       (e) => e.modelicaPath === expectedPath,
-    ) as parser.Component;
+    ) as parser.Input;
 
     const option = dat.getOptions()[0];
 
@@ -78,7 +78,7 @@ describe("Basic parser functionality", () => {
 
   it("Extracts model elements", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.entries[0] as parser.Model;
+    const template = file.entries[0] as parser.InputGroup;
     expect(template.elementList.length).not.toBe(0);
     template.elementList.map((e: parser.Element) =>
       expect(e.modelicaPath).not.toBeFalsy(),
@@ -97,7 +97,7 @@ describe("Expected Options are extracted", () => {
 
   it("Generates Options for literal types", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.entries[0] as parser.Model;
+    const template = file.entries[0] as parser.InputGroup;
 
     // get elements that match literal types: Boolean, String, Real, Integer, Enum
     const templateOptions = template.getOptions();
@@ -146,7 +146,7 @@ describe("Expected Options are extracted", () => {
   */
   it("Extracts literal value expression", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.entries[0] as parser.Model;
+    const template = file.entries[0] as parser.InputGroup;
     const options = template.getOptions();
     const option = options.find(
       (o) =>
@@ -159,7 +159,7 @@ describe("Expected Options are extracted", () => {
 
   it("Extracts 'choices'", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.entries[0] as parser.Model;
+    const template = file.entries[0] as parser.InputGroup;
     const component = template.elementList.find(
       (e) => e.name === "selectable_component",
     ) as parser.Element;
@@ -176,7 +176,7 @@ describe("Expected Options are extracted", () => {
     const expectedTab = "Tabby";
     const expectedGroup = "Groupy";
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.entries[0] as parser.Model;
+    const template = file.entries[0] as parser.InputGroup;
     const options = template.getOptions();
     const option = options.find(
       (o) =>
@@ -197,7 +197,7 @@ describe("Expected Options are extracted", () => {
 
   it("Ignore 'final' parameters", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.entries[0] as parser.Model;
+    const template = file.entries[0] as parser.InputGroup;
 
     const options = template.getOptions();
     const option = options.find(
@@ -210,7 +210,7 @@ describe("Expected Options are extracted", () => {
 
   it("Enums return each type as an option", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.entries[0] as parser.Model;
+    const template = file.entries[0] as parser.InputGroup;
     const expectedValues = ["Chocolate", "Vanilla", "Strawberry"];
 
     const element = template.elementList.find(
@@ -224,5 +224,12 @@ describe("Expected Options are extracted", () => {
     });
 
     expect(expectedValues.length).toBe(0);
+  });
+
+  it("Extracts the expected number of options for the TestTemplate", () => {
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.entries[0] as parser.InputGroup;
+    const options = template.getOptions();
+    expect(options.length).toBeGreaterThan(10);
   });
 });
