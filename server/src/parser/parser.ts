@@ -412,7 +412,6 @@ export class Enum extends Element {
     this.name = specifier.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = "Enum";
-    this.enumList = specifier.value.enum_list;
     this.description = specifier.value.description.description_string;
     store.set(this.modelicaPath, this);
 
@@ -431,11 +430,11 @@ export class Enum extends Element {
 
   getOptions(recursive = true) {
     // outputs a parent option, then an option for each enum type
-    const optionList: any = this.enumList.map((e) => ({
+    const optionList: OptionN[] = this.enumList.map((e) => ({
       modelicaPath: e.modelicaPath,
       name: e.description,
       type: this.type,
-      options: null,
+      value: e.modelicaPath
     }));
 
     return optionList;
@@ -445,20 +444,19 @@ export class Enum extends Element {
 // TODO: this almost entirely overlaps with 'Component' - try and refactor
 export class ExtendClause extends Element {
   modifications: any[] = [];
-  type: string; // modelica path
+  type: string;
   constructor(definition: any, basePath: string) {
     super();
     this.name = "__extend"; // arbitrary name. Important that this will not collide with other param names
-    this.modelicaPath = `${basePath}.${definition.extends_clause.name}`;
+    this.modelicaPath = `${basePath}.${this.name}`;
     this.type = definition.extends_clause.name;
 
     store.set(this.modelicaPath, this);
   }
 
   getOptions(recursive = true) {
-    // TODO
     const typeInstance = store.get(this.type);
-    return typeInstance ? typeInstance.getOptions() : [];
+    return typeInstance ? typeInstance.getOptions(recursive) : [];
   }
 }
 
@@ -499,6 +497,7 @@ function _constructElement(
     case "type":
       return new Enum(definition, basePath);
     case "model":
+    case "partial model":
       return new Model(definition, basePath);
     case "package":
       return new Package(definition, basePath);

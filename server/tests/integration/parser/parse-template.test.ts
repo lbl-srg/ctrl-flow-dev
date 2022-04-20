@@ -1,7 +1,6 @@
 import { notDeepEqual } from "assert";
 import { execSync } from "child_process";
 import fs from "fs";
-import path from "path";
 
 import config from "../../../src/config";
 import * as parser from "../../../src/parser/parser";
@@ -200,12 +199,30 @@ describe("Expected Options are extracted", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.entries[0] as parser.Model;
 
-    const options = template.getOptions();  
+    const options = template.getOptions();
     const option = options.find(
       (o) =>
         o.modelicaPath === "TestPackage.Template.TestTemplate.should_ignore",
     );
 
     expect(option).toBeUndefined();
+  });
+
+  it("Enums return each type as an option", () => {
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.entries[0] as parser.Model;
+    const expectedValues = ["Chocolate", "Vanilla", "Strawberry"];
+
+    const element = template.elementList.find(
+      (e) => e.modelicaPath === "TestPackage.Template.TestTemplate.typ",
+    ) as parser.Element;
+    const [parent, ...childOptions] = element.getOptions();
+
+    expect(childOptions?.length).toEqual(expectedValues.length);
+    childOptions?.map((o: parser.OptionN) => {
+      expectedValues.splice(expectedValues.indexOf(o.value));
+    });
+
+    expect(expectedValues.length).toBe(0);
   });
 });
