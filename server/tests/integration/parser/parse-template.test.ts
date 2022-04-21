@@ -229,6 +229,8 @@ describe("Expected Options are extracted", () => {
   it("Extracts the expected number of options for the TestTemplate", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.entries[0] as parser.InputGroup;
+    // TODO: update getOptions so it returns a dictionary. Use the dictionary to
+    // prevent duplicate options
     const options = template.getOptions();
     expect(options.length).toBe(21);
   });
