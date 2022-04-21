@@ -3,9 +3,8 @@ import path from "path";
 import loader from "./loader";
 
 const EXTEND_NAME = "__extend";
-// TODO: there are many literals defined in the modelica standard library
-// e.g. 'Modelica.Units.SI.PressureDifference'. We'll have to account for these types
-// as well
+// TODO: templates *should* have all types defined within a template - however there will
+// be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 
 // const store: { [key: string]: any } = {};
@@ -291,9 +290,6 @@ export class Input extends Element {
   }
 
   getOptions(recursive = true) {
-    // TODO: when dealing with input groups does this parent option
-    // make sense? It may since we need context to avoid the problem of
-    // multiple instances of the same class
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
@@ -464,9 +460,6 @@ function _constructElement(
   const component = "component_clause";
   const replaceable = "replaceable";
 
-  // TODO: iterating through a list of elements, 'class_definition'
-  // nested class definitions are wrapped in an additional 'class_definition' tag
-  // check if this is the case
   definition =
     "class_definition" in definition ? definition.class_definition : definition;
   // either the element type is defined ('type', 'model', 'package', or 'record') or

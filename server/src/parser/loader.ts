@@ -2,9 +2,9 @@ import path from "path";
 import fs from "fs";
 
 export default function (prefix: string, reference: string) {
-
   let parsedPath = path.parse(reference.replace(/\./g, "/"));
-  let jsonFile = path.resolve(prefix, parsedPath.dir, parsedPath.name) + ".json";
+  let jsonFile =
+    path.resolve(prefix, parsedPath.dir, parsedPath.name) + ".json";
 
   while (!fs.existsSync(jsonFile) && parsedPath.name) {
     parsedPath = path.parse(parsedPath.dir);
@@ -14,10 +14,10 @@ export default function (prefix: string, reference: string) {
   if (fs.existsSync(jsonFile)) {
     return require(jsonFile);
   } else {
-    if (!reference.startsWith('Modelica')) { // TODO: how to handle modelica standard library
-      throw new Error(`${jsonFile} could not be found!!`);  
+    // Templates *should* have all types defined within a template so we do not need
+    // to rely on definitionals in the modelica standard library
+    if (!reference.startsWith("Modelica")) {
+      throw new Error(`${jsonFile} could not be found!!`);
     }
-    // TODO: check if a 'Modelica' path - we have nothing to import here
-    // The extend clause is failing because of this!
   }
 }
