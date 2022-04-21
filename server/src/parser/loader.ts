@@ -2,29 +2,22 @@ import path from "path";
 import fs from "fs";
 
 export default function (prefix: string, reference: string) {
-  const { dir, name } = path.parse(reference.replace(/\./g, "/"));
-  const jsonFile = path.resolve(prefix, dir, name) + ".json";
+  let parsedPath = path.parse(reference.replace(/\./g, "/"));
+  let jsonFile =
+    path.resolve(prefix, parsedPath.dir, parsedPath.name) + ".json";
+
+  while (!fs.existsSync(jsonFile) && parsedPath.name) {
+    parsedPath = path.parse(parsedPath.dir);
+    jsonFile = path.resolve(prefix, parsedPath.dir, parsedPath.name) + ".json";
+  }
 
   if (fs.existsSync(jsonFile)) {
     return require(jsonFile);
   } else {
-    throw new Error(`${jsonFile} could not be found!!`);
-    // const defFile = dir + ".json";
-    // // console.log("//////////// file does not exist....");
-    // if (!fs.existsSync(defFile)) {
-    //   // console.log(chalk.red(jsonFile));
-    //   return {};
-    // }
-    // const data = require(dir + ".json");
-    // const elements =
-    //   data.class_definition[0].class_specifier.long_class_specifier.composition
-    //     .element_list;
-    // const desiredClass = elements.find((el: any) => {
-    //   return (
-    //     el.class_definition?.class_specifier?.short_class_specifier
-    //       ?.identifier === name
-    //   );
-    // });
-    // return desiredClass || data;
+    // Templates *should* have all types defined within a template so we do not need
+    // to rely on definitionals in the modelica standard library
+    if (!reference.startsWith("Modelica")) {
+      throw new Error(`${jsonFile} could not be found!!`);
+    }
   }
 }

@@ -3,9 +3,8 @@ import path from "path";
 import loader from "./loader";
 
 const EXTEND_NAME = "__extend";
-// TODO: there are many literals defined in the modelica standard library
-// e.g. 'Modelica.Units.SI.PressureDifference'. We'll have to account for these types
-// as well
+// TODO: templates *should* have all types defined within a template - however there will
+// be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 
 // const store: { [key: string]: any } = {};
@@ -13,16 +12,40 @@ export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 class Store {
   _store: Map<string, any> = new Map();
 
-  set(path: string, element: any) {
+  set(path: string, element: Element) {
     this._store.set(path, element);
   }
 
-  get(path: string) {
-    return this._store.get(path);
+  get(path: string): Element | undefined {
+    if (!MODELICA_LITERALS.includes(path)) {
+      if (!this._store.has(path)) {
+        try {
+          getFile(path);
+        } catch (error) {
+          throw new Error(`Unable to find type ${path}`);
+        }
+      }
+      assertType(path);
+      return this._store.get(path);
+    }
+  }
+
+  has(path: string): boolean {
+    return this._store.has(path);
   }
 }
 
 const store = new Store();
+
+function assertType(type: string) {
+  if (
+    !MODELICA_LITERALS.includes(type) &&
+    !store.has(type) &&
+    !type.startsWith("Modelica")
+  ) {
+    throw new Error(`${type} not defined`);
+  }
+}
 
 type RedeclarationMod = {
   element_redeclaration: {
@@ -37,7 +60,7 @@ type RedeclarationMod = {
 };
 
 type ClassMod = {
-  class_modification: WrappedMod[];
+  class_modification: (WrappedMod | RedeclarationMod)[];
 };
 
 type Assignment = {
@@ -100,16 +123,18 @@ class Modification {
         // TODO: feed this into an expression parser to generate actual expression
         // instances IF there is an expression. If it is a simple value keep the assignment
         this.value = (mod as Assignment).expression.simple_expression;
+      } else if (this.name == "choice") {
+        // element_redeclarations
+        // choice has the following structure:
+        // ClassMod -> RedeclarationMod
+        const choiceMod = (mod as ClassMod)
+          .class_modification[0] as RedeclarationMod;
+        this.value =
+          choiceMod.element_redeclaration.component_clause1.type_specifier;
       } else if ("class_modification" in mod) {
         this.mods = (mod as ClassMod).class_modification.map(
-          (m) => new Modification(m),
+          (m) => new Modification(m as WrappedMod),
         );
-      } else if ("element_redeclaration" in mod) {
-        // element_redeclarations don't have a name
-        this.name = "choice";
-        this.value = (
-          mod as RedeclarationMod
-        ).element_redeclaration.component_clause1.type_specifier;
       }
     } else {
       this.empty = true;
@@ -122,8 +147,8 @@ export interface OptionN {
   // id: number;
   type: string;
   name: string;
-  modelicaPath: string; //
-  options?: OptionN[]; // TODO: flatten references
+  modelicaPath: string;
+  options?: string[];
   group?: string;
   tab?: string;
   value?: any;
@@ -136,47 +161,10 @@ export abstract class Element {
   name = "";
   type = "";
 
-  abstract getOptions(): OptionN[];
+  abstract getOptions(recursive?: boolean): { [key: string]: OptionN };
 }
 
-export class Record extends Element {
-  elementList: Element[];
-  description: string;
-  constructor(definition: any, basePath: string) {
-    super();
-    const specifier = definition.class_specifier.long_class_specifier;
-    this.name = specifier.identifer;
-    this.modelicaPath = `${basePath}.${this.name}`;
-    this.type = "Record";
-    this.description = specifier.description_string;
-    this.elementList = specifier.composition.element_list;
-    store.set(this.modelicaPath, this);
-  }
-
-  getOptions() {
-    return this.elementList.flatMap((el) => el.getOptions());
-  }
-}
-
-export class Package extends Element {
-  elementList: Element[];
-  description: string;
-
-  constructor(definition: any, basePath: string) {
-    super();
-    const specifier = definition.class_specifier.long_class_specifier;
-    this.name = specifier.identifer;
-    this.modelicaPath = `${basePath}.${this.name}`;
-    this.description = specifier.description_string;
-    this.elementList = specifier.composition.element_list;
-  }
-
-  getOptions() {
-    return this.elementList.flatMap((el) => el.getOptions());
-  }
-}
-
-export class Model extends Element {
+export class InputGroup extends Element {
   elementList: Element[];
   description: string;
 
@@ -193,18 +181,31 @@ export class Model extends Element {
     store.set(this.modelicaPath, this);
   }
 
-  getOptions() {
-    return this.elementList.flatMap((el) => el.getOptions());
+  getOptions(recursive = true) {
+    const option: OptionN = {
+      modelicaPath: this.modelicaPath,
+      type: this.type,
+      name: this.description,
+    };
+
+    let options: { [key: string]: OptionN } = { [option.modelicaPath]: option };
+
+    this.elementList.map((el) => {
+      options = { ...options, ...el.getOptions(recursive) };
+    });
+
+    return options;
   }
 }
 
 // a parameter with a type
-export class Component extends Element {
+export class Input extends Element {
   modifications: any[] = [];
   type = ""; // modelica path
   value: any;
   description = "";
-  annotation: any[] = [];
+  final = false;
+  annotation: Modification[] = [];
   tab? = "";
   group? = "";
   enable: Expression = { expression: "", modelicaPath: "" };
@@ -218,17 +219,23 @@ export class Component extends Element {
     ).declaration as DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
+    this.final = definition.final ? definition.final : this.final;
 
     this.type = componentClause.type_specifier;
-    const descriptionBlock = componentClause.component_list.find(
-      (c: any) => "description" in c,
-    )?.description || definition['description']; // TODO: unsure why description block can be in different locations
+
+    // description block (where the annotation is) can be in different locations
+    // constrainby changes this location
+    const descriptionBlock =
+      componentClause.component_list.find((c: any) => "description" in c)
+        ?.description || definition["description"];
 
     if (descriptionBlock) {
       this.description = descriptionBlock?.description_string || "";
-      this.annotation = descriptionBlock?.annotation;
-      if (this.annotation) {
-        this._setUIInfo(this.annotation);
+      if (descriptionBlock?.annotation) {
+        this.annotation = descriptionBlock.annotation.map(
+          (mod: Mod | WrappedMod) => new Modification(mod),
+        );
+        this._setUIInfo();
       }
     }
 
@@ -265,10 +272,8 @@ export class Component extends Element {
    * Sets tab and group if found
    * assigns 'enable' expression
    */
-  _setUIInfo(annotation: (Mod | WrappedMod)[]) {
-    const mods = annotation.map((mod) => new Modification(mod));
-
-    const dialog = mods.find((m) => m.name === "Dialog");
+  _setUIInfo() {
+    const dialog = this.annotation.find((m) => m.name === "Dialog");
     if (dialog) {
       const group = dialog.mods.find((m) => m.name === "group")?.value;
       const tab = dialog.mods.find((m) => m.name === "tab")?.value;
@@ -284,7 +289,7 @@ export class Component extends Element {
     }
   }
 
-  getOptions() {
+  getOptions(recursive = true) {
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
@@ -295,67 +300,67 @@ export class Component extends Element {
       valueExpression: this.valueExpression,
       enable: this.enable,
     };
-    const typeInstance = store.get(this.type) || null;
 
-    if (typeInstance) {
-      option.options = typeInstance.getOptions();
+    let options = this.final ? {} : { [option.modelicaPath]: option };
+
+    if (recursive) {
+      const typeInstance = store.get(this.type) || null;
+      if (typeInstance) {
+        const childOptions = typeInstance.getOptions((recursive = false));
+        option.options = Object.keys(childOptions);
+        options = { ...options, ...typeInstance.getOptions() };
+      }
     }
 
-    return [option];
+    return options;
   }
 }
 
-export class Replaceable extends Component {
-  choices: { type: string; description: string }[] = [];
+export class ReplaceableInput extends Input {
+  choices: string[] = [];
   constructor(definition: any, basePath: string) {
     super(definition, basePath);
 
     // the default value is original type provided
     this.value = this.type;
 
-    // TODO: switch choices extraction to use 'Mod' class
-    // extract choices from the annotation
-    const choicesBlock = this.annotation.find(
-      (entry: any) =>
-        entry?.element_modification_or_replacable?.element_modification
-          ?.name === "choices",
-    )?.element_modification_or_replacable?.element_modification;
+    const choices = this.annotation.find(
+      (m) => m.name === "choices",
+    ) as Modification;
 
-    if (choicesBlock) {
-      // iterate through each modification and get the choice
-      const choiceList = choicesBlock.modification.class_modification;
-      choiceList.map((c: any) => {
-        const [choiceMod, ..._rest] =
-          c.element_modification_or_replacable.element_modification
-            .class_modification;
-        const componentClause =
-          choiceMod.elementredeclaration.component_clause1;
-        const type = componentClause.type_specifier;
-        const description =
-          componentClause.component_declaration1.description.description_string;
-
-        this.choices.push({ type, description });
+    if (choices) {
+      choices.mods.map((choice) => {
+        if (choice.value) {
+          this.choices.push(choice.value as string);
+        } else {
+          throw new Error("Malformed 'Choices' specified");
+        }
       });
     }
   }
 
-  getOptions() {
+  getOptions(recursive = true) {
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       value: this.value,
       name: this.description,
-      options: [],
+      options: this.choices,
+      group: this.group,
+      tab: this.tab,
     };
 
-    this.choices.map((c) => {
-      const typeInstance = store.get(c.type) || null;
-      if (typeInstance) {
-        option.options?.push(...typeInstance.getOptions());
-      }
-    });
+    let options = { [option.modelicaPath]: option };
+    if (recursive) {
+      this.choices.map((c) => {
+        const typeInstance = store.get(c) || null;
+        if (typeInstance) {
+          options = { ...options, ...typeInstance.getOptions() };
+        }
+      });
+    }
 
-    return [option];
+    return options;
   }
 }
 
@@ -372,8 +377,7 @@ export class Enum extends Element {
     const specifier = definition.class_specifier.short_class_specifier;
     this.name = specifier.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
-    this.type = "Enum";
-    this.enumList = specifier.value.enum_list;
+    this.type = this.modelicaPath;
     this.description = specifier.value.description.description_string;
     store.set(this.modelicaPath, this);
 
@@ -390,35 +394,54 @@ export class Enum extends Element {
     );
   }
 
-  getOptions() {
+  getOptions(recursive = true) {
+    const options: { [key: string]: OptionN } = {};
     // outputs a parent option, then an option for each enum type
-    const optionList: any = this.enumList.map((e) => ({
-      modelicaPath: e.modelicaPath,
-      name: e.description,
-      type: this.type,
-      options: null,
-    }));
+    const optionList: OptionN[] = this.enumList.map(
+      (e) =>
+        (options[e.modelicaPath] = {
+          modelicaPath: e.modelicaPath,
+          name: e.description,
+          type: this.type,
+          value: e.modelicaPath,
+        }),
+    );
 
-    return optionList;
+    return options;
   }
 }
 
-// TODO: this almost entirely overlaps with 'Component' - try and refactor
-export class ExtendClause extends Element {
+// Inherited properties by type with modifications
+export class InputGroupExtend extends Element {
   modifications: any[] = [];
-  type: string; // modelica path
+  type: string;
+  value: string;
   constructor(definition: any, basePath: string) {
     super();
     this.name = "__extend"; // arbitrary name. Important that this will not collide with other param names
-    this.modelicaPath = `${basePath}.${definition.extends_clause.name}`;
+    this.modelicaPath = `${basePath}.${this.name}`;
     this.type = definition.extends_clause.name;
+    this.value = this.type;
 
     store.set(this.modelicaPath, this);
   }
 
-  getOptions() {
-    const typeInstance = store.get(this.type);
-    return typeInstance ? typeInstance.getOptions() : []; // TODO: return options from store
+  getOptions(recursive = true) {
+    const typeInstance = store.get(this.type) as Element;
+    if (typeInstance) {
+      const option: OptionN = {
+        modelicaPath: this.modelicaPath,
+        type: this.type,
+        value: this.value,
+        name: typeInstance.name,
+      };
+      return {
+        ...{ [option.modelicaPath]: option },
+        ...typeInstance.getOptions(recursive),
+      };
+    } else {
+      return {};
+    }
   }
 }
 
@@ -435,7 +458,10 @@ function _constructElement(
 ): Element | undefined {
   const extend = "extends_clause";
   const component = "component_clause";
+  const replaceable = "replaceable";
 
+  definition =
+    "class_definition" in definition ? definition.class_definition : definition;
   // either the element type is defined ('type', 'model', 'package', or 'record') or
   // 'extend_clause' or 'component_clause' is provided
   let elementType = null;
@@ -443,6 +469,8 @@ function _constructElement(
     elementType = definition.class_prefixes;
   } else if (extend in definition) {
     elementType = extend;
+  } else if (replaceable in definition && definition.replaceable) {
+    elementType = replaceable;
   } else if (component in definition) {
     elementType = component;
   }
@@ -451,15 +479,16 @@ function _constructElement(
     case "type":
       return new Enum(definition, basePath);
     case "model":
-      return new Model(definition, basePath);
-    case "package":
-      return new Package(definition, basePath);
+    case "partial model":
     case "record":
-      return new Record(definition, basePath);
+    case "package":
+      return new InputGroup(definition, basePath);
     case extend:
-      return new ExtendClause(definition, basePath);
+      return new InputGroupExtend(definition, basePath);
     case component:
-      return new Component(definition, basePath);
+      return new Input(definition, basePath);
+    case replaceable:
+      return new ReplaceableInput(definition, basePath);
   }
 }
 
@@ -467,8 +496,21 @@ function _constructElement(
 export class File {
   public modelicaPath = ""; // only important part of a file
   public entries: Element[] = [];
-  constructor(obj: any) {
+  constructor(obj: any, filePath: string) {
     this.modelicaPath = obj.within;
+
+    // Check that each portion of the within path matches the file path
+    // a mismatch means an incorrectly typed or structured package
+    // Folder and file should always line up, e.g.
+    // TestPackage/Interface/stuff.mo should have a within path of 'TestPackage.Interface'
+    const splitFilePath = filePath.split(".");
+    this.modelicaPath.split(".").forEach((value, index) => {
+      if (value !== splitFilePath[index]) {
+        throw new Error(
+          "Malformed Modelica Package or Incorrect type assigned",
+        );
+      }
+    });
     obj.class_definition.map((cd: any) => {
       const element = _constructElement(cd, this.modelicaPath);
       if (element) {
@@ -485,5 +527,7 @@ export function setPathPrefix(prefix: string) {
 // Extracts models/packages
 export const getFile = (filePath: string) => {
   const jsonData = loader(pathPrefix, filePath);
-  return new File(jsonData);
+  if (jsonData) {
+    return new File(jsonData, filePath);
+  }
 };

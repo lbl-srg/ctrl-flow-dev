@@ -1,4 +1,4 @@
-within TestModelicaPackage;
+within TestPackage;
 package Types "Package with type definitions"
   extends Modelica.Icons.TypesPackage;
   type IceCream = enumeration(

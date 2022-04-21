@@ -1,5 +1,5 @@
-within TestPackage;
-package Data "Test Record"
+within TestPackage.Template;
+package Data "Test Data Package"
   extends Modelica.Icons.Package;
 
   record TestRecord "Test Record"

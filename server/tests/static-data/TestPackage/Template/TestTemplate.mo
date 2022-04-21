@@ -3,7 +3,7 @@ model TestTemplate "Test Template"
   /*
     Test that extends work as expected
   */
-  extends Interface.ExtendInterface(
+  extends TestPackage.Interface.ExtendInterface(
     interface_param="Updated Value"
   );
 
@@ -20,10 +20,10 @@ model TestTemplate "Test Template"
   inner replaceable
     TestPackage.Component.SecondComponent
     selectable_component constrainedby
-    TestPackage.Interface.Partial(
+    TestPackage.Interface.PartialComponent(
       final container=TestPackage.Types.Container.Cone
     )
-    "Second Component"
+    "Replaceable Component"
     annotation (
       choices(
         choice(
@@ -41,7 +41,7 @@ model TestTemplate "Test Template"
   /*
     Test Record
   */
-  parameter TestPackage.Data.TestRecord dat
+  parameter TestPackage.Template.Data.TestRecord dat
     "Record with additional parameters";
 
   /*
@@ -61,7 +61,7 @@ model TestTemplate "Test Template"
   /*
     Bool assigned by expression
   */
-  final parameter Boolean expression_bool=dat.nested_bool;
+  parameter Boolean expression_bool=dat.nested_bool;
 
   // TODO: add values for annotation variations
 
@@ -77,7 +77,7 @@ model TestTemplate "Test Template"
   parameter Integer test_int=2
     "Test Integer";
 
-  parameter TestModelicaPackage.Types.IceCream typ = TestModelicaPackage.Types.IceCream.Chocolate
+  parameter TestPackage.Types.IceCream typ = TestPackage.Types.IceCream.Chocolate
     "Test Enum"
     annotation (
       Evaluate=true,

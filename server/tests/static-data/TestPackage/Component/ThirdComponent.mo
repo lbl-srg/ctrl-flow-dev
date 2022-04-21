@@ -1,7 +1,7 @@
 within TestPackage.Component;
 model ThirdComponent "Third Component"
   extends
-    TestPackage.Interface.Partial(
+    TestPackage.Interface.PartialComponent(
       container=TestPackage.Types.Container.Bowl
     );
   parameter String component_param="Third Component Param"

@@ -1,13 +1,12 @@
 import { notDeepEqual } from "assert";
 import { execSync } from "child_process";
 import fs from "fs";
-import path from "path";
 
 import config from "../../../src/config";
 import * as parser from "../../../src/parser/parser";
 
 const tempDirPath = "/tmp/test-linkage-widget/";
-const testModelicaFile = "TestPackage/Template/TestTemplate";
+const testModelicaFile = "TestPackage.Template.TestTemplate";
 // const templatePath =
 //   "json/tests/static-data/TestModelicaPackage/Template/TestTemplate";
 // const fullTemplatePath = path.resolve(tempDirPath, templatePath);
@@ -31,19 +30,19 @@ describe("Basic parser functionality", () => {
   });
 
   it("Extracts a 'file' object", () => {
-    const file = parser.getFile(testModelicaFile);
+    const file = parser.getFile(testModelicaFile) as parser.File;
     const expectedPath = "TestPackage.Template";
     expect(file.modelicaPath).toEqual(expectedPath);
   });
 
-  it("Supports loading with / syntax", () => {
-    const file = parser.getFile(testModelicaFile);
+  it("Supports loading with . syntax", () => {
+    const file = parser.getFile(testModelicaFile) as parser.File;
     const expectedPath = "TestPackage.Template";
     expect(file.modelicaPath).toEqual(expectedPath);
   });
 
   it("Extracts Template modelica path", () => {
-    const file = parser.getFile(testModelicaFile);
+    const file = parser.getFile(testModelicaFile) as parser.File;
     const [template, ..._rest] = file.entries;
     const expectedPath = "TestPackage.Template.TestTemplate";
     expect(template.modelicaPath).toEqual(expectedPath);
@@ -52,8 +51,8 @@ describe("Basic parser functionality", () => {
   it("Builds up modelica paths for subcomponents", () => {
     const paramName = "dat";
 
-    const file = parser.getFile(testModelicaFile);
-    const template = file.entries[0] as parser.Model;
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.entries[0] as parser.InputGroup;
     const expectedPath = `${template.modelicaPath}.${paramName}`;
 
     expect(
@@ -61,9 +60,25 @@ describe("Basic parser functionality", () => {
     ).not.toBeFalsy();
   });
 
+  it("Generates type instances by for related files", () => {
+    const paramName = "dat";
+
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.entries[0] as parser.InputGroup;
+    const expectedPath = `${template.modelicaPath}.${paramName}`;
+
+    const dat = template.elementList.find(
+      (e) => e.modelicaPath === expectedPath,
+    ) as parser.Input;
+
+    const option = dat.getOptions()[expectedPath];
+
+    expect(option.options).toBeTruthy();
+  });
+
   it("Extracts model elements", () => {
-    const file = parser.getFile(testModelicaFile);
-    const template = file.entries[0] as parser.Model;
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.entries[0] as parser.InputGroup;
     expect(template.elementList.length).not.toBe(0);
     template.elementList.map((e: parser.Element) =>
       expect(e.modelicaPath).not.toBeFalsy(),
@@ -81,12 +96,12 @@ describe("Expected Options are extracted", () => {
   });
 
   it("Generates Options for literal types", () => {
-    const file = parser.getFile(testModelicaFile);
-    const template = file.entries[0] as parser.Model;
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.entries[0] as parser.InputGroup;
 
     // get elements that match literal types: Boolean, String, Real, Integer, Enum
     const templateOptions = template.getOptions();
-    templateOptions.map((o) => {
+    Object.values(templateOptions).map((o) => {
       if (o.type in parser.MODELICA_LITERALS) {
         expect(o.name).not.toBeFalsy();
         expect(o.modelicaPath).not.toBeFalsy();
@@ -98,28 +113,24 @@ describe("Expected Options are extracted", () => {
     const expectedValue = "I'm all set";
 
     // check that when a parameter has an initial value it is set, when it is not it is null
-    const unInitializedOption = templateOptions.find(
-      (o) => o.modelicaPath === uninitializedParamPath,
-    );
+    const unInitializedOption = templateOptions[uninitializedParamPath];
     expect(unInitializedOption?.value).toBeUndefined();
-    const initiazedOption = templateOptions.find(
-      (o) => o.modelicaPath === initializedParamPath,
-    );
-    expect(initiazedOption?.value).toEqual(expectedValue);
+    const initializedOption = templateOptions[initializedParamPath]
+    expect(initializedOption?.value).toEqual(expectedValue);
 
     // check that other literals are extracted to a good value
     const boolPath = `${template.modelicaPath}.nullable_bool`;
     expect(
-      templateOptions.find((o) => o.modelicaPath === boolPath)?.value,
+      templateOptions[boolPath]?.value,
     ).toBe(false);
 
     const realNumPath = `${template.modelicaPath}.test_real`;
     expect(
-      templateOptions.find((o) => o.modelicaPath === realNumPath)?.value,
+      templateOptions[realNumPath]?.value,
     ).toBe(1);
 
     const intPath = `${template.modelicaPath}.test_int`;
-    expect(templateOptions.find((o) => o.modelicaPath === intPath)?.value).toBe(
+    expect(templateOptions[intPath]?.value).toBe(
       2,
     );
   });
@@ -130,59 +141,98 @@ describe("Expected Options are extracted", () => {
   Check that instead of a value, the option has a value expression
   */
   it("Extracts literal value expression", () => {
-    const file = parser.getFile(testModelicaFile);
-    const template = file.entries[0] as parser.Model;
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.entries[0] as parser.InputGroup;
     const options = template.getOptions();
-    const option = options.find(
-      (o) =>
-        o.modelicaPath === "TestPackage.Template.TestTemplate.expression_bool",
-    ) as parser.OptionN;
+    const option = options["TestPackage.Template.TestTemplate.expression_bool"] as parser.OptionN;
 
     expect(option.value).toBeNull();
     expect(option.valueExpression).toBeTruthy();
-  })
+  });
 
   it("Extracts 'choices'", () => {
-    const file = parser.getFile(testModelicaFile);
-    const template = file.entries[0] as parser.Model;
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.entries[0] as parser.InputGroup;
     const component = template.elementList.find(
       (e) => e.name === "selectable_component",
     ) as parser.Element;
-    const options = component.getOptions();
-    expect(options.length).toBe(1);
-    // TODO: run below tests when file loader is integrated
-    // const choices = options[0].options as parser.OptionN[];
-    // expect(choices.length).toBe(2);
-    // const [choice1, choice2] = choices;
-
-    // expect(choice1.value).toBe("TestPackage.Component.SecondComponent");
-    // expect(choice2.value).toBe("TestPackage.Component.ThirdComponent");
+    const options = component.getOptions(false);
+    expect(Object.keys(options).length).toBe(1);
+    const [option] = Object.values(options);
+    expect(option.options?.length).toBe(2);
+    const [choice1, choice2] = option.options as string[];
+    expect(choice1).toBe("TestPackage.Component.SecondComponent");
+    expect(choice2).toBe("TestPackage.Component.ThirdComponent");
   });
 
   it("Gets parameter UI info", () => {
     const expectedTab = "Tabby";
     const expectedGroup = "Groupy";
-    const file = parser.getFile(testModelicaFile);
-    const template = file.entries[0] as parser.Model;
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.entries[0] as parser.InputGroup;
     const options = template.getOptions();
-    const option = options.find(
-      (o) =>
-        o.modelicaPath === "TestPackage.Template.TestTemplate.nullable_bool",
-    );
+    const option = options["TestPackage.Template.TestTemplate.nullable_bool"];
     expect(option?.group).toEqual(expectedGroup);
     expect(option?.tab).toEqual(expectedTab);
     expect(option?.enable).not.toBeFalsy();
 
     // also test a "constrainedby" component as this impacts where the annotation
     // is placed
-    const selectablePath = "TestPackage.Template.TestTemplate.selectable_component";
-    const selectableGroup = "Selectable Component"
-    const selectable = options.find(
-      (o) =>
-        o.modelicaPath === selectablePath
-    );
+    const selectablePath =
+      "TestPackage.Template.TestTemplate.selectable_component";
+    const selectableGroup = "Selectable Component";
+    const selectable = options[selectablePath];
     expect(selectable?.group).toEqual(selectableGroup);
   });
 
-  it("Ignore 'final' parameters", () => {});
+  it("Ignore 'final' parameters", () => {
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.entries[0] as parser.InputGroup;
+
+    const options = template.getOptions();
+    const option = options["TestPackage.Template.TestTemplate.should_ignore"];
+
+    expect(option).toBeUndefined();
+  });
+
+  it("Enums return each type as an option", () => {
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.entries[0] as parser.InputGroup;
+    const expectedValues = ["Chocolate", "Vanilla", "Strawberry"];
+
+    const element = template.elementList.find(
+      (e) => e.modelicaPath === "TestPackage.Template.TestTemplate.typ",
+    ) as parser.Element;
+    const [parent, ...childOptions] = Object.values(element.getOptions());
+
+    expect(childOptions?.length).toEqual(expectedValues.length);
+    childOptions?.map((o: parser.OptionN) => {
+      expectedValues.splice(expectedValues.indexOf(o.value));
+    });
+
+    expect(expectedValues.length).toBe(0);
+  });
+
+  it("Extracts the expected number of options for the TestTemplate", () => {
+    const optionTotal = 34;
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.entries[0] as parser.InputGroup;
+    const options = template.getOptions();
+    expect(Object.values(options).length).toBe(optionTotal);
+  });
+
+  it("All child options have valid option references", () => {
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.entries[0] as parser.InputGroup;
+    const options = template.getOptions();
+
+    Object.values(options).map(o => {
+      const childOptions = o.options;
+      if (childOptions) {
+        childOptions.map(option => {
+          expect(option in options).toBeTruthy()
+        });
+      }
+    });
+  })
 });
