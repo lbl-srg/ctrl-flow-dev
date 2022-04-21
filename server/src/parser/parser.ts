@@ -26,6 +26,7 @@ class Store {
           throw new Error(`Unable to find type ${path}`);
         }
       }
+      assertType(path);
       return this._store.get(path);
     }
   }
@@ -38,7 +39,11 @@ class Store {
 const store = new Store();
 
 function assertType(type: string) {
-  if (!MODELICA_LITERALS.includes(type) && !store.has(type) && !(type.startsWith("Modelica"))) {
+  if (
+    !MODELICA_LITERALS.includes(type) &&
+    !store.has(type) &&
+    !type.startsWith("Modelica")
+  ) {
     throw new Error(`${type} not defined`);
   }
 }
@@ -157,7 +162,7 @@ export abstract class Element {
   name = "";
   type = "";
 
-  abstract getOptions(recursive?: boolean): OptionN[];
+  abstract getOptions(recursive?: boolean): { [key: string]: OptionN };
 }
 
 export class InputGroup extends Element {
@@ -178,7 +183,19 @@ export class InputGroup extends Element {
   }
 
   getOptions(recursive = true) {
-    return this.elementList.flatMap((el) => el.getOptions());
+    const option: OptionN = {
+      modelicaPath: this.modelicaPath,
+      type: this.type,
+      name: this.description,
+    };
+
+    let options: { [key: string]: OptionN } = { [option.modelicaPath]: option };
+
+    this.elementList.map((el) => {
+      options = { ...options, ...el.getOptions(recursive) };
+    });
+
+    return options;
   }
 }
 
@@ -288,15 +305,14 @@ export class Input extends Element {
       enable: this.enable,
     };
 
-    const options = this.final ? [] : [option];
+    let options = this.final ? {} : { [option.modelicaPath]: option };
 
     if (recursive) {
       const typeInstance = store.get(this.type) || null;
-      assertType(this.type);
       if (typeInstance) {
         const childOptions = typeInstance.getOptions((recursive = false));
-        option.options = childOptions.map((c: OptionN) => c.modelicaPath);
-        options.push(...typeInstance.getOptions());
+        option.options = Object.keys(childOptions);
+        options = { ...options, ...typeInstance.getOptions() };
       }
     }
 
@@ -328,28 +344,25 @@ export class ReplaceableInput extends Input {
   }
 
   getOptions(recursive = true) {
-    const option = {
+    const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       value: this.value,
       name: this.description,
-      options: [] as string[],
+      options: this.choices,
       group: this.group,
       tab: this.tab,
     };
 
-    const options: OptionN[] = [option];
-
-    this.choices.map((c) => {
-      option.options.push(c);
-      if (recursive) {
+    let options = { [option.modelicaPath]: option };
+    if (recursive) {
+      this.choices.map((c) => {
         const typeInstance = store.get(c) || null;
-        assertType(c);
         if (typeInstance) {
-          options.push(...typeInstance.getOptions());
+          options = { ...options, ...typeInstance.getOptions() };
         }
-      }
-    });
+      });
+    }
 
     return options;
   }
@@ -386,15 +399,19 @@ export class Enum extends Element {
   }
 
   getOptions(recursive = true) {
+    const options: { [key: string]: OptionN } = {};
     // outputs a parent option, then an option for each enum type
-    const optionList: OptionN[] = this.enumList.map((e) => ({
-      modelicaPath: e.modelicaPath,
-      name: e.description,
-      type: this.type,
-      value: e.modelicaPath,
-    }));
+    const optionList: OptionN[] = this.enumList.map(
+      (e) =>
+        (options[e.modelicaPath] = {
+          modelicaPath: e.modelicaPath,
+          name: e.description,
+          type: this.type,
+          value: e.modelicaPath,
+        }),
+    );
 
-    return optionList;
+    return options;
   }
 }
 
@@ -402,19 +419,33 @@ export class Enum extends Element {
 export class InputGroupExtend extends Element {
   modifications: any[] = [];
   type: string;
+  value: string;
   constructor(definition: any, basePath: string) {
     super();
     this.name = "__extend"; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = definition.extends_clause.name;
+    this.value = this.type;
 
     store.set(this.modelicaPath, this);
   }
 
   getOptions(recursive = true) {
-    const typeInstance = store.get(this.type);
-    assertType(this.type);
-    return typeInstance ? typeInstance.getOptions(recursive) : [];
+    const typeInstance = store.get(this.type) as Element;
+    if (typeInstance) {
+      const option: OptionN = {
+        modelicaPath: this.modelicaPath,
+        type: this.type,
+        value: this.value,
+        name: typeInstance.name,
+      };
+      return {
+        ...{ [option.modelicaPath]: option },
+        ...typeInstance.getOptions(recursive),
+      };
+    } else {
+      return {};
+    }
   }
 }
 
