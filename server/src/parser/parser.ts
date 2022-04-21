@@ -29,9 +29,19 @@ class Store {
       return this._store.get(path);
     }
   }
+
+  has(path: string): boolean {
+    return this._store.has(path);
+  }
 }
 
 const store = new Store();
+
+function assertType(type: string) {
+  if (!MODELICA_LITERALS.includes(type) && !store.has(type) && !(type.startsWith("Modelica"))) {
+    throw new Error(`${type} not defined`);
+  }
+}
 
 type RedeclarationMod = {
   element_redeclaration: {
@@ -264,6 +274,9 @@ export class Input extends Element {
   }
 
   getOptions(recursive = true) {
+    // TODO: when dealing with input groups does this parent option
+    // make sense? It may since we need context to avoid the problem of
+    // multiple instances of the same class
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
@@ -279,6 +292,7 @@ export class Input extends Element {
 
     if (recursive) {
       const typeInstance = store.get(this.type) || null;
+      assertType(this.type);
       if (typeInstance) {
         const childOptions = typeInstance.getOptions((recursive = false));
         option.options = childOptions.map((c: OptionN) => c.modelicaPath);
@@ -328,9 +342,9 @@ export class ReplaceableInput extends Input {
 
     this.choices.map((c) => {
       option.options.push(c);
-
       if (recursive) {
         const typeInstance = store.get(c) || null;
+        assertType(c);
         if (typeInstance) {
           options.push(...typeInstance.getOptions());
         }
@@ -354,7 +368,7 @@ export class Enum extends Element {
     const specifier = definition.class_specifier.short_class_specifier;
     this.name = specifier.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
-    this.type = "Enum";
+    this.type = this.modelicaPath;
     this.description = specifier.value.description.description_string;
     store.set(this.modelicaPath, this);
 
@@ -399,6 +413,7 @@ export class InputGroupExtend extends Element {
 
   getOptions(recursive = true) {
     const typeInstance = store.get(this.type);
+    assertType(this.type);
     return typeInstance ? typeInstance.getOptions(recursive) : [];
   }
 }
@@ -457,8 +472,21 @@ function _constructElement(
 export class File {
   public modelicaPath = ""; // only important part of a file
   public entries: Element[] = [];
-  constructor(obj: any) {
+  constructor(obj: any, filePath: string) {
     this.modelicaPath = obj.within;
+
+    // Check that each portion of the within path matches the file path
+    // a mismatch means an incorrectly typed or structured package
+    // Folder and file should always line up, e.g.
+    // TestPackage/Interface/stuff.mo should have a within path of 'TestPackage.Interface'
+    const splitFilePath = filePath.split(".");
+    this.modelicaPath.split(".").forEach((value, index) => {
+      if (value !== splitFilePath[index]) {
+        throw new Error(
+          "Malformed Modelica Package or Incorrect type assigned",
+        );
+      }
+    });
     obj.class_definition.map((cd: any) => {
       const element = _constructElement(cd, this.modelicaPath);
       if (element) {
@@ -476,6 +504,6 @@ export function setPathPrefix(prefix: string) {
 export const getFile = (filePath: string) => {
   const jsonData = loader(pathPrefix, filePath);
   if (jsonData) {
-    return new File(jsonData);
+    return new File(jsonData, filePath);
   }
 };

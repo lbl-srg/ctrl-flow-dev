@@ -1,7 +1,7 @@
 within TestPackage.Component;
 model FirstComponent "First Component"
   extends
-    TestPackage.Interface.Partial(
+    TestPackage.Interface.PartialComponent(
        container=TestPackage.Types.Container.Hand
     );
   parameter String component_param="First Component Param"

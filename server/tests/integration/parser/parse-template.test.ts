@@ -6,7 +6,7 @@ import config from "../../../src/config";
 import * as parser from "../../../src/parser/parser";
 
 const tempDirPath = "/tmp/test-linkage-widget/";
-const testModelicaFile = "TestPackage/Template/TestTemplate";
+const testModelicaFile = "TestPackage.Template.TestTemplate";
 // const templatePath =
 //   "json/tests/static-data/TestModelicaPackage/Template/TestTemplate";
 // const fullTemplatePath = path.resolve(tempDirPath, templatePath);
@@ -35,7 +35,7 @@ describe("Basic parser functionality", () => {
     expect(file.modelicaPath).toEqual(expectedPath);
   });
 
-  it("Supports loading with / syntax", () => {
+  it("Supports loading with . syntax", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const expectedPath = "TestPackage.Template";
     expect(file.modelicaPath).toEqual(expectedPath);
@@ -230,6 +230,6 @@ describe("Expected Options are extracted", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.entries[0] as parser.InputGroup;
     const options = template.getOptions();
-    expect(options.length).toBeGreaterThan(10);
+    expect(options.length).toBe(21);
   });
 });

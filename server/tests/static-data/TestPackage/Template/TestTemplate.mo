@@ -20,7 +20,7 @@ model TestTemplate "Test Template"
   inner replaceable
     TestPackage.Component.SecondComponent
     selectable_component constrainedby
-    TestPackage.Interface.Partial(
+    TestPackage.Interface.PartialComponent(
       final container=TestPackage.Types.Container.Cone
     )
     "Replaceable Component"

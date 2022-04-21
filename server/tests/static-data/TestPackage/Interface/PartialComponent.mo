@@ -1,4 +1,4 @@
-within TestPackage.Component;
+within TestPackage.Interface;
 partial model PartialComponent
   "Interface for Test Components"
 

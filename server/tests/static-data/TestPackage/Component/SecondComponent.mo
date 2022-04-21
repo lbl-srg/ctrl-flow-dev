@@ -1,7 +1,7 @@
 within TestPackage.Component;
 model SecondComponent "Second Component"
   extends
-    TestPackage.Interface.Partial(
+    TestPackage.Interface.PartialComponent(
       container=TestPackage.Types.Container.Bowl
     );
   parameter String component_param="Second Component Param"
