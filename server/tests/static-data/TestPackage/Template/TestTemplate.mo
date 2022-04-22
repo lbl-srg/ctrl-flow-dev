@@ -83,4 +83,5 @@ model TestTemplate "Test Template"
       Evaluate=true,
       Dialog(group="Configuration"));
 
+  annotation (__LinkageTemplate=true);
 end TestTemplate;
