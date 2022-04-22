@@ -1,4 +1,3 @@
-import { notDeepEqual } from "assert";
 import { execSync } from "child_process";
 import fs from "fs";
 
@@ -23,7 +22,7 @@ function createTestModelicaJson() {
   }
 }
 
-describe("Basic parser functionality", () => {
+describe("Parser file loading", () => {
   beforeAll(() => {
     createTestModelicaJson();
     parser.setPathPrefix(tempDirPath + "json/tests/static-data/");
@@ -35,11 +34,25 @@ describe("Basic parser functionality", () => {
     expect(file.modelicaPath).toEqual(expectedPath);
   });
 
+  it("Discovers template files", () => {
+    const packagePath = "TestPackage";
+    parser.load(packagePath);
+  });
+
   it("Supports loading with . syntax", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const expectedPath = "TestPackage.Template";
     expect(file.modelicaPath).toEqual(expectedPath);
   });
+});
+
+describe("Basic parser functionality", () => {
+  beforeAll(() => {
+    createTestModelicaJson();
+    parser.setPathPrefix(tempDirPath + "json/tests/static-data/");
+  });
+
+
 
   it("Extracts Template modelica path", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
