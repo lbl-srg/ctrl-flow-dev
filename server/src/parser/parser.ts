@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import loader from "./loader";
+import { getTemplates, loader } from "./loader";
 
 const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
@@ -524,10 +524,21 @@ let pathPrefix = "";
 export function setPathPrefix(prefix: string) {
   pathPrefix = prefix;
 }
+
 // Extracts models/packages
 export const getFile = (filePath: string) => {
   const jsonData = loader(pathPrefix, filePath);
   if (jsonData) {
     return new File(jsonData, filePath);
   }
+};
+
+// Searches a package for templates, then loads the file
+// creating template instances
+export const load = async (filePath: string) => {
+  // iterates through each file in a package trying to find the '__Linkage' annotation
+  const templatePaths = getTemplates(pathPrefix, filePath);
+  templatePaths?.map((path) => {
+    getFile(path);
+  });
 };
