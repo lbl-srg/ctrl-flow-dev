@@ -179,6 +179,8 @@ export class InputGroup extends Element {
       _constructElement(e, this.modelicaPath),
     );
     store.set(this.modelicaPath, this);
+
+    // if __LinkageWidget is present, create a Template or Package
   }
 
   getOptions(recursive = true) {
@@ -535,10 +537,13 @@ export const getFile = (filePath: string) => {
 
 // Searches a package for templates, then loads the file
 // creating template instances
-export const load = async (filePath: string) => {
+export const load = (filePath: string) => {
   // iterates through each file in a package trying to find the '__Linkage' annotation
-  const templatePaths = getTemplates(pathPrefix, filePath);
-  templatePaths?.map((path) => {
+  const paths = getTemplates(pathPrefix, filePath);
+
+  // need to discover if it is a package or template
+  // or if it is a template
+  paths?.map((path) => {
     getFile(path);
   });
 };

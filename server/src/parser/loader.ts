@@ -15,6 +15,8 @@ export function getTemplates(prefix: string, reference: string) {
       .split("\n")
       .filter((p) => p != "")
       .map((p) => path.relative(prefix, p));
+  // TODO: convert file path to modelica path
+  // OR change interface so getTemplates returns json
   } catch (error: any) {
     console.log(`Status Code: ${error.status} with '${error.message}'`);
   }
