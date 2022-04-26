@@ -5,3 +5,4 @@ model SecondTemplate "Subcategory Template"
     annotation (
       Evaluate=true,
       Dialog(group="Configuration"));
+end SecondTemplate;
