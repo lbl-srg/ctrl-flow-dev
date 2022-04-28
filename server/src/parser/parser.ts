@@ -503,19 +503,21 @@ export class File {
   public elementList: Element[] = [];
   constructor(obj: any, filePath: string) {
     this.package = obj.within;
-
-    // Check that each portion of the within path matches the file path
-    // a mismatch means an incorrectly typed or structured package
-    // Folder and file should always line up, e.g.
-    // TestPackage/Interface/stuff.mo should have a within path of 'TestPackage.Interface'
     const splitFilePath = filePath.split(".");
-    this.package.split(".").forEach((value, index) => {
-      if (index < splitFilePath.length && value !== splitFilePath[index]) {
-        throw new Error(
-          "Malformed Modelica Package or Incorrect type assigned",
-        );
-      }
-    });
+    if (this.package) {
+      // Check that each portion of the within path matches the file path
+      // a mismatch means an incorrectly typed or structured package
+      // Folder and file should always line up, e.g.
+      // TestPackage/Interface/stuff.mo should have a within path of 'TestPackage.Interface'
+      this.package.split(".").forEach((value, index) => {
+        if (index < splitFilePath.length && value !== splitFilePath[index]) {
+          throw new Error(
+            "Malformed Modelica Package or Incorrect type assigned",
+          );
+        }
+      });
+    }
+
     obj.class_definition.map((cd: any) => {
       const element = _constructElement(cd, this.package);
       if (element) {
