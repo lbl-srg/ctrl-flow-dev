@@ -19,11 +19,7 @@ class Store {
   get(path: string): Element | undefined {
     if (!MODELICA_LITERALS.includes(path)) {
       if (!this._store.has(path)) {
-        try {
-          getFile(path);
-        } catch (error) {
-          throw new Error(`Unable to find type ${path}`);
-        }
+        getFile(path);
       }
       assertType(path);
       return this._store.get(path);
@@ -44,6 +40,38 @@ function assertType(type: string) {
     !type.startsWith("Modelica")
   ) {
     throw new Error(`${type} not defined`);
+  }
+}
+
+interface SystemType {
+  description: string;
+  modelicaPath: string;
+}
+
+class Template {
+  systemTypes: SystemType[] = [];
+
+  constructor(public element: Element) {
+    // extract system type by getting descriptions for each type
+    const path = element.modelicaPath.split(".");
+    while (path.length) {
+      path.pop();
+      const type = store.get(path.join("."));
+      if (type) {
+        this.systemTypes.push({
+          description: type.description,
+          modelicaPath: type.modelicaPath,
+        });
+      }
+    }
+  }
+
+  get modelicaPath() {
+    return this.element.modelicaPath;
+  }
+
+  getOptions() {
+    return this.element.getOptions();
   }
 }
 
@@ -160,6 +188,7 @@ export abstract class Element {
   modelicaPath = "";
   name = "";
   type = "";
+  description = "";
 
   abstract getOptions(recursive?: boolean): { [key: string]: OptionN };
 }
@@ -167,6 +196,8 @@ export abstract class Element {
 export class InputGroup extends Element {
   elementList: Element[];
   description: string;
+  entryPoint = false;
+  mods: Modification[] = [];
 
   constructor(definition: any, basePath: string) {
     super();
@@ -179,8 +210,6 @@ export class InputGroup extends Element {
       _constructElement(e, this.modelicaPath),
     );
     store.set(this.modelicaPath, this);
-
-    // if __LinkageWidget is present, create a Template or Package
   }
 
   getOptions(recursive = true) {
@@ -497,7 +526,7 @@ function _constructElement(
 //
 export class File {
   public modelicaPath = ""; // only important part of a file
-  public entries: Element[] = [];
+  public elementList: Element[] = [];
   constructor(obj: any, filePath: string) {
     this.modelicaPath = obj.within;
 
@@ -507,7 +536,7 @@ export class File {
     // TestPackage/Interface/stuff.mo should have a within path of 'TestPackage.Interface'
     const splitFilePath = filePath.split(".");
     this.modelicaPath.split(".").forEach((value, index) => {
-      if (value !== splitFilePath[index]) {
+      if (index < splitFilePath.length && value !== splitFilePath[index]) {
         throw new Error(
           "Malformed Modelica Package or Incorrect type assigned",
         );
@@ -516,7 +545,7 @@ export class File {
     obj.class_definition.map((cd: any) => {
       const element = _constructElement(cd, this.modelicaPath);
       if (element) {
-        this.entries.push(element);
+        this.elementList.push(element);
       }
     });
   }

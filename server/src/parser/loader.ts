@@ -1,10 +1,11 @@
 import path from "path";
 import fs from "fs";
 import { execSync } from "child_process";
+import { Z_FIXED } from "zlib";
 
 const TEMPLATE_IDENTIFIER = "__LinkageTemplate";
 
-export function getTemplates(prefix: string, reference: string) {
+export function loadPackage(prefix: string, reference: string) {
   try {
     const cmd = `grep -rl ${path.resolve(
       prefix,
@@ -14,9 +15,8 @@ export function getTemplates(prefix: string, reference: string) {
     return response
       .split("\n")
       .filter((p) => p != "")
-      .map((p) => path.relative(prefix, p));
-  // TODO: convert file path to modelica path
-  // OR change interface so getTemplates returns json
+      .map((p) => path.relative(prefix, p))
+      .map((p) => loader(prefix, p));
   } catch (error: any) {
     console.log(`Status Code: ${error.status} with '${error.message}'`);
   }
@@ -25,10 +25,23 @@ export function getTemplates(prefix: string, reference: string) {
 // When given a path, loads types
 export function loader(prefix: string, reference: string): Object | undefined {
   let parsedPath = path.parse(reference.replace(/\./g, "/"));
-  let jsonFile =
-    path.resolve(prefix, parsedPath.dir, parsedPath.name) + ".json";
+  let jsonFile = path.resolve(
+    prefix,
+    parsedPath.dir,
+    `${parsedPath.name}.json`,
+  );
 
   while (!fs.existsSync(jsonFile) && parsedPath.name) {
+    // package definitions break the typical modelica path to file mapping that
+    // is used. A typical modelica path to file path look like:
+    //  'Template.AirHandlerFans.VAVMultizone' -> 'Template/AirhandlerFans/VAVMultizone
+    // We need to support mapping like this as well:
+    //  'Template.AirHandlerFans -> Template/AirhandlerFans/package'
+    // 'package' files behave kind of like 'index.html' files
+    jsonFile = path.resolve(parsedPath.dir, parsedPath.name, "package.json");
+    if (fs.existsSync(jsonFile)) {
+      break;
+    }
     parsedPath = path.parse(parsedPath.dir);
     jsonFile = path.resolve(prefix, parsedPath.dir, parsedPath.name) + ".json";
   }
