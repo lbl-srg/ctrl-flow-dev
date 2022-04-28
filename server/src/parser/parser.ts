@@ -1,13 +1,11 @@
 import fs from "fs";
 import path from "path";
-import { getTemplates, loader } from "./loader";
+import { findPackageEntryPoints, loader } from "./loader";
 
 const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
-
-// const store: { [key: string]: any } = {};
 
 class Store {
   _store: Map<string, any> = new Map();
@@ -31,47 +29,15 @@ class Store {
   }
 }
 
-const store = new Store();
+export const typeStore = new Store();
 
 function assertType(type: string) {
   if (
     !MODELICA_LITERALS.includes(type) &&
-    !store.has(type) &&
+    !typeStore.has(type) &&
     !type.startsWith("Modelica")
   ) {
     throw new Error(`${type} not defined`);
-  }
-}
-
-interface SystemType {
-  description: string;
-  modelicaPath: string;
-}
-
-class Template {
-  systemTypes: SystemType[] = [];
-
-  constructor(public element: Element) {
-    // extract system type by getting descriptions for each type
-    const path = element.modelicaPath.split(".");
-    while (path.length) {
-      path.pop();
-      const type = store.get(path.join("."));
-      if (type) {
-        this.systemTypes.push({
-          description: type.description,
-          modelicaPath: type.modelicaPath,
-        });
-      }
-    }
-  }
-
-  get modelicaPath() {
-    return this.element.modelicaPath;
-  }
-
-  getOptions() {
-    return this.element.getOptions();
   }
 }
 
@@ -209,7 +175,7 @@ export class InputGroup extends Element {
     this.elementList = specifier.composition.element_list.map((e: any) =>
       _constructElement(e, this.modelicaPath),
     );
-    store.set(this.modelicaPath, this);
+    typeStore.set(this.modelicaPath, this);
   }
 
   getOptions(recursive = true) {
@@ -296,7 +262,7 @@ export class Input extends Element {
       }
     }
 
-    store.set(this.modelicaPath, this);
+    typeStore.set(this.modelicaPath, this);
   }
 
   /**
@@ -335,7 +301,7 @@ export class Input extends Element {
     let options = this.final ? {} : { [option.modelicaPath]: option };
 
     if (recursive) {
-      const typeInstance = store.get(this.type) || null;
+      const typeInstance = typeStore.get(this.type) || null;
       if (typeInstance) {
         const childOptions = typeInstance.getOptions((recursive = false));
         option.options = Object.keys(childOptions);
@@ -384,7 +350,7 @@ export class ReplaceableInput extends Input {
     let options = { [option.modelicaPath]: option };
     if (recursive) {
       this.choices.map((c) => {
-        const typeInstance = store.get(c) || null;
+        const typeInstance = typeStore.get(c) || null;
         if (typeInstance) {
           options = { ...options, ...typeInstance.getOptions() };
         }
@@ -410,7 +376,7 @@ export class Enum extends Element {
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = this.modelicaPath;
     this.description = specifier.value.description.description_string;
-    store.set(this.modelicaPath, this);
+    typeStore.set(this.modelicaPath, this);
 
     specifier.value.enum_list.map(
       (e: {
@@ -454,11 +420,11 @@ export class InputGroupExtend extends Element {
     this.type = definition.extends_clause.name;
     this.value = this.type;
 
-    store.set(this.modelicaPath, this);
+    typeStore.set(this.modelicaPath, this);
   }
 
   getOptions(recursive = true) {
-    const typeInstance = store.get(this.type) as Element;
+    const typeInstance = typeStore.get(this.type) as Element;
     if (typeInstance) {
       const option: OptionN = {
         modelicaPath: this.modelicaPath,
@@ -525,17 +491,17 @@ function _constructElement(
 
 //
 export class File {
-  public modelicaPath = ""; // only important part of a file
+  public package = ""; // only important part of a file
   public elementList: Element[] = [];
   constructor(obj: any, filePath: string) {
-    this.modelicaPath = obj.within;
+    this.package = obj.within;
 
     // Check that each portion of the within path matches the file path
     // a mismatch means an incorrectly typed or structured package
     // Folder and file should always line up, e.g.
     // TestPackage/Interface/stuff.mo should have a within path of 'TestPackage.Interface'
     const splitFilePath = filePath.split(".");
-    this.modelicaPath.split(".").forEach((value, index) => {
+    this.package.split(".").forEach((value, index) => {
       if (index < splitFilePath.length && value !== splitFilePath[index]) {
         throw new Error(
           "Malformed Modelica Package or Incorrect type assigned",
@@ -543,7 +509,7 @@ export class File {
       }
     });
     obj.class_definition.map((cd: any) => {
-      const element = _constructElement(cd, this.modelicaPath);
+      const element = _constructElement(cd, this.package);
       if (element) {
         this.elementList.push(element);
       }
@@ -566,13 +532,8 @@ export const getFile = (filePath: string) => {
 
 // Searches a package for templates, then loads the file
 // creating template instances
-export const load = (filePath: string) => {
-  // iterates through each file in a package trying to find the '__Linkage' annotation
-  const paths = getTemplates(pathPrefix, filePath);
+export const loadPackage = (filePath: string) => {
+  const paths = findPackageEntryPoints(pathPrefix, filePath);
 
-  // need to discover if it is a package or template
-  // or if it is a template
-  paths?.map((path) => {
-    getFile(path);
-  });
+  paths?.map(({ json, path }) => new File(json, path));
 };

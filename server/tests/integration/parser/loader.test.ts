@@ -1,27 +1,28 @@
 import * as parser from "../../../src/parser/parser";
+import { loader } from "../../../src/parser/loader";
 import { initializeTestModelicaJson } from "./utils";
 
-const testModelicaFile = "TestPackage.Template.TestTemplate";
+const testTemplatePath = "TestPackage.Template.TestTemplate";
+const testPackagePath = "TestPackage.Template";
 
 describe("Parser file loading", () => {
   beforeAll(() => {
     initializeTestModelicaJson();
   });
 
-  it("Extracts a 'file' object", () => {
-    const file = parser.getFile(testModelicaFile) as parser.File;
+  it("Extracts a 'file' object with '.' syntax", () => {
+    const file = parser.getFile(testTemplatePath) as parser.File;
     const expectedPath = "TestPackage.Template";
-    expect(file.modelicaPath).toEqual(expectedPath);
+    expect(file.package).toEqual(expectedPath);
   });
 
-  it("Supports loading with . syntax", () => {
-    const file = parser.getFile(testModelicaFile) as parser.File;
-    const expectedPath = "TestPackage.Template";
-    expect(file.modelicaPath).toEqual(expectedPath);
+  it("Finds 'package' using modelica path", () => {
+    const file = parser.getFile(testPackagePath) as parser.File;
+    expect(file.package).toBe("TestPackage");
   });
 
   it("Discovers template files", () => {
     const packagePath = "TestPackage";
-    parser.load(packagePath);
+    parser.loadPackage(packagePath);
   });
 });
