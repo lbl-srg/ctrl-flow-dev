@@ -1,9 +1,8 @@
 import path from "path";
 import fs from "fs";
 import { execSync } from "child_process";
-import { Z_FIXED } from "zlib";
 
-const TEMPLATE_IDENTIFIER = "__LinkageTemplate";
+export const TEMPLATE_IDENTIFIER = "__LinkageTemplate";
 
 function _toModelicaPath(path: string) {
   path = path.endsWith(".json") ? path.slice(0, -5) : path;

@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { findPackageEntryPoints, loader } from "./loader";
+import { findPackageEntryPoints, loader, TEMPLATE_IDENTIFIER } from "./loader";
 
 const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
@@ -160,6 +160,7 @@ export abstract class Element {
 }
 
 export class InputGroup extends Element {
+  annotation: Modification[];
   elementList: Element[];
   description: string;
   entryPoint = false;
@@ -176,6 +177,13 @@ export class InputGroup extends Element {
       _constructElement(e, this.modelicaPath),
     );
     typeStore.set(this.modelicaPath, this);
+
+    this.annotation = specifier.composition.annotation?.map(
+      (m: Mod | WrappedMod) => new Modification(m),
+    );
+    if (this.mods.find((m) => m.name === TEMPLATE_IDENTIFIER)) {
+      // create new template
+    }
   }
 
   getOptions(recursive = true) {

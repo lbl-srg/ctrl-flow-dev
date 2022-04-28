@@ -1,5 +1,4 @@
 import * as parser from "../../../src/parser/parser";
-import { loader } from "../../../src/parser/loader";
 import { initializeTestModelicaJson } from "./utils";
 
 const testTemplatePath = "TestPackage.Template.TestTemplate";
