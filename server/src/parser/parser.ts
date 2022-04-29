@@ -156,6 +156,7 @@ export abstract class Element {
   name = "";
   type = "";
   description = "";
+  entryPoint = false;
 
   abstract getOptions(recursive?: boolean): { [key: string]: OptionN };
 }
@@ -187,7 +188,9 @@ export class InputGroup extends Element {
       this.annotation.find((m) => m.name === TEMPLATE_IDENTIFIER)
     ) {
       this.entryPoint = true;
-      new Template(this);
+      if (definition.class_prefixes === "model") {
+        new Template(this);
+      }
     }
   }
 

@@ -25,12 +25,11 @@ export class Template {
     path.pop();
     while (path.length) {
       const type = parser.typeStore.get(path.join("."));
-      if (type) {
+      if (type && type.entryPoint) {
         const systemType = {
           description: type.description,
           modelicaPath: type.modelicaPath,
         }
-
         this.systemTypes.push(systemType);
         systemTypeStore.set(type.modelicaPath, systemType);
       }
