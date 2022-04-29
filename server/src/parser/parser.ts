@@ -14,7 +14,9 @@ class Store {
   }
 
   get(path: string): Element | undefined {
-    if (!MODELICA_LITERALS.includes(path)) {
+    // startsWith("Modelica"): Templates *should* have all types defined within
+    // a template so we do not need to rely on definitionals in the modelica standard library
+    if (!MODELICA_LITERALS.includes(path) && !path.startsWith("Modelica")) {
       if (!this._store.has(path)) {
         getFile(path);
       }
@@ -169,7 +171,7 @@ export class InputGroup extends Element {
     super();
     const specifier = definition.class_specifier.long_class_specifier;
     this.name = specifier.identifier;
-    this.modelicaPath = `${basePath}.${this.name}`;
+    this.modelicaPath = basePath ? [basePath, this.name].join(".") : this.name;
     this.type = this.modelicaPath;
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list.map((e: any) =>
@@ -180,7 +182,11 @@ export class InputGroup extends Element {
     this.annotation = specifier.composition.annotation?.map(
       (m: Mod | WrappedMod) => new Modification(m),
     );
-    if (this.annotation.find((m) => m.name === TEMPLATE_IDENTIFIER)) {
+    if (
+      this.annotation &&
+      this.annotation.find((m) => m.name === TEMPLATE_IDENTIFIER)
+    ) {
+      this.entryPoint = true;
       new Template(this);
     }
   }

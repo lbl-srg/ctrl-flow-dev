@@ -22,8 +22,8 @@ export class Template {
   constructor(public element: parser.Element) {
     // extract system type by getting descriptions for each type
     const path = element.modelicaPath.split(".");
+    path.pop();
     while (path.length) {
-      path.pop();
       const type = parser.typeStore.get(path.join("."));
       if (type) {
         const systemType = {
@@ -34,6 +34,7 @@ export class Template {
         this.systemTypes.push(systemType);
         systemTypeStore.set(type.modelicaPath, systemType);
       }
+      path.pop();
     }
 
     templateStore.set(this.modelicaPath, this);
