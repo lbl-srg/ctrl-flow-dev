@@ -16,6 +16,13 @@ export interface SystemType {
   modelicaPath: string;
 }
 
+export interface SystemTemplateN {
+  modelicaPath: string;
+  systemTypes: string[];
+  name: string;
+  options?: string[];
+}
+
 export class Template {
   systemTypes: SystemType[] = [];
 
@@ -29,8 +36,8 @@ export class Template {
         const systemType = {
           description: type.description,
           modelicaPath: type.modelicaPath,
-        }
-        this.systemTypes.push(systemType);
+        };
+        this.systemTypes.unshift(systemType);
         systemTypeStore.set(type.modelicaPath, systemType);
       }
       path.pop();
@@ -43,11 +50,24 @@ export class Template {
     return this.element.modelicaPath;
   }
 
+  get description() {
+    return this.element.description;
+  }
+
   getOptions() {
     return this.element.getOptions();
   }
 
   getSystemTypes() {
     return this.systemTypes;
+  }
+
+  getSystemTemplate(): SystemTemplateN {
+    return {
+      modelicaPath: this.modelicaPath,
+      systemTypes: this.systemTypes.map((t) => t.modelicaPath),
+      name: this.description,
+      options: Object.values(this.getOptions()).map((o) => o.modelicaPath),
+    };
   }
 }
