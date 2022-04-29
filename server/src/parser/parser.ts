@@ -1,13 +1,10 @@
-import fs from "fs";
-import path from "path";
-import loader from "./loader";
+import { findPackageEntryPoints, loader, TEMPLATE_IDENTIFIER } from "./loader";
+import { Template } from "./template";
 
 const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
-
-// const store: { [key: string]: any } = {};
 
 class Store {
   _store: Map<string, any> = new Map();
@@ -17,13 +14,11 @@ class Store {
   }
 
   get(path: string): Element | undefined {
-    if (!MODELICA_LITERALS.includes(path)) {
+    // startsWith("Modelica"): Templates *should* have all types defined within
+    // a template so we do not need to rely on definitionals in the modelica standard library
+    if (!MODELICA_LITERALS.includes(path) && !path.startsWith("Modelica")) {
       if (!this._store.has(path)) {
-        try {
-          getFile(path);
-        } catch (error) {
-          throw new Error(`Unable to find type ${path}`);
-        }
+        getFile(path);
       }
       assertType(path);
       return this._store.get(path);
@@ -35,12 +30,12 @@ class Store {
   }
 }
 
-const store = new Store();
+export const typeStore = new Store();
 
 function assertType(type: string) {
   if (
     !MODELICA_LITERALS.includes(type) &&
-    !store.has(type) &&
+    !typeStore.has(type) &&
     !type.startsWith("Modelica")
   ) {
     throw new Error(`${type} not defined`);
@@ -160,25 +155,43 @@ export abstract class Element {
   modelicaPath = "";
   name = "";
   type = "";
+  description = "";
+  entryPoint = false;
 
   abstract getOptions(recursive?: boolean): { [key: string]: OptionN };
 }
 
 export class InputGroup extends Element {
+  annotation: Modification[];
   elementList: Element[];
   description: string;
+  entryPoint = false;
+  mods: Modification[] = [];
 
   constructor(definition: any, basePath: string) {
     super();
     const specifier = definition.class_specifier.long_class_specifier;
     this.name = specifier.identifier;
-    this.modelicaPath = `${basePath}.${this.name}`;
+    this.modelicaPath = basePath ? [basePath, this.name].join(".") : this.name;
     this.type = this.modelicaPath;
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list.map((e: any) =>
       _constructElement(e, this.modelicaPath),
     );
-    store.set(this.modelicaPath, this);
+    typeStore.set(this.modelicaPath, this);
+
+    this.annotation = specifier.composition.annotation?.map(
+      (m: Mod | WrappedMod) => new Modification(m),
+    );
+    if (
+      this.annotation &&
+      this.annotation.find((m) => m.name === TEMPLATE_IDENTIFIER)
+    ) {
+      this.entryPoint = true;
+      if (definition.class_prefixes === "model") {
+        new Template(this);
+      }
+    }
   }
 
   getOptions(recursive = true) {
@@ -265,7 +278,7 @@ export class Input extends Element {
       }
     }
 
-    store.set(this.modelicaPath, this);
+    typeStore.set(this.modelicaPath, this);
   }
 
   /**
@@ -304,7 +317,7 @@ export class Input extends Element {
     let options = this.final ? {} : { [option.modelicaPath]: option };
 
     if (recursive) {
-      const typeInstance = store.get(this.type) || null;
+      const typeInstance = typeStore.get(this.type) || null;
       if (typeInstance) {
         const childOptions = typeInstance.getOptions((recursive = false));
         option.options = Object.keys(childOptions);
@@ -353,7 +366,7 @@ export class ReplaceableInput extends Input {
     let options = { [option.modelicaPath]: option };
     if (recursive) {
       this.choices.map((c) => {
-        const typeInstance = store.get(c) || null;
+        const typeInstance = typeStore.get(c) || null;
         if (typeInstance) {
           options = { ...options, ...typeInstance.getOptions() };
         }
@@ -379,7 +392,7 @@ export class Enum extends Element {
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = this.modelicaPath;
     this.description = specifier.value.description.description_string;
-    store.set(this.modelicaPath, this);
+    typeStore.set(this.modelicaPath, this);
 
     specifier.value.enum_list.map(
       (e: {
@@ -423,11 +436,11 @@ export class InputGroupExtend extends Element {
     this.type = definition.extends_clause.name;
     this.value = this.type;
 
-    store.set(this.modelicaPath, this);
+    typeStore.set(this.modelicaPath, this);
   }
 
   getOptions(recursive = true) {
-    const typeInstance = store.get(this.type) as Element;
+    const typeInstance = typeStore.get(this.type) as Element;
     if (typeInstance) {
       const option: OptionN = {
         modelicaPath: this.modelicaPath,
@@ -494,27 +507,29 @@ function _constructElement(
 
 //
 export class File {
-  public modelicaPath = ""; // only important part of a file
-  public entries: Element[] = [];
+  public package = ""; // only important part of a file
+  public elementList: Element[] = [];
   constructor(obj: any, filePath: string) {
-    this.modelicaPath = obj.within;
-
-    // Check that each portion of the within path matches the file path
-    // a mismatch means an incorrectly typed or structured package
-    // Folder and file should always line up, e.g.
-    // TestPackage/Interface/stuff.mo should have a within path of 'TestPackage.Interface'
+    this.package = obj.within;
     const splitFilePath = filePath.split(".");
-    this.modelicaPath.split(".").forEach((value, index) => {
-      if (value !== splitFilePath[index]) {
-        throw new Error(
-          "Malformed Modelica Package or Incorrect type assigned",
-        );
-      }
-    });
+    if (this.package) {
+      // Check that each portion of the within path matches the file path
+      // a mismatch means an incorrectly typed or structured package
+      // Folder and file should always line up, e.g.
+      // TestPackage/Interface/stuff.mo should have a within path of 'TestPackage.Interface'
+      this.package.split(".").forEach((value, index) => {
+        if (index < splitFilePath.length && value !== splitFilePath[index]) {
+          throw new Error(
+            "Malformed Modelica Package or Incorrect type assigned",
+          );
+        }
+      });
+    }
+
     obj.class_definition.map((cd: any) => {
-      const element = _constructElement(cd, this.modelicaPath);
+      const element = _constructElement(cd, this.package);
       if (element) {
-        this.entries.push(element);
+        this.elementList.push(element);
       }
     });
   }
@@ -524,10 +539,19 @@ let pathPrefix = "";
 export function setPathPrefix(prefix: string) {
   pathPrefix = prefix;
 }
+
 // Extracts models/packages
 export const getFile = (filePath: string) => {
   const jsonData = loader(pathPrefix, filePath);
   if (jsonData) {
     return new File(jsonData, filePath);
   }
+};
+
+// Searches a package for templates, then loads the file
+// creating template instances
+export const loadPackage = (filePath: string) => {
+  const paths = findPackageEntryPoints(pathPrefix, filePath);
+
+  paths?.map(({ json, path }) => new File(json, path));
 };
