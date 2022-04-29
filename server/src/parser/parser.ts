@@ -1,6 +1,5 @@
-import fs from "fs";
-import path from "path";
 import { findPackageEntryPoints, loader, TEMPLATE_IDENTIFIER } from "./loader";
+import { Template } from "./template";
 
 const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
@@ -181,8 +180,8 @@ export class InputGroup extends Element {
     this.annotation = specifier.composition.annotation?.map(
       (m: Mod | WrappedMod) => new Modification(m),
     );
-    if (this.mods.find((m) => m.name === TEMPLATE_IDENTIFIER)) {
-      // create new template
+    if (this.annotation.find((m) => m.name === TEMPLATE_IDENTIFIER)) {
+      new Template(this);
     }
   }
 
