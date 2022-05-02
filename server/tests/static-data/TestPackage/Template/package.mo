@@ -1,5 +1,6 @@
 within TestPackage;
-package Template "Test Templates"
+package Template "Test Template"
   extends Modelica.Icons.Package;
-annotation(__LinkageTemplate=true);
+
+  annotation (__LinkageTemplate=true);
 end Template;
