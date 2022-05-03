@@ -32,6 +32,8 @@ class Store {
 
 export const typeStore = new Store();
 
+const modStore: Map<string, Modification> = new Map();
+
 function assertType(type: string) {
   if (
     !MODELICA_LITERALS.includes(type) &&
@@ -97,7 +99,8 @@ class Modification {
   value?: string;
   mods: Modification[] = [];
   empty = false;
-  constructor(definition: WrappedMod | Mod | DeclarationBlock) {
+  modelicaPath: string;
+  constructor(definition: WrappedMod | Mod | DeclarationBlock, basePath: string) {
     // determine if wrapped
     const modBlock =
       "element_modification_or_replaceable" in definition
@@ -109,6 +112,7 @@ class Modification {
     } else if ("identifier" in modBlock) {
       this.name = modBlock.identifier;
     }
+    this.modelicaPath = `${basePath}.${this.name}`;
 
     const mod = modBlock.modification;
 
@@ -128,12 +132,13 @@ class Modification {
           choiceMod.element_redeclaration.component_clause1.type_specifier;
       } else if ("class_modification" in mod) {
         this.mods = (mod as ClassMod).class_modification.map(
-          (m) => new Modification(m as WrappedMod),
+          (m) => new Modification(m as WrappedMod, this.modelicaPath),
         );
       }
     } else {
       this.empty = true;
     }
+    modStore.set(this.modelicaPath, this);
   }
 }
 
@@ -213,9 +218,9 @@ export class InputGroup extends Element {
 
 // a parameter with a type
 export class Input extends Element {
-  modifications: any[] = [];
+  modifications: Modification[] = [];
   type = ""; // modelica path
-  value: any;
+  value: any; // modelica path?
   description = "";
   final = false;
   annotation: Modification[] = [];
@@ -246,7 +251,7 @@ export class Input extends Element {
       this.description = descriptionBlock?.description_string || "";
       if (descriptionBlock?.annotation) {
         this.annotation = descriptionBlock.annotation.map(
-          (mod: Mod | WrappedMod) => new Modification(mod),
+          (mod: Mod | WrappedMod) => new Modification(mod, this.modelicaPath),
         );
         this._setUIInfo();
       }
