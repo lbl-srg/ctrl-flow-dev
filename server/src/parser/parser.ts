@@ -94,13 +94,20 @@ type Expression = {
   expression: string;
 };
 
+/**
+ * Some Modifications need to be referenced, some don't. A modification is a key - value assignmnent,
+ * It can either be a singular modification (e.g. a=1) or it can be a modification with nested modifications
+ *  (e.g. a redeclare statement)
+ *
+ * Some mods need to be easily referenced (any parameter assignment) and others not (like annotation mods)
+ */
 class Modification {
   name?: string;
   value?: string;
   mods: Modification[] = [];
   empty = false;
   modelicaPath: string;
-  constructor(definition: WrappedMod | Mod | DeclarationBlock, basePath: string) {
+  constructor(definition: WrappedMod | Mod | DeclarationBlock, basePath = "") {
     // determine if wrapped
     const modBlock =
       "element_modification_or_replaceable" in definition
@@ -112,15 +119,16 @@ class Modification {
     } else if ("identifier" in modBlock) {
       this.name = modBlock.identifier;
     }
-    this.modelicaPath = `${basePath}.${this.name}`;
+
+    this.modelicaPath = basePath ? `${basePath}.${this.name}` : "";
 
     const mod = modBlock.modification;
 
     if (mod) {
       // test if an assignment
       if ("equal" in mod) {
-        // TODO: feed this into an expression parser to generate actual expression
-        // instances IF there is an expression. If it is a simple value keep the assignment
+        // simple_expression can potentially be an expression
+        // TODO be ready to feed that into Expression generator
         this.value = (mod as Assignment).expression.simple_expression;
       } else if (this.name == "choice") {
         // element_redeclarations
@@ -138,7 +146,10 @@ class Modification {
     } else {
       this.empty = true;
     }
-    modStore.set(this.modelicaPath, this);
+    if (this.modelicaPath) {
+      // only register the mod if it has a path
+      modStore.set(this.modelicaPath, this);
+    }
   }
 }
 
@@ -251,14 +262,14 @@ export class Input extends Element {
       this.description = descriptionBlock?.description_string || "";
       if (descriptionBlock?.annotation) {
         this.annotation = descriptionBlock.annotation.map(
-          (mod: Mod | WrappedMod) => new Modification(mod, this.modelicaPath),
+          (mod: Mod | WrappedMod) => new Modification(mod),
         );
         this._setUIInfo();
       }
     }
 
     const mod = declarationBlock.modification
-      ? new Modification(declarationBlock)
+      ? new Modification(declarationBlock, this.modelicaPath)
       : null;
 
     if (mod && !mod.empty) {
