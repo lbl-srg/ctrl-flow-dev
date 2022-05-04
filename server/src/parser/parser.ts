@@ -175,6 +175,12 @@ export abstract class Element {
   entryPoint = false;
 
   abstract getOptions(recursive?: boolean): { [key: string]: OptionN };
+
+  // 'Input' and 'InputGroup' returns modifications and override
+  // this method. Other elements (enums)
+  getModifications(): Modification[] {
+    return [];
+  }
 }
 
 export class InputGroup extends Element {
@@ -182,7 +188,7 @@ export class InputGroup extends Element {
   elementList: Element[];
   description: string;
   entryPoint = false;
-  mods: Modification[] = [];
+  mod: Modification | undefined;
 
   constructor(definition: any, basePath: string) {
     super();
@@ -225,11 +231,15 @@ export class InputGroup extends Element {
 
     return options;
   }
+
+  getModifications() {
+    return this.elementList.flatMap((e) => e.getModifications());
+  }
 }
 
 // a parameter with a type
 export class Input extends Element {
-  modifications: Modification[] = [];
+  mod: Modification | null;
   type = ""; // modelica path
   value: any; // modelica path?
   description = "";
@@ -268,12 +278,12 @@ export class Input extends Element {
       }
     }
 
-    const mod = declarationBlock.modification
+    this.mod = declarationBlock.modification
       ? new Modification(declarationBlock, this.modelicaPath)
       : null;
 
-    if (mod && !mod.empty) {
-      this.value = mod.value;
+    if (this.mod && !this.mod.empty) {
+      this.value = this.mod.value;
     }
 
     // if type is a literal type we can convert it from a string
@@ -342,6 +352,10 @@ export class Input extends Element {
     }
 
     return options;
+  }
+
+  getModifications(): Modification[] {
+    return this.mod && !this.mod.empty ? [this.mod] : [];
   }
 }
 
@@ -442,7 +456,7 @@ export class Enum extends Element {
 
 // Inherited properties by type with modifications
 export class InputGroupExtend extends Element {
-  modifications: any[] = [];
+  mod: Modification | undefined;
   type: string;
   value: string;
   constructor(definition: any, basePath: string) {
@@ -451,6 +465,7 @@ export class InputGroupExtend extends Element {
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = definition.extends_clause.name;
     this.value = this.type;
+    this.mod = new Modification(definition.extends_clause, this.modelicaPath);
 
     typeStore.set(this.modelicaPath, this);
   }
@@ -471,6 +486,10 @@ export class InputGroupExtend extends Element {
     } else {
       return {};
     }
+  }
+
+  getModifications() {
+    return this.mod ? [this.mod] : [];
   }
 }
 
