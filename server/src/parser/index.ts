@@ -2,6 +2,7 @@ import path from "path";
 import * as loader from "./loader";
 import * as parser from "./parser";
 import * as template from "./template";
+export { SystemType, Template } from "./template";
 
 /**
  *
@@ -9,7 +10,7 @@ import * as template from "./template";
  *
  * @returns Templates
  */
-export function loadPackage(packagePath: string): IterableIterator<template.Template> {
+export function loadPackage(packagePath: string): template.Template[] {
   //
   const parsedPath = path.parse(packagePath);
 
@@ -19,10 +20,10 @@ export function loadPackage(packagePath: string): IterableIterator<template.Temp
   return template.getTemplates();
 }
 
-export function getTemplates() {
+export function getTemplates(): template.Template[] {
   return template.getTemplates();
 }
 
-export function getSystemTypes() {
+export function getSystemTypes(): template.SystemType[] {
   return template.getSystemTypes();
 }

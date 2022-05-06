@@ -3,8 +3,12 @@ import {
   loadPackage,
   getTemplates,
   getSystemTypes,
+  Template,
 } from "../../../src/parser/";
-import { executionAsyncId } from "async_hooks";
+
+const templatePath = "TestPackage.Template.TestTemplate";
+const nestedTemplatePath =
+  "TestPackage.NestedTemplate.Subcategory.SecondTemplate";
 
 describe("Basic parser functionality", () => {
   beforeAll(() => {
@@ -21,8 +25,15 @@ describe("Basic parser functionality", () => {
   });
 
   it("Templates have expected options and SystemTypes", () => {
-    const [template, nestedTemplate] = getTemplates();
-
+    // TODO: we cannot rely on order! GREP does not necessarily
+    // return things in the order we expect
+    const templates = getTemplates();
+    const template = templates.find(
+      (t) => t.modelicaPath === templatePath,
+    ) as Template;
+    const nestedTemplate = templates.find(
+      (t) => t.modelicaPath === nestedTemplatePath,
+    ) as Template;
     const templateSystemTypes = template.getSystemTypes();
     expect(templateSystemTypes.length).toBe(1);
     const nestedTemplateSystemTypes = nestedTemplate.getSystemTypes();
@@ -42,7 +53,13 @@ describe("Basic parser functionality", () => {
       systemTypeLength: 2,
     };
 
-    const [template, nestedTemplate] = getTemplates();
+    const templates = getTemplates();
+    const template = templates.find(
+      (t) => t.modelicaPath === templatePath,
+    ) as Template;
+    const nestedTemplate = templates.find(
+      (t) => t.modelicaPath === nestedTemplatePath,
+    ) as Template;
 
     const systemTemplate = template.getSystemTemplate();
     const nestedSystemTemplate = nestedTemplate.getSystemTemplate();
@@ -69,11 +86,18 @@ describe("Basic parser functionality", () => {
 
   it("Keeps system types in correct order", () => {
     // The system types should match the directory order
-    const [_, nestedTemplate] = getTemplates();
-  
+    const templates = getTemplates();
+
+    const nestedTemplate = templates.find(
+      (t) => t.modelicaPath === nestedTemplatePath,
+    ) as Template;
+
     const templateJSON = nestedTemplate.getSystemTemplate();
-    const expectedOrder = ['TestPackage.NestedTemplate', 'TestPackage.NestedTemplate.Subcategory'];
-  
+    const expectedOrder = [
+      "TestPackage.NestedTemplate",
+      "TestPackage.NestedTemplate.Subcategory",
+    ];
+
     expect(templateJSON.systemTypes).toEqual(expectedOrder);
   });
 });

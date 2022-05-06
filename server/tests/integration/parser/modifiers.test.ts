@@ -3,9 +3,13 @@ import {
   loadPackage,
   getTemplates,
   getSystemTypes,
+  Template,
 } from "../../../src/parser/";
 
-describe("Basic parser functionality", () => {
+const templatePath = "TestPackage.Template.TestTemplate";
+const nestedPath = "TestPackage.NestedTemplate.Subcategory.SecondTemplate";
+
+describe("Modifications", () => {
   beforeAll(() => {
     createTestModelicaJson();
     loadPackage(`${fullTempDirPath}/TestPackage`);
@@ -23,13 +27,16 @@ describe("Basic parser functionality", () => {
       ],
       ["TestPackage.Template.TestTemplate.should_ignore", "ignore me"],
     ];
-    const [testTemplate, ..._otherTemplates] = getTemplates();
+    const templates = getTemplates();
+    const template = templates.find(
+      (t) => t.modelicaPath === templatePath,
+    ) as Template;
 
-    const modifiers = testTemplate.getModifiers();
+    const modifiers = template.getModifiers();
 
     expectedMods.map((m) => {
       const [key, value] = m;
-      const mod = modifiers.find((modifier) => modifier.path);
+      const mod = modifiers.find((modifier) => modifier.modelicaPath);
     });
   });
 });

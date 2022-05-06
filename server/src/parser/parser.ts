@@ -99,29 +99,34 @@ type Expression = {
  * It can either be a singular modification (e.g. a=1) or it can be a modification with nested modifications
  *  (e.g. a redeclare statement)
  *
- * Some mods need to be easily referenced (any parameter assignment) and others not (like annotation mods)
+ * The mod 'name' can be explicitly provided instead of discovered
  */
 class Modification {
   name?: string;
   value?: string;
   mods: Modification[] = [];
   empty = false;
-  modelicaPath: string;
-  constructor(definition: WrappedMod | Mod | DeclarationBlock, basePath = "") {
+  modelicaPath = "";
+  constructor(
+    definition: WrappedMod | Mod | DeclarationBlock,
+    basePath = "",
+    name = "",
+  ) {
     // determine if wrapped
     const modBlock =
       "element_modification_or_replaceable" in definition
         ? definition.element_modification_or_replaceable.element_modification
         : definition;
 
-    if ("name" in modBlock) {
+    if (name) {
+      this.name = name;
+    } else if ("name" in modBlock) {
       this.name = modBlock.name;
     } else if ("identifier" in modBlock) {
       this.name = modBlock.identifier;
     }
 
     this.modelicaPath = basePath ? `${basePath}.${this.name}` : "";
-
     const mod = modBlock.modification;
 
     if (mod) {
@@ -139,9 +144,10 @@ class Modification {
         this.value =
           choiceMod.element_redeclaration.component_clause1.type_specifier;
       } else if ("class_modification" in mod) {
+        // const type = "";
         this.mods = (mod as ClassMod).class_modification.map(
           (m) => new Modification(m as WrappedMod, this.modelicaPath),
-        );
+        );  
       }
     } else {
       this.empty = true;
@@ -176,8 +182,8 @@ export abstract class Element {
 
   abstract getOptions(recursive?: boolean): { [key: string]: OptionN };
 
-  // 'Input' and 'InputGroup' returns modifications and override
-  // this method. Other elements (enums)
+  // 'Input' and 'InputGroup' and 'Extend' returns modifications and override
+  // this method. Other elements do not have a modification
   getModifications(): Modification[] {
     return [];
   }
@@ -195,12 +201,12 @@ export class InputGroup extends Element {
     const specifier = definition.class_specifier.long_class_specifier;
     this.name = specifier.identifier;
     this.modelicaPath = basePath ? [basePath, this.name].join(".") : this.name;
+    typeStore.set(this.modelicaPath, this);
     this.type = this.modelicaPath;
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list.map((e: any) =>
       _constructElement(e, this.modelicaPath),
     );
-    typeStore.set(this.modelicaPath, this);
 
     this.annotation = specifier.composition.annotation?.map(
       (m: Mod | WrappedMod) => new Modification(m),
@@ -258,6 +264,7 @@ export class Input extends Element {
     ).declaration as DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
+    typeStore.set(this.modelicaPath, this);
     this.final = definition.final ? definition.final : this.final;
 
     this.type = componentClause.type_specifier;
@@ -304,7 +311,6 @@ export class Input extends Element {
       }
     }
 
-    typeStore.set(this.modelicaPath, this);
   }
 
   /**
@@ -461,13 +467,16 @@ export class InputGroupExtend extends Element {
   value: string;
   constructor(definition: any, basePath: string) {
     super();
-    this.name = "__extend"; // arbitrary name. Important that this will not collide with other param names
+    this.name = EXTEND_NAME; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${this.name}`;
+    typeStore.set(this.modelicaPath, this);
     this.type = definition.extends_clause.name;
     this.value = this.type;
-    this.mod = new Modification(definition.extends_clause, this.modelicaPath);
-
-    typeStore.set(this.modelicaPath, this);
+    this.mod = new Modification(
+      definition.extends_clause,
+      this.modelicaPath,
+      this.name,
+    );
   }
 
   getOptions(recursive = true) {

@@ -4,11 +4,11 @@ const templateStore = new Map<string, Template>();
 const systemTypeStore = new Map<string, SystemType>();
 
 export function getTemplates() {
-  return templateStore.values();
+  return [...templateStore.values()];
 }
 
 export function getSystemTypes() {
-  return systemTypeStore.values();
+  return [...systemTypeStore.values()];
 }
 
 export interface SystemType {
@@ -21,6 +21,11 @@ export interface SystemTemplateN {
   systemTypes: string[];
   name: string;
   options?: string[];
+}
+
+export interface ModifiersN {
+  modelicaPath: string;
+  value: any;
 }
 
 export class Template {
@@ -69,5 +74,14 @@ export class Template {
       name: this.description,
       options: Object.values(this.getOptions()).map((o) => o.modelicaPath),
     };
+  }
+
+  getModifiers(): ModifiersN[] {
+    const mods = this.element.getModifications();
+
+    return mods.map(m => ({
+      modelicaPath: m.modelicaPath,
+      value: m.value,
+    }));
   }
 }
