@@ -157,6 +157,14 @@ class Modification {
       modStore.set(this.modelicaPath, this);
     }
   }
+
+  // returns a flattened list of all modifications
+  getModifications(): Modification[] {
+    // provide the base path
+    // basePath + name
+    const childMods = this.mods.flatMap(m => m.getModifications());
+    return [this, ...childMods];
+  }
 }
 
 // TODO: remove this once types are shared between FE and BE
@@ -361,17 +369,26 @@ export class Input extends Element {
   }
 
   getModifications(): Modification[] {
-    return this.mod && !this.mod.empty ? [this.mod] : [];
+    return this.mod && !this.mod.empty ? this.mod.getModifications() : [];
   }
 }
 
 export class ReplaceableInput extends Input {
   choices: string[] = [];
+  constraint: Element | undefined;
   constructor(definition: any, basePath: string) {
     super(definition, basePath);
 
     // the default value is original type provided
     this.value = this.type;
+
+    // modifiers for replaceables are specified in a constraining
+    // interface. Check if one is present to extract modifiers
+    if (definition.constraining_clause) {
+      const constraintDef = definition.constraining_clause;
+      this.constraint = typeStore.get(constraintDef.name)
+      this.mod = (constraintDef?.class_modification) ? new Modification(constraintDef, this.modelicaPath) : null;
+    }
 
     const choices = this.annotation.find(
       (m) => m.name === "choices",
@@ -472,11 +489,14 @@ export class InputGroupExtend extends Element {
     typeStore.set(this.modelicaPath, this);
     this.type = definition.extends_clause.name;
     this.value = this.type;
-    this.mod = new Modification(
-      definition.extends_clause,
-      this.modelicaPath,
-      this.name,
-    );
+    if (definition.extends_clause.class_modification) {
+      this.mod = new Modification(
+        definition.extends_clause.class_modification,
+        this.modelicaPath,
+        this.name,
+      );
+    }
+
   }
 
   getOptions(recursive = true) {
@@ -498,7 +518,7 @@ export class InputGroupExtend extends Element {
   }
 
   getModifications() {
-    return this.mod ? [this.mod] : [];
+    return this.mod ? this.mod.getModifications() : [];
   }
 }
 
