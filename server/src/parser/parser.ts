@@ -145,9 +145,7 @@ class Modification {
           choiceMod.element_redeclaration.component_clause1.type_specifier;
       } else if ("class_modification" in mod) {
         // const type = "";
-        this.mods = (mod as ClassMod).class_modification.map(
-          (m) => new Modification(m as WrappedMod, this.modelicaPath),
-        );  
+        this.mods = unpackClassModification(mod as ClassMod, this.modelicaPath);
       }
     } else {
       this.empty = true;
@@ -162,9 +160,19 @@ class Modification {
   getModifications(): Modification[] {
     // provide the base path
     // basePath + name
-    const childMods = this.mods.flatMap(m => m.getModifications());
+    const childMods = this.mods.flatMap((m) => m.getModifications());
     return [this, ...childMods];
   }
+}
+
+function unpackClassModification(
+  classMod: ClassMod,
+  modelicaPath: string,
+  name = "",
+): Modification[] {
+  return classMod.class_modification.map(
+    (m) => new Modification(m as WrappedMod, modelicaPath, name),
+  );
 }
 
 // TODO: remove this once types are shared between FE and BE
@@ -318,7 +326,6 @@ export class Input extends Element {
         }
       }
     }
-
   }
 
   /**
@@ -369,13 +376,24 @@ export class Input extends Element {
   }
 
   getModifications(): Modification[] {
-    return this.mod && !this.mod.empty ? this.mod.getModifications() : [];
+    const typeInstance = typeStore.get(this.type);
+    const typeInstanceMods = typeInstance
+      ? typeInstance.getModifications()
+      : [];
+    const paramMods =
+      this.mod && !this.mod.empty ? this.mod.getModifications() : [];
+    // TODO: If there are duplicate mods (by modelica path) paramMods should
+    // overwrite typeInstance mods
+    // TODO: a param might point to a classmod, it would be better
+    // to not put that modification in the list
+    return [...paramMods, ...typeInstanceMods];
   }
 }
 
 export class ReplaceableInput extends Input {
   choices: string[] = [];
   constraint: Element | undefined;
+  mods: Modification[] = [];
   constructor(definition: any, basePath: string) {
     super(definition, basePath);
 
@@ -386,8 +404,10 @@ export class ReplaceableInput extends Input {
     // interface. Check if one is present to extract modifiers
     if (definition.constraining_clause) {
       const constraintDef = definition.constraining_clause;
-      this.constraint = typeStore.get(constraintDef.name)
-      this.mod = (constraintDef?.class_modification) ? new Modification(constraintDef, this.modelicaPath) : null;
+      this.constraint = typeStore.get(constraintDef.name);
+      this.mods = constraintDef?.class_modification
+        ? unpackClassModification(constraintDef, this.modelicaPath)
+        : [];
     }
 
     const choices = this.annotation.find(
@@ -427,6 +447,21 @@ export class ReplaceableInput extends Input {
     }
 
     return options;
+  }
+
+  getModifications(): Modification[] {
+    const constraintMods = this.constraint ? this.constraint.getModifications() : [];
+    const replaceableMods: Modification[] = [];
+
+    this.choices.map(c => {
+      const typeInstance = typeStore.get(c) || null;
+      if (typeInstance) {
+        replaceableMods.push(...typeInstance.getModifications());
+      }
+      
+    });
+
+    return [...constraintMods, ...replaceableMods];
   }
 }
 
@@ -479,7 +514,7 @@ export class Enum extends Element {
 
 // Inherited properties by type with modifications
 export class InputGroupExtend extends Element {
-  mod: Modification | undefined;
+  mods: Modification[] = [];
   type: string;
   value: string;
   constructor(definition: any, basePath: string) {
@@ -490,13 +525,12 @@ export class InputGroupExtend extends Element {
     this.type = definition.extends_clause.name;
     this.value = this.type;
     if (definition.extends_clause.class_modification) {
-      this.mod = new Modification(
-        definition.extends_clause.class_modification,
+      this.mods = unpackClassModification(
+        definition.extends_clause,
         this.modelicaPath,
         this.name,
       );
     }
-
   }
 
   getOptions(recursive = true) {
@@ -518,7 +552,7 @@ export class InputGroupExtend extends Element {
   }
 
   getModifications() {
-    return this.mod ? this.mod.getModifications() : [];
+    return this.mods ? this.mods.flatMap((m) => m.getModifications()) : [];
   }
 }
 
