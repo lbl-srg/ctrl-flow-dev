@@ -28,6 +28,9 @@ export interface ModifiersN {
   value: any;
 }
 
+/**
+ * This class maps parser output to schema consumable by the linkage widget
+ */
 export class Template {
   systemTypes: SystemType[] = [];
 
@@ -79,7 +82,9 @@ export class Template {
   getModifiers(): ModifiersN[] {
     const mods = this.element.getModifications();
 
-    return mods.map(m => ({
+    return mods
+      .filter(m => m.mods.length === 0)
+      .map(m => ({
       modelicaPath: m.modelicaPath,
       value: m.value,
     }));
