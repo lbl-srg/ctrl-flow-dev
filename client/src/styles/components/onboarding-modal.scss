@@ -1,0 +1,55 @@
+.onboarding-modal {
+  article {
+    background-color: white;
+  }
+
+  .controls {
+    position: sticky;
+    padding: var(--spacing-md) 0;
+    bottom: -50px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-md);
+    z-index: 4;
+    background-color: white;
+    box-shadow: 0px 0px 15px 5px white;
+
+    button {
+      width: auto;
+    }
+
+    .prev.disabled {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+  p.columns {
+    columns: 2;
+  }
+
+  .marker-container {
+    display: flex;
+    align-items: center;
+
+    .marker {
+      cursor: pointer;
+      margin: 0 var(--spacing-xs);
+      width: 10px;
+      height: 10px;
+      background-color: var(--color-blue-light);
+      border-radius: 5px;
+
+      &.active {
+        background-color: var(--color-blue-dark);
+      }
+    }
+  }
+
+  .slide-container {
+    height: calc(100% - 50px);
+    // max-height: 100%;
+    overflow-y: auto;
+  }
+}
