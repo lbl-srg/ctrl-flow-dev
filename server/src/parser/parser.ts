@@ -452,18 +452,19 @@ export class ReplaceableInput extends Input {
   }
 
   getModifications(): Modification[] {
-    const constraintMods = this.constraint ? this.constraint.getModifications() : [];
+    const constraintMods = this.constraint
+      ? this.constraint.getModifications()
+      : [];
     const replaceableMods: Modification[] = [];
 
-    this.choices.map(c => {
+    this.choices.map((c) => {
       const typeInstance = typeStore.get(c) || null;
       if (typeInstance) {
         replaceableMods.push(...typeInstance.getModifications());
       }
-      
     });
 
-    return [...constraintMods, ...replaceableMods];
+    return [...this.mods, ...constraintMods, ...replaceableMods];
   }
 }
 
@@ -530,7 +531,6 @@ export class InputGroupExtend extends Element {
       this.mods = unpackClassModification(
         definition.extends_clause,
         this.modelicaPath,
-        this.name,
       );
     }
   }
