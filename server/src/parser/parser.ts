@@ -118,6 +118,8 @@ class Modification {
         ? definition.element_modification_or_replaceable.element_modification
         : definition;
 
+    const mod = modBlock.modification;
+
     if (name) {
       this.name = name;
     } else if ("name" in modBlock) {
@@ -126,8 +128,8 @@ class Modification {
       this.name = modBlock.identifier;
     }
 
+    // name gets duplicated for 'class'
     this.modelicaPath = basePath ? `${basePath}.${this.name}` : "";
-    const mod = modBlock.modification;
 
     if (mod) {
       // test if an assignment
@@ -302,7 +304,7 @@ export class Input extends Element {
     }
 
     this.mod = declarationBlock.modification
-      ? new Modification(declarationBlock, this.modelicaPath)
+      ? new Modification(declarationBlock, basePath, this.name)
       : null;
 
     if (this.mod && !this.mod.empty) {
