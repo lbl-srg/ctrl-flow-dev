@@ -3,6 +3,11 @@
     background-color: white;
   }
 
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
   .controls {
     position: sticky;
     padding: var(--spacing-md) 0;

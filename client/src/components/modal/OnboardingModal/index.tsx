@@ -1,16 +1,14 @@
 import Modal from "../Modal";
 import { SyntheticEvent, useState } from "react";
-import SlideOne from "./SlideOne";
-import SlideTwo from "./SlideTwo";
+import Slide from "./Slide";
+import itl from "../../../translations";
 
 import "../../../styles/components/onboarding-modal.scss";
 
 function OnboardingModal() {
+  const slides = itl.onboarding;
   const [slide, setSlide] = useState(0);
   const [isOpen, setIsOpen] = useState(true);
-
-  const slides = [SlideOne, SlideTwo];
-  const CurrentSlide = slides[slide];
 
   function prev(ev: SyntheticEvent) {
     ev.preventDefault();
@@ -27,7 +25,7 @@ function OnboardingModal() {
   return (
     <Modal close={close} isOpen={isOpen} className="onboarding-modal">
       <div className="slide-container">
-        <CurrentSlide />
+        <Slide slideNum={slide} />
       </div>
 
       <div className="controls">
@@ -37,7 +35,7 @@ function OnboardingModal() {
           className={slide === 0 ? "prev disabled" : "prev"}
         >
           <i className="icon-left-open" />
-          back
+          {itl.buttons.back}
         </a>
 
         <div className="marker-container">
@@ -55,7 +53,7 @@ function OnboardingModal() {
         </div>
 
         <button className="small next" onClick={next}>
-          continue
+          {itl.buttons.continue}
         </button>
       </div>
     </Modal>
