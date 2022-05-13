@@ -17,11 +17,11 @@ export function loadPackage(packagePath: string): templates.SystemTemplateN[] {
   parser.setPathPrefix(parsedPath.dir);
   parser.loadPackage(parsedPath.name);
 
-  return templates.getTemplates();
+  return templates.getTemplates().map((t) => t.getSystemTemplate());
 }
 
 export function getTemplates(): templates.SystemTemplateN[] {
-  return templates.getTemplates();
+  return templates.getTemplates().map((t) => t.getSystemTemplate());
 }
 
 export function getSystemTypes(): templates.SystemTypeN[] {
