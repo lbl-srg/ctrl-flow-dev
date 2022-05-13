@@ -55,9 +55,81 @@ export function getModificationList(
   modelicaPath: string,
   name = "",
 ): Modification[] {
-  return classMod.class_modification.map(
-    (m) => new Modification(m as WrappedMod, modelicaPath, name),
+  return classMod.class_modification.map((m) =>
+    createModification({
+      definition: m as WrappedMod,
+      basePath: modelicaPath,
+      name: name,
+    }),
   );
+}
+
+interface ModificationBasics {
+  basePath?: string;
+  name?: string;
+  value?: any;
+  definition?: any;
+}
+
+interface ModificationWithDefinition extends ModificationBasics {
+  definition: WrappedMod | Mod | DeclarationBlock;
+  value?: never;
+}
+
+interface ModificationWithValue extends ModificationBasics {
+  definition?: never;
+  value: any;
+  name: string;
+}
+
+type ModificationProps = ModificationWithDefinition | ModificationWithValue;
+
+/**
+ * Factory method that can create a Modification from two approaches:
+ *
+ * 1. Either a definition blob of JSON
+ * 2. name and value are explicitly provided
+ *
+ * @param props: ModificationProps
+ * @returns Modification
+ */
+export function createModification(props: ModificationProps): Modification {
+  let mods: Modification[] = [];
+  let { definition, value, basePath = "", name } = props;
+  let modelicaPath = basePath ? `${basePath}.${name}` : "";
+
+  if (definition) {
+    const modBlock =
+      "element_modification_or_replaceable" in definition
+        ? definition.element_modification_or_replaceable.element_modification
+        : definition;
+
+    if ("name" in modBlock) {
+      name = modBlock.name;
+    } else if ("identifier" in modBlock) {
+      name = modBlock.identifier;
+    }
+
+    const mod = modBlock.modification;
+    if (mod) {
+      // test if an assignment
+      if ("equal" in mod) {
+        // simple_expression can potentially be an expression
+        // TODO be ready to feed that into Expression generator
+        value = (mod as Assignment).expression.simple_expression;
+      } else if (name == "choice") {
+        const choiceMod = (mod as ClassMod)
+          .class_modification[0] as RedeclarationMod;
+        value =
+          choiceMod.element_redeclaration.component_clause1.type_specifier;
+      } else if ("class_modification" in mod) {
+        // const type = "";
+        mods = getModificationList(mod as ClassMod, modelicaPath);
+      }
+    }
+  }
+
+  return new Modification(basePath, name, value, mods);
 }
 
 /**
@@ -68,56 +140,17 @@ export function getModificationList(
  * The mod 'name' can be explicitly provided instead of discovered
  */
 export class Modification {
-  name?: string;
-  value?: string;
-  mods: Modification[] = [];
   empty = false;
   modelicaPath = "";
   constructor(
-    definition: WrappedMod | Mod | DeclarationBlock,
     basePath = "",
-    name = "",
+    public name = "",
+    public value: any,
+    public mods: Modification[] = [],
   ) {
-    // determine if wrapped
-    const modBlock =
-      "element_modification_or_replaceable" in definition
-        ? definition.element_modification_or_replaceable.element_modification
-        : definition;
-
-    const mod = modBlock.modification;
-
-    if (name) {
-      this.name = name;
-    } else if ("name" in modBlock) {
-      this.name = modBlock.name;
-    } else if ("identifier" in modBlock) {
-      this.name = modBlock.identifier;
-    }
-
-    // name gets duplicated for 'class'
+    this.empty = mods.length === 0;
     this.modelicaPath = basePath ? `${basePath}.${this.name}` : "";
 
-    if (mod) {
-      // test if an assignment
-      if ("equal" in mod) {
-        // simple_expression can potentially be an expression
-        // TODO be ready to feed that into Expression generator
-        this.value = (mod as Assignment).expression.simple_expression;
-      } else if (this.name == "choice") {
-        // element_redeclarations
-        // choice has the following structure:
-        // ClassMod -> RedeclarationMod
-        const choiceMod = (mod as ClassMod)
-          .class_modification[0] as RedeclarationMod;
-        this.value =
-          choiceMod.element_redeclaration.component_clause1.type_specifier;
-      } else if ("class_modification" in mod) {
-        // const type = "";
-        this.mods = getModificationList(mod as ClassMod, this.modelicaPath);
-      }
-    } else {
-      this.empty = true;
-    }
     if (this.modelicaPath) {
       // only register the mod if it has a path
       modStore.set(this.modelicaPath, this);

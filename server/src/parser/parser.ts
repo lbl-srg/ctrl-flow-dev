@@ -1,6 +1,7 @@
 import { findPackageEntryPoints, loader, TEMPLATE_IDENTIFIER } from "./loader";
 import { Template } from "./template";
 import {
+  createModification,
   Mod,
   Modification,
   WrappedMod,
@@ -100,7 +101,7 @@ export class InputGroup extends Element {
     );
 
     this.annotation = specifier.composition.annotation?.map(
-      (m: Mod | WrappedMod) => new Modification(m),
+      (m: Mod | WrappedMod) => createModification({definition: m}),
     );
     if (
       this.annotation &&
@@ -170,14 +171,14 @@ export class Input extends Element {
       this.description = descriptionBlock?.description_string || "";
       if (descriptionBlock?.annotation) {
         this.annotation = descriptionBlock.annotation.map(
-          (mod: Mod | WrappedMod) => new Modification(mod),
+          (mod: Mod | WrappedMod) => createModification({definition: mod}),
         );
         this._setUIInfo();
       }
     }
 
     this.mod = declarationBlock.modification
-      ? new Modification(declarationBlock, basePath, this.name)
+      ? createModification({definition: declarationBlock, basePath, name: this.name})
       : null;
 
     if (this.mod && !this.mod.empty) {
@@ -274,9 +275,12 @@ export class ReplaceableInput extends Input {
 
     // the default value is original type provided
     this.value = this.type;
-    // TODO: this has to be represented as a modifier... maybe!
-    // either options have a predefined value OR all assignments get
-    // represented as modifiers
+
+    this.mods.push(createModification({
+      name: this.name,
+      value: this.value,
+      basePath: basePath
+    }));
 
     // modifiers for replaceables are specified in a constraining
     // interface. Check if one is present to extract modifiers
@@ -284,7 +288,7 @@ export class ReplaceableInput extends Input {
       const constraintDef = definition.constraining_clause;
       this.constraint = typeStore.get(constraintDef.name);
       this.mods = constraintDef?.class_modification
-        ? getModificationList(constraintDef, this.modelicaPath)
+        ? [...this.mods, ...getModificationList(constraintDef, this.modelicaPath)]
         : [];
     }
 
