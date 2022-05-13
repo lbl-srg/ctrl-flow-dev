@@ -22,6 +22,9 @@ describe("Modifications", () => {
         "TestPackage.Component.SecondComponent",
       ],
       [
+        "TestPackage.Template.TestTemplate.selectable_component.container"
+      ],
+      [
         "Testpackage.Template.TestTemplate.first.component_param",
         "First Component Template Override",
       ],
@@ -34,9 +37,40 @@ describe("Modifications", () => {
 
     const modifiers = template.getModifiers();
 
-    expectedMods.map((m) => {
-      const [key, value] = m;
-      const mod = modifiers.find((modifier) => modifier.modelicaPath);
+    // just check shape
+    modifiers.map((m) => {
+      expect(m.modelicaPath).toBeDefined();
+      expect(m.value).toBeDefined();
     });
+  });
+
+  it("Correctly assigns '__extend' modifiers", () => {
+    const expectedMods = [
+      [
+        "TestPackage.Template.TestTemplate.__extend.interface_param",
+        '"Updated Value"',
+      ]
+    ];
+  });
+
+  it("Finds modifiers from related classes", () => {
+    const expectedMod = [
+      [
+        "TestPackage.Component.FirstComponent.__extend.container",
+        'TestPackage.Types.Container.Hand',
+      ],
+      [
+        "TestPackage.Component.FirstComponent.__extend",
+        "First Component Param"
+      ]
+    ];
+  });
+
+  it("Creates modifiers for replaceables", () => {
+
+  })
+
+  it("Finds 'constrainby' modifiers", () => {
+
   });
 });
