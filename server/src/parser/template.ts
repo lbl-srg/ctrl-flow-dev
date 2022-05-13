@@ -5,20 +5,36 @@
  * and provide accessor methods to extract what is needed in linkage schema format
  */
 
+import { access } from "fs";
 import * as parser from "./parser";
 
 const templateStore = new Map<string, Template>();
-const systemTypeStore = new Map<string, SystemType>();
+const systemTypeStore = new Map<string, SystemTypeN>();
 
 export function getTemplates() {
-  return [...templateStore.values()];
+  return [...templateStore.values()].map((t) => t.getSystemTemplate());
 }
 
 export function getSystemTypes() {
   return [...systemTypeStore.values()];
 }
 
-export interface SystemType {
+export function getOptions(): parser.OptionN[] {
+  const templates = [...templateStore.values()];
+
+  // [{'asdf': OptionN}, {'asdf': OptionN}, {}]
+  const options = templates.reduce(
+    (acc: { [key: string]: parser.OptionN }, currentValue) => {
+      return { ...acc, ...currentValue.getOptions() };
+    },
+    {},
+  );
+  const optionsList = Object.values(options);
+
+  return optionsList;
+}
+
+export interface SystemTypeN {
   description: string;
   modelicaPath: string;
 }
@@ -36,7 +52,7 @@ export interface ModifiersN {
 }
 
 export class Template {
-  systemTypes: SystemType[] = [];
+  systemTypes: SystemTypeN[] = [];
 
   constructor(public element: parser.Element) {
     // extract system type by getting descriptions for each type

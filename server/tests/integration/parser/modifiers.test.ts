@@ -1,7 +1,5 @@
 import { createTestModelicaJson, fullTempDirPath } from "./utils";
-import {
-  ModifiersN
-} from "../../../src/parser/template"
+import { ModifiersN } from "../../../src/parser/template";
 import {
   loadPackage,
   getTemplates,
@@ -10,7 +8,6 @@ import {
 } from "../../../src/parser/";
 
 const templatePath = "TestPackage.Template.TestTemplate";
-const nestedPath = "TestPackage.NestedTemplate.Subcategory.SecondTemplate";
 
 let modifiers: ModifiersN[] = [];
 
@@ -23,7 +20,7 @@ describe("Modifications", () => {
       (t) => t.modelicaPath === templatePath,
     ) as Template;
 
-    modifiers = template.getModifiers();    
+    modifiers = template.getModifiers();
   });
 
   it("Template modifiers are all assigned", () => {
@@ -39,30 +36,30 @@ describe("Modifications", () => {
       [
         "TestPackage.Template.TestTemplate.__extend.interface_param",
         '"Updated Value"',
-      ]
+      ],
     ];
-    expectedMods.map(expectedMod => {
+    expectedMods.map((expectedMod) => {
       const [path, value] = expectedMod;
-      const extendMod = modifiers.find(m => m.modelicaPath === path);
+      const extendMod = modifiers.find((m) => m.modelicaPath === path);
       expect(extendMod?.value).toEqual(value);
-    })
+    });
   });
 
   it("Finds modifiers from related classes", () => {
     const expectedMods = [
       [
         "TestPackage.Component.FirstComponent.__extend.container",
-        'TestPackage.Types.Container.Hand',
+        "TestPackage.Types.Container.Hand",
       ],
       [
         "TestPackage.Component.FirstComponent.component_param",
-        '"First Component Param"'
-      ]
+        '"First Component Param"',
+      ],
     ];
 
-    expectedMods.map(expectedMod => {
+    expectedMods.map((expectedMod) => {
       const [path, value] = expectedMod;
-      const extendMod = modifiers.find(m => m.modelicaPath === path);
+      const extendMod = modifiers.find((m) => m.modelicaPath === path);
       expect(extendMod?.value).toEqual(value);
     });
   });
@@ -72,27 +69,27 @@ describe("Modifications", () => {
       [
         "TestPackage.Template.TestTemplate.selectable_component",
         "TestPackage.Component.SecondComponent",
-      ]
+      ],
     ];
 
-    expectedMods.map(expectedMod => {
+    expectedMods.map((expectedMod) => {
       const [path, value] = expectedMod;
-      const extendMod = modifiers.find(m => m.modelicaPath === path);
+      const extendMod = modifiers.find((m) => m.modelicaPath === path);
       expect(extendMod?.value).toEqual(value);
     });
-  })
+  });
 
   it("Finds 'constrainby' modifiers", () => {
     const expectedMods = [
       [
         "TestPackage.Template.TestTemplate.selectable_component.container",
         "TestPackage.Types.Container.Cone",
-      ]
+      ],
     ];
 
-    expectedMods.map(expectedMod => {
+    expectedMods.map((expectedMod) => {
       const [path, value] = expectedMod;
-      const extendMod = modifiers.find(m => m.modelicaPath === path);
+      const extendMod = modifiers.find((m) => m.modelicaPath === path);
       expect(extendMod?.value).toEqual(value);
     });
   });
