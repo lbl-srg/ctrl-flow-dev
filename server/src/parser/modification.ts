@@ -148,7 +148,6 @@ export class Modification {
     public value: any,
     public mods: Modification[] = [],
   ) {
-    this.empty = mods.length === 0;
     this.modelicaPath = basePath ? `${basePath}.${this.name}` : "";
 
     if (this.modelicaPath) {
