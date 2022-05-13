@@ -1,3 +1,12 @@
+/**
+ * The parser extracts modelica-json with the goal of finding each point of 'input' in modelica-json.
+ * Various structures in modelica are generically converted to 'elements', with each specific structure
+ * implemented as a class that extends the 'Element' base class.
+ *
+ * The parser also keeps a store of type definitions, so that as json is unpacked and converted to an 'Element'
+ * that element is available if referenced by another piece of modelica-json.
+ */
+
 import { findPackageEntryPoints, loader, TEMPLATE_IDENTIFIER } from "./loader";
 import { Template } from "./template";
 import {
@@ -101,7 +110,7 @@ export class InputGroup extends Element {
     );
 
     this.annotation = specifier.composition.annotation?.map(
-      (m: Mod | WrappedMod) => createModification({definition: m}),
+      (m: Mod | WrappedMod) => createModification({ definition: m }),
     );
     if (
       this.annotation &&
@@ -171,14 +180,18 @@ export class Input extends Element {
       this.description = descriptionBlock?.description_string || "";
       if (descriptionBlock?.annotation) {
         this.annotation = descriptionBlock.annotation.map(
-          (mod: Mod | WrappedMod) => createModification({definition: mod}),
+          (mod: Mod | WrappedMod) => createModification({ definition: mod }),
         );
         this._setUIInfo();
       }
     }
 
     this.mod = declarationBlock.modification
-      ? createModification({definition: declarationBlock, basePath, name: this.name})
+      ? createModification({
+          definition: declarationBlock,
+          basePath,
+          name: this.name,
+        })
       : null;
 
     if (this.mod && !this.mod.empty) {
@@ -276,11 +289,13 @@ export class ReplaceableInput extends Input {
     // the default value is original type provided
     this.value = this.type;
 
-    this.mods.push(createModification({
-      name: this.name,
-      value: this.value,
-      basePath: basePath
-    }));
+    this.mods.push(
+      createModification({
+        name: this.name,
+        value: this.value,
+        basePath: basePath,
+      }),
+    );
 
     // modifiers for replaceables are specified in a constraining
     // interface. Check if one is present to extract modifiers
@@ -288,7 +303,10 @@ export class ReplaceableInput extends Input {
       const constraintDef = definition.constraining_clause;
       this.constraint = typeStore.get(constraintDef.name);
       this.mods = constraintDef?.class_modification
-        ? [...this.mods, ...getModificationList(constraintDef, this.modelicaPath)]
+        ? [
+            ...this.mods,
+            ...getModificationList(constraintDef, this.modelicaPath),
+          ]
         : [];
     }
 

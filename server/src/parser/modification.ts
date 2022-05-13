@@ -1,3 +1,26 @@
+/**
+ * Modifications are places where there is an assignment, e.g.
+ * 'my_param=5'. Modifications can also contain groups of modifications, e.g.
+ * ```
+ * MyClass myClassInstance(
+ *  myclassParam=true,
+ *  anotherMyClassParam=5
+ * )
+ * ```
+ * The above becomes three modifiers, one for 'myClassInstance', and two for
+ * the key/value assigned parameters
+ *
+ * Modifications are used in all places where there are assignments, so this includes
+ * annotations that contain purely UI related data, or with the 'graphic' tag that
+ * contains SVG data.
+ *
+ * Parameter modifications are kept in a store using a modelica path. All other
+ * modifications (annotation, graphic) are not put in the store.
+ *
+ * TODO: this store could potentially be used to help simplify expressions. If we
+ * don't end up going this route, the store should be removed.
+ */
+
 const modStore: Map<string, Modification> = new Map();
 
 type RedeclarationMod = {

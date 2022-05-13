@@ -1,3 +1,10 @@
+/**
+ * Templates are the intended point of interaction with the parser.
+ *
+ * Templates sit in front of all parsed elements that represent a single template
+ * and provide accessor methods to extract what is needed in linkage schema format
+ */
+
 import * as parser from "./parser";
 
 const templateStore = new Map<string, Template>();
@@ -28,9 +35,6 @@ export interface ModifiersN {
   value: any;
 }
 
-/**
- * This class maps parser output to schema consumable by the linkage widget
- */
 export class Template {
   systemTypes: SystemType[] = [];
 
@@ -83,10 +87,10 @@ export class Template {
     const mods = this.element.getModifications();
 
     return mods
-      .filter(m => m.mods.length === 0)
-      .map(m => ({
-      modelicaPath: m.modelicaPath,
-      value: m.value,
-    }));
+      .filter((m) => m.mods.length === 0)
+      .map((m) => ({
+        modelicaPath: m.modelicaPath,
+        value: m.value,
+      }));
   }
 }
