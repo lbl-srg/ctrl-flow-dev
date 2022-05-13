@@ -401,6 +401,9 @@ export class ReplaceableInput extends Input {
 
     // the default value is original type provided
     this.value = this.type;
+    // TODO: this has to be represented as a modifier... maybe!
+    // either options have a predefined value OR all assignments get
+    // represented as modifiers
 
     // modifiers for replaceables are specified in a constraining
     // interface. Check if one is present to extract modifiers
