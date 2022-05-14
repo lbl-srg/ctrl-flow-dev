@@ -1,5 +1,23 @@
+/**
+ * The parser extracts modelica-json with the goal of finding each point of 'input' in modelica-json.
+ * Various structures in modelica are generically converted to 'elements', with each specific structure
+ * implemented as a class that extends the 'Element' base class.
+ *
+ * The parser also keeps a store of type definitions, so that as json is unpacked and converted to an 'Element'
+ * that element is available if referenced by another piece of modelica-json.
+ */
+
 import { findPackageEntryPoints, loader, TEMPLATE_IDENTIFIER } from "./loader";
 import { Template } from "./template";
+import {
+  createModification,
+  Mod,
+  Modification,
+  WrappedMod,
+  Expression,
+  DeclarationBlock,
+  getModificationList,
+} from "./modification";
 
 const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
@@ -42,101 +60,6 @@ function assertType(type: string) {
   }
 }
 
-type RedeclarationMod = {
-  element_redeclaration: {
-    component_clause1: {
-      type_specifier: string; // Modelica Path
-      component_declaration1: {
-        declaration: DeclarationBlock;
-        description: DescriptionBlock;
-      };
-    };
-  };
-};
-
-type ClassMod = {
-  class_modification: (WrappedMod | RedeclarationMod)[];
-};
-
-type Assignment = {
-  equal: boolean;
-  expression: {
-    simple_expression: string; // JSON deserializable value
-  };
-};
-
-// Replacable
-type WrappedMod = {
-  element_modification_or_replaceable: {
-    element_modification: Mod;
-  };
-};
-
-type Mod = {
-  name: string;
-  modification: ClassMod | WrappedMod | Assignment | RedeclarationMod;
-};
-
-type DeclarationBlock = {
-  identifier: string;
-  modification?: ClassMod | WrappedMod | Assignment | RedeclarationMod;
-};
-
-type DescriptionBlock = {
-  description_string: string;
-  annotation?: any;
-};
-
-type Expression = {
-  modelicaPath: string;
-  expression: string;
-};
-
-class Modification {
-  name?: string;
-  value?: string;
-  mods: Modification[] = [];
-  empty = false;
-  constructor(definition: WrappedMod | Mod | DeclarationBlock) {
-    // determine if wrapped
-    const modBlock =
-      "element_modification_or_replaceable" in definition
-        ? definition.element_modification_or_replaceable.element_modification
-        : definition;
-
-    if ("name" in modBlock) {
-      this.name = modBlock.name;
-    } else if ("identifier" in modBlock) {
-      this.name = modBlock.identifier;
-    }
-
-    const mod = modBlock.modification;
-
-    if (mod) {
-      // test if an assignment
-      if ("equal" in mod) {
-        // TODO: feed this into an expression parser to generate actual expression
-        // instances IF there is an expression. If it is a simple value keep the assignment
-        this.value = (mod as Assignment).expression.simple_expression;
-      } else if (this.name == "choice") {
-        // element_redeclarations
-        // choice has the following structure:
-        // ClassMod -> RedeclarationMod
-        const choiceMod = (mod as ClassMod)
-          .class_modification[0] as RedeclarationMod;
-        this.value =
-          choiceMod.element_redeclaration.component_clause1.type_specifier;
-      } else if ("class_modification" in mod) {
-        this.mods = (mod as ClassMod).class_modification.map(
-          (m) => new Modification(m as WrappedMod),
-        );
-      }
-    } else {
-      this.empty = true;
-    }
-  }
-}
-
 // TODO: remove this once types are shared between FE and BE
 export interface OptionN {
   // id: number;
@@ -159,6 +82,12 @@ export abstract class Element {
   entryPoint = false;
 
   abstract getOptions(recursive?: boolean): { [key: string]: OptionN };
+
+  // 'Input' and 'InputGroup' and 'Extend' returns modifications and override
+  // this method. Other elements do not have a modification
+  getModifications(): Modification[] {
+    return [];
+  }
 }
 
 export class InputGroup extends Element {
@@ -166,22 +95,22 @@ export class InputGroup extends Element {
   elementList: Element[];
   description: string;
   entryPoint = false;
-  mods: Modification[] = [];
+  mod: Modification | undefined;
 
   constructor(definition: any, basePath: string) {
     super();
     const specifier = definition.class_specifier.long_class_specifier;
     this.name = specifier.identifier;
     this.modelicaPath = basePath ? [basePath, this.name].join(".") : this.name;
+    typeStore.set(this.modelicaPath, this);
     this.type = this.modelicaPath;
     this.description = specifier.description_string;
     this.elementList = specifier.composition.element_list.map((e: any) =>
       _constructElement(e, this.modelicaPath),
     );
-    typeStore.set(this.modelicaPath, this);
 
     this.annotation = specifier.composition.annotation?.map(
-      (m: Mod | WrappedMod) => new Modification(m),
+      (m: Mod | WrappedMod) => createModification({ definition: m }),
     );
     if (
       this.annotation &&
@@ -209,13 +138,17 @@ export class InputGroup extends Element {
 
     return options;
   }
+
+  getModifications() {
+    return this.elementList.flatMap((e) => e.getModifications());
+  }
 }
 
 // a parameter with a type
 export class Input extends Element {
-  modifications: any[] = [];
+  mod: Modification | null;
   type = ""; // modelica path
-  value: any;
+  value: any; // modelica path?
   description = "";
   final = false;
   annotation: Modification[] = [];
@@ -232,6 +165,7 @@ export class Input extends Element {
     ).declaration as DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
+    typeStore.set(this.modelicaPath, this);
     this.final = definition.final ? definition.final : this.final;
 
     this.type = componentClause.type_specifier;
@@ -246,18 +180,22 @@ export class Input extends Element {
       this.description = descriptionBlock?.description_string || "";
       if (descriptionBlock?.annotation) {
         this.annotation = descriptionBlock.annotation.map(
-          (mod: Mod | WrappedMod) => new Modification(mod),
+          (mod: Mod | WrappedMod) => createModification({ definition: mod }),
         );
         this._setUIInfo();
       }
     }
 
-    const mod = declarationBlock.modification
-      ? new Modification(declarationBlock)
+    this.mod = declarationBlock.modification
+      ? createModification({
+          definition: declarationBlock,
+          basePath,
+          name: this.name,
+        })
       : null;
 
-    if (mod && !mod.empty) {
-      this.value = mod.value;
+    if (this.mod && !this.mod.empty) {
+      this.value = this.mod.value;
     }
 
     // if type is a literal type we can convert it from a string
@@ -277,8 +215,6 @@ export class Input extends Element {
         }
       }
     }
-
-    typeStore.set(this.modelicaPath, this);
   }
 
   /**
@@ -327,15 +263,52 @@ export class Input extends Element {
 
     return options;
   }
+
+  getModifications(): Modification[] {
+    const typeInstance = typeStore.get(this.type);
+    const typeInstanceMods = typeInstance
+      ? typeInstance.getModifications()
+      : [];
+    const paramMods =
+      this.mod && !this.mod.empty ? this.mod.getModifications() : [];
+    // TODO: If there are duplicate mods (by modelica path) paramMods should
+    // overwrite typeInstance mods
+    // TODO: a param might point to a classmod, it would be better
+    // to not put that modification in the list
+    return [...paramMods, ...typeInstanceMods];
+  }
 }
 
 export class ReplaceableInput extends Input {
   choices: string[] = [];
+  constraint: Element | undefined;
+  mods: Modification[] = [];
   constructor(definition: any, basePath: string) {
     super(definition, basePath);
 
     // the default value is original type provided
     this.value = this.type;
+
+    this.mods.push(
+      createModification({
+        name: this.name,
+        value: this.value,
+        basePath: basePath,
+      }),
+    );
+
+    // modifiers for replaceables are specified in a constraining
+    // interface. Check if one is present to extract modifiers
+    if (definition.constraining_clause) {
+      const constraintDef = definition.constraining_clause;
+      this.constraint = typeStore.get(constraintDef.name);
+      this.mods = constraintDef?.class_modification
+        ? [
+            ...this.mods,
+            ...getModificationList(constraintDef, this.modelicaPath),
+          ]
+        : [];
+    }
 
     const choices = this.annotation.find(
       (m) => m.name === "choices",
@@ -374,6 +347,22 @@ export class ReplaceableInput extends Input {
     }
 
     return options;
+  }
+
+  getModifications(): Modification[] {
+    const constraintMods = this.constraint
+      ? this.constraint.getModifications()
+      : [];
+    const replaceableMods: Modification[] = [];
+
+    this.choices.map((c) => {
+      const typeInstance = typeStore.get(c) || null;
+      if (typeInstance) {
+        replaceableMods.push(...typeInstance.getModifications());
+      }
+    });
+
+    return [...this.mods, ...constraintMods, ...replaceableMods];
   }
 }
 
@@ -426,17 +415,22 @@ export class Enum extends Element {
 
 // Inherited properties by type with modifications
 export class InputGroupExtend extends Element {
-  modifications: any[] = [];
+  mods: Modification[] = [];
   type: string;
   value: string;
   constructor(definition: any, basePath: string) {
     super();
-    this.name = "__extend"; // arbitrary name. Important that this will not collide with other param names
+    this.name = EXTEND_NAME; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${this.name}`;
+    typeStore.set(this.modelicaPath, this);
     this.type = definition.extends_clause.name;
     this.value = this.type;
-
-    typeStore.set(this.modelicaPath, this);
+    if (definition.extends_clause.class_modification) {
+      this.mods = getModificationList(
+        definition.extends_clause,
+        this.modelicaPath,
+      );
+    }
   }
 
   getOptions(recursive = true) {
@@ -455,6 +449,10 @@ export class InputGroupExtend extends Element {
     } else {
       return {};
     }
+  }
+
+  getModifications() {
+    return this.mods ? this.mods.flatMap((m) => m.getModifications()) : [];
   }
 }
 
