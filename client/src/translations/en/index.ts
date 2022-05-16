@@ -7,4 +7,10 @@ export default {
     continue: "continue",
     back: "back",
   },
+  terms: {
+    schedule: "Schedule",
+    results: "Results",
+    configure: "Configure",
+    systems: "Systems",
+  },
 } as Translations;

@@ -8,9 +8,27 @@
     justify-content: center;
 
     img {
+      animation-name: fadeIn;
+      animation-duration: 5s ease;
       max-width: 100%;
       height: auto;
       max-height: calc(100vh * 0.5);
+    }
+  }
+
+  .icon-list {
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 1.5rem;
+    justify-content: center;
+    margin-bottom: var(--spacing-lg);
+    margin-top: calc(var(--spacing-md) * -1.2);
+    align-items: center;
+
+    div {
+      display: inline-flex;
+      align-items: center;
+      margin-right: var(--spacing-lg);
     }
   }
 
@@ -58,9 +76,30 @@
     }
   }
 
+  .modal-content {
+    overflow: hidden;
+  }
+
   .slide-container {
     height: calc(100% - 50px);
-    // max-height: 100%;
     overflow-y: auto;
+    overflow-y: auto;
+    display: flex;
+    transition: margin 0.3s ease;
+
+    &.disabled {
+      border: 3px solid pink;
+      transition: none !important;
+    }
+
+    .slide {
+      height: 300px;
+      opacity: 0;
+
+      &.active {
+        opacity: 1;
+        height: auto;
+      }
+    }
   }
 }

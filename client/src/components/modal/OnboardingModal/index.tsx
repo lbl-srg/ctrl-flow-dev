@@ -9,6 +9,28 @@ function OnboardingModal() {
   const slides = itl.onboarding;
   const [slide, setSlide] = useState(0);
   const [isOpen, setIsOpen] = useState(true);
+  const [offset, setOffset] = useState(0);
+  const [slideWidth, setSlideWidth] = useState(0);
+
+  const calculate = () => {
+    const $el = document.querySelector(".modal-content");
+
+    if (!$el) return;
+
+    setSlideWidth($el.getBoundingClientRect().width || 0);
+    setOffset(slide * slideWidth);
+  };
+
+  useEffect(calculate, [slide]);
+
+  useEffect(() => {
+    window.addEventListener("resize", calculate);
+    document.body.addEventListener("keyup", navigate);
+    return () => {
+      document.body.removeEventListener("keyup", navigate);
+      window.removeEventListener("resize", calculate);
+    };
+  });
 
   function prev(ev?: MouseEvent) {
     if (slide === 0) return;
@@ -26,19 +48,24 @@ function OnboardingModal() {
     else if (ev.key === "ArrowLeft") prev();
   }
 
-  useEffect(() => {
-    document.body.addEventListener("keyup", navigate);
-    return () => document.body.removeEventListener("keyup", navigate);
-  }, [slide]);
-
   const close = () => setIsOpen(false);
 
   return (
     <Modal close={close} isOpen={isOpen} className="onboarding-modal">
-      <div className="slide-container">
-        <Slide slideNum={slide} />
+      <div className="modal-content">
+        <div className="slide-container" style={{ marginLeft: -offset }}>
+          {slides.map((comp, index) => {
+            return (
+              <Slide
+                key={index}
+                slideWidth={slideWidth}
+                slideNum={index}
+                isActive={index === slide}
+              />
+            );
+          })}
+        </div>
       </div>
-
       <div className="controls">
         <a
           href="#"

@@ -11,5 +11,11 @@ export interface Translations extends LocalizedStringsMethods {
     continue: string;
     back: string;
   };
+  terms: {
+    schedule: string;
+    results: string;
+    configure: string;
+    systems: string;
+  };
   onboarding: OnboardingSlide[];
 }
