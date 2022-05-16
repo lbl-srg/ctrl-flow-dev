@@ -1,5 +1,5 @@
 import Modal from "../Modal";
-import { SyntheticEvent, useState } from "react";
+import { useState, useEffect, MouseEvent } from "react";
 import Slide from "./Slide";
 import itl from "../../../translations";
 
@@ -10,8 +10,9 @@ function OnboardingModal() {
   const [slide, setSlide] = useState(0);
   const [isOpen, setIsOpen] = useState(true);
 
-  function prev(ev: SyntheticEvent) {
-    ev.preventDefault();
+  function prev(ev?: MouseEvent) {
+    if (slide === 0) return;
+    if (ev) ev.preventDefault();
     setSlide(slide - 1);
   }
 
@@ -19,6 +20,16 @@ function OnboardingModal() {
     if (slide === slides.length - 1) setIsOpen(false);
     else setSlide(slide + 1);
   }
+
+  function navigate(ev: KeyboardEvent) {
+    if (ev.key === "ArrowRight") next();
+    else if (ev.key === "ArrowLeft") prev();
+  }
+
+  useEffect(() => {
+    document.body.addEventListener("keyup", navigate);
+    return () => document.body.removeEventListener("keyup", navigate);
+  }, [slide]);
 
   const close = () => setIsOpen(false);
 

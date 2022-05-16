@@ -3,9 +3,15 @@
     background-color: white;
   }
 
-  img {
-    max-width: 100%;
-    height: auto;
+  .img-container {
+    display: flex;
+    justify-content: center;
+
+    img {
+      max-width: 100%;
+      height: auto;
+      max-height: calc(100vh * 0.5);
+    }
   }
 
   .controls {
