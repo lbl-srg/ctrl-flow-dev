@@ -1,9 +1,10 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import itl from "../../../translations";
 import { SlideProps } from "./types";
 
 const slides = [
   {
+    columns: true,
     subHeader: (
       <div className="icon-list">
         <div>
@@ -26,7 +27,7 @@ const slides = [
     ),
   },
   {
-    icon: <i className="icon-pencil" />,
+    icon: <i className="icon-edit-pencil" />,
     img: <img src="/onboarding/edit-project.png" />,
   },
   {
@@ -51,21 +52,19 @@ const slides = [
   },
 ];
 
-function SlideOne({ slideNum, isActive, slideWidth }: SlideProps) {
+function Slide({ slideNum }: SlideProps) {
   const slide = { ...itl.onboarding[slideNum], ...slides[slideNum] };
 
   return (
-    <div
-      className={isActive ? "slide active" : "slide"}
-      style={{ minWidth: slideWidth }}
-    >
+    <div className="slide" key={slideNum}>
+      <div className="cover"></div>
       <h1>
         {slide.icon ? slide.icon : null}
         {slide.title}
       </h1>
 
       {slide.subHeader ? slide.subHeader : null}
-      <p className="columns">{slide.copy}</p>
+      <p className={slide.columns ? "columns" : ""}>{slide.copy}</p>
 
       <ul>
         {slide.points.map((point, index) => {
@@ -78,4 +77,4 @@ function SlideOne({ slideNum, isActive, slideWidth }: SlideProps) {
   );
 }
 
-export default SlideOne;
+export default Slide;

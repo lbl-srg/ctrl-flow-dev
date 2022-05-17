@@ -1,6 +1,34 @@
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
 .onboarding-modal {
   article {
     background-color: white;
+
+    h1 {
+      display: flex;
+      align-items: center;
+      line-height: 2rem;
+
+      i {
+        margin-right: var(--spacing);
+      }
+    }
+
+    p {
+      margin-bottom: var(--spacing-md) !important;
+
+      &.columns {
+        columns: 2;
+      }
+    }
   }
 
   .img-container {
@@ -8,8 +36,6 @@
     justify-content: center;
 
     img {
-      animation-name: fadeIn;
-      animation-duration: 5s ease;
       max-width: 100%;
       height: auto;
       max-height: calc(100vh * 0.5);
@@ -54,8 +80,15 @@
       pointer-events: none;
     }
   }
-  p.columns {
-    columns: 2;
+
+  .slide {
+    background-color: white;
+    position: relative;
+
+    animation-name: fade;
+    animation-duration: 1s;
+    animation-iteration-count: 0.3s;
+    animation-timing-function: ease-out;
   }
 
   .marker-container {
@@ -72,33 +105,6 @@
 
       &.active {
         background-color: var(--color-blue-dark);
-      }
-    }
-  }
-
-  .modal-content {
-    overflow: hidden;
-  }
-
-  .slide-container {
-    height: calc(100% - 50px);
-    overflow-y: auto;
-    overflow-y: auto;
-    display: flex;
-    transition: margin 0.3s ease;
-
-    &.disabled {
-      border: 3px solid pink;
-      transition: none !important;
-    }
-
-    .slide {
-      height: 300px;
-      opacity: 0;
-
-      &.active {
-        opacity: 1;
-        height: auto;
       }
     }
   }
