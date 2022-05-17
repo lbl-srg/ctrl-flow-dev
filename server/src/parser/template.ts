@@ -12,7 +12,7 @@ const templateStore = new Map<string, Template>();
 const systemTypeStore = new Map<string, SystemTypeN>();
 
 export function getTemplates() {
-  return [...templateStore.values()].map((t) => t.getSystemTemplate());
+  return [...templateStore.values()];
 }
 
 export function getSystemTypes() {

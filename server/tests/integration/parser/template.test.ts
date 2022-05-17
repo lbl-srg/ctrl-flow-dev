@@ -1,10 +1,13 @@
 import { createTestModelicaJson, fullTempDirPath } from "./utils";
 import {
   loadPackage,
-  getTemplates,
   getSystemTypes,
   Template,
 } from "../../../src/parser/";
+
+import {
+  getTemplates,
+} from "../../../src/parser/template";
 
 const templatePath = "TestPackage.Template.TestTemplate";
 const nestedTemplatePath =
