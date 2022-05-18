@@ -1,5 +1,6 @@
 import { useStore } from "../../store/store";
 import System from "./System";
+import itl from "../../translations";
 
 import "../../styles/components/left-navigation.scss";
 
@@ -12,7 +13,7 @@ const LeftNav = () => {
 
   return (
     <div className="left-nav">
-      <h4>Systems</h4>
+      <h4>{itl.terms.systems}</h4>
 
       {systemTypes.map((systemType) => (
         <System

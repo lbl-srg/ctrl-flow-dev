@@ -3,6 +3,7 @@ import { useStore } from "../../../store/store";
 import AddUserSystemsWidget from "./AddUserSystemsWidget";
 import UserSystemTable from "./UserSystemTable";
 import { Fragment, useState } from "react";
+import itl from "../../../translations";
 
 import "../../../styles/steps/schedules.scss";
 
@@ -31,10 +32,7 @@ function Schedules() {
       <PageHeader headerText="Equipment Schedules" />
 
       <div className="schedules-page">
-        <h4>
-          Add tags, IDs, and quantities for your selected systems. Edit your
-          system&apos;s schedule directly from the table.
-        </h4>
+        <h4>{itl.phrases.scheduleInstruct}</h4>
 
         <div
           className={
@@ -52,15 +50,15 @@ function Schedules() {
                     isFullscreen ? "icon-fullscreen-exit" : "icon-fullscreen"
                   }
                 />
-                Toggle Fullscreen
+                {itl.terms.toggleFullscreen}
               </a>
               <a>
                 <i className="icon-upload" />
-                Upload
+                {itl.terms.upload}
               </a>
               <a>
                 <i className="icon-download" />
-                Download
+                {itl.terms.download}
               </a>
             </div>
           </h3>

@@ -1,3 +1,5 @@
+import itl from "../translations";
+
 export interface PageHeaderProps {
   headerText: string;
 }
@@ -8,8 +10,8 @@ function PageHeader({ headerText }: PageHeaderProps) {
       <h1>{headerText}</h1>
 
       <div className="save-widget">
-        <span>last saved 4 hours ago</span>
-        <button className="small inline">Save</button>
+        <span>{itl.formatString(itl.phrases.lastSaved, 4)}</span>
+        <button className="small inline">{itl.terms.save}</button>
       </div>
     </header>
   );

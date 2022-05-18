@@ -1,7 +1,7 @@
 import { Field, Form, Formik } from "formik";
 import { ProjectDetails, useStore } from "../../store/store";
 import Modal, { ModalInterface } from "./Modal";
-
+import itl from "../../translations";
 interface EditDetailsModalProps extends ModalInterface {
   afterSubmit?: () => void;
   initialState?: Partial<ProjectDetails>;
@@ -44,7 +44,7 @@ function EditDetailsModal({
       >
         <Form className="no-margin">
           <label htmlFor="name">
-            Project Name:
+            {itl.phrases.projectName}:
             <Field id="name" name="name" type="text" />
           </label>
 
@@ -55,7 +55,7 @@ function EditDetailsModal({
 
           <div className="grid">
             <label htmlFor="type">
-              Type
+              {itl.terms.type}
               <Field as="select" name="type" data-testid="type-input">
                 <option value="multi-story office">Multi-Story Office</option>
                 <option value="warehouse">Warehouse</option>
@@ -64,12 +64,12 @@ function EditDetailsModal({
             </label>
 
             <label htmlFor="size">
-              Size
+              {itl.terms.size}
               <Field id="size" type="number" name="size" />
             </label>
 
             <label htmlFor="units">
-              Units
+              {itl.terms.units}
               <Field as="select" name="units" data-testid="units-input">
                 <option value="ip">IP</option>
                 <option value="square feet">square ft</option>
@@ -78,7 +78,7 @@ function EditDetailsModal({
             </label>
 
             <label htmlFor="code">
-              Energy Code
+              {itl.phrases.energyCode}
               <Field as="select" name="code" data-testid="code-input">
                 <option value="ashrae 90.1 20201">ASHRAE 90.1 20201</option>
                 <option value="a different one">A Different One</option>
@@ -86,7 +86,7 @@ function EditDetailsModal({
             </label>
           </div>
 
-          <label htmlFor="notes">Notes:</label>
+          <label htmlFor="notes">{itl.terms.notes}:</label>
           <Field as="textarea" id="notes" name="notes" />
 
           <div className="action-bar">

@@ -5,6 +5,7 @@ import { isInViewPort, getAll, getNumericId } from "../../utils/dom-utils";
 import "../../styles/components/sidebar-layout.scss";
 import EditDetailsModal from "../modal/EditDetailsModal";
 import { useLocation } from "react-router-dom";
+import itl from "../../translations";
 export interface SidebarLayoutProps {
   contentLeft: ReactNode;
   contentRight: ReactNode;
@@ -100,7 +101,7 @@ function Sidebarlayout({
                   className="small inline"
                   onClick={() => setModalOpen(true)}
                 >
-                  Edit
+                  {itl.terms.edit}
                 </button>
               )}
             </header>

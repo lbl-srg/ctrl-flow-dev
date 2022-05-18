@@ -1,7 +1,4 @@
-interface IconMap {
-  iconClass: string;
-  systemName: string;
-}
+import { IconMap } from "./Types";
 
 const map: IconMap[] = [
   {

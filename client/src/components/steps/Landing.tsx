@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import EditDetailsModal from "../modal/EditDetailsModal";
+import OnboardingModal from "../modal/OnboardingModal";
 import { useState, Fragment } from "react";
 
 import "../../styles/steps/landing.scss";
@@ -18,6 +19,8 @@ function Landing() {
         submitText="Create Project"
         afterSubmit={() => navigate("/systems")}
       ></EditDetailsModal>
+
+      <OnboardingModal />
 
       <main className="landing">
         <header>
