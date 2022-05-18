@@ -1,5 +1,6 @@
 import Modal, { ModalInterface } from "./Modal";
 import { useState, ChangeEvent } from "react";
+import itl from "../../translations";
 
 function DownloadModal({ isOpen, close }: ModalInterface) {
   const files = [
@@ -20,7 +21,7 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
 
   return (
     <Modal close={close} isOpen={isOpen}>
-      <h1>Select Components to Download</h1>
+      <h1>{itl.phrases.selectToDownload}</h1>
 
       <ul className="check-list">
         {files.map(({ label, ext }) => (
@@ -40,7 +41,7 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
 
       <div className="action-bar margin-top-lg">
         <button className="inline" onClick={close}>
-          Download Selected
+          {itl.phrases.downloadSelected}
         </button>
       </div>
     </Modal>

@@ -44,7 +44,7 @@ function OnboardingModal() {
           className={slide === 0 ? "prev disabled" : "prev"}
         >
           <i className="icon-left-open" />
-          {itl.buttons.back}
+          {itl.terms.back}
         </a>
 
         <div className="marker-container">
@@ -62,7 +62,7 @@ function OnboardingModal() {
         </div>
 
         <button className="small next" onClick={next}>
-          {itl.buttons.continue}
+          {itl.terms.continue}
         </button>
       </div>
     </Modal>

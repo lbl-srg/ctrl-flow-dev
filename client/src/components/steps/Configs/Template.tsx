@@ -1,6 +1,7 @@
 import { MouseEvent } from "react";
 import { useStore } from "../../../store/store";
 import { TemplateProps } from "./Types";
+import itl from "../../../translations";
 import Config from "./Config";
 
 function Template({ template }: TemplateProps) {
@@ -26,11 +27,11 @@ function Template({ template }: TemplateProps) {
         <div className="links">
           <a>
             <i className="icon-upload" />
-            Upload
+            {itl.terms.upload}
           </a>
           <a>
             <i className="icon-download" />
-            Download
+            {itl.terms.download}
           </a>
         </div>
       </h4>
@@ -45,7 +46,7 @@ function Template({ template }: TemplateProps) {
 
       <a href="#" onClick={add}>
         <i className="icon-plus" />
-        Add Configuration
+        {itl.phrases.addConfig}
       </a>
     </article>
   );

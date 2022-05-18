@@ -1,6 +1,7 @@
 import { Fragment, useState } from "react";
 import PageHeader from "../../PageHeader";
 import { useStore } from "../../../store/store";
+import itl from "../../../translations";
 
 import "../../../styles/steps/results.scss";
 import ImgControl from "./ImgControl";
@@ -27,25 +28,25 @@ function Results() {
               className={getClass("sequence")}
               onClick={() => setActiveTab("sequence")}
             >
-              Sequence
+              {itl.terms.sequence}
             </li>
             <li
               className={getClass("pointList")}
               onClick={() => setActiveTab("pointList")}
             >
-              Point List
+              {itl.terms.pointList}
             </li>
             <li
               className={getClass("schematics")}
               onClick={() => setActiveTab("schematics")}
             >
-              Schematics
+              {itl.terms.schematics}
             </li>
             <li
               className={getClass("schedules")}
               onClick={() => setActiveTab("schedules")}
             >
-              Schedules
+              {itl.terms.schedules}
             </li>
           </ul>
         </nav>

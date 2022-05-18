@@ -1,6 +1,6 @@
-import { OnboardingSlide } from "../types";
+import Translations from "../types";
 
-export default [
+const onboarding: Translations["onboarding"] = [
   {
     title: "Welcome to the High Performance Controls Design Tool",
     copy: "Writing a detailed and accurate control sequence is hard to do! This tool makes it easy to design high performance control sequences following ASHRAE Guideline 36 and best practices. After inputting project details, the tool will produce everything you need for your control sequence design — including a detailed sequence of operations, control diagrams, points lists, and schedules. Note: Use this tool as your project evolves, provide the details you have now, then come back later and add additional details for a more detailed set of outputs. The tool will also create the customized control logic for a project in an open format based on the ASHRAE standard 231P. A Controls Description Language (.CDL) file includes both the control logic and a model for the selected mechanical systems using the modeling language, Modelica. This can be used to test the control logic and perform detailed energy modeling. The Controls Exchange Format (.CXF) has the control logic to help the project’s controls contractor jumpstart their work in programming the control system.",
@@ -65,4 +65,6 @@ export default [
     copy: "After designing the high performance control system, view and download the results in the tool, and download files for use.",
     points: [],
   },
-] as OnboardingSlide[];
+];
+
+export default onboarding;

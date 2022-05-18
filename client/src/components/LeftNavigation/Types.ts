@@ -15,3 +15,8 @@ export interface SystemTemplateProps {
   systemId: number;
   meta: MetaConfiguration[];
 }
+
+export interface IconMap {
+  iconClass: string;
+  systemName: string;
+}

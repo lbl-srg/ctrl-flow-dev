@@ -2,6 +2,7 @@ import { useStore } from "../../../store/store";
 import { AddUserSystemsWidgetProps, AddUserSystemFormData } from "./Types";
 import { ChangeEvent, FormEvent } from "react";
 import { getFormData } from "../../../utils/dom-utils";
+import itl from "../../../translations";
 
 function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
   const { addUserSystems, activeConfig, setActiveConfigId } = useStore(
@@ -40,7 +41,7 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
       <form onSubmit={onWidgetSubmit}>
         <div className="row input-container">
           <label className="col-xs-4">
-            Equipment Tag
+            {itl.terms.equipmentTag}
             <input
               type="text"
               name="tag"
@@ -50,7 +51,7 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
           </label>
 
           <label className="col-xs-2">
-            ID #
+            {itl.terms.id} #
             <input
               name="start"
               type="number"
@@ -60,7 +61,7 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
           </label>
 
           <label className="col-xs-4">
-            Configuration
+            {itl.terms.configuration}
             <select
               name="config"
               defaultValue={initValues.configId}
@@ -76,7 +77,7 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
           </label>
 
           <label className="col-xs-2">
-            Quantity
+            {itl.terms.quantity}
             <input
               name="quantity"
               type="number"
@@ -88,7 +89,7 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
 
         <div className="submit-container">
           <button type="submit" className="small inline">
-            Add
+            {itl.terms.add}
           </button>
         </div>
       </form>
