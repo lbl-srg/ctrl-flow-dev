@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import PageHeader from "../../PageHeader";
 import System from "./System";
 import { useStore } from "../../../store/store";
+import itl from "../../../translations";
 
 import "../../../styles/steps/configs.scss";
 
@@ -17,7 +18,7 @@ function Configs() {
       <PageHeader headerText="Configurations" />
 
       <div className="configs-page">
-        <h4>Add Configurations For The System Types You Selected</h4>
+        <h4>{itl.phrases.addConfigs}</h4>
 
         {systemTypes.map((systemT) => {
           const systemTypeTemplates = templates.filter(

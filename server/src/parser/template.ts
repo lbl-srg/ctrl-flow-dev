@@ -1,17 +1,40 @@
+/**
+ * Templates are the intended point of interaction with the parser.
+ *
+ * Templates sit in front of all parsed elements that represent a single template
+ * and provide accessor methods to extract what is needed in linkage schema format
+ */
+
+import { access } from "fs";
 import * as parser from "./parser";
 
 const templateStore = new Map<string, Template>();
-const systemTypeStore = new Map<string, SystemType>();
+const systemTypeStore = new Map<string, SystemTypeN>();
 
 export function getTemplates() {
-  return templateStore.values();
+  return [...templateStore.values()];
 }
 
 export function getSystemTypes() {
-  return systemTypeStore.values();
+  return [...systemTypeStore.values()];
 }
 
-export interface SystemType {
+export function getOptions(): parser.OptionN[] {
+  const templates = [...templateStore.values()];
+
+  // [{'asdf': OptionN}, {'asdf': OptionN}, {}]
+  const options = templates.reduce(
+    (acc: { [key: string]: parser.OptionN }, currentValue) => {
+      return { ...acc, ...currentValue.getOptions() };
+    },
+    {},
+  );
+  const optionsList = Object.values(options);
+
+  return optionsList;
+}
+
+export interface SystemTypeN {
   description: string;
   modelicaPath: string;
 }
@@ -23,8 +46,13 @@ export interface SystemTemplateN {
   options?: string[];
 }
 
+export interface ModifiersN {
+  modelicaPath: string;
+  value: any;
+}
+
 export class Template {
-  systemTypes: SystemType[] = [];
+  systemTypes: SystemTypeN[] = [];
 
   constructor(public element: parser.Element) {
     // extract system type by getting descriptions for each type
@@ -69,5 +97,16 @@ export class Template {
       name: this.description,
       options: Object.values(this.getOptions()).map((o) => o.modelicaPath),
     };
+  }
+
+  getModifiers(): ModifiersN[] {
+    const mods = this.element.getModifications();
+
+    return mods
+      .filter((m) => m.mods.length === 0)
+      .map((m) => ({
+        modelicaPath: m.modelicaPath,
+        value: m.value,
+      }));
   }
 }

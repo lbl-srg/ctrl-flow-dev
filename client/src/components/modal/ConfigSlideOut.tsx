@@ -7,6 +7,7 @@ import { SelectInput } from "../shared/SelectInput";
 import "../../styles/components/config-slide-out.scss";
 
 import { getSelections, ConfigFormValues } from "../../utils/FormHelpers";
+import itl from "../../translations";
 
 import {
   useStore,
@@ -55,7 +56,7 @@ const SlideOut = ({ template, config, disabled = true }: SlideOutProps) => {
   return (
     <Fragment>
       <button disabled={disabled} className="small" onClick={openPanel}>
-        Edit
+        {itl.terms.edit}
       </button>
       <Modal
         close={() => setOpen(false)}
@@ -108,7 +109,7 @@ const SlideOut = ({ template, config, disabled = true }: SlideOutProps) => {
                 />
               ))}
 
-              <button type="submit">Save</button>
+              <button type="submit">{itl.terms.save}</button>
             </Form>
           )}
         </Formik>

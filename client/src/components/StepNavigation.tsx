@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import DownloadModal from "./modal/DownloadModal";
 import { useState, Fragment } from "react";
+import itl from "../translations";
 
 import "../styles/components/step-navigation.scss";
 
@@ -35,7 +36,7 @@ function StepNavigation() {
           <div className="prev-container">
             <Link to={previous.path}>
               <i className="icon-left-open" />
-              Back
+              {itl.terms.back}
             </Link>
           </div>
         )}
@@ -60,13 +61,15 @@ function StepNavigation() {
         <div className="next-container">
           {next && (
             <Link role="button" to={next.path}>
-              Next Step: {next.label}
+              {itl.phrases.nextStep}: {next.label}
               <i className="icon-right-open right" />
             </Link>
           )}
 
           {currentLabel === "Results" && (
-            <button onClick={() => setDownloadOpen(true)}>All Downloads</button>
+            <button onClick={() => setDownloadOpen(true)}>
+              {itl.phrases.allDownloads}
+            </button>
           )}
         </div>
       </div>
