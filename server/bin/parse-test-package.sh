@@ -1,3 +1,10 @@
 #!/bin/sh
 
-node ../dependancies/modelica-json/app.js -f tests/static-data/TestPackage -o json -d /tmp/test-linkage-widget/json/tests/static-data/
+DEST="/tmp/test-linkage-widget/"
+[ -d "$DEST" ] || mkdir "$DEST"
+
+convert() {
+  node ../dependencies/modelica-json/app.js -f $1 -o json -d $DEST
+}
+
+convert tests/static-data/TestPackage

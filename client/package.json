@@ -23,7 +23,7 @@
     "zustand": "^3.6.7"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "sh bin/copy-system-templates.sh && react-scripts start",
     "build": "npm version patch && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

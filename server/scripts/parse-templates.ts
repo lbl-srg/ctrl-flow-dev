@@ -1,4 +1,3 @@
-// const jp = require("jsonpath");
 import fs from "fs";
 import path from "path";
 import {
@@ -17,8 +16,6 @@ const data = {
   options: getOptions(),
 };
 
-const dest = path.resolve(
-  `${__dirname}/../../client/src/templates/system-templates.json`,
-);
+const dest = path.resolve(`${__dirname}/../public/build/system-templates.json`);
 
 fs.writeFileSync(dest, JSON.stringify(data, null, 2));
