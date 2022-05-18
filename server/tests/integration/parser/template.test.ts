@@ -46,7 +46,7 @@ describe("Basic parser functionality", () => {
   it("Templates output expected linkage schema for SystemTemplates", () => {
     const expectedTemplateValues = {
       modelicaPath: "TestPackage.Template.TestTemplate",
-      optionLength: 34,
+      optionLength: 39,
       systemTypeLength: 1,
     };
 

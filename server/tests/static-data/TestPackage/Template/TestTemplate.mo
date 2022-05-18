@@ -4,15 +4,13 @@ model TestTemplate "Test Template"
     Test that extends work as expected
   */
   extends TestPackage.Interface.ExtendInterface(
-    interface_param="Updated Value"
-  );
+    interface_param="Updated Value");
 
   /*
     Test that a subcomponent's options are added
   */
   TestPackage.Component.FirstComponent first(
-    component_param="First Component Template Override"
-  );
+    component_param="First Component Template Override");
 
   /*
     Test a replacable
@@ -21,27 +19,28 @@ model TestTemplate "Test Template"
     TestPackage.Component.SecondComponent
     selectable_component constrainedby
     TestPackage.Interface.PartialComponent(
-      final container=TestPackage.Types.Container.Cone
-    )
+      final container=TestPackage.Types.Container.Cone)
     "Replaceable Component"
     annotation (
       choices(
         choice(
           redeclare TestPackage.Component.SecondComponent selectable_component
-          "Second Test Component"
-        ),
+          "Second Test Component"),
         choice(
           redeclare TestPackage.Component.ThirdComponent selectable_component
-          "Third Test Component"
-        )
-      ),
-      Dialog(group="Selectable Component")
-    );
+          "Third Test Component")),
+      Dialog(group="Selectable Component"));
+
+  /*
+  Test that a subcomponent has access to an outer declaration
+  */
+  TestPackage.Component.ThirdComponent third_component;
 
   /*
     Test Record
   */
-  parameter TestPackage.Template.Data.TestRecord dat
+  parameter TestPackage.Template.Data.TestRecord dat(
+    final container_selectable_component=selectable_component.container)
     "Record with additional parameters";
 
   /*
@@ -82,6 +81,5 @@ model TestTemplate "Test Template"
     annotation (
       Evaluate=true,
       Dialog(group="Configuration"));
-
   annotation (__LinkageTemplate=true);
 end TestTemplate;
