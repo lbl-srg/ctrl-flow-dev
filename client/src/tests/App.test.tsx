@@ -19,6 +19,9 @@ test("renders welcome page", () => {
 });
 
 test("create new project modal opens and creates a new project", async () => {
+  // close onboarding modal
+  userEvent.click(screen.getByRole("button", { name: /Close/i }));
+
   userEvent.click(screen.getByRole("button", { name: /create new project/i }));
 
   // Open the create project modal
@@ -73,6 +76,8 @@ test("create new project modal opens and creates a new project", async () => {
 });
 
 test("navigate through steps", async () => {
+  // close onboarding modal
+  userEvent.click(screen.getByRole("button", { name: /Close/i }));
   userEvent.click(screen.getByRole("button", { name: /create new project/i }));
 
   // Open the create project modal and move on without changes
