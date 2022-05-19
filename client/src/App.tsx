@@ -9,6 +9,9 @@ import LeftNav from "./components/LeftNavigation";
 
 import "./styles/application.scss";
 
+import templates from "./templates/system-templates.json";
+console.log(templates);
+
 const App = () => {
   const location = useLocation();
   const isFullScreen = ["/"].includes(location.pathname);

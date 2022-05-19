@@ -1,3 +1,3 @@
 #!/bin/sh
 
-cp ../server/public/build/system-templates.json src/templates
+cp -r ../server/public/templates src/

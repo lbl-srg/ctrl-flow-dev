@@ -1,7 +1,8 @@
 node_modules
 client/build
+client/src/templates/**
 server/build/**
-server/public/build/**
+server/public/templates/**
 
 # env files
 .env*

@@ -26,8 +26,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "preparsetemplates": "sh bin/parse-test-package.sh",
-    "parsetemplates": "npx ts-node scripts/parse-templates.ts",
+    "parseTestModelica": "sh bin/parse-test-package.sh",
+    "parseTestJSON": "npx ts-node scripts/parse-test-package.ts",
     "start": "nodemon src/index.ts",
     "install-modelica-deps": "./bin/install-modelica-dependencies.sh",
     "docker:start": "docker-compose -f docker/docker-compose.yaml --env-file ./.env up -d",
