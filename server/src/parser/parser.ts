@@ -72,6 +72,7 @@ export interface OptionN {
   value?: any;
   valueExpression?: any;
   enable?: any;
+  final?: boolean;
 }
 
 export abstract class Element {
@@ -128,6 +129,7 @@ export class InputGroup extends Element {
       modelicaPath: this.modelicaPath,
       type: this.type,
       name: this.description,
+      options: this.elementList.map((el) => el.modelicaPath)
     };
 
     let options: { [key: string]: OptionN } = { [option.modelicaPath]: option };
@@ -248,9 +250,10 @@ export class Input extends Element {
       tab: this.tab,
       valueExpression: this.valueExpression,
       enable: this.enable,
+      final: this.final
     };
 
-    let options = this.final ? {} : { [option.modelicaPath]: option };
+    let options = { [option.modelicaPath]: option };
 
     if (recursive) {
       const typeInstance = typeStore.get(this.type) || null;

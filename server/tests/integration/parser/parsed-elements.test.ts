@@ -191,6 +191,9 @@ describe("Expected Options are extracted", () => {
       const childOptions = o.options;
       if (childOptions) {
         childOptions.map((option) => {
+          if (!(option in options)) {
+            console.log(o, option);
+          }
           expect(option in options).toBeTruthy();
         });
       }
