@@ -9,7 +9,7 @@ import LeftNav from "./components/LeftNavigation";
 
 import "./styles/application.scss";
 
-import templates from "./templates/system-templates.json";
+import templates from "./templates/system-template-test-package.json";
 console.log(templates);
 
 const App = () => {
