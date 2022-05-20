@@ -441,6 +441,7 @@ export class InputGroupExtend extends Element {
         type: this.type,
         value: this.value,
         name: typeInstance.name,
+        options: Object.keys(typeInstance.getOptions(false)),
       };
       return {
         ...{ [option.modelicaPath]: option },
