@@ -13,6 +13,7 @@ import userSlice, { UserSliceInterface } from "./slices/user-slice";
 import npmPackage from "../../package.json";
 
 import { sortByName, SortableByName } from "../utils/utils";
+import templateSlice from "./slices/template-slice";
 
 export * from "./slices/user-slice";
 
@@ -141,6 +142,7 @@ export const useStore = create<State>(
       (set, get) => ({
         ...uiSlice(set, get),
         ...userSlice(set, get),
+        ...templateSlice(set, get),
         systemTypes: getMockData()["systemTypes"],
         templates: getMockData()["templates"],
         options: getMockData()["options"],
