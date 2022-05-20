@@ -146,14 +146,14 @@ describe("Expected Options are extracted", () => {
     expect(selectable?.group).toEqual(selectableGroup);
   });
 
-  it("Ignore 'final' parameters", () => {
+  it("Set 'final' parameter correctly", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
 
     const options = template.getOptions();
     const option = options["TestPackage.Template.TestTemplate.should_ignore"];
 
-    expect(option).toBeUndefined();
+    expect(option.final).toBeTruthy();
   });
 
   it("Enums return each type as an option", () => {
@@ -175,7 +175,7 @@ describe("Expected Options are extracted", () => {
   });
 
   it("Extracts the expected number of options for the TestTemplate", () => {
-    const optionTotal = 39;
+    const optionTotal = 41;
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
     const options = template.getOptions();
@@ -191,6 +191,9 @@ describe("Expected Options are extracted", () => {
       const childOptions = o.options;
       if (childOptions) {
         childOptions.map((option) => {
+          if (!(option in options)) {
+            console.log(o, option);
+          }
           expect(option in options).toBeTruthy();
         });
       }

@@ -72,6 +72,7 @@ export interface OptionN {
   value?: any;
   valueExpression?: any;
   enable?: any;
+  final?: boolean;
 }
 
 export abstract class Element {
@@ -124,15 +125,25 @@ export class InputGroup extends Element {
   }
 
   getOptions(recursive = true) {
+    // A group with no elementList is ignorecd
+    if (this.elementList.length === 0) {
+      return {};
+    }
+
+    const children = this.elementList.filter(
+      (el) => Object.keys(el.getOptions()).length > 0,
+    );
+
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       name: this.description,
+      options: children.map((c) => c.modelicaPath),
     };
 
     let options: { [key: string]: OptionN } = { [option.modelicaPath]: option };
 
-    this.elementList.map((el) => {
+    children.map((el) => {
       options = { ...options, ...el.getOptions(recursive) };
     });
 
@@ -248,9 +259,10 @@ export class Input extends Element {
       tab: this.tab,
       valueExpression: this.valueExpression,
       enable: this.enable,
+      final: this.final,
     };
 
-    let options = this.final ? {} : { [option.modelicaPath]: option };
+    let options = { [option.modelicaPath]: option };
 
     if (recursive) {
       const typeInstance = typeStore.get(this.type) || null;
@@ -435,13 +447,21 @@ export class InputGroupExtend extends Element {
 
   getOptions(recursive = true) {
     const typeInstance = typeStore.get(this.type) as Element;
+
     if (typeInstance) {
+      const childOptions = Object.keys(typeInstance.getOptions(false));
+      if (childOptions.length === 0) {
+        return {};
+      }
+
       const option: OptionN = {
         modelicaPath: this.modelicaPath,
         type: this.type,
         value: this.value,
         name: typeInstance.name,
+        options: [this.type],
       };
+
       return {
         ...{ [option.modelicaPath]: option },
         ...typeInstance.getOptions(recursive),

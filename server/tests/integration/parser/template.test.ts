@@ -1,13 +1,7 @@
 import { createTestModelicaJson, fullTempDirPath } from "./utils";
-import {
-  loadPackage,
-  getSystemTypes,
-  Template,
-} from "../../../src/parser/";
+import { loadPackage, getSystemTypes, Template } from "../../../src/parser/";
 
-import {
-  getTemplates,
-} from "../../../src/parser/template";
+import { getTemplates } from "../../../src/parser/template";
 
 const templatePath = "TestPackage.Template.TestTemplate";
 const nestedTemplatePath =
@@ -46,7 +40,7 @@ describe("Basic parser functionality", () => {
   it("Templates output expected linkage schema for SystemTemplates", () => {
     const expectedTemplateValues = {
       modelicaPath: "TestPackage.Template.TestTemplate",
-      optionLength: 39,
+      optionLength: 41,
       systemTypeLength: 1,
     };
 
