@@ -3,6 +3,7 @@ import fs from "fs";
 import { execSync } from "child_process";
 
 export const TEMPLATE_IDENTIFIER = "__LinkageTemplate";
+export const MODELICAPATH = ['/path/to/json/output'];
 
 function _toModelicaPath(path: string) {
   path = path.endsWith(".json") ? path.slice(0, -5) : path;
@@ -31,16 +32,23 @@ export function findPackageEntryPoints(
     });
 }
 
-// When given a path, loads types
-export function loader(prefix: string, reference: string): Object | undefined {
-  let parsedPath = path.parse(reference.replace(/\./g, "/"));
+/**
+ * 
+ * @param prefix directory to search
+ * @param filePath path to try and find
+ * 
+ * @returns the found file path or null if not found
+ */
+function _findPath(prefix: string, reference: string): string | null {
+  let filePath = path.parse(reference.replace(/\./g, "/"));
+
   let jsonFile = path.resolve(
     prefix,
-    parsedPath.dir,
-    `${parsedPath.name}.json`,
+    filePath.dir,
+    `${filePath.name}.json`,
   );
 
-  while (!fs.existsSync(jsonFile) && parsedPath.name) {
+  while (!fs.existsSync(jsonFile) && filePath.name) {
     // package definitions break the typical modelica path to file mapping that
     // is used. A typical modelica path to file path look like:
     //  'Template.AirHandlerFans.VAVMultizone' -> 'Template/AirhandlerFans/VAVMultizone
@@ -49,24 +57,28 @@ export function loader(prefix: string, reference: string): Object | undefined {
     // 'package' files behave kind of like 'index.html' files
     jsonFile = path.resolve(
       prefix,
-      parsedPath.dir,
-      parsedPath.name,
+      filePath.dir,
+      filePath.name,
       "package.json",
     );
     if (fs.existsSync(jsonFile)) {
       break;
     }
-    parsedPath = path.parse(parsedPath.dir);
-    jsonFile = path.resolve(prefix, parsedPath.dir, `${parsedPath.name}.json`);
+    filePath = path.parse(filePath.dir);
+    jsonFile = path.resolve(prefix, filePath.dir, `${filePath.name}.json`);
   }
 
-  if (fs.existsSync(jsonFile)) {
-    return require(jsonFile);
-  } else {
-    // Templates *should* have all types defined within a template so we do not need
-    // to rely on definitionals in the modelica standard library
-    if (!reference.startsWith("Modelica")) {
-      throw new Error(`${prefix} ${reference}. ${jsonFile} could not be found!!`);
+  return (fs.existsSync(jsonFile)) ? jsonFile : null;
+}
+
+// When given a path, loads types
+export function loader(prefix: string, reference: string): Object | undefined {
+  [...MODELICAPATH, prefix].map((dir) => {
+    const jsonFile = _findPath(dir, reference);
+    if (jsonFile && fs.existsSync(jsonFile)) {
+      return require(jsonFile)
     }
-  }
+  });
+
+  throw new Error(`${prefix} ${reference}. ${reference} could not be found!!`);
 }
