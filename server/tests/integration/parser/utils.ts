@@ -3,6 +3,7 @@ import fs from "fs";
 
 import config from "../../../src/config";
 import * as parser from "../../../src/parser/parser";
+import { createModelicaJson } from "../../../scripts/generate-modelica-json";
 
 // const templatePath =
 //   "json/tests/static-data/TestModelicaPackage/Template/TestTemplate";
@@ -10,17 +11,12 @@ import * as parser from "../../../src/parser/parser";
 
 // NOTE: if the test modelica package changes it will need to be
 // manually removed to update for tests
+const testPackagePath = "tests/static-data/TestPackage";
 const tempDirPath = "/tmp/test-linkage-widget/";
 export const fullTempDirPath = `${tempDirPath}json/tests/static-data/`;
 
 export function createTestModelicaJson() {
-  if (!fs.existsSync(tempDirPath)) {
-    fs.mkdirSync(tempDirPath);
-    execSync(
-      `node ${config.MODELICA_DEPENDENCIES}/modelica-json/app.js -f tests/static-data/TestPackage -o json -d ${tempDirPath}`,
-    );
-    // TODO: maybe use spawnsync so when a process errors this throws instead of silently failing
-  }
+  createModelicaJson(testPackagePath, tempDirPath);
 }
 
 /**

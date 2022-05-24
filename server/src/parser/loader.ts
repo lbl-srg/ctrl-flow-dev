@@ -2,8 +2,10 @@ import path from "path";
 import fs from "fs";
 import { execSync } from "child_process";
 
+import config from "../../src/config";
+
 export const TEMPLATE_IDENTIFIER = "__LinkageTemplate";
-export const MODELICAPATH = ['/path/to/json/output'];
+export const MODELICAPATH = [`${config.MODELICA_DEPENDENCIES}/template-json/json/`];
 
 function _toModelicaPath(path: string) {
   path = path.endsWith(".json") ? path.slice(0, -5) : path;
@@ -33,7 +35,7 @@ export function findPackageEntryPoints(
 }
 
 /**
- * 
+ * Searched the provided directory for a given 
  * @param prefix directory to search
  * @param filePath path to try and find
  * 
@@ -73,12 +75,14 @@ function _findPath(prefix: string, reference: string): string | null {
 
 // When given a path, loads types
 export function loader(prefix: string, reference: string): Object | undefined {
-  [...MODELICAPATH, prefix].map((dir) => {
+  const modelicaDirs = [prefix, ...MODELICAPATH]
+    
+  for (const dir of modelicaDirs) {
     const jsonFile = _findPath(dir, reference);
     if (jsonFile && fs.existsSync(jsonFile)) {
       return require(jsonFile)
     }
-  });
+  }
 
   throw new Error(`${prefix} ${reference}. ${reference} could not be found!!`);
 }
