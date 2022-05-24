@@ -11,7 +11,10 @@ FROM base as dependencies
 
 RUN apk update && apk --no-cache add make curl git
 RUN npm run install-modelica-deps
-
+WORKDIR /dependencies
+ENV MODELICAPATH=/dependencies/ModelicaStandardLibrary:/dependencies/modelica-buildings
+RUN mkdir template-json
+RUN node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d template-json
 
 FROM base as dev-server
 
