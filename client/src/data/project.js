@@ -1,18 +1,27 @@
 import { makeAutoObservable, autorun } from "mobx";
 import persist from "./persist";
+import { poj } from "../utils/utils";
 import { v4 as uuid } from "uuid";
 
 const { projects, activeProjectId } = persist.storage;
 
 const DEFAULT_PROJECT = {
   userSystems: [],
-  projectDetails: {},
+  projectDetails: {
+    name: "",
+    address: "",
+    type: "Multi-Story Office",
+    size: 0,
+    units: "IP",
+    code: "ashrae 90.1 20201",
+    notes: "",
+  },
   id: uuid(),
 };
 
 // const projectSchema = {
 //   userSystems: [
-//     { modelicaPath: "", templates: [{ modelicaPath: "", configs: [] }] },
+//     { modelicaPath: "", userConfigs: [{ modelicaPath: "", configs: [] }] },
 //   ],
 // };
 
@@ -27,16 +36,9 @@ export default class Project {
 
     autorun(() => {
       persist.storage = {
-        projects: this.projects,
+        projects: poj(this.projects),
         activeProjectId: this.activeProjectId,
       };
-    });
-  }
-
-  addUserConfig(systemPath, templatePath, config = { name: "Default" }) {
-    this.activeProject.userSystems.push({
-      modelicaPath: systemPath,
-      templates: [],
     });
   }
 

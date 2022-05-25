@@ -69,7 +69,6 @@ const Sidebarlayout = observer(
               <EditDetailsModal
                 isOpen={modalOpen}
                 close={() => setModalOpen(false)}
-                initialState={projectDetails}
                 modalTitle=""
                 submitText="Save"
                 cancelText="Discard"

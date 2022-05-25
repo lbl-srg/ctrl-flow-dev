@@ -18,7 +18,7 @@ const Systems = () => {
           <System
             key={systemType.modelicaPath}
             title={systemType.description}
-            modelicaPath={systemType.modelicaPath}
+            systemPath={systemType.modelicaPath}
             options={templateStore.getTemplatesForSystem(
               systemType.modelicaPath,
             )}

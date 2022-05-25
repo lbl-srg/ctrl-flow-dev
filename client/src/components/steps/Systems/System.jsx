@@ -2,22 +2,21 @@ import { findIcon } from "../../LeftNavigation/icon-mappings";
 import { useStores } from "../../../data";
 
 function System({ systemPath, title, options }) {
-  const { uiStore, projectStore, templateStore } = useStores();
+  const { uiStore, configStore } = useStores();
 
   // const templates = getTemplates();
   const iconClass = findIcon(title);
 
   function onSelect(option, checked) {
-    uiStore.setOpenSystemPath(option.modelicaPath);
-    const template = templateStore.getTemplateByPath(option.modelicaPath);
+    uiStore.setOpenSystemPath(systemPath);
+    uiStore.setActiveSystemPath(systemPath);
 
     if (checked) {
-      //   addUserSystem(modelicaPath);
-      //   // addConfig(template, { name: "Default" });
-      //   // const [config] = getConfigs(template);
-      //   // addUserSystem(template.name, 1, 1, config);
+      configStore.addUserConfig(systemPath, {
+        templatePath: option.modelicaPath,
+      });
     } else {
-      //   removeAllTemplateConfigs(template);
+      configStore.removeAllConfigsForTemplate(systemPath, option.modelicaPath);
     }
   }
 

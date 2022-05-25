@@ -33,6 +33,10 @@ export default class Ui {
     else this.openSystemPath = path;
   }
 
+  setOpenSystemPath(path) {
+    this.openSystemPath = path;
+  }
+
   setActiveSystemPath(path) {
     this.clearNavState();
     this.activeSystemPath = path;

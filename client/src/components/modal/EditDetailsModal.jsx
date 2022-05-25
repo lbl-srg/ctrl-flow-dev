@@ -1,37 +1,26 @@
 import { Field, Form, Formik } from "formik";
-import { useStore } from "../../store/store";
 import Modal from "./Modal";
 import itl from "../../translations";
-
-const defaultState = {
-  name: "",
-  address: "",
-  type: "Multi-Story Office",
-  size: 0,
-  units: "IP",
-  code: "ashrae 90.1 20201",
-  notes: "",
-};
+import { useStores } from "../../data";
 
 function EditDetailsModal({
   afterSubmit,
-  initialState = defaultState,
   modalTitle,
   submitText,
   cancelText,
   isOpen,
   close,
 }) {
-  const { saveProjectDetails } = useStore((state) => state);
+  const { projectStore } = useStores();
 
   return (
     <Modal close={close} isOpen={isOpen}>
       <h1>{modalTitle}</h1>
 
       <Formik
-        initialValues={initialState}
+        initialValues={projectStore.activeProject.projectDetails}
         onSubmit={(values) => {
-          saveProjectDetails(values);
+          projectStore.setProjectDetails(values);
           afterSubmit && afterSubmit();
         }}
       >
