@@ -10,6 +10,12 @@ const DEFAULT_PROJECT = {
   id: uuid(),
 };
 
+// const projectSchema = {
+//   userSystems: [
+//     { modelicaPath: "", templates: [{ modelicaPath: "", configs: [] }] },
+//   ],
+// };
+
 export default class Project {
   projects = projects || [DEFAULT_PROJECT];
   activeProjectId = activeProjectId || DEFAULT_PROJECT.id;
@@ -27,17 +33,19 @@ export default class Project {
     });
   }
 
+  addUserConfig(systemPath, templatePath, config = { name: "Default" }) {
+    this.activeProject.userSystems.push({
+      modelicaPath: systemPath,
+      templates: [],
+    });
+  }
+
   setActiveProjectId(id) {
     this.activeProjectId = id;
   }
 
   setProjectDetails(details) {
     this.activeProject.projectDetails = details;
-  }
-
-  addUserSystem(path) {
-    const userSystem = { modelicaPath: path, templates: [] };
-    this.activeProject.userSystems.push(userSystem);
   }
 
   get activeProject() {

@@ -20,6 +20,7 @@ const map = [
   },
 ];
 
+// TODO: this is gonna move into the templates store
 export function findIcon(systemName) {
   if (!systemName) return null;
   const match = map.find(

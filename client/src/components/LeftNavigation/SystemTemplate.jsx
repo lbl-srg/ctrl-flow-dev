@@ -41,7 +41,7 @@ const Template = observer(({ templatePath, meta, systemTypePath }) => {
               }
               onClick={() => chooseConfig(m.config.id)}
             >
-              <div className="truncate">{`${m.config.name}`}</div>
+              <div className="truncate">{m.config.name}</div>
               <div>{`qty.${m.quantity}`}</div>
             </a>
           </li>

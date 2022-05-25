@@ -21,7 +21,9 @@ const LeftNav = () => {
         <System
           key={systemType.modelicaPath}
           systemTypePath={systemType.modelicaPath}
-          templates={templateStore.getTemplatesForSystem(systemType)}
+          templates={templateStore.getTemplatesForSystem(
+            systemType.modelicaPath,
+          )}
           meta={meta}
         />
       ))}

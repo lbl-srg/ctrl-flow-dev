@@ -1,39 +1,28 @@
-import { useStore } from "../../../store/store";
 import { findIcon } from "../../LeftNavigation/icon-mappings";
+import { useStores } from "../../../data";
 
-function System({ modelicaPath, title, options }) {
-  const {
-    // getTemplates,
-    addConfig,
-    getConfigs,
-    removeAllTemplateConfigs,
-    addUserSystem,
-    setOpenSystemPath,
-    getTemplateByPath,
-  } = useStore((state) => state);
+function System({ systemPath, title, options }) {
+  const { uiStore, projectStore, templateStore } = useStores();
 
   // const templates = getTemplates();
   const iconClass = findIcon(title);
 
   function onSelect(option, checked) {
-    setOpenSystemPath(option.modelicaPath);
-    const template = getTemplateByPath(option.modelicaPath);
+    uiStore.setOpenSystemPath(option.modelicaPath);
+    const template = templateStore.getTemplateByPath(option.modelicaPath);
 
- 
-      if (checked) {
-
-        addUserSystem(modelicaPath);
-        // addConfig(template, { name: "Default" });
-        // const [config] = getConfigs(template);
-        // addUserSystem(template.name, 1, 1, config);
-      } else {
-        removeAllTemplateConfigs(template);
-      }
-    
+    if (checked) {
+      //   addUserSystem(modelicaPath);
+      //   // addConfig(template, { name: "Default" });
+      //   // const [config] = getConfigs(template);
+      //   // addUserSystem(template.name, 1, 1, config);
+    } else {
+      //   removeAllTemplateConfigs(template);
+    }
   }
 
   return (
-    <li className="system" id={`system-${modelicaPath}`} data-spy="system">
+    <li className="system" id={`system-${systemPath}`} data-spy="system">
       <h2 className="system-header">
         {iconClass && <i className={iconClass} />}
         {title}

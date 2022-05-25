@@ -1,12 +1,12 @@
 import { Fragment } from "react";
 import PageHeader from "../../PageHeader";
-import { useStore } from "../../../store/store";
 import System from "./System";
+import { useStores } from "../../../data";
 
 import "../../../styles/steps/systems.scss";
 
 const Systems = () => {
-  const { systemTypes, getTemplatesForSystem } = useStore();
+  const { templateStore } = useStores();
 
   return (
     <Fragment>
@@ -14,12 +14,14 @@ const Systems = () => {
       <h4>Select the systems types you will configure:</h4>
 
       <div className="systems-page">
-        {systemTypes.map((systemType) => (
+        {templateStore.systemTypes.map((systemType) => (
           <System
             key={systemType.modelicaPath}
             title={systemType.description}
             modelicaPath={systemType.modelicaPath}
-            options={getTemplatesForSystem(systemType)}
+            options={templateStore.getTemplatesForSystem(
+              systemType.modelicaPath,
+            )}
           />
         ))}
       </div>
