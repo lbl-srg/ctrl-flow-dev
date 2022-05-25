@@ -10,8 +10,6 @@ import { observer } from "mobx-react";
 
 import itl from "../../translations";
 
-const MIN_WIDTH = 0;
-
 const Sidebarlayout = observer(
   ({ contentLeft, contentRight, isFullScreen = true }) => {
     const { uiStore } = useStores();
@@ -48,10 +46,7 @@ const Sidebarlayout = observer(
     }
 
     function recordDrag(ev) {
-      if (isDragging) {
-        const desiredWidth = ev.pageX < MIN_WIDTH ? MIN_WIDTH : ev.pageX;
-        uiStore.setLeftColWidth(desiredWidth);
-      }
+      if (isDragging) uiStore.setLeftColWidth(ev.pageX);
     }
 
     function toggle() {

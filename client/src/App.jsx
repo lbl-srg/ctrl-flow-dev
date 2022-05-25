@@ -6,6 +6,8 @@ import Schedules from "./components/steps/Schedules";
 import Systems from "./components/steps/Systems";
 import Sidebarlayout from "./components/layouts/SidebarLayout";
 import LeftNav from "./components/LeftNavigation";
+import { autorun } from "mobx";
+import { observer } from "mobx-react";
 
 import "./styles/application.scss";
 

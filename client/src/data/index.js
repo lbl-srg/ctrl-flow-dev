@@ -1,9 +1,11 @@
 import { useContext, createContext } from "react";
 import UiStore from "./ui";
+import TemplateStore from "./template";
 
 class RootStore {
   constructor() {
     this.uiStore = new UiStore(this);
+    this.templateStore = new TemplateStore(this);
   }
 }
 

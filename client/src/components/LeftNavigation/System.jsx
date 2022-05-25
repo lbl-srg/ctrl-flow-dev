@@ -1,17 +1,17 @@
 import SystemTemplate from "./SystemTemplate";
 import { findIcon } from "./icon-mappings";
 import { scrollToSelector } from "../../utils/dom-utils";
-import { getSystemTypeByPath } from "../../utils/TemplateHelpers";
 import { useStores } from "../../data";
 import { observer } from "mobx-react";
 
 const System = observer(({ systemTypePath, templates, meta }) => {
-  const { uiStore } = useStores();
-  const systemType = getSystemTypeByPath(systemTypePath);
+  const { uiStore, templateStore } = useStores();
+  const systemType = templateStore.getSystemTypeByPath(systemTypePath);
 
   const classes = ["system"];
-  const isActive = systemTypePath === uiStore.activeSystem && templates.length;
-  const isOpen = systemTypePath === uiStore.openSystem && templates.length;
+  const isActive =
+    systemTypePath === uiStore.activeSystemPath && templates.length;
+  const isOpen = systemTypePath === uiStore.openSystemPath && templates.length;
 
   if (!templates.length) classes.push("empty");
   if (isActive) classes.push("active");
@@ -20,7 +20,7 @@ const System = observer(({ systemTypePath, templates, meta }) => {
   const icon = findIcon(systemType.description) || "";
 
   function setActive() {
-    uiStore.setActiveSystem(systemTypePath);
+    uiStore.setActiveSystemPath(systemTypePath);
     scrollToSelector(`#system-${systemTypePath}`);
   }
 
@@ -33,7 +33,7 @@ const System = observer(({ systemTypePath, templates, meta }) => {
         </a>
 
         <i
-          onClick={() => uiStore.toggleSystemOpen(systemTypePath)}
+          onClick={() => uiStore.toggleSystemOpenPath(systemTypePath)}
           className={"toggle icon-down-open"}
         />
       </div>
@@ -44,7 +44,7 @@ const System = observer(({ systemTypePath, templates, meta }) => {
             <SystemTemplate
               systemTypePath={systemTypePath}
               key={tpl.modelicaPath}
-              template={tpl}
+              templatePath={tpl.modelicaPath}
               meta={meta.filter(
                 (m) => m.config.template.modelicaPath === tpl.modelicaPath,
               )}

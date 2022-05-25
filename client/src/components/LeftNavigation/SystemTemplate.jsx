@@ -1,50 +1,33 @@
-import { useStore } from "../../store/store";
-import { useRef } from "react";
 import { scrollToSelector } from "../../utils/dom-utils";
+import { observer } from "mobx-react";
+import { useStores } from "../../data";
 
-function Template({ template, meta, systemTypePath }) {
-  const {
-    activeTemplatePath,
-    setActiveTemplatePath,
-    setActiveSystemPath,
-    timeoutScroll,
-    setActiveConfigId,
-    activeConfigId,
-    clearNavState,
-  } = useStore((state) => state);
+const Template = observer(({ templatePath, meta, systemTypePath }) => {
+  const { uiStore, templateStore } = useStores();
 
-  const active = activeTemplatePath === template.modelicaPath;
-  const ref = useRef(null);
+  const template = templateStore.getTemplateByPath(templatePath);
+  const active = uiStore.activeTemplate === templatePath;
   const rootClass = active ? "active" : "";
 
   function selectTemplate(ev) {
     // prevent default since its a <a> with no valid href
     ev.preventDefault();
-    clearNavState();
-    setActiveSystemPath(systemTypePath);
-    setActiveTemplatePath(template.modelicaPath);
-    timeoutScroll();
-    scrollToSelector(`#template-${template.modelicaPath}`);
+    uiStore.setActiveSystemPath(systemTypePath);
+    uiStore.setActiveTemplatePath(templatePath);
+    scrollToSelector(`#template-${templatePath}`);
   }
 
   function chooseConfig(configId, ev) {
     ev.preventDefault();
-    clearNavState();
-    setActiveSystemPath(systemTypePath);
-    setActiveTemplatePath(template.modelicaPath);
-    setActiveConfigId(configId);
-    timeoutScroll();
+    uiStore.setActiveSystemPath(systemTypePath);
+    uiStore.setActiveTemplatePath(template.modelicaPath);
+    uiStore.setActiveConfigId(configId);
     scrollToSelector(`#config-${configId}`);
   }
 
   return (
-    <li ref={ref} className={rootClass}>
-      <a
-        className="truncate"
-        key={template.modelicaPath}
-        href="#"
-        onClick={selectTemplate}
-      >
+    <li className={rootClass}>
+      <a className="truncate" href="#" onClick={selectTemplate}>
         {template.name}
       </a>
 
@@ -54,9 +37,9 @@ function Template({ template, meta, systemTypePath }) {
             <a
               href="#"
               className={
-                m.config.id === activeConfigId ? "grid active" : "grid"
+                m.config.id === uiStore.activeConfigId ? "grid active" : "grid"
               }
-              onClick={chooseConfig.bind(null, m.config.id)}
+              onClick={() => chooseConfig(m.config.id)}
             >
               <div className="truncate">{`${m.config.name}`}</div>
               <div>{`qty.${m.quantity}`}</div>
@@ -66,6 +49,6 @@ function Template({ template, meta, systemTypePath }) {
       </ul>
     </li>
   );
-}
+});
 
 export default Template;

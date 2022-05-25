@@ -1,42 +1,54 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, autorun } from "mobx";
+import persist from "./persist";
+
+const { ui } = persist.storage;
+const MIN_WIDTH = 100;
 
 export default class Ui {
-  activeSystem = null;
-  openSystem = null;
+  activeSystemPath = null;
+  openSystemPath = null;
+  activeTemplatePath = null;
+  activeConfigId = null;
 
-  activeTemplate = null;
-
-  activeConfigPath = null;
-  leftColWidth = 300;
+  leftColWidth = ui?.leftColWidth || 300;
   watchScroll = false;
 
-  constructor() {
+  constructor(rootStore) {
+    this.rootStore = rootStore;
+
     makeAutoObservable(this);
+
+    autorun(() => {
+      persist.storage = { ui: { leftColWidth: this.leftColWidth } };
+    });
   }
 
   // actions
-
   clearNavState() {
-    this.activeSystem = this.activeTemplate = this.activeConfigPath = null;
+    this.activeSystem = this.activeTemplatePath = this.activeConfigPath = null;
   }
 
-  toggleSystemOpen(path) {
-    if (this.openSystem === path) this.openSystem = null;
-    else this.openSystem = path;
+  toggleSystemOpenPath(path) {
+    if (this.openSystemPath === path) this.openSystemPath = null;
+    else this.openSystemPath = path;
   }
 
-  setActiveSystem(path) {
+  setActiveSystemPath(path) {
     this.clearNavState();
-    this.activeSystem = path;
+    this.activeSystemPath = path;
     this.timeoutScroll();
   }
 
-  setActiveTemplate(path) {
-    this.activeTemplate = path;
+  setActiveConfigId(id) {
+    this.activeConfigId = id;
+  }
+
+  setActiveTemplatePath(path) {
+    this.activeTemplatePath = path;
   }
 
   setLeftColWidth(width) {
-    this.leftColWidth = width;
+    this.leftColWidth = width > MIN_WIDTH ? width : MIN_WIDTH;
   }
 
   timeoutScroll() {
