@@ -1,12 +1,5 @@
-import {
-  useStore,
-  Configuration,
-  MetaConfiguration,
-  Option,
-  Selection,
-  SystemTemplate,
-  UserSystem,
-} from "../store/store";
+import { useStore } from "./store";
+import jest, { test, expect } from "jest";
 
 jest.mock("./mock-data");
 
@@ -15,12 +8,12 @@ test("Denormalization", () => {
   const template = useStore
     .getState()
     .getTemplates()
-    .find((t) => t.id === templateN.id) as SystemTemplate;
+    .find((t) => t.id === templateN.id);
   const [_, options] = useStore.getState().getTemplateOptions(template);
 
   expect(template).not.toBe(null || undefined);
   expect(templateN.id === template.id);
-  const templateOptions = template.options as Option[];
+  const templateOptions = template.options;
 
   templateOptions.map((o) => {
     expect(o).toEqual(options.find((option) => option.id === o.id));
@@ -131,12 +124,12 @@ test("Template/Option Denormalization", () => {
   const template = useStore
     .getState()
     .getTemplates()
-    .find((t) => t.id === templateN.id) as SystemTemplate;
+    .find((t) => t.id === templateN.id);
   const [_, options] = useStore.getState().getTemplateOptions(template);
 
   expect(template).not.toBe(null || undefined);
   expect(templateN.id === template.id);
-  const templateOptions = template.options as Option[];
+  const templateOptions = template.options;
 
   templateOptions.map((o) => {
     expect(o).toEqual(options.find((option) => option.id === o.id));
@@ -180,15 +173,12 @@ test("Test Updating Config Selections", () => {
   useStore.getState().addConfig(template1);
 
   // a map to help make option access a little easier:
-  const optionMap = options.reduce(
-    (previousValue: { [key: number]: Option }, currentValue: Option) => {
-      previousValue[currentValue.id] = currentValue;
-      return previousValue;
-    },
-    {},
-  );
+  const optionMap = options.reduce((previousValue, currentValue) => {
+    previousValue[currentValue.id] = currentValue;
+    return previousValue;
+  }, {});
 
-  const selections: Selection[] = [
+  const selections = [
     { parent: optionMap[1], option: optionMap[2], value: undefined },
     { parent: optionMap[2], option: optionMap[3], value: undefined },
   ];
@@ -210,32 +200,29 @@ test("Test Config Selection Pruning", () => {
   useStore.getState().addConfig(template1);
 
   // a map to help make option access a little easier:
-  const optionMap = options.reduce(
-    (previousValue: { [key: number]: Option }, currentValue: Option) => {
-      previousValue[currentValue.id] = currentValue;
-      return previousValue;
-    },
-    {},
-  );
+  const optionMap = options.reduce((previousValue, currentValue) => {
+    previousValue[currentValue.id] = currentValue;
+    return previousValue;
+  }, {});
 
   let [config, ...rest] = useStore.getState().getConfigs();
 
   // refer to mock data in __mocks__ folder for tree of available options
-  const selections: Selection[] = [
+  const selections = [
     { parent: optionMap[1], option: optionMap[2], value: undefined },
     { parent: optionMap[2], option: optionMap[3], value: undefined },
   ];
   useStore.getState().updateConfig(config, testName, selections);
 
   // check that on selection of a different branch prunes out previous selctions
-  const newSelections: Selection[] = [
+  const newSelections = [
     { parent: optionMap[1], option: optionMap[5], value: undefined },
   ];
   useStore.getState().updateConfig(config, testName, newSelections);
   [config, ...rest] = useStore.getState().getConfigs();
   expect(config.selections).toEqual(newSelections);
 
-  const addChildSelection: Selection[] = [
+  const addChildSelection = [
     { parent: optionMap[5], option: optionMap[6], value: undefined },
   ];
   useStore.getState().updateConfig(config, testName, addChildSelection);
@@ -295,7 +282,7 @@ test("Updating a user system", () => {
   userSystem = useStore
     .getState()
     .getUserSystems()
-    .find((s) => s.id === userSystem.id) as UserSystem;
+    .find((s) => s.id === userSystem.id);
   expect(userSystem.config).toEqual(config2);
   // update tag
   const newTag = "test-tag 5";
@@ -306,7 +293,7 @@ test("Updating a user system", () => {
   userSystem = useStore
     .getState()
     .getUserSystems()
-    .find((s) => s.id === userSystem.id) as UserSystem;
+    .find((s) => s.id === userSystem.id);
   expect(userSystem.tag).toEqual(newTag);
 
   // update scheduleList
@@ -333,7 +320,7 @@ test("Updating a user system", () => {
   userSystem = useStore
     .getState()
     .getUserSystems()
-    .find((s) => s.id === userSystem.id) as UserSystem;
+    .find((s) => s.id === userSystem.id);
 
   expect(userSystem.scheduleList[0].children[0].value).toEqual(
     testScheduleValue,

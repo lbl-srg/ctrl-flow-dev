@@ -3,30 +3,33 @@ import { findIcon } from "../../LeftNavigation/icon-mappings";
 
 function System({ modelicaPath, title, options }) {
   const {
-    getTemplates,
+    // getTemplates,
     addConfig,
     getConfigs,
     removeAllTemplateConfigs,
-    addUserSystems,
-    setOpenSystemId,
+    addUserSystem,
+    setOpenSystemPath,
+    getTemplateByPath,
   } = useStore((state) => state);
 
-  const templates = getTemplates();
+  // const templates = getTemplates();
   const iconClass = findIcon(title);
 
-  function onSelect(selection, checked) {
-    // setOpenSystemId(id);
+  function onSelect(option, checked) {
+    setOpenSystemPath(option.modelicaPath);
+    const template = getTemplateByPath(option.modelicaPath);
 
-    const template = templates.find((s) => s.name === selection);
-    if (template) {
+ 
       if (checked) {
-        addConfig(template, { name: "Default" });
-        const [config] = getConfigs(template);
-        addUserSystems(template.name, 1, 1, config);
+
+        addUserSystem(modelicaPath);
+        // addConfig(template, { name: "Default" });
+        // const [config] = getConfigs(template);
+        // addUserSystem(template.name, 1, 1, config);
       } else {
         removeAllTemplateConfigs(template);
       }
-    }
+    
   }
 
   return (
@@ -51,7 +54,7 @@ function System({ modelicaPath, title, options }) {
                 <input
                   type="checkbox"
                   checked={checked}
-                  onChange={(e) => onSelect(name, e.target.checked)}
+                  onChange={(e) => onSelect(option, e.target.checked)}
                 />
                 {name}
                 <i className="icon-info-circled" />

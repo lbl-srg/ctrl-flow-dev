@@ -4,9 +4,13 @@ import itl from "../../translations";
 
 import "../../styles/components/left-navigation.scss";
 
+import {
+  systemTypes,
+  getTemplatesForSystem,
+} from "../../utils/TemplateHelpers";
+
 const LeftNav = () => {
-  const { systemTypes, meta, getTemplatesForSystem } = useStore((state) => ({
-    ...state,
+  const { meta } = useStore((state) => ({
     meta: state.getMetaConfigs(),
   }));
 
@@ -17,7 +21,7 @@ const LeftNav = () => {
       {systemTypes.map((systemType) => (
         <System
           key={systemType.modelicaPath}
-          systemType={systemType}
+          systemTypePath={systemType.modelicaPath}
           templates={getTemplatesForSystem(systemType)}
           meta={meta}
         />

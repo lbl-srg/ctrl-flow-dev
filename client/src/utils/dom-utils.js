@@ -30,6 +30,11 @@ export function getNumericId($el) {
   return val ? Number(val) : null;
 }
 
+export function getPath($el) {
+  const idStr = $el.getAttribute("id") || "";
+  return idStr.split("-")[1];
+}
+
 export function getFormData($form) {
   const formData = Array.from(new FormData($form).entries());
   return formData.reduce((ret, [key, val]) => {

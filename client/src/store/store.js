@@ -10,8 +10,9 @@ import { devtools, persist } from "zustand/middleware";
 // import getMockData from "./mock-data";
 import uiSlice from "./slices/ui-slice";
 import projectSlice from "./slices/project-slice";
-import userSlice from "./slices/user-slice";
 import npmPackage from "../../package.json";
+
+import userSlice from "./slices/user-slice";
 
 // import { sortByName, SortableByName } from "../utils/utils";
 import templateSlice from "./slices/template-slice";

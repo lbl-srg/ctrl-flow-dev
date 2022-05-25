@@ -1,23 +1,17 @@
 import SystemTemplate from "./SystemTemplate";
 import { findIcon } from "./icon-mappings";
-import { useStore } from "../../store/store";
 import { scrollToSelector } from "../../utils/dom-utils";
+import { getSystemTypeByPath } from "../../utils/TemplateHelpers";
+import { useStores } from "../../data";
+import { observer } from "mobx-react";
 
-function System({ systemType, templates, meta }) {
-  const {
-    openSystemPath,
-    setOpenSystemPath,
-    activeSystemPath,
-    clearNavState,
-    setActiveSystemPath,
-    timeoutScroll,
-  } = useStore((state) => state);
+const System = observer(({ systemTypePath, templates, meta }) => {
+  const { uiStore } = useStores();
+  const systemType = getSystemTypeByPath(systemTypePath);
 
   const classes = ["system"];
-  const isActive =
-    systemType.modelicaPath === activeSystemPath && templates.length > 0;
-  const isOpen =
-    systemType.modelicaPath === openSystemPath && templates.length > 0;
+  const isActive = systemTypePath === uiStore.activeSystem && templates.length;
+  const isOpen = systemTypePath === uiStore.openSystem && templates.length;
 
   if (!templates.length) classes.push("empty");
   if (isActive) classes.push("active");
@@ -26,14 +20,8 @@ function System({ systemType, templates, meta }) {
   const icon = findIcon(systemType.description) || "";
 
   function setActive() {
-    clearNavState();
-    setActiveSystemPath(systemType.modelicaPath);
-    scrollToSelector(`#system-${systemType.modelicaPath}`);
-    timeoutScroll();
-  }
-
-  function toggleOpen() {
-    setOpenSystemPath(isOpen ? null : systemType.modelicaPath);
+    uiStore.setActiveSystem(systemTypePath);
+    scrollToSelector(`#system-${systemTypePath}`);
   }
 
   return (
@@ -44,14 +32,17 @@ function System({ systemType, templates, meta }) {
           {systemType.description}
         </a>
 
-        <i onClick={toggleOpen} className={"toggle icon-down-open"} />
+        <i
+          onClick={() => uiStore.toggleSystemOpen(systemTypePath)}
+          className={"toggle icon-down-open"}
+        />
       </div>
 
       {isOpen && (
         <ul className="templates">
           {templates.map((tpl) => (
             <SystemTemplate
-              systemPath={systemType.modelicaPath}
+              systemTypePath={systemTypePath}
               key={tpl.modelicaPath}
               template={tpl}
               meta={meta.filter(
@@ -63,6 +54,6 @@ function System({ systemType, templates, meta }) {
       )}
     </div>
   );
-}
+});
 
 export default System;

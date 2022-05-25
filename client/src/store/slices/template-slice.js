@@ -21,6 +21,10 @@ export default function (set, get) {
       );
     },
 
+    getTemplateByPath(path) {
+      return templates.find((tpl) => tpl.modelicaPath === path);
+    },
+
     getNestedOptions: () => {
       function findOptions(option) {
         if (option.options) {

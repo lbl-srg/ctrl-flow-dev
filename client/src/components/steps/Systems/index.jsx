@@ -6,17 +6,7 @@ import System from "./System";
 import "../../../styles/steps/systems.scss";
 
 const Systems = () => {
-  const { systemTypes, activeTemplates, getTemplatesForSystem } = useStore(
-    (state) => {
-      return {
-        ...state,
-
-        templates: state.getTemplates(),
-        activeTemplates: state.getActiveTemplates(),
-        activeTemplate: state.getActiveTemplate(),
-      };
-    },
-  );
+  const { systemTypes, getTemplatesForSystem } = useStore();
 
   return (
     <Fragment>

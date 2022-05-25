@@ -2,7 +2,7 @@ import { useStore } from "../../store/store";
 import { useRef } from "react";
 import { scrollToSelector } from "../../utils/dom-utils";
 
-function Template({ template, meta, systemPath }) {
+function Template({ template, meta, systemTypePath }) {
   const {
     activeTemplatePath,
     setActiveTemplatePath,
@@ -21,7 +21,7 @@ function Template({ template, meta, systemPath }) {
     // prevent default since its a <a> with no valid href
     ev.preventDefault();
     clearNavState();
-    setActiveSystemPath(systemPath);
+    setActiveSystemPath(systemTypePath);
     setActiveTemplatePath(template.modelicaPath);
     timeoutScroll();
     scrollToSelector(`#template-${template.modelicaPath}`);
@@ -30,7 +30,7 @@ function Template({ template, meta, systemPath }) {
   function chooseConfig(configId, ev) {
     ev.preventDefault();
     clearNavState();
-    setActiveSystemPath(systemPath);
+    setActiveSystemPath(systemTypePath);
     setActiveTemplatePath(template.modelicaPath);
     setActiveConfigId(configId);
     timeoutScroll();

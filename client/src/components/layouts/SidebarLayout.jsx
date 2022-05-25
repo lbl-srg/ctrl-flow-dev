@@ -1,137 +1,137 @@
 import { useState, useEffect } from "react";
 import { useStore } from "../../store/store";
 import StepNavigation from "../StepNavigation";
-import { isInViewPort, getAll, getNumericId } from "../../utils/dom-utils";
+import { isInViewPort, getAll, getPath } from "../../utils/dom-utils";
 import "../../styles/components/sidebar-layout.scss";
 import EditDetailsModal from "../modal/EditDetailsModal";
 import { useLocation } from "react-router-dom";
+import { useStores } from "../../data";
+import { observer } from "mobx-react";
+
 import itl from "../../translations";
 
 const MIN_WIDTH = 0;
 
-function Sidebarlayout({ contentLeft, contentRight, isFullScreen = true }) {
-  const {
-    projectDetails,
-    leftColWidth,
-    setLeftColWidth,
-    setActiveTemplateId,
-    setActiveSystemId,
-    watchScroll,
-  } = useStore((state) => {
-    return {
-      ...state,
-      projectDetails: state.getActiveProject()?.projectDetails,
-    };
-  });
+const Sidebarlayout = observer(
+  ({ contentLeft, contentRight, isFullScreen = true }) => {
+    const { uiStore } = useStores();
 
-  const projectName = projectDetails?.name;
-  const [isDragging, setIsDragging] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [leftPaneOpen, setLeftPaneOpen] = useState(true);
-  const location = useLocation();
+    const { projectDetails } = useStore((state) => {
+      return {
+        ...state,
+        projectDetails: state.getActiveProject()?.projectDetails,
+      };
+    });
 
-  useEffect(() => {
-    const $rightCol = document.querySelector(".right-col");
-    if ($rightCol?.scrollTo) $rightCol.scrollTo(0, 0);
-  }, [location]);
+    const projectName = projectDetails?.name;
+    const [isDragging, setIsDragging] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [leftPaneOpen, setLeftPaneOpen] = useState(true);
+    const location = useLocation();
 
-  function spy() {
-    if (!watchScroll) return;
-    const [$firstTpl] = getAll("[data-spy='template']").filter(isInViewPort);
-    if ($firstTpl) {
-      setActiveTemplateId(getNumericId($firstTpl));
-      const $system = $firstTpl.closest("[data-spy='system']");
-      if ($system) {
-        const id = getNumericId($system);
-        if (id) setActiveSystemId(id);
+    useEffect(() => {
+      const $rightCol = document.querySelector(".right-col");
+      if ($rightCol?.scrollTo) $rightCol.scrollTo(0, 0);
+    }, [location]);
+
+    function spy() {
+      if (!uiStore.watchScroll) return;
+      const [$firstTpl] = getAll("[data-spy='template']").filter(isInViewPort);
+      if ($firstTpl) {
+        uiStore.setActiveTemplate(getPath($firstTpl));
+        const $system = $firstTpl.closest("[data-spy='system']");
+        if ($system) {
+          const path = getPath($system);
+          if (path) uiStore.setActiveSystem(path);
+        }
       }
     }
-  }
 
-  function recordDrag(ev) {
-    if (isDragging) {
-      const desiredWidth = ev.pageX < MIN_WIDTH ? MIN_WIDTH : ev.pageX;
-      setLeftColWidth(desiredWidth);
+    function recordDrag(ev) {
+      if (isDragging) {
+        const desiredWidth = ev.pageX < MIN_WIDTH ? MIN_WIDTH : ev.pageX;
+        uiStore.setLeftColWidth(desiredWidth);
+      }
     }
-  }
 
-  function toggle() {
-    setLeftPaneOpen(!leftPaneOpen);
-  }
+    function toggle() {
+      setLeftPaneOpen(!leftPaneOpen);
+    }
 
-  const classes = ["sidebar-layout"];
-  if (isDragging) classes.push("dragging");
-  if (isFullScreen) classes.push("fullscreen");
+    const classes = ["sidebar-layout"];
+    if (isDragging) classes.push("dragging");
+    if (isFullScreen) classes.push("fullscreen");
 
-  return (
-    <main
-      className={classes.join(" ")}
-      onMouseUp={() => setIsDragging(false)}
-      onMouseMove={recordDrag}
-    >
-      <div className="col-container">
-        {!isFullScreen && leftPaneOpen && (
-          <section className="left-col">
-            <EditDetailsModal
-              isOpen={modalOpen}
-              close={() => setModalOpen(false)}
-              initialState={projectDetails}
-              modalTitle=""
-              submitText="Save"
-              cancelText="Discard"
-              afterSubmit={() => setModalOpen(false)}
-            />
+    return (
+      <main
+        className={classes.join(" ")}
+        onMouseUp={() => setIsDragging(false)}
+        onMouseMove={recordDrag}
+      >
+        <div className="col-container">
+          {!isFullScreen && leftPaneOpen && (
+            <section className="left-col">
+              <EditDetailsModal
+                isOpen={modalOpen}
+                close={() => setModalOpen(false)}
+                initialState={projectDetails}
+                modalTitle=""
+                submitText="Save"
+                cancelText="Discard"
+                afterSubmit={() => setModalOpen(false)}
+              />
 
-            <header>
-              <div className="truncate">
-                All Projects &gt; &nbsp;
-                <strong>{projectName}</strong>
-              </div>
-              {modalOpen ? null : (
-                <button
-                  className="small inline"
-                  onClick={() => setModalOpen(true)}
-                >
-                  {itl.terms.edit}
-                </button>
-              )}
-            </header>
+              <header>
+                <div className="truncate">
+                  All Projects &gt; &nbsp;
+                  <strong>{projectName}</strong>
+                </div>
+                {modalOpen ? null : (
+                  <button
+                    className="small inline"
+                    onClick={() => setModalOpen(true)}
+                  >
+                    {itl.terms.edit}
+                  </button>
+                )}
+              </header>
 
-            {modalOpen ? null : contentLeft}
+              {modalOpen ? null : contentLeft}
 
-            <div
-              className="dragger"
-              onMouseDown={() => setIsDragging(true)}
-            ></div>
-          </section>
-        )}
+              <div
+                className="dragger"
+                onMouseDown={() => setIsDragging(true)}
+              ></div>
+            </section>
+          )}
 
-        <section
-          className="right-col"
-          onScroll={spy}
-          style={{
-            width:
-              isFullScreen || !leftPaneOpen
-                ? "100vw"
-                : `calc(100vw - ${leftColWidth}px)`,
-          }}
-        >
-          <div
-            className="left-pane-toggle"
-            title="toggle left nav"
-            onClick={toggle}
+          <section
+            className="right-col"
+            onScroll={spy}
+            style={{
+              width:
+                isFullScreen || !leftPaneOpen
+                  ? "100vw"
+                  : `calc(100vw - ${uiStore.leftColWidth}px)`,
+            }}
           >
-            <i
-              className={leftPaneOpen ? "icon-left-open" : "icon-right-open"}
-            ></i>
-          </div>
-          {contentRight}
-        </section>
-      </div>
+            <div
+              className="left-pane-toggle"
+              title="toggle left nav"
+              onClick={toggle}
+            >
+              <i
+                className={leftPaneOpen ? "icon-left-open" : "icon-right-open"}
+              ></i>
+            </div>
+            {contentRight}
+          </section>
+        </div>
 
-      {!isFullScreen && <StepNavigation />}
-    </main>
-  );
-}
+        {!isFullScreen && <StepNavigation />}
+      </main>
+    );
+  },
+);
 
 export default Sidebarlayout;

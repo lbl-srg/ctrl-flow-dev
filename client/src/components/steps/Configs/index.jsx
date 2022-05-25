@@ -7,11 +7,7 @@ import itl from "../../../translations";
 import "../../../styles/steps/configs.scss";
 
 function Configs() {
-  const { systemTypes, templates, configs } = useStore((state) => ({
-    ...state,
-    configs: state.getConfigs(),
-    templates: state.getActiveTemplates(),
-  }));
+  const { getTemplatesForSystem, systemTypes } = useStore();
 
   return (
     <Fragment>
@@ -20,16 +16,14 @@ function Configs() {
       <div className="configs-page">
         <h4>{itl.phrases.addConfigs}</h4>
 
-        {systemTypes.map((systemT) => {
-          const systemTypeTemplates = templates.filter(
-            (t) => t.systemType.id === systemT.id,
-          );
+        {systemTypes.map((systemType) => {
+          const templates = getTemplatesForSystem(systemType);
 
           return (
             <System
-              key={systemT.id}
-              systemType={systemT}
-              templates={systemTypeTemplates}
+              key={systemType.modelicaPath}
+              systemType={systemType}
+              templates={templates}
             />
           );
         })}

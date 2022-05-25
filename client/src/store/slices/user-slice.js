@@ -6,7 +6,7 @@
  *
  * Zustand freezes (makes read only) items returned from a 'get()' and does not allow updates
  */
-
+import { v4 as uuid } from "uuid";
 import { produce } from "immer";
 import { deduplicate, sortByName } from "../../utils/utils";
 import getMockData from "../mock-data";
@@ -252,7 +252,7 @@ const _addUserSystems = (prefix, start, quantity, config, set) => {
 
         for (let i = 0; i < quantity; i += 1) {
           const system = {
-            id: getID(),
+            id: uuid(),
             tag: `${prefix} - ${start + i}`,
             prefix: prefix,
             number: start + i,
@@ -363,10 +363,10 @@ export default function (set, get) {
     userProjects: [initialUserProject],
     userSystems: [],
     configurations: [],
-    saveProjectDetails: (projectDetails) =>
-      _saveProjectDetails(projectDetails, set),
-    getActiveProject: () => _getActiveProject(get),
-    setActiveProject: (userProject) => set({ activeProject: userProject.id }),
+    // saveProjectDetails: (projectDetails) =>
+    //   _saveProjectDetails(projectDetails, set),
+    // getActiveProject: () => _getActiveProject(get),
+    // setActiveProject: (userProject) => set({ activeProject: userProject.id }),
     getActiveTemplates: (sort = sortByName) =>
       sort ? _getActiveTemplates(get).sort(sort) : _getActiveTemplates(get),
     getConfigs: (template = undefined, sort = sortByName) =>
