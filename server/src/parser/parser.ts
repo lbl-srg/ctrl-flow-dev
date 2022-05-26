@@ -134,6 +134,10 @@ export class InputGroup extends Element {
     typeStore.set(this.modelicaPath, this);
     this.type = this.modelicaPath;
     this.description = specifier.description_string;
+    if (this.description === 'Partial component with two ports') {
+      console.log("yep");
+    }
+
     this.elementList = specifier.composition.element_list.map((e: any) =>
       _constructElement(e, this.modelicaPath),
     );

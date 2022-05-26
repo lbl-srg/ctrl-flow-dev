@@ -1,6 +1,6 @@
 import * as parser from "../../../src/parser/parser";
 import { initializeTestModelicaJson } from "./utils";
-import config from "../../../src/config";
+import * as publicParser from "../../../src/parser";
 
 const testTemplatePath = "TestPackage.Template.TestTemplate";
 const testPackagePath = "TestPackage.Template";
@@ -27,8 +27,19 @@ describe("Parser file loading", () => {
   });
 });
 
-describe("Parser loads modelica-buildings package", () => {
+describe("Parser is able to load modelica-buildings", () => {
   it("Modelica Buildings can load", () => {
     parser.loadPackage('Buildings');
+  });
+});
+
+describe("Parser extracts expected parts or modelica-buildings", () => {
+  beforeAll(() => {
+    parser.loadPackage('Buildings');
+  });
+
+  it("Modelica Buildings can load", () => {
+    const templates = publicParser.getTemplates();
+    expect(templates.length).toBe(3);
   });
 });
