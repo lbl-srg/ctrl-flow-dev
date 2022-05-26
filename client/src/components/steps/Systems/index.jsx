@@ -17,11 +17,7 @@ const Systems = () => {
         {templateStore.systemTypes.map((systemType) => (
           <System
             key={systemType.modelicaPath}
-            title={systemType.description}
             systemPath={systemType.modelicaPath}
-            options={templateStore.getTemplatesForSystem(
-              systemType.modelicaPath,
-            )}
           />
         ))}
       </div>

@@ -1,5 +1,27 @@
 import tplData from "../templates/system-template-test-package.json";
 
+const icons = [
+  {
+    iconClass: "icon-ahu",
+    systemPath: "",
+  },
+
+  {
+    iconClass: "icon-zone-equipment",
+    systemPath: "",
+  },
+
+  {
+    iconClass: "icon-chiller-plant",
+    systemPath: "",
+  },
+
+  {
+    iconClass: "icon-boiler-plant",
+    systemPath: "",
+  },
+];
+
 export default class Template {
   templates = tplData.templates;
   options = tplData.options;
@@ -35,6 +57,11 @@ export default class Template {
     }
 
     return this.options.map(findOptions);
+  }
+
+  getIconForSystem(systemPath) {
+    const match = icons.find((item) => item.systemPath === systemPath);
+    return match ? match.iconClass : "";
   }
 
   getOptionsForTemplate(path) {

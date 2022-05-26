@@ -1,23 +1,20 @@
-import { findIcon } from "../../LeftNavigation/icon-mappings";
 import { useStores } from "../../../data";
 
-function System({ systemPath, title, options }) {
-  const { uiStore, configStore } = useStores();
+function System({ systemPath }) {
+  const { uiStore, configStore, templateStore } = useStores();
 
-  // const templates = getTemplates();
-  const iconClass = findIcon(title);
+  const { title } = templateStore.getSystemTypeByPath(systemPath);
+  const templates = templateStore.getTemplatesForSystem(systemPath);
+  const iconClass = templateStore.getIconForSystem(systemPath);
 
   function onSelect(option, checked) {
     uiStore.setOpenSystemPath(systemPath);
     uiStore.setActiveSystemPath(systemPath);
 
-    if (checked) {
-      configStore.addUserConfig(systemPath, {
-        templatePath: option.modelicaPath,
-      });
-    } else {
-      configStore.removeAllConfigsForTemplate(systemPath, option.modelicaPath);
-    }
+    const templatePath = option.modelicaPath;
+
+    if (checked) configStore.add({ systemPath, templatePath });
+    else configStore.removeAllForSystemTemplate(systemPath, templatePath);
   }
 
   return (
@@ -28,7 +25,7 @@ function System({ systemPath, title, options }) {
       </h2>
 
       <ul className="check-list">
-        {options.map((option) => {
+        {templates.map((option) => {
           const { name, checked, modelicaPath } = option;
 
           return (

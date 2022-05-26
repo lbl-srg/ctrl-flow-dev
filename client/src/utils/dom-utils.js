@@ -24,12 +24,6 @@ export function getAll(selector) {
   return Array.from(document.querySelectorAll(selector));
 }
 
-export function getNumericId($el) {
-  const idStr = $el.getAttribute("id") || "";
-  const [str, val] = idStr.split("-");
-  return val ? Number(val) : null;
-}
-
 export function getPath($el) {
   const idStr = $el.getAttribute("id") || "";
   return idStr.split("-")[1];

@@ -1,8 +1,9 @@
 import Template from "./Template";
-import { findIcon } from "../../LeftNavigation/icon-mappings";
+import { useStores } from "../../../data";
 
 const System = ({ systemType, templates }) => {
-  const icon = findIcon(systemType.name) || "";
+  const { templateStore } = useStores();
+  const icon = templateStore.getIconForSystem(systemType.modelicaPath);
 
   return (
     <div className="system" id={`system-${systemType.id}`} data-spy="system">

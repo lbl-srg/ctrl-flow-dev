@@ -3,7 +3,7 @@ import { v4 as uuid } from "uuid";
 import { makePersistable } from "mobx-persist-store";
 
 const DEFAULT_PROJECT = {
-  userSystems: [],
+  id: uuid(),
   projectDetails: {
     name: "",
     address: "",
@@ -13,7 +13,6 @@ const DEFAULT_PROJECT = {
     code: "ashrae 90.1 20201",
     notes: "",
   },
-  id: uuid(),
 };
 
 // const projectSchema = {

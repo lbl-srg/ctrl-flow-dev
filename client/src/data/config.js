@@ -1,45 +1,52 @@
-import { poj } from "../utils/utils";
 import { v4 as uuid } from "uuid";
+import { makeAutoObservable } from "mobx";
+import { makePersistable } from "mobx-persist-store";
+/*
+const config = {
+  sytemPath: "",
+  templatePath: "",
+  id: "",
+  name: "",
+  isLocked: false,
+  selections: []
+}
+*/
 
 export default class Config {
+  configs = [];
+
   constructor(rootStore) {
     this.rootStore = rootStore;
+
+    makeAutoObservable(this);
+
+    makePersistable(this, {
+      name: this.rootStore.getStorageKey("config"),
+      properties: ["configs"],
+    });
   }
 
-  addUserConfig(systemPath, templatePath, config) {
-    const existing = this.getUserSystemByPath(systemPath);
-
-    const userConfig = {
+  add(config) {
+    const merged = {
       ...config,
       id: uuid(),
       name: "Default",
-      templatePath,
       isLocked: false,
       selections: [],
     };
 
-    if (existing) {
-      existing.userConfigs.push(userConfig);
-    } else {
-      this.rootStore.projectStore.activeProject.userSystems.push({
-        modelicaPath: systemPath,
-        userConfigs: [userConfig],
-      });
-    }
+    this.configs.push(merged);
   }
 
-  getUserSystemByPath(path) {
-    return this.rootStore.projectStore.activeProject.userSystems.find(
-      (sys) => sys.modelicaPath === path,
-    );
+  remove({ id }) {
+    this.configs = this.configs.filter((config) => config.id !== id);
   }
 
-  removeAllConfigsForTemplate(systemPath, templatePath) {
-    const match = this.getUserSystemByPath(systemPath);
-    if (!match) return;
-
-    match.userConfigs = match.userConfigs.filter(
-      (config) => config.templatePath !== templatePath,
+  removeAllForSystemTemplate(systemPath, templatePath) {
+    this.configs = this.configs.filter(
+      (config) =>
+        config.systemPath !== systemPath &&
+        config.templatePath !== templatePath,
     );
   }
 }

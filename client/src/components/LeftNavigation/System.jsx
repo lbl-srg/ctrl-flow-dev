@@ -1,5 +1,4 @@
 import SystemTemplate from "./SystemTemplate";
-import { findIcon } from "./icon-mappings";
 import { scrollToSelector } from "../../utils/dom-utils";
 import { useStores } from "../../data";
 import { observer } from "mobx-react";
@@ -8,6 +7,7 @@ const System = observer(({ systemTypePath, templates, meta }) => {
   const { uiStore, templateStore } = useStores();
   const systemType = templateStore.getSystemTypeByPath(systemTypePath);
 
+  const icon = templateStore.getIconForSystem(systemTypePath) || "";
   const classes = ["system"];
   const isActive =
     systemTypePath === uiStore.activeSystemPath && templates.length;
@@ -16,8 +16,6 @@ const System = observer(({ systemTypePath, templates, meta }) => {
   if (!templates.length) classes.push("empty");
   if (isActive) classes.push("active");
   if (isOpen) classes.push("open");
-
-  const icon = findIcon(systemType.description) || "";
 
   function setActive() {
     uiStore.setActiveSystemPath(systemTypePath);
