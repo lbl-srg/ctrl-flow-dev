@@ -1,7 +1,6 @@
-import { makeAutoObservable, autorun } from "mobx";
-import persist from "./persist";
+import { makeAutoObservable } from "mobx";
+import { makePersistable } from "mobx-persist-store";
 
-const { ui } = persist.storage;
 const MIN_WIDTH = 100;
 
 export default class Ui {
@@ -9,8 +8,7 @@ export default class Ui {
   openSystemPath = null;
   activeTemplatePath = null;
   activeConfigId = null;
-
-  leftColWidth = ui?.leftColWidth || 300;
+  leftColWidth = 300;
   watchScroll = false;
 
   constructor(rootStore) {
@@ -18,8 +16,9 @@ export default class Ui {
 
     makeAutoObservable(this);
 
-    autorun(() => {
-      persist.storage = { ui: { leftColWidth: this.leftColWidth } };
+    makePersistable(this, {
+      name: this.rootStore.getStorageKey("ui"),
+      properties: ["leftColWidth"],
     });
   }
 

@@ -1,7 +1,8 @@
-import { Field, Form, Formik } from "formik";
+// import { Field, Form, Formik } from "formik";
 import Modal from "./Modal";
 import itl from "../../translations";
 import { useStores } from "../../data";
+import { getFormData } from "../../utils/dom-utils";
 
 function EditDetailsModal({
   afterSubmit,
@@ -13,74 +14,92 @@ function EditDetailsModal({
 }) {
   const { projectStore } = useStores();
 
+  const details = projectStore.activeProject.projectDetails;
+
+  function save(ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    projectStore.setProjectDetails(getFormData(ev.target));
+    afterSubmit();
+  }
+
   return (
     <Modal close={close} isOpen={isOpen}>
       <h1>{modalTitle}</h1>
 
-      <Formik
-        initialValues={projectStore.activeProject.projectDetails}
-        onSubmit={(values) => {
-          projectStore.setProjectDetails(values);
-          afterSubmit && afterSubmit();
-        }}
-      >
-        <Form className="no-margin">
-          <label htmlFor="name">
-            {itl.phrases.projectName}:
-            <Field id="name" name="name" type="text" />
+      <form className="no-margin" onSubmit={save}>
+        <label htmlFor="name">
+          {itl.phrases.projectName}:
+          <input name="name" type="text" defaultValue={details.name} />
+        </label>
+
+        <label htmlFor="address">
+          Address:
+          <input name="address" type="text" defaultValue={details.address} />
+        </label>
+
+        <div className="grid">
+          <label htmlFor="type">
+            {itl.terms.type}
+            <select
+              name="type"
+              data-testid="type-input"
+              defaultValue={details.type}
+            >
+              <option value="multi-story office">Multi-Story Office</option>
+              <option value="warehouse">Warehouse</option>
+              <option value="something else">Something Else</option>
+            </select>
           </label>
 
-          <label htmlFor="address">
-            Address:
-            <Field id="address" name="address" type="text" />
+          <label htmlFor="size">
+            {itl.terms.size}
+            <input
+              id="size"
+              type="number"
+              name="size"
+              defaultValue={details.size}
+            />
           </label>
 
-          <div className="grid">
-            <label htmlFor="type">
-              {itl.terms.type}
-              <Field as="select" name="type" data-testid="type-input">
-                <option value="multi-story office">Multi-Story Office</option>
-                <option value="warehouse">Warehouse</option>
-                <option value="something else">Something Else</option>
-              </Field>
-            </label>
+          <label htmlFor="units">
+            {itl.terms.units}
+            <select
+              name="units"
+              data-testid="units-input"
+              defaultValue={details.units}
+            >
+              <option value="ip">IP</option>
+              <option value="square feet">square ft</option>
+              <option value="something">Something</option>
+            </select>
+          </label>
 
-            <label htmlFor="size">
-              {itl.terms.size}
-              <Field id="size" type="number" name="size" />
-            </label>
+          <label htmlFor="code">
+            {itl.phrases.energyCode}
+            <select
+              name="code"
+              data-testid="code-input"
+              defaultValue={details.code}
+            >
+              <option value="ashrae 90.1 20201">ASHRAE 90.1 20201</option>
+              <option value="a different one">A Different One</option>
+            </select>
+          </label>
+        </div>
 
-            <label htmlFor="units">
-              {itl.terms.units}
-              <Field as="select" name="units" data-testid="units-input">
-                <option value="ip">IP</option>
-                <option value="square feet">square ft</option>
-                <option value="something">Something</option>
-              </Field>
-            </label>
+        <label htmlFor="notes">{itl.terms.notes}:</label>
+        <textarea name="notes" defaultValue={details.notes}></textarea>
 
-            <label htmlFor="code">
-              {itl.phrases.energyCode}
-              <Field as="select" name="code" data-testid="code-input">
-                <option value="ashrae 90.1 20201">ASHRAE 90.1 20201</option>
-                <option value="a different one">A Different One</option>
-              </Field>
-            </label>
-          </div>
-
-          <label htmlFor="notes">{itl.terms.notes}:</label>
-          <Field as="textarea" id="notes" name="notes" />
-
-          <div className="action-bar">
-            {cancelText ? (
-              <button onClick={close} className="inline outline small">
-                {cancelText}
-              </button>
-            ) : null}
-            <input type="submit" className="inline" value={submitText} />
-          </div>
-        </Form>
-      </Formik>
+        <div className="action-bar">
+          {cancelText ? (
+            <button onClick={close} className="inline outline small">
+              {cancelText}
+            </button>
+          ) : null}
+          <input type="submit" className="inline" value={submitText} />
+        </div>
+      </form>
     </Modal>
   );
 }

@@ -31,6 +31,7 @@ function Landing() {
         <article>
           <div className="row">
             <div className="col-md-7 col-xs-12">
+              {/* TODO: this needs localized */}
               <h3>HVAC Controls Design Tool</h3>
               <p>
                 The Controls Design Tool allows you to design high performance

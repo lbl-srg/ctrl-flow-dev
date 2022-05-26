@@ -1,9 +1,6 @@
-import { makeAutoObservable, autorun } from "mobx";
-import persist from "./persist";
-import { poj } from "../utils/utils";
+import { makeAutoObservable } from "mobx";
 import { v4 as uuid } from "uuid";
-
-const { projects, activeProjectId } = persist.storage;
+import { makePersistable } from "mobx-persist-store";
 
 const DEFAULT_PROJECT = {
   userSystems: [],
@@ -26,19 +23,17 @@ const DEFAULT_PROJECT = {
 // };
 
 export default class Project {
-  projects = projects || [DEFAULT_PROJECT];
-  activeProjectId = activeProjectId || DEFAULT_PROJECT.id;
+  projects = [DEFAULT_PROJECT];
+  activeProjectId = DEFAULT_PROJECT.id;
 
   constructor(rootStore) {
     this.rootStore = rootStore;
 
     makeAutoObservable(this);
 
-    autorun(() => {
-      persist.storage = {
-        projects: poj(this.projects),
-        activeProjectId: this.activeProjectId,
-      };
+    makePersistable(this, {
+      name: this.rootStore.getStorageKey("projects"),
+      properties: ["projects", "activeProjectId"],
     });
   }
 
