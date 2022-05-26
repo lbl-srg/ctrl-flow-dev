@@ -30,19 +30,37 @@ export default class Config {
 
   add(config) {
     const merged = {
-      ...config,
       id: uuid(),
       name: "Default",
       isLocked: false,
       selections: [],
       quantity: 1,
+      ...config,
     };
 
     this.configs.push(merged);
   }
 
-  remove({ id }) {
+  update(attrs) {
+    const config = this.getById(attrs.id);
+    if (config) {
+      Object.entries(attrs).forEach(([key, value]) => {
+        if (key in config) config[key] = value;
+      });
+    }
+  }
+
+  getById(id) {
+    return this.configs.find((config) => config.id === id);
+  }
+
+  remove(id) {
     this.configs = this.configs.filter((config) => config.id !== id);
+  }
+
+  toggleConfigLock(id) {
+    const config = this.getById(id);
+    if (config) config.isLocked = !config.isLocked;
   }
 
   hasSystemTemplateConfigs(systemPath, templatePath) {

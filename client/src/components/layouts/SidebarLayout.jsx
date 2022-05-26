@@ -12,16 +12,9 @@ import itl from "../../translations";
 
 const Sidebarlayout = observer(
   ({ contentLeft, contentRight, isFullScreen = true }) => {
-    const { uiStore } = useStores();
+    const { uiStore, projectStore } = useStores();
+    const projectDetails = projectStore.projectDetails;
 
-    const { projectDetails } = useStore((state) => {
-      return {
-        ...state,
-        projectDetails: state.getActiveProject()?.projectDetails,
-      };
-    });
-
-    const projectName = projectDetails?.name;
     const [isDragging, setIsDragging] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [leftPaneOpen, setLeftPaneOpen] = useState(true);
@@ -36,11 +29,11 @@ const Sidebarlayout = observer(
       if (!uiStore.watchScroll) return;
       const [$firstTpl] = getAll("[data-spy='template']").filter(isInViewPort);
       if ($firstTpl) {
-        uiStore.setActiveTemplate(getPath($firstTpl));
+        uiStore.setActiveTemplatePath(getPath($firstTpl));
         const $system = $firstTpl.closest("[data-spy='system']");
         if ($system) {
           const path = getPath($system);
-          if (path) uiStore.setActiveSystem(path);
+          if (path) uiStore.setActiveSystemPath(path);
         }
       }
     }
@@ -78,7 +71,7 @@ const Sidebarlayout = observer(
               <header>
                 <div className="truncate">
                   All Projects &gt; &nbsp;
-                  <strong>{projectName}</strong>
+                  <strong>{projectDetails.name || "unnamed"}</strong>
                 </div>
                 {modalOpen ? null : (
                   <button

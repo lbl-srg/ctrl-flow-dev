@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import { Field, Form, Formik, FormikProps } from "formik";
-
+import Debug from "../debug";
 import Modal from "./Modal";
 
 import { SelectInput } from "../shared/SelectInput";
@@ -9,41 +9,57 @@ import "../../styles/components/config-slide-out.scss";
 import { getSelections, ConfigFormValues } from "../../utils/FormHelpers";
 import itl from "../../translations";
 
-import { useStore, Option } from "../../store/store";
+// import { useStore, Option } from "../../store/store";
 
-const SlideOut = ({ template, config, disabled = true }) => {
+import { useStores } from "../../data";
+
+const SlideOut = ({ configId }) => {
+  const { configStore, uiStore, templateStore } = useStores();
+
+  const config = configStore.getById(configId);
+  const template = templateStore.getTemplateByPath(config.templatePath);
+
   const [isOpen, setOpen] = useState(false);
-  const updateConfig = useStore((state) => state.updateConfig);
-  const { getTemplateOptions, setOpenSystemId } = useStore((state) => state);
-  const [initTemplateOptions, fullTemplateOptions] =
-    getTemplateOptions(template);
 
-  const initSelections = config.selections.reduce(
-    (previousValue, currentValue) => {
-      previousValue[currentValue.parent.name] = currentValue.option.id;
-      return previousValue;
-    },
-    {},
-  );
+  const options = templateStore.getOptionsForTemplate(template.modelicaPath);
 
-  const [initialValues, setInitialValues] = useState({
-    configName: config.name || "",
-    ...initSelections,
-  });
+  // const updateConfig = useStore((state) => state.updateConfig);
+  // const { getTemplateOptions, setOpenSystemId } = useStore((state) => state);
+  // const [initTemplateOptions, fullTemplateOptions] =
+  //   getTemplateOptions(template);
+
+  // const initSelections = config.selections.reduce(
+  //   (previousValue, currentValue) => {
+  //     previousValue[currentValue.parent.name] = currentValue.option.id;
+  //     return previousValue;
+  //   },
+  //   {},
+  // );
+
+  // const [initialValues, setInitialValues] = useState({
+  //   configName: config.name || "",
+  //   ...initSelections,
+  // });
 
   // grabs the updates if the name has changed since initialized
   useEffect(() => {
-    setInitialValues({ ...initialValues, configName: config.name });
+    // setInitialValues({ ...initialValues, configName: config.name });
   }, [config]);
 
   function openPanel() {
     setOpen(true);
-    setOpenSystemId(template.systemType.id);
+    uiStore.setOpenSystemPath(config.systemPath);
+  }
+
+  function save(ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    console.log(ev.target);
   }
 
   return (
     <Fragment>
-      <button disabled={disabled} className="small" onClick={openPanel}>
+      <button disabled={config.isLocked} className="small" onClick={openPanel}>
         {itl.terms.edit}
       </button>
       <Modal
@@ -53,54 +69,27 @@ const SlideOut = ({ template, config, disabled = true }) => {
       >
         <h3>{template.name}</h3>
 
-        <Formik
-          initialValues={initialValues}
-          enableReinitialize={true}
-          onSubmit={(configSelections) => {
-            const selections = getSelections(
-              configSelections,
-              initSelections,
-              fullTemplateOptions,
-            );
-            const configName = configSelections.configName;
-            updateConfig(config, configName, selections);
-            setOpen(false);
-          }}
-        >
-          {(formik) => (
-            <Form
-              onChange={(e) => {
-                const target = e.target;
-                const newValue = {};
-                // TODO: this will not work once we start incorporating more types of input
-                // For example, this would also fail if a config is given a number as a name
-                // we'll need to be able to make intelligent decisions about how to cast input.
-                // use option name
-                const value = isNaN(target.value)
-                  ? target.value
-                  : Number(target.value);
-                newValue[target.name] = value;
-                setInitialValues({ ...initialValues, ...newValue });
-              }}
-            >
-              <Field
-                id="configName"
-                name="configName"
-                placeholder="Name Your New Configuration"
-              />
-              {initTemplateOptions.map((option) => (
-                <OptionDisplay
-                  option={option}
-                  options={fullTemplateOptions}
-                  formik={formik}
-                  key={option.id}
-                />
-              ))}
+        <form onSubmit={save}>
+          <input
+            type="text"
+            id="configName"
+            name="configName"
+            defaultValue={config.name}
+            placeholder="Name Your Configuration"
+          />
+          {/* {initTemplateOptions.map((option) => (
+            <OptionDisplay
+            option={option}
+            options={fullTemplateOptions}
+            formik={formik}
+            key={option.id}
+            />
+          ))} */}
 
-              <button type="submit">{itl.terms.save}</button>
-            </Form>
-          )}
-        </Formik>
+          <Debug item={options} />
+
+          <button type="submit">{itl.terms.save}</button>
+        </form>
       </Modal>
     </Fragment>
   );

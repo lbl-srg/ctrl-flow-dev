@@ -6,17 +6,22 @@ import { observer } from "mobx-react";
 const System = observer(({ systemPath }) => {
   const { uiStore, templateStore } = useStores();
 
-  const templates = templateStore.getActiveTemplatesForSystem(systemPath);
-  const systemType = templateStore.getSystemTypeByPath(systemPath);
-  const icon = templateStore.getIconForSystem(systemPath);
+  const { systemType, templates, icon } = {
+    templates: templateStore.getActiveTemplatesForSystem(systemPath),
+    systemType: templateStore.getSystemTypeByPath(systemPath),
+    icon: templateStore.getIconForSystem(systemPath),
+  };
 
   const classes = ["system"];
-  const isActive = systemPath === uiStore.activeSystemPath && templates.length;
-  const isOpen = systemPath === uiStore.openSystemPath && templates.length;
+  const isEmpty = !templates.length;
+  const isActive = systemPath === uiStore.activeSystemPath && !isEmpty;
+  const isOpen = systemPath === uiStore.openSystemPath && !isEmpty;
 
-  if (!templates.length) classes.push("empty");
-  if (isActive) classes.push("active");
-  if (isOpen) classes.push("open");
+  if (isEmpty) classes.push("empty");
+  else {
+    if (isActive) classes.push("active");
+    if (isOpen) classes.push("open");
+  }
 
   function setActive() {
     uiStore.setActiveSystemPath(systemPath);
@@ -37,7 +42,7 @@ const System = observer(({ systemPath }) => {
         />
       </div>
 
-      {isOpen && templates.length && (
+      {isOpen && !isEmpty && (
         <ul className="templates">
           {templates.map((tpl) => (
             <SystemTemplate

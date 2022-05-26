@@ -1,7 +1,8 @@
 import { scrollToSelector } from "../../utils/dom-utils";
 import { useStores } from "../../data";
+import { observer } from "mobx-react";
 
-const SystemTemplate = ({ systemPath, templatePath }) => {
+const SystemTemplate = observer(({ systemPath, templatePath }) => {
   const { uiStore, templateStore, configStore } = useStores();
 
   const template = templateStore.getTemplateByPath(templatePath);
@@ -36,7 +37,7 @@ const SystemTemplate = ({ systemPath, templatePath }) => {
 
       <ul className="configs">
         {configs.map((config) => (
-          <li key={config.name}>
+          <li key={config.id}>
             <a
               href="#"
               className={
@@ -52,6 +53,6 @@ const SystemTemplate = ({ systemPath, templatePath }) => {
       </ul>
     </li>
   );
-};
+});
 
 export default SystemTemplate;

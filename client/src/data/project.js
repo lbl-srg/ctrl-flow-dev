@@ -1,5 +1,5 @@
-import { makeAutoObservable } from "mobx";
 import { v4 as uuid } from "uuid";
+import { makeAutoObservable } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 
 const DEFAULT_PROJECT = {
@@ -42,6 +42,10 @@ export default class Project {
 
   setProjectDetails(details) {
     this.activeProject.projectDetails = details;
+  }
+
+  get projectDetails() {
+    return this.activeProject.projectDetails;
   }
 
   get activeProject() {

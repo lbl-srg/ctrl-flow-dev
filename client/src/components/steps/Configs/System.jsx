@@ -1,22 +1,32 @@
 import Template from "./Template";
 import { useStores } from "../../../data";
+import { observer } from "mobx-react";
 
-const System = ({ systemType, templates }) => {
+const System = observer(({ systemPath }) => {
   const { templateStore } = useStores();
-  const icon = templateStore.getIconForSystem(systemType.modelicaPath);
+
+  const { system, templates, icon } = {
+    system: templateStore.getSystemTypeByPath(systemPath),
+    templates: templateStore.getActiveTemplatesForSystem(systemPath),
+    icon: templateStore.getIconForSystem(systemPath),
+  };
 
   return (
-    <div className="system" id={`system-${systemType.id}`} data-spy="system">
+    <div className="system" id={`system-${systemPath}`} data-spy="system">
       <h2 className="system-header">
         <i className={icon} />
-        {systemType.name}
+        {system.description}
       </h2>
 
       {templates.map((template) => (
-        <Template key={template.id} template={template} />
+        <Template
+          key={template.modelicaPath}
+          systemPath={systemPath}
+          templatePath={template.modelicaPath}
+        />
       ))}
     </div>
   );
-};
+});
 
 export default System;
