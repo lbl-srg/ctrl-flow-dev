@@ -3,23 +3,24 @@ import { scrollToSelector } from "../../utils/dom-utils";
 import { useStores } from "../../data";
 import { observer } from "mobx-react";
 
-const System = observer(({ systemTypePath, templates, meta }) => {
+const System = observer(({ systemPath }) => {
   const { uiStore, templateStore } = useStores();
-  const systemType = templateStore.getSystemTypeByPath(systemTypePath);
 
-  const icon = templateStore.getIconForSystem(systemTypePath) || "";
+  const templates = templateStore.getActiveTemplatesForSystem(systemPath);
+  const systemType = templateStore.getSystemTypeByPath(systemPath);
+  const icon = templateStore.getIconForSystem(systemPath);
+
   const classes = ["system"];
-  const isActive =
-    systemTypePath === uiStore.activeSystemPath && templates.length;
-  const isOpen = systemTypePath === uiStore.openSystemPath && templates.length;
+  const isActive = systemPath === uiStore.activeSystemPath && templates.length;
+  const isOpen = systemPath === uiStore.openSystemPath && templates.length;
 
   if (!templates.length) classes.push("empty");
   if (isActive) classes.push("active");
   if (isOpen) classes.push("open");
 
   function setActive() {
-    uiStore.setActiveSystemPath(systemTypePath);
-    scrollToSelector(`#system-${systemTypePath}`);
+    uiStore.setActiveSystemPath(systemPath);
+    scrollToSelector(`#system-${systemPath}`);
   }
 
   return (
@@ -31,21 +32,18 @@ const System = observer(({ systemTypePath, templates, meta }) => {
         </a>
 
         <i
-          onClick={() => uiStore.toggleSystemOpenPath(systemTypePath)}
+          onClick={() => uiStore.toggleSystemOpenPath(systemPath)}
           className={"toggle icon-down-open"}
         />
       </div>
 
-      {isOpen && (
+      {isOpen && templates.length && (
         <ul className="templates">
           {templates.map((tpl) => (
             <SystemTemplate
-              systemTypePath={systemTypePath}
               key={tpl.modelicaPath}
+              systemPath={systemPath}
               templatePath={tpl.modelicaPath}
-              meta={meta.filter(
-                (m) => m.config.template.modelicaPath === tpl.modelicaPath,
-              )}
             />
           ))}
         </ul>

@@ -1,4 +1,3 @@
-import { useStore } from "../../store/store";
 import System from "./System";
 import itl from "../../translations";
 import { useStores } from "../../data";
@@ -6,11 +5,6 @@ import { useStores } from "../../data";
 import "../../styles/components/left-navigation.scss";
 
 const LeftNav = () => {
-  // TODO: what is this meta and wehre does it come from
-  const { meta } = useStore((state) => ({
-    meta: state.getMetaConfigs(),
-  }));
-
   const { templateStore } = useStores();
 
   return (
@@ -20,11 +14,7 @@ const LeftNav = () => {
       {templateStore.systemTypes.map((systemType) => (
         <System
           key={systemType.modelicaPath}
-          systemTypePath={systemType.modelicaPath}
-          templates={templateStore.getTemplatesForSystem(
-            systemType.modelicaPath,
-          )}
-          meta={meta}
+          systemPath={systemType.modelicaPath}
         />
       ))}
     </div>

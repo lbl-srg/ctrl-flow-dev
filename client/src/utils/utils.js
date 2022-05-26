@@ -13,5 +13,6 @@ export const getChangedValues = (values, initialValues) => {
   }, {});
 };
 
+export const poj = (obj) => JSON.parse(JSON.stringify(obj));
 export const deduplicate = (arr) => Array.from(new Set(arr).values());
 export const sortByName = (a, b) => a.name.localeCompare(b.name);

@@ -39,6 +39,15 @@ export default class Template {
     return this.templates.filter((tpl) => tpl.systemTypes.includes(path));
   }
 
+  getActiveTemplatesForSystem(systemPath) {
+    return this.getTemplatesForSystem(systemPath).filter((tpl) =>
+      this.rootStore.configStore.hasSystemTemplateConfigs(
+        systemPath,
+        tpl.modelicaPath,
+      ),
+    );
+  }
+
   getSystemTypeByPath(path) {
     return this.systemTypes.find(
       (systemType) => systemType.modelicaPath === path,

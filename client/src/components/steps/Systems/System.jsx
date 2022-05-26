@@ -1,9 +1,10 @@
 import { useStores } from "../../../data";
+import { observer } from "mobx-react";
 
-function System({ systemPath }) {
+const System = observer(({ systemPath }) => {
   const { uiStore, configStore, templateStore } = useStores();
 
-  const { title } = templateStore.getSystemTypeByPath(systemPath);
+  const { description } = templateStore.getSystemTypeByPath(systemPath);
   const templates = templateStore.getTemplatesForSystem(systemPath);
   const iconClass = templateStore.getIconForSystem(systemPath);
 
@@ -21,12 +22,17 @@ function System({ systemPath }) {
     <li className="system" id={`system-${systemPath}`} data-spy="system">
       <h2 className="system-header">
         {iconClass && <i className={iconClass} />}
-        {title}
+        {description}
       </h2>
 
       <ul className="check-list">
         {templates.map((option) => {
-          const { name, checked, modelicaPath } = option;
+          const { name, modelicaPath } = option;
+
+          const checked = configStore.hasSystemTemplateConfigs(
+            systemPath,
+            modelicaPath,
+          );
 
           return (
             <li
@@ -50,6 +56,6 @@ function System({ systemPath }) {
       </ul>
     </li>
   );
-}
+});
 
 export default System;

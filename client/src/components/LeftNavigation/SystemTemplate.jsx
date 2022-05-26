@@ -1,25 +1,28 @@
 import { scrollToSelector } from "../../utils/dom-utils";
-import { observer } from "mobx-react";
 import { useStores } from "../../data";
 
-const Template = observer(({ templatePath, meta, systemTypePath }) => {
-  const { uiStore, templateStore } = useStores();
+const SystemTemplate = ({ systemPath, templatePath }) => {
+  const { uiStore, templateStore, configStore } = useStores();
 
   const template = templateStore.getTemplateByPath(templatePath);
+  const configs = configStore.getConfigsForSystemTemplate(
+    systemPath,
+    templatePath,
+  );
   const active = uiStore.activeTemplate === templatePath;
   const rootClass = active ? "active" : "";
 
   function selectTemplate(ev) {
     // prevent default since its a <a> with no valid href
     ev.preventDefault();
-    uiStore.setActiveSystemPath(systemTypePath);
+    uiStore.setActiveSystemPath(systemPath);
     uiStore.setActiveTemplatePath(templatePath);
     scrollToSelector(`#template-${templatePath}`);
   }
 
   function chooseConfig(configId, ev) {
     ev.preventDefault();
-    uiStore.setActiveSystemPath(systemTypePath);
+    uiStore.setActiveSystemPath(systemPath);
     uiStore.setActiveTemplatePath(template.modelicaPath);
     uiStore.setActiveConfigId(configId);
     scrollToSelector(`#config-${configId}`);
@@ -32,23 +35,23 @@ const Template = observer(({ templatePath, meta, systemTypePath }) => {
       </a>
 
       <ul className="configs">
-        {meta.map((m) => (
-          <li key={m.config.name}>
+        {configs.map((config) => (
+          <li key={config.name}>
             <a
               href="#"
               className={
-                m.config.id === uiStore.activeConfigId ? "grid active" : "grid"
+                config.id === uiStore.activeConfigId ? "grid active" : "grid"
               }
-              onClick={() => chooseConfig(m.config.id)}
+              onClick={(ev) => chooseConfig(config.id, ev)}
             >
-              <div className="truncate">{m.config.name}</div>
-              <div>{`qty.${m.quantity}`}</div>
+              <div className="truncate">{config.name}</div>
+              <div>{`qty.${config.quantity}`}</div>
             </a>
           </li>
         ))}
       </ul>
     </li>
   );
-});
+};
 
-export default Template;
+export default SystemTemplate;

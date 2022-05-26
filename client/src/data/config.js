@@ -1,6 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { makeAutoObservable } from "mobx";
 import { makePersistable } from "mobx-persist-store";
+
 /*
 const config = {
   sytemPath: "",
@@ -8,7 +9,8 @@ const config = {
   id: "",
   name: "",
   isLocked: false,
-  selections: []
+  selections: [],
+  quantity: 1
 }
 */
 
@@ -33,6 +35,7 @@ export default class Config {
       name: "Default",
       isLocked: false,
       selections: [],
+      quantity: 1,
     };
 
     this.configs.push(merged);
@@ -42,11 +45,28 @@ export default class Config {
     this.configs = this.configs.filter((config) => config.id !== id);
   }
 
-  removeAllForSystemTemplate(systemPath, templatePath) {
-    this.configs = this.configs.filter(
+  hasSystemTemplateConfigs(systemPath, templatePath) {
+    return this.configs.find(
       (config) =>
-        config.systemPath !== systemPath &&
-        config.templatePath !== templatePath,
+        config.systemPath == systemPath && config.templatePath === templatePath,
+    )
+      ? true
+      : false;
+  }
+
+  getConfigsForSystemTemplate(systemPath, templatePath) {
+    return this.configs.filter(
+      (config) =>
+        config.systemPath === systemPath &&
+        config.templatePath === templatePath,
+    );
+  }
+
+  removeAllForSystemTemplate(systemPath, templatePath) {
+    this.configs = this.configs.filter((config) =>
+      config.systemPath === systemPath && config.templatePath === templatePath
+        ? false
+        : true,
     );
   }
 }
