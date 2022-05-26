@@ -31,15 +31,47 @@ class Store {
     this._store.set(path, element);
   }
 
-  get(path: string): Element | undefined {
-    // startsWith("Modelica"): Templates *should* have all types defined within
-    // a template so we do not need to rely on definitionals in the modelica standard library
-    if (!MODELICA_LITERALS.includes(path) && !path.startsWith("Modelica")) {
-      if (!this._store.has(path)) {
-        getFile(path);
+  /**
+   * TODO: This 'get' needs to match the lookup behavior for modelica type references
+   * where it is able to follow an order of searching based on the type. Full rules
+   * are defined here: https://mbe.modelica.university/components/packages/lookup/
+   *
+   * For now this does two types of lookup:
+   * 1. Try the path as an absolute path
+   * 2. Try it as a relative path (context + path)
+   *
+   * @param path
+   * @param context
+   * @returns
+   */
+  get(path: string, context = ""): Element | undefined {
+    if (MODELICA_LITERALS.includes(path)) {
+      return; // PUNCH-OUT! literals don't have a type definition
+    }
+
+    const paths = context ? [path, `${context}.${path}`] : [path];
+
+    // for each path
+    // check if either is in the store
+    const typeDef = this._store.has(path)
+      ? this._store.get(path)
+      : this._store.get(`${context}.${path}`);
+
+    if (typeDef) {
+      return typeDef; // PUNCH-OUT!
+    }
+
+    // not found, attempt to load from json
+    for (const p of paths) {
+      try {
+        const file = getFile(p);
+        if (file) {
+          assertType(p);
+          return this._store.get(p);
+        }
+      } catch (e) {
+        // not found
       }
-      assertType(path);
-      return this._store.get(path);
     }
   }
 
@@ -51,11 +83,7 @@ class Store {
 export const typeStore = new Store();
 
 function assertType(type: string) {
-  if (
-    !MODELICA_LITERALS.includes(type) &&
-    !typeStore.has(type) &&
-    !type.startsWith("Modelica")
-  ) {
+  if (!MODELICA_LITERALS.includes(type) && !typeStore.has(type)) {
     throw new Error(`${type} not defined`);
   }
 }

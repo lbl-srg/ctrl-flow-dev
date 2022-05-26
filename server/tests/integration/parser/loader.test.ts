@@ -1,5 +1,6 @@
 import * as parser from "../../../src/parser/parser";
 import { initializeTestModelicaJson } from "./utils";
+import config from "../../../src/config";
 
 const testTemplatePath = "TestPackage.Template.TestTemplate";
 const testPackagePath = "TestPackage.Template";
@@ -23,5 +24,11 @@ describe("Parser file loading", () => {
   it("Discovers template files", () => {
     const packagePath = "TestPackage";
     parser.loadPackage(packagePath);
+  });
+});
+
+describe("Parser loads modelica-buildings package", () => {
+  it("Modelica Buildings can load", () => {
+    parser.loadPackage('Buildings');
   });
 });

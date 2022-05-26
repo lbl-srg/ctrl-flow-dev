@@ -5,7 +5,9 @@ import { execSync } from "child_process";
 import config from "../../src/config";
 
 export const TEMPLATE_IDENTIFIER = "__LinkageTemplate";
-export const MODELICAPATH = [`${config.MODELICA_DEPENDENCIES}/template-json/json/`];
+export const MODELICAPATH = [
+  `${config.MODELICA_DEPENDENCIES}/template-json/json/`,
+];
 
 function _toModelicaPath(path: string) {
   path = path.endsWith(".json") ? path.slice(0, -5) : path;
@@ -16,39 +18,42 @@ export function findPackageEntryPoints(
   prefix: string,
   reference: string,
 ): { path: string; json: Object | undefined }[] {
-  const cmd = `grep -rl ${path.resolve(
-    prefix,
-    reference,
-  )} -e "${TEMPLATE_IDENTIFIER}"`;
-  const response = execSync(cmd).toString();
-  return response
-    .split("\n")
-    .filter((p) => p != "")
-    .map((p) => path.relative(prefix, p))
-    .map((p) => {
-      const path = _toModelicaPath(p)
-      return {
-        path: path,
-        json: loader(prefix, path)
-      }
-    });
+  const entryPoints: { path: string; json: Object | undefined }[] = [];
+  [prefix, ...MODELICAPATH].forEach((dir) => {
+    const dirPath = path.resolve(dir, reference);
+    if (fs.existsSync(dirPath)) {
+      const cmd = `grep -rl ${dirPath} -e "${TEMPLATE_IDENTIFIER}"`;
+      const response = execSync(cmd).toString();
+      entryPoints.push(
+        ...response
+          .split("\n")
+          .filter((p) => p != "")
+          .map((p) => path.relative(dir, p))
+          .map((p) => {
+            const path = _toModelicaPath(p);
+            return {
+              path: path,
+              json: loader(dir, path),
+            };
+          }),
+      );
+    }
+  });
+
+  return entryPoints;
 }
 
 /**
- * Searched the provided directory for a given 
+ * Searched the provided directory for a given
  * @param prefix directory to search
  * @param filePath path to try and find
- * 
+ *
  * @returns the found file path or null if not found
  */
 function _findPath(prefix: string, reference: string): string | null {
   let filePath = path.parse(reference.replace(/\./g, "/"));
 
-  let jsonFile = path.resolve(
-    prefix,
-    filePath.dir,
-    `${filePath.name}.json`,
-  );
+  let jsonFile = path.resolve(prefix, filePath.dir, `${filePath.name}.json`);
 
   while (!fs.existsSync(jsonFile) && filePath.name) {
     // package definitions break the typical modelica path to file mapping that
@@ -70,17 +75,17 @@ function _findPath(prefix: string, reference: string): string | null {
     jsonFile = path.resolve(prefix, filePath.dir, `${filePath.name}.json`);
   }
 
-  return (fs.existsSync(jsonFile)) ? jsonFile : null;
+  return fs.existsSync(jsonFile) ? jsonFile : null;
 }
 
 // When given a path, loads types
 export function loader(prefix: string, reference: string): Object | undefined {
-  const modelicaDirs = [prefix, ...MODELICAPATH]
-    
+  const modelicaDirs = [prefix, ...MODELICAPATH];
+
   for (const dir of modelicaDirs) {
     const jsonFile = _findPath(dir, reference);
     if (jsonFile && fs.existsSync(jsonFile)) {
-      return require(jsonFile)
+      return require(jsonFile);
     }
   }
 
