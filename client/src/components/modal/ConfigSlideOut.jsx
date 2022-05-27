@@ -1,12 +1,10 @@
 import { Fragment, useEffect, useState } from "react";
-import { Field, Form, Formik, FormikProps } from "formik";
 import Debug from "../debug";
 import Modal from "./Modal";
-
+import { poj } from "../../utils/utils";
 import { SelectInput } from "../shared/SelectInput";
 import "../../styles/components/config-slide-out.scss";
 
-import { getSelections, ConfigFormValues } from "../../utils/FormHelpers";
 import itl from "../../translations";
 
 // import { useStore, Option } from "../../store/store";
@@ -21,7 +19,9 @@ const SlideOut = ({ configId }) => {
 
   const [isOpen, setOpen] = useState(false);
 
-  const options = templateStore.getOptionsForTemplate(template.modelicaPath);
+  const options = templateStore.getOptionsForTemplate(template?.modelicaPath);
+
+  console.log(poj(options));
 
   // const updateConfig = useStore((state) => state.updateConfig);
   // const { getTemplateOptions, setOpenSystemId } = useStore((state) => state);
@@ -67,7 +67,7 @@ const SlideOut = ({ configId }) => {
         isOpen={isOpen}
         className="config-slide-out"
       >
-        <h3>{template.name}</h3>
+        <h3>{template?.name}</h3>
 
         <form onSubmit={save}>
           <input

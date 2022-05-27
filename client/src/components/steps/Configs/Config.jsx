@@ -14,7 +14,7 @@ const Config = observer(({ configId }) => {
   }
 
   const updateName = useDebouncedCallback((ev) => {
-    configStore.update({ id: configId, name: ev.target.value });
+    configStore.update(config.id, { name: ev.target.value });
   }, 400);
 
   return (

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useStore } from "../../store/store";
 import StepNavigation from "../StepNavigation";
 import { isInViewPort, getAll, getPath } from "../../utils/dom-utils";
 import "../../styles/components/sidebar-layout.scss";

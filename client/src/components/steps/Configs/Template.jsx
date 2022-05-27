@@ -10,6 +10,7 @@ const Template = ({ systemPath, templatePath }) => {
     systemPath,
     templatePath,
   );
+
   const { template } = {
     template: templateStore.getTemplateByPath(templatePath),
   };
