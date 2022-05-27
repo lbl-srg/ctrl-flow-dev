@@ -24,6 +24,42 @@ const EXTEND_NAME = "__extend";
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 
+interface ClassModification {
+  element_modification_or_replaceable: {
+    each: boolean;
+    final: boolean;
+    element_modification: {
+      name: string;
+      modification: any; // modification
+      "description-string": string;
+    };
+    element_replaceable: any;
+  };
+}
+[];
+
+interface Description {
+  "description-string": string;
+  annotation: ClassModification;
+}
+
+interface ShortClassSpecifier {
+  identifier: string;
+  short_class_specifier_value: {
+    base_prefix: string;
+    name: string;
+    array_subscripts: any;
+    class_modification: any;
+    description: any;
+    enum_list: [
+      {
+        identifier: string;
+        description: any;
+      },
+    ];
+  };
+}
+
 class Store {
   _store: Map<string, any> = new Map();
 
@@ -61,17 +97,19 @@ class Store {
       return typeDef; // PUNCH-OUT!
     }
 
+    let typeFound = false;
     // not found, attempt to load from json
     for (const p of paths) {
-      try {
-        const file = getFile(p);
-        if (file) {
-          assertType(p);
-          return this._store.get(p);
-        }
-      } catch (e) {
-        // not found
+      const file = getFile(p);
+      if (file) {
+        assertType(p);
+        typeFound = true;
+        return this._store.get(p);
       }
+    }
+  
+    if (!typeFound) {
+      console.log(path, context)
     }
   }
 
@@ -119,6 +157,24 @@ export abstract class Element {
   }
 }
 
+export class InputGroupShort extends Element {
+  value: string;
+  description: string;
+  constructor(definition: any, basePath: string) {
+    super();
+    const specifier = definition.class_specifier.short_class_specifier;
+    this.name = specifier.identifier;
+    const classValue = specifier?.value;
+    this.value = classValue.description?.description_string;
+    this.description = classValue.name;
+    this.modelicaPath = `${basePath}.${this.name}`;
+  }
+
+  getOptions() {
+    return {};
+  }
+}
+
 export class InputGroup extends Element {
   annotation: Modification[];
   elementList: Element[];
@@ -129,14 +185,15 @@ export class InputGroup extends Element {
   constructor(definition: any, basePath: string) {
     super();
     const specifier = definition.class_specifier.long_class_specifier;
-    this.name = specifier.identifier;
+    try {
+      this.name = specifier.identifier;
+    } catch (e) {
+      throw e;
+    }
     this.modelicaPath = basePath ? [basePath, this.name].join(".") : this.name;
     typeStore.set(this.modelicaPath, this);
     this.type = this.modelicaPath;
     this.description = specifier.description_string;
-    if (this.description === 'Partial component with two ports') {
-      console.log("yep");
-    }
 
     this.elementList = specifier.composition.element_list.map((e: any) =>
       _constructElement(e, this.modelicaPath),
@@ -530,6 +587,7 @@ function _constructElement(
   let elementType = null;
   if ("class_prefixes" in definition) {
     elementType = definition.class_prefixes;
+    elementType = elementType.replace("partial ", "");  // TODO: not sure if we need to treat partial differently
   } else if (extend in definition) {
     elementType = extend;
   } else if (replaceable in definition && definition.replaceable) {
@@ -542,10 +600,14 @@ function _constructElement(
     case "type":
       return new Enum(definition, basePath);
     case "model":
-    case "partial model":
+    case "block":
     case "record":
     case "package":
-      return new InputGroup(definition, basePath);
+      const long_specifier =
+        "long_class_specifier" in definition.class_specifier;
+      return long_specifier
+        ? new InputGroup(definition, basePath)
+        : new InputGroupShort(definition, basePath);
     case extend:
       return new InputGroupExtend(definition, basePath);
     case component:
@@ -595,6 +657,8 @@ export const getFile = (filePath: string) => {
   const jsonData = loader(pathPrefix, filePath);
   if (jsonData) {
     return new File(jsonData, filePath);
+  } else {
+    console.log(jsonData);
   }
 };
 
