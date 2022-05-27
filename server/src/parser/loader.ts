@@ -78,7 +78,7 @@ function _findPath(prefix: string, reference: string): string | null {
   return fs.existsSync(jsonFile) ? jsonFile : null;
 }
 
-// When given a path, loads types
+// When given a path, loads types. returns null if not found
 export function loader(prefix: string, reference: string): Object | undefined {
   const modelicaDirs = [prefix, ...MODELICAPATH];
 
@@ -88,6 +88,4 @@ export function loader(prefix: string, reference: string): Object | undefined {
       return require(jsonFile);
     }
   }
-
-  throw new Error(`${prefix} ${reference}. ${reference} could not be found!!`);
 }
