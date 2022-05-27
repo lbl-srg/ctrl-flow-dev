@@ -27,19 +27,20 @@ describe("Parser file loading", () => {
   });
 });
 
-describe("Parser is able to load modelica-buildings", () => {
-  it("Modelica Buildings can load", () => {
-    parser.loadPackage('Buildings');
+describe("Loading from all paths", () => {
+  it("A building path can load", () => {
+    const file = parser.getFile('Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone');
+    expect(file).toBeTruthy();
   });
 });
 
-describe("Parser extracts expected parts or modelica-buildings", () => {
-  beforeAll(() => {
-    parser.loadPackage('Buildings');
-  });
+// describe("Parser extracts expected parts or modelica-buildings", () => {
+//   beforeAll(() => {
+//     parser.loadPackage('Buildings');
+//   });
 
-  it("Modelica Buildings can load", () => {
-    const templates = publicParser.getTemplates();
-    expect(templates.length).toBe(3);
-  });
-});
+//   it("Modelica Buildings can load", () => {
+//     const templates = publicParser.getTemplates();
+//     expect(templates.length).toBe(3);
+//   });
+// });
