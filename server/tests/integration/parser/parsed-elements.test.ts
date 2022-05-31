@@ -182,6 +182,26 @@ describe("Expected Options are extracted", () => {
     expect(Object.values(options).length).toBe(optionTotal);
   });
 
+  it("Extracts expected InputGroup options", () => {
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const inputGroup = file.elementList[0] as parser.InputGroup;
+    const options = inputGroup.getOptions();
+    const firstComponentOption =
+      options["TestPackage.Template.TestTemplate.first"];
+
+    expect(firstComponentOption.options?.length).toBe(2);
+  });
+
+  it("Extracts expected extend class options", () => {
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const inputGroup = file.elementList[0] as parser.InputGroup;
+    const options = inputGroup.getOptions();
+    const extendOptions = options["TestPackage.Template.TestTemplate.__extend"];
+    const [childOption] = extendOptions.options as string[];
+    const extendTypeOptions = options[childOption];
+    expect(extendTypeOptions.options?.length).toBe(1);
+  });
+
   it("All child options have valid option references", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;

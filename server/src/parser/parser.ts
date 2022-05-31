@@ -73,6 +73,7 @@ export interface OptionN {
   valueExpression?: any;
   enable?: any;
   final?: boolean;
+  replaceable?: boolean;
 }
 
 export abstract class Element {
@@ -131,14 +132,16 @@ export class InputGroup extends Element {
     }
 
     const children = this.elementList.filter(
-      (el) => Object.keys(el.getOptions()).length > 0,
+      (el) => Object.keys(el.getOptions(recursive)).length > 0,
     );
 
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       name: this.description,
-      options: children.map((c) => c.modelicaPath),
+      options: children
+        .map((c) => c.modelicaPath)
+        .filter((c) => !(c in MODELICA_LITERALS)),
     };
 
     let options: { [key: string]: OptionN } = { [option.modelicaPath]: option };
@@ -250,6 +253,10 @@ export class Input extends Element {
   }
 
   getOptions(recursive = true) {
+    const typeInstance = typeStore.get(this.type) || null;
+    const typeOptions = typeInstance ? typeInstance.getOptions(false) : {};
+    const childOptions = typeOptions[this.type]?.options || [];
+
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
@@ -259,16 +266,14 @@ export class Input extends Element {
       tab: this.tab,
       valueExpression: this.valueExpression,
       enable: this.enable,
+      options: childOptions,
       final: this.final,
     };
 
     let options = { [option.modelicaPath]: option };
 
     if (recursive) {
-      const typeInstance = typeStore.get(this.type) || null;
       if (typeInstance) {
-        const childOptions = typeInstance.getOptions((recursive = false));
-        option.options = Object.keys(childOptions);
         options = { ...options, ...typeInstance.getOptions() };
       }
     }
@@ -346,6 +351,7 @@ export class ReplaceableInput extends Input {
       options: this.choices,
       group: this.group,
       tab: this.tab,
+      replaceable: true,
     };
 
     let options = { [option.modelicaPath]: option };
