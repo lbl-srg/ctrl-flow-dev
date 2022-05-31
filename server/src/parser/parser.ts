@@ -424,7 +424,7 @@ export class Enum extends Element {
           name: e.description,
           type: this.type,
           value: e.modelicaPath,
-          visible: true,
+          visible: false,
         }),
     );
 
