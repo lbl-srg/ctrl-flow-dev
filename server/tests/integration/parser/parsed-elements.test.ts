@@ -146,14 +146,14 @@ describe("Expected Options are extracted", () => {
     expect(selectable?.group).toEqual(selectableGroup);
   });
 
-  it("Set 'final' parameter correctly", () => {
+  it("Set 'visible' parameter correctly", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
 
     const options = template.getOptions();
     const option = options["TestPackage.Template.TestTemplate.should_ignore"];
 
-    expect(option.final).toBeTruthy();
+    expect(option.visible).toBeFalsy();
   });
 
   it("Enums return each type as an option", () => {

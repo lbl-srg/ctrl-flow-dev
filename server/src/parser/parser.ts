@@ -66,14 +66,13 @@ export interface OptionN {
   type: string;
   name: string;
   modelicaPath: string;
+  visible: boolean;
   options?: string[];
   group?: string;
   tab?: string;
   value?: any;
   valueExpression?: any;
   enable?: any;
-  final?: boolean;
-  replaceable?: boolean;
 }
 
 export abstract class Element {
@@ -139,6 +138,7 @@ export class InputGroup extends Element {
       modelicaPath: this.modelicaPath,
       type: this.type,
       name: this.description,
+      visible: false,
       options: children
         .map((c) => c.modelicaPath)
         .filter((c) => !(c in MODELICA_LITERALS)),
@@ -264,10 +264,10 @@ export class Input extends Element {
       name: this.description,
       group: this.group,
       tab: this.tab,
+      visible: !this.final,
       valueExpression: this.valueExpression,
       enable: this.enable,
       options: childOptions,
-      final: this.final,
     };
 
     let options = { [option.modelicaPath]: option };
@@ -351,7 +351,7 @@ export class ReplaceableInput extends Input {
       options: this.choices,
       group: this.group,
       tab: this.tab,
-      replaceable: true,
+      visible: true,
     };
 
     let options = { [option.modelicaPath]: option };
@@ -424,6 +424,7 @@ export class Enum extends Element {
           name: e.description,
           type: this.type,
           value: e.modelicaPath,
+          visible: true,
         }),
     );
 
@@ -465,6 +466,7 @@ export class InputGroupExtend extends Element {
         type: this.type,
         value: this.value,
         name: typeInstance.name,
+        visible: false,
         options: [this.type],
       };
 
