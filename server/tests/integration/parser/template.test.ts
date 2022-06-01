@@ -51,14 +51,10 @@ describe("Basic parser functionality", () => {
     const template = templates.find(
       (t) => t.modelicaPath === templatePath,
     ) as Template;
-    const nestedTemplate = templates.find(
-      (t) => t.modelicaPath === nestedTemplatePath,
-    ) as Template;
 
     const systemTemplate = template.getSystemTemplate();
     const options = getOptions();
-    console.log(systemTemplate);
-    console.log(getOptions());
+
     const systemTemplateOptions = options.find(
       (o) => o.modelicaPath === systemTemplate.modelicaPath,
     );
