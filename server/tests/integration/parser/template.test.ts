@@ -1,5 +1,10 @@
 import { createTestModelicaJson, fullTempDirPath } from "./utils";
-import { loadPackage, getSystemTypes, Template } from "../../../src/parser/";
+import {
+  loadPackage,
+  getSystemTypes,
+  Template,
+  getOptions,
+} from "../../../src/parser/";
 
 import { getTemplates } from "../../../src/parser/template";
 
@@ -40,7 +45,7 @@ describe("Basic parser functionality", () => {
   it("Templates output expected linkage schema for SystemTemplates", () => {
     const expectedTemplateValues = {
       modelicaPath: "TestPackage.Template.TestTemplate",
-      optionLength: 41,
+      optionLength: 43,
       systemTypeLength: 1,
     };
 
@@ -63,6 +68,8 @@ describe("Basic parser functionality", () => {
     expect(systemTemplate.options?.length).toBe(
       expectedTemplateValues.optionLength,
     );
+    console.log(systemTemplate.options);
+    console.log(getOptions());
     expect(systemTemplate.modelicaPath).toBe(
       expectedTemplateValues.modelicaPath,
     );

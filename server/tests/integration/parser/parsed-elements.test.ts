@@ -156,7 +156,7 @@ describe("Expected Options are extracted", () => {
     expect(option.visible).toBeFalsy();
   });
 
-  it("Enums return each type as an option", () => {
+  it("Enums parameter returns the expected options", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
     const expectedValues = ["Chocolate", "Vanilla", "Strawberry"];
@@ -165,17 +165,24 @@ describe("Expected Options are extracted", () => {
       (e) => e.modelicaPath === "TestPackage.Template.TestTemplate.typ",
     ) as parser.Element;
     const [parent, ...childOptions] = Object.values(element.getOptions());
+    const enumOption = childOptions.find(e => e.modelicaPath === element.type);
 
-    expect(childOptions?.length).toEqual(expectedValues.length);
-    childOptions?.map((o: parser.OptionN) => {
-      expectedValues.splice(expectedValues.indexOf(o.value));
+    expect(enumOption?.options?.length).toEqual(expectedValues?.length); // includes parent option
+    expect(parent.options?.length).toEqual(expectedValues?.length);
+
+    enumOption?.options?.map((o) => {
+      expectedValues.splice(expectedValues.indexOf(o));
     });
-
     expect(expectedValues.length).toBe(0);
+
+    enumOption?.options?.map((o) => {
+      const childOption = childOptions.find(e => e.modelicaPath === o);
+      expect(childOption?.visible).toBeFalsy();
+    });
   });
 
   it("Extracts the expected number of options for the TestTemplate", () => {
-    const optionTotal = 41;
+    const optionTotal = 43;
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
     const options = template.getOptions();

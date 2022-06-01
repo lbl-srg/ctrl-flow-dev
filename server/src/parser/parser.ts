@@ -252,10 +252,17 @@ export class Input extends Element {
     }
   }
 
+  // Helper method to determine if the given input's option reprensentation
+  // should be marked as 'visible'.
+  _setOptionVisible(typeOption: OptionN | undefined): boolean {
+    return ((this.type in MODELICA_LITERALS || typeOption?.visible) && !this.final) as boolean;
+  }
+
   getOptions(recursive = true) {
     const typeInstance = typeStore.get(this.type) || null;
     const typeOptions = typeInstance ? typeInstance.getOptions(false) : {};
     const childOptions = typeOptions[this.type]?.options || [];
+    const visible = this._setOptionVisible(typeOptions[this.type]);
 
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
@@ -264,7 +271,7 @@ export class Input extends Element {
       name: this.description,
       group: this.group,
       tab: this.tab,
-      visible: !this.final,
+      visible: visible,
       valueExpression: this.valueExpression,
       enable: this.enable,
       options: childOptions,
@@ -415,9 +422,18 @@ export class Enum extends Element {
   }
 
   getOptions(recursive = true) {
-    const options: { [key: string]: OptionN } = {};
+    const options: { [key: string]: OptionN } = {
+      [this.modelicaPath]: {
+        modelicaPath: this.modelicaPath,
+        name: this.description,
+        type: this.type,
+        visible: true,
+        options: this.enumList.map((e) => e.modelicaPath)
+      }
+    };
+
     // outputs a parent option, then an option for each enum type
-    const optionList: OptionN[] = this.enumList.map(
+    this.enumList.map(
       (e) =>
         (options[e.modelicaPath] = {
           modelicaPath: e.modelicaPath,
