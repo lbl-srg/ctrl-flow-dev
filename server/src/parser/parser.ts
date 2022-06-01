@@ -255,7 +255,8 @@ export class Input extends Element {
   // Helper method to determine if the given input's option reprensentation
   // should be marked as 'visible'.
   _setOptionVisible(typeOption: OptionN | undefined): boolean {
-    return ((this.type in MODELICA_LITERALS || typeOption?.visible) && !this.final) as boolean;
+    return ((this.type in MODELICA_LITERALS || typeOption?.visible) &&
+      !this.final) as boolean;
   }
 
   getOptions(recursive = true) {
@@ -428,8 +429,8 @@ export class Enum extends Element {
         name: this.description,
         type: this.type,
         visible: true,
-        options: this.enumList.map((e) => e.modelicaPath)
-      }
+        options: this.enumList.map((e) => e.modelicaPath),
+      },
     };
 
     // outputs a parent option, then an option for each enum type

@@ -165,7 +165,9 @@ describe("Expected Options are extracted", () => {
       (e) => e.modelicaPath === "TestPackage.Template.TestTemplate.typ",
     ) as parser.Element;
     const [parent, ...childOptions] = Object.values(element.getOptions());
-    const enumOption = childOptions.find(e => e.modelicaPath === element.type);
+    const enumOption = childOptions.find(
+      (e) => e.modelicaPath === element.type,
+    );
 
     expect(enumOption?.options?.length).toEqual(expectedValues?.length); // includes parent option
     expect(parent.options?.length).toEqual(expectedValues?.length);
@@ -176,7 +178,7 @@ describe("Expected Options are extracted", () => {
     expect(expectedValues.length).toBe(0);
 
     enumOption?.options?.map((o) => {
-      const childOption = childOptions.find(e => e.modelicaPath === o);
+      const childOption = childOptions.find((e) => e.modelicaPath === o);
       expect(childOption?.visible).toBeFalsy();
     });
   });

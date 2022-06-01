@@ -59,8 +59,12 @@ describe("Basic parser functionality", () => {
     const options = getOptions();
     console.log(systemTemplate);
     console.log(getOptions());
-    const systemTemplateOptions = options.find( o => o.modelicaPath === systemTemplate.modelicaPath);
-    expect(systemTemplateOptions?.options?.length).toBe(expectedTemplateValues.optionLength);
+    const systemTemplateOptions = options.find(
+      (o) => o.modelicaPath === systemTemplate.modelicaPath,
+    );
+    expect(systemTemplateOptions?.options?.length).toBe(
+      expectedTemplateValues.optionLength,
+    );
   });
 
   it("Keeps system types in correct order", () => {
