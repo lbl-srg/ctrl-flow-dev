@@ -1,5 +1,10 @@
 import { createTestModelicaJson, fullTempDirPath } from "./utils";
-import { loadPackage, getSystemTypes, Template } from "../../../src/parser/";
+import {
+  loadPackage,
+  getSystemTypes,
+  Template,
+  getOptions,
+} from "../../../src/parser/";
 
 import { getTemplates } from "../../../src/parser/template";
 
@@ -21,9 +26,7 @@ describe("Basic parser functionality", () => {
     expect(systemTypes.length).toBe(3);
   });
 
-  it("Templates have expected options and SystemTypes", () => {
-    // TODO: we cannot rely on order! GREP does not necessarily
-    // return things in the order we expect
+  it("Templates have expected SystemTypes", () => {
     const templates = getTemplates();
     const template = templates.find(
       (t) => t.modelicaPath === templatePath,
@@ -40,44 +43,23 @@ describe("Basic parser functionality", () => {
   it("Templates output expected linkage schema for SystemTemplates", () => {
     const expectedTemplateValues = {
       modelicaPath: "TestPackage.Template.TestTemplate",
-      optionLength: 41,
+      optionLength: 13,
       systemTypeLength: 1,
-    };
-
-    const expectedNestedTemplateValues = {
-      modelicaPath: "TestPackage.NestedTemplate.Subcategory.SecondTemplate",
-      optionLength: 2,
-      systemTypeLength: 2,
     };
 
     const templates = getTemplates();
     const template = templates.find(
       (t) => t.modelicaPath === templatePath,
     ) as Template;
-    const nestedTemplate = templates.find(
-      (t) => t.modelicaPath === nestedTemplatePath,
-    ) as Template;
 
     const systemTemplate = template.getSystemTemplate();
-    const nestedSystemTemplate = nestedTemplate.getSystemTemplate();
-    expect(systemTemplate.options?.length).toBe(
-      expectedTemplateValues.optionLength,
-    );
-    expect(systemTemplate.modelicaPath).toBe(
-      expectedTemplateValues.modelicaPath,
-    );
-    expect(systemTemplate.systemTypes.length).toBe(
-      expectedTemplateValues.systemTypeLength,
-    );
+    const options = getOptions();
 
-    expect(nestedSystemTemplate.options?.length).toBe(
-      expectedNestedTemplateValues.optionLength,
+    const systemTemplateOptions = options.find(
+      (o) => o.modelicaPath === systemTemplate.modelicaPath,
     );
-    expect(nestedSystemTemplate.modelicaPath).toBe(
-      expectedNestedTemplateValues.modelicaPath,
-    );
-    expect(nestedSystemTemplate.systemTypes.length).toBe(
-      expectedNestedTemplateValues.systemTypeLength,
+    expect(systemTemplateOptions?.options?.length).toBe(
+      expectedTemplateValues.optionLength,
     );
   });
 
