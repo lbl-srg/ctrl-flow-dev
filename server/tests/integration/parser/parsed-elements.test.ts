@@ -175,7 +175,7 @@ describe("Expected Options are extracted", () => {
   });
 
   it("Extracts the expected number of options for the TestTemplate", () => {
-    const optionTotal = 34;
+    const optionTotal = 39;
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
     const options = template.getOptions();
