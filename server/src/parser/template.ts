@@ -43,7 +43,6 @@ export interface SystemTemplateN {
   modelicaPath: string;
   systemTypes: string[];
   name: string;
-  options?: string[];
 }
 
 export interface ModifiersN {
@@ -95,7 +94,6 @@ export class Template {
       modelicaPath: this.modelicaPath,
       systemTypes: this.systemTypes.map((t) => t.modelicaPath),
       name: this.description,
-      options: Object.values(this.getOptions()).map((o) => o.modelicaPath),
     };
   }
 

@@ -18,7 +18,7 @@ describe("Parser file loading", () => {
 
   it("Finds 'package' using modelica path", () => {
     const file = parser.getFile(testPackagePath) as parser.File;
-    expect(file.package).toBe("TestPackage"); 
+    expect(file.package).toBe("TestPackage");
   });
 
   it("Discovers template files", () => {
