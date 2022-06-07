@@ -1,4 +1,4 @@
-import { CSSProperties, useState } from "react";
+import { CSSProperties, Fragment, SyntheticEvent, useState } from "react";
 
 function Debug({ item }: { item: object | [] }) {
   const [fullscreen, setFullscreen] = useState(false);
@@ -10,6 +10,11 @@ function Debug({ item }: { item: object | [] }) {
     padding: "1rem",
     lineHeight: "1.2rem",
     cursor: "pointer",
+  };
+
+  const containerStyle: CSSProperties = {
+    backgroundColor: "#222",
+    padding: "2rem",
   };
 
   if (fullscreen) {
@@ -24,10 +29,21 @@ function Debug({ item }: { item: object | [] }) {
     };
   }
 
+  function log(ev: SyntheticEvent) {
+    ev.stopPropagation();
+    ev.preventDefault();
+    console.dir(item);
+  }
+
   return (
-    <pre onClick={() => setFullscreen(!fullscreen)} style={style}>
-      {JSON.stringify(item, null, 2)}
-    </pre>
+    <div style={containerStyle}>
+      <pre onClick={() => setFullscreen(!fullscreen)} style={style}>
+        {JSON.stringify(item, null, 2)}
+      </pre>
+      <a href="#" onClick={log}>
+        Console Log
+      </a>
+    </div>
   );
 }
 
