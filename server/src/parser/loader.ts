@@ -82,10 +82,13 @@ function _findPath(prefix: string, reference: string): string | null {
 export function loader(prefix: string, reference: string): Object | undefined {
   const modelicaDirs = [prefix, ...MODELICAPATH];
 
-  for (const dir of modelicaDirs) {
-    const jsonFile = _findPath(dir, reference);
-    if (jsonFile && fs.existsSync(jsonFile)) {
-      return require(jsonFile);
+  // TODO: allow modelica paths
+  if (!reference.startsWith("Modelica")) {
+    for (const dir of modelicaDirs) {
+      const jsonFile = _findPath(dir, reference);
+      if (jsonFile && fs.existsSync(jsonFile)) {
+        return require(jsonFile);
+      }
     }
   }
 }
