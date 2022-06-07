@@ -76,6 +76,12 @@ export default class Config {
       : false;
   }
 
+  getActiveConfigs(): ConfigInterface[] {
+    const system = this.rootStore.uiStore.activeSystemPath;
+    const template = this.rootStore.uiStore.activeTemplatePath;
+    return this.getConfigsForSystemTemplate(system, template);
+  }
+
   getConfigsForSystemTemplate(
     systemPath: string,
     templatePath: string,

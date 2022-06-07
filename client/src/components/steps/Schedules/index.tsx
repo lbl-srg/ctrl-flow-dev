@@ -1,25 +1,16 @@
 import PageHeader from "../../PageHeader";
 import AddUserSystemsWidget from "./AddUserSystemsWidget";
-import UserSystemTable from "./UserSystemTable";
+// import UserSystemTable from "./UserSystemTable";
 import { Fragment, useState } from "react";
 import itl from "../../../translations";
 
 import "../../../styles/steps/schedules.scss";
 import { useStores } from "../../../data";
+import { observer } from "mobx-react";
 
-function Schedules() {
-  // Order of attempting to get a currently active template:
-  // 1. try the 'activeTemplate' from the store
-  // 2. otherwise get the first config found and get its template
-  // 3. leave undefined - no configs or user systems will show
-  // const [firstConf] = configs;
-  // const activeTemplate = template ? template : firstConf?.template;
-
-  // const templateConfigs = getConfigs(activeTemplate);
-  // const userSystems = getUserSystems(activeTemplate);
+const Schedules = observer(() => {
   const { uiStore } = useStores();
   const activeTemplate = uiStore.activeTemplate;
-
   const [isFullscreen, setFullscreen] = useState(false);
 
   return (
@@ -57,16 +48,15 @@ function Schedules() {
               </a>
             </div>
           </h3>
-
-          {/* <AddUserSystemsWidget configs={templateConfigs} /> */}
+          {activeTemplate ? <AddUserSystemsWidget /> : null}
           {/* <button onClick={() => userSystems.map((s) => removeUserSystem(s))}>
           Remove Systems
         </button> */}
-          {/* <UserSystemTable userSystems={userSystems} /> */}
+          {/* <UserSystemTable /> */}
         </div>
       </div>
     </Fragment>
   );
-}
+});
 
 export default Schedules;

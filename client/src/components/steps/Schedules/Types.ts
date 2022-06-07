@@ -10,9 +10,6 @@ export interface GroupedField {
   groupName: string;
   fields: string[];
 }
-export interface AddUserSystemsWidgetProps {
-  configs: ConfigInterface[];
-}
 
 // export interface UserSystemTableProps {
 //   userSystems: UserSystem[];
