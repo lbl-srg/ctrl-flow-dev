@@ -10,7 +10,7 @@ services:
     env_file:
       - ../.env
     environment:
-      - MODELICAPATH=/app/dependencies/ModelicaStandardLibrary:/app/dependencies/modelica-buildings
+      - MODELICAPATH=/dependencies/ModelicaStandardLibrary:/dependencies/modelica-buildings
     ports:
       - ${PORT:-3000}:${PORT:-3000}
     volumes:

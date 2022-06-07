@@ -66,6 +66,7 @@ export interface OptionN {
   type: string;
   name: string;
   modelicaPath: string;
+  visible: boolean;
   options?: string[];
   group?: string;
   tab?: string;
@@ -124,15 +125,28 @@ export class InputGroup extends Element {
   }
 
   getOptions(recursive = true) {
+    // A group with no elementList is ignorecd
+    if (this.elementList.length === 0) {
+      return {};
+    }
+
+    const children = this.elementList.filter(
+      (el) => Object.keys(el.getOptions(recursive)).length > 0,
+    );
+
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       name: this.description,
+      visible: false,
+      options: children
+        .map((c) => c.modelicaPath)
+        .filter((c) => !(c in MODELICA_LITERALS)),
     };
 
     let options: { [key: string]: OptionN } = { [option.modelicaPath]: option };
 
-    this.elementList.map((el) => {
+    children.map((el) => {
       options = { ...options, ...el.getOptions(recursive) };
     });
 
@@ -238,7 +252,19 @@ export class Input extends Element {
     }
   }
 
+  // Helper method to determine if the given input's option reprensentation
+  // should be marked as 'visible'.
+  _setOptionVisible(typeOption: OptionN | undefined): boolean {
+    return ((this.type in MODELICA_LITERALS || typeOption?.visible) &&
+      !this.final) as boolean;
+  }
+
   getOptions(recursive = true) {
+    const typeInstance = typeStore.get(this.type) || null;
+    const typeOptions = typeInstance ? typeInstance.getOptions(false) : {};
+    const childOptions = typeOptions[this.type]?.options || [];
+    const visible = this._setOptionVisible(typeOptions[this.type]);
+
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
@@ -246,17 +272,16 @@ export class Input extends Element {
       name: this.description,
       group: this.group,
       tab: this.tab,
+      visible: visible,
       valueExpression: this.valueExpression,
       enable: this.enable,
+      options: childOptions,
     };
 
-    let options = this.final ? {} : { [option.modelicaPath]: option };
+    let options = { [option.modelicaPath]: option };
 
     if (recursive) {
-      const typeInstance = typeStore.get(this.type) || null;
       if (typeInstance) {
-        const childOptions = typeInstance.getOptions((recursive = false));
-        option.options = Object.keys(childOptions);
         options = { ...options, ...typeInstance.getOptions() };
       }
     }
@@ -334,6 +359,7 @@ export class ReplaceableInput extends Input {
       options: this.choices,
       group: this.group,
       tab: this.tab,
+      visible: true,
     };
 
     let options = { [option.modelicaPath]: option };
@@ -397,15 +423,25 @@ export class Enum extends Element {
   }
 
   getOptions(recursive = true) {
-    const options: { [key: string]: OptionN } = {};
+    const options: { [key: string]: OptionN } = {
+      [this.modelicaPath]: {
+        modelicaPath: this.modelicaPath,
+        name: this.description,
+        type: this.type,
+        visible: true,
+        options: this.enumList.map((e) => e.modelicaPath),
+      },
+    };
+
     // outputs a parent option, then an option for each enum type
-    const optionList: OptionN[] = this.enumList.map(
+    this.enumList.map(
       (e) =>
         (options[e.modelicaPath] = {
           modelicaPath: e.modelicaPath,
           name: e.description,
           type: this.type,
           value: e.modelicaPath,
+          visible: false,
         }),
     );
 
@@ -435,13 +471,22 @@ export class InputGroupExtend extends Element {
 
   getOptions(recursive = true) {
     const typeInstance = typeStore.get(this.type) as Element;
+
     if (typeInstance) {
+      const childOptions = Object.keys(typeInstance.getOptions(false));
+      if (childOptions.length === 0) {
+        return {};
+      }
+
       const option: OptionN = {
         modelicaPath: this.modelicaPath,
         type: this.type,
         value: this.value,
         name: typeInstance.name,
+        visible: false,
+        options: [this.type],
       };
+
       return {
         ...{ [option.modelicaPath]: option },
         ...typeInstance.getOptions(recursive),
