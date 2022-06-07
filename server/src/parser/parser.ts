@@ -63,8 +63,12 @@ interface ShortClassSpecifier {
 class Store {
   _store: Map<string, any> = new Map();
 
-  set(path: string, element: Element) {
-    this._store.set(path, element);
+  set(path: string, element: Element): boolean {
+    if (!this.has(path)) {
+      this._store.set(path, element);
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -107,9 +111,9 @@ class Store {
         return this._store.get(p);
       }
     }
-  
+
     if (!typeFound) {
-      console.log(path, context)
+      // console.log(path, context)
     }
   }
 
@@ -150,6 +154,10 @@ export abstract class Element {
 
   abstract getOptions(recursive?: boolean): { [key: string]: OptionN };
 
+  registerPath(path: string): boolean {
+    return typeStore.set(path, this);
+  }
+
   // 'Input' and 'InputGroup' and 'Extend' returns modifications and override
   // this method. Other elements do not have a modification
   getModifications(): Modification[] {
@@ -168,30 +176,38 @@ export class InputGroupShort extends Element {
     this.value = classValue.description?.description_string;
     this.description = classValue.name;
     this.modelicaPath = `${basePath}.${this.name}`;
+    const registered = this.registerPath(this.modelicaPath);
+    if (!registered) {
+      return; // PUNCH-OUT!
+    }
   }
 
   getOptions() {
+    console.log(this.modelicaPath);
+
     return {};
   }
 }
 
 export class InputGroup extends Element {
-  annotation: Modification[];
-  elementList: Element[];
-  description: string;
+  annotation: Modification[] = [];
+  elementList: Element[] = [];
+  description: string = "";
   entryPoint = false;
   mod: Modification | undefined;
 
   constructor(definition: any, basePath: string) {
     super();
     const specifier = definition.class_specifier.long_class_specifier;
-    try {
-      this.name = specifier.identifier;
-    } catch (e) {
-      throw e;
-    }
+    this.name = specifier.identifier;
+
     this.modelicaPath = basePath ? [basePath, this.name].join(".") : this.name;
-    typeStore.set(this.modelicaPath, this);
+    const registered = this.registerPath(this.modelicaPath);
+
+    if (!registered) {
+      return; // PUNCH-OUT!
+    }
+
     this.type = this.modelicaPath;
     this.description = specifier.description_string;
 
@@ -214,6 +230,8 @@ export class InputGroup extends Element {
   }
 
   getOptions(recursive = true) {
+    console.log(this.modelicaPath);
+
     // A group with no elementList is ignorecd
     if (this.elementList.length === 0) {
       return {};
@@ -249,7 +267,7 @@ export class InputGroup extends Element {
 
 // a parameter with a type
 export class Input extends Element {
-  mod: Modification | null;
+  mod?: Modification | null;
   type = ""; // modelica path
   value: any; // modelica path?
   description = "";
@@ -268,7 +286,12 @@ export class Input extends Element {
     ).declaration as DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
-    typeStore.set(this.modelicaPath, this);
+    const registered = this.registerPath(this.modelicaPath);
+
+    if (!registered) {
+      return; // PUNCH-OUT!
+    }
+
     this.final = definition.final ? definition.final : this.final;
 
     this.type = componentClause.type_specifier;
@@ -349,6 +372,7 @@ export class Input extends Element {
   }
 
   getOptions(recursive = true) {
+    console.log(this.modelicaPath);
     const typeInstance = typeStore.get(this.type) || null;
     const typeOptions = typeInstance ? typeInstance.getOptions(false) : {};
     const childOptions = typeOptions[this.type]?.options || [];
@@ -440,6 +464,8 @@ export class ReplaceableInput extends Input {
   }
 
   getOptions(recursive = true) {
+    console.log(this.modelicaPath);
+
     const option: OptionN = {
       modelicaPath: this.modelicaPath,
       type: this.type,
@@ -496,7 +522,10 @@ export class Enum extends Element {
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = this.modelicaPath;
     this.description = specifier.value.description.description_string;
-    typeStore.set(this.modelicaPath, this);
+    const registered = this.registerPath(this.modelicaPath);
+    if (!registered) {
+      return; // PUNCH-OUT!
+    }
 
     specifier.value.enum_list.map(
       (e: {
@@ -512,6 +541,8 @@ export class Enum extends Element {
   }
 
   getOptions(recursive = true) {
+    console.log(this.modelicaPath);
+
     const options: { [key: string]: OptionN } = {
       [this.modelicaPath]: {
         modelicaPath: this.modelicaPath,
@@ -541,13 +572,17 @@ export class Enum extends Element {
 // Inherited properties by type with modifications
 export class InputGroupExtend extends Element {
   mods: Modification[] = [];
-  type: string;
-  value: string;
+  type: string = "";
+  value: string = "";
   constructor(definition: any, basePath: string) {
     super();
     this.name = EXTEND_NAME; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${this.name}`;
-    typeStore.set(this.modelicaPath, this);
+    const registered = this.registerPath(this.modelicaPath);
+    if (!registered) {
+      return; // PUNCH-OUT!
+    }
+
     this.type = definition.extends_clause.name;
     this.value = this.type;
     if (definition.extends_clause.class_modification) {
@@ -559,6 +594,8 @@ export class InputGroupExtend extends Element {
   }
 
   getOptions(recursive = true) {
+    console.log(this.modelicaPath);
+
     const typeInstance = typeStore.get(this.type) as Element;
 
     if (typeInstance) {
@@ -612,7 +649,10 @@ function _constructElement(
   let elementType = null;
   if ("class_prefixes" in definition) {
     elementType = definition.class_prefixes;
-    elementType = elementType.replace("partial ", "");  // TODO: not sure if we need to treat partial differently
+    // TODO: class prefix descriptors like 'partial' and 'expandable' may
+    // need to be taken into account when constructing the appropriate element
+    elementType = elementType.replace("partial ", "");
+    elementType = elementType.replace("expandable ", "");
   } else if (extend in definition) {
     elementType = extend;
   } else if (replaceable in definition && definition.replaceable) {
@@ -624,6 +664,7 @@ function _constructElement(
   switch (elementType) {
     case "type":
       return new Enum(definition, basePath);
+    case "connector":
     case "model":
     case "block":
     case "record":
@@ -683,7 +724,7 @@ export const getFile = (filePath: string) => {
   if (jsonData) {
     return new File(jsonData, filePath);
   } else {
-    console.log(jsonData);
+    // console.log(`Not found: ${filePath}`);
   }
 };
 
