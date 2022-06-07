@@ -23,11 +23,11 @@ export function findPackageEntryPoints(
     .filter((p) => p != "")
     .map((p) => path.relative(prefix, p))
     .map((p) => {
-      const path = _toModelicaPath(p)
+      const path = _toModelicaPath(p);
       return {
         path: path,
-        json: loader(prefix, path)
-      }
+        json: loader(prefix, path),
+      };
     });
 }
 
@@ -66,7 +66,9 @@ export function loader(prefix: string, reference: string): Object | undefined {
     // Templates *should* have all types defined within a template so we do not need
     // to rely on definitionals in the modelica standard library
     if (!reference.startsWith("Modelica")) {
-      throw new Error(`${prefix} ${reference}. ${jsonFile} could not be found!!`);
+      throw new Error(
+        `${prefix} ${reference}. ${jsonFile} could not be found!!`,
+      );
     }
   }
 }
