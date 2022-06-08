@@ -23,6 +23,5 @@ describe("Parser extracts expected parts or modelica-buildings", () => {
     expect(templates.length).toBe(3);
     const [template1, ..._] = templates;
     const options = template1.getOptions();
-    writeFileSync("/app/test-options", JSON.stringify(options));
   });
 });
