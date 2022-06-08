@@ -164,14 +164,13 @@ describe("Expected Options are extracted", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
     const expectedValues = ["Chocolate", "Vanilla", "Strawberry"];
-
+    const parentPath = "TestPackage.Template.TestTemplate.typ";
     const element = template.elementList.find(
-      (e) => e.modelicaPath === "TestPackage.Template.TestTemplate.typ",
+      (e) => e.modelicaPath === parentPath,
     ) as parser.Element;
-    const [parent, ...childOptions] = Object.values(element.getOptions());
-    const enumOption = childOptions.find(
-      (e) => e.modelicaPath === element.type,
-    );
+    const options = element.getOptions();
+    const enumOption = options[element.type];
+    const parent = options[parentPath];
 
     expect(enumOption?.options?.length).toEqual(expectedValues?.length); // includes parent option
     expect(parent.options?.length).toEqual(expectedValues?.length);
@@ -182,13 +181,13 @@ describe("Expected Options are extracted", () => {
     expect(expectedValues.length).toBe(0);
 
     enumOption?.options?.map((o) => {
-      const childOption = childOptions.find((e) => e.modelicaPath === o);
+      const childOption = options[o]
       expect(childOption?.visible).toBeFalsy();
     });
   });
 
   it("Extracts the expected number of options for the TestTemplate", () => {
-    const optionTotal = 43;
+    const optionTotal = 44;
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
     const options = template.getOptions();

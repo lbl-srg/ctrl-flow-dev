@@ -256,7 +256,7 @@ export class InputGroup extends Element {
     };
 
     children.map((el) => {
-      options = { ...options, ...el.getOptions(options, recursive) };
+      options = el.getOptions(options, recursive);
     });
 
     return options;
@@ -402,7 +402,7 @@ export class Input extends Element {
 
     if (recursive) {
       if (typeInstance) {
-        return typeInstance.getOptions(options);
+        options = typeInstance.getOptions(options);
       }
     }
 
@@ -606,27 +606,18 @@ export class InputGroupExtend extends Element {
       return options;
     }
 
-    const typeInstance = typeStore.get(this.type) as Element;
+    const typeInstance = typeStore.get(this.type);
 
-    if (typeInstance) {
-      const childOptions = Object.keys(typeInstance.getOptions(options, false));
-      if (childOptions.length === 0) {
-        return options;
-      }
+    options[this.modelicaPath] = {
+      modelicaPath: this.modelicaPath,
+      type: this.type,
+      value: this.value,
+      name: typeInstance?.name || '',
+      visible: false,
+      options: (this.type.startsWith("Modelica")) ? [] : [this.type],
+    };
 
-      options[this.modelicaPath] = {
-        modelicaPath: this.modelicaPath,
-        type: this.type,
-        value: this.value,
-        name: typeInstance.name,
-        visible: false,
-        options: [this.type],
-      };
-
-      return typeInstance.getOptions(options, recursive);
-    } else {
-      return options;
-    }
+    return (typeInstance) ? typeInstance.getOptions(options, recursive) : options;
   }
 
   getModifications() {
