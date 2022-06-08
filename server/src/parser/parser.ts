@@ -151,6 +151,7 @@ export abstract class Element {
   type = "";
   description = "";
   entryPoint = false;
+  duplicate = false;
 
   abstract getOptions(
     options?: { [key: string]: OptionN },
@@ -158,7 +159,9 @@ export abstract class Element {
   ): { [key: string]: OptionN };
 
   registerPath(path: string): boolean {
-    return typeStore.set(path, this);
+    const isSet = typeStore.set(path, this);
+    this.duplicate = !isSet;
+    return isSet;
   }
 
   // 'Input' and 'InputGroup' and 'Extend' returns modifications and override
@@ -665,9 +668,12 @@ function _constructElement(
     elementType = component;
   }
 
+  let element: Element | undefined;
+
   switch (elementType) {
     case "type":
-      return new Enum(definition, basePath);
+      element = new Enum(definition, basePath);
+      break;
     case "connector":
     case "model":
     case "block":
@@ -675,16 +681,22 @@ function _constructElement(
     case "package":
       const long_specifier =
         "long_class_specifier" in definition.class_specifier;
-      return long_specifier
+      element = long_specifier
         ? new InputGroup(definition, basePath)
         : new InputGroupShort(definition, basePath);
+      break;
     case extend:
-      return new InputGroupExtend(definition, basePath);
+      element = new InputGroupExtend(definition, basePath);
+      break;
     case component:
-      return new Input(definition, basePath);
+      element = new Input(definition, basePath);
+      break;
     case replaceable:
-      return new ReplaceableInput(definition, basePath);
+      element = new ReplaceableInput(definition, basePath);
+      break;
   }
+
+  return element?.duplicate ? typeStore.get(element?.modelicaPath) : element;
 }
 
 //
