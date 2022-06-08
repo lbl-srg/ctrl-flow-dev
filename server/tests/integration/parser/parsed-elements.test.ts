@@ -7,6 +7,12 @@ describe("Basic parser functionality", () => {
     initializeTestModelicaJson();
   });
 
+  // afterEach(() => {
+  //   // type store needs to be reset to let the parser parser
+  //   // the same path multiple times. Typically it will stop once it knows
+  //   parser.typeStore._store = new Map();
+  // });
+
   it("Extracts Template modelica path", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const [template, ..._rest] = file.elementList;
@@ -20,10 +26,8 @@ describe("Basic parser functionality", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
     const expectedPath = `${template.modelicaPath}.${paramName}`;
-
-    expect(
-      template.elementList.find((e) => e.modelicaPath === expectedPath),
-    ).not.toBeFalsy();
+    const element = template.elementList.find((e) => e.modelicaPath === expectedPath)
+    expect(element).toBeTruthy();
   });
 
   it("Generates type instances by for related files", () => {
@@ -100,7 +104,7 @@ describe("Expected Options are extracted", () => {
   Check that instead of a value, the option has a value expression
   */
   it("Extracts literal value expression", () => {
-    const file = parser.getFile(testModelicaFile) as parser.File;
+    const file = parser.getFile(testModelicaFile) as    parser.File;
     const template = file.elementList[0] as parser.InputGroup;
     const options = template.getOptions();
     const option = options[
@@ -117,7 +121,7 @@ describe("Expected Options are extracted", () => {
     const component = template.elementList.find(
       (e) => e.name === "selectable_component",
     ) as parser.Element;
-    const options = component.getOptions(false);
+    const options = component.getOptions({}, false);
     expect(Object.keys(options).length).toBe(1);
     const [option] = Object.values(options);
     expect(option.options?.length).toBe(2);
