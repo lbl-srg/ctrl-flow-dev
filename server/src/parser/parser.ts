@@ -234,8 +234,6 @@ export class InputGroup extends Element {
   }
 
   getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
-    console.log(this.modelicaPath);
-
     // A group with no elementList is ignored
     if (this.modelicaPath in options || this.elementList.length === 0) {
       return options;
@@ -612,12 +610,12 @@ export class InputGroupExtend extends Element {
       modelicaPath: this.modelicaPath,
       type: this.type,
       value: this.value,
-      name: typeInstance?.name || '',
+      name: typeInstance?.name || "",
       visible: false,
-      options: (this.type.startsWith("Modelica")) ? [] : [this.type],
+      options: this.type.startsWith("Modelica") ? [] : [this.type],
     };
 
-    return (typeInstance) ? typeInstance.getOptions(options, recursive) : options;
+    return typeInstance ? typeInstance.getOptions(options, recursive) : options;
   }
 
   getModifications() {
