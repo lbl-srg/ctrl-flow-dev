@@ -24,10 +24,10 @@ model TestTemplate "Test Template"
     annotation (
       choices(
         choice(
-          redeclare TestPackage.Component.SecondComponent selectable_component
+          redeclare replaceable TestPackage.Component.SecondComponent selectable_component
           "Second Test Component"),
         choice(
-          redeclare TestPackage.Component.ThirdComponent selectable_component
+          redeclare replaceable TestPackage.Component.ThirdComponent selectable_component
           "Third Test Component")),
       Dialog(group="Selectable Component"));
 
