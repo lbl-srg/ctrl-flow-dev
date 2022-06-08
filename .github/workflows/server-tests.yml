@@ -37,4 +37,4 @@ jobs:
         run: |
           npx ts-node src/index.ts &
           sleep 5 # wait for server to start
-          npm run integration-test --testPathIgnorePatterns=\(/node_modules/ long\)
+          npx jest --testPathIgnorePatterns=\(/node_modules/ long\)
