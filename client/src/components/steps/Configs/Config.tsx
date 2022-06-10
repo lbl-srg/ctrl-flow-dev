@@ -1,14 +1,14 @@
-import ConfigSlideOut from "../../modal/ConfigSlideOut";
-import Debug from "../../debug";
+import ConfigSlideOut from "./ConfigSlideOut";
 import { useDebouncedCallback } from "use-debounce";
 import { useStores } from "../../../data";
 import { observer } from "mobx-react";
+import { MouseEvent } from "react";
 
-const Config = observer(({ configId }) => {
+const Config = observer(({ configId }: { configId: string }) => {
   const { configStore } = useStores();
   const config = configStore.getById(configId);
 
-  function remove(ev) {
+  function remove(ev: MouseEvent) {
     ev.preventDefault();
     configStore.remove(configId);
   }

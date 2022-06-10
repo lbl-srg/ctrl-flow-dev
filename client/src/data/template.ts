@@ -15,6 +15,7 @@ export interface OptionInterface {
   value?: string | boolean | null | number;
   group?: string;
   tab?: string;
+  visible?: boolean;
   options?: string[];
   childOptions?: OptionInterface[];
   valueExpression?: { expression: string; modelicaPath: string };
@@ -105,13 +106,6 @@ export default class Template {
   }
 
   getOptionsForTemplate(path: string): OptionInterface[] {
-    const nested = this.nestedOptions;
-    const template = this.getTemplateByPath(path);
-    if (!template || !template.options) return [];
-
-    return template.options.reduce((acc, optionPath) => {
-      const match = nested.find((opt) => opt.modelicaPath === optionPath);
-      return match ? acc.concat(match) : acc;
-    }, [] as OptionInterface[]);
+    return this.nestedOptions.filter((opt) => opt.modelicaPath === path);
   }
 }
