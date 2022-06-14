@@ -10,6 +10,21 @@ index 5f6f674a6f..cb7ee23d7d 100644
      defaultComponentName="VAV",
      Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
      coordinateSystem(preserveAspectRatio=false, extent={{-300,-280},{300,280}}),
+diff --git a/Buildings/Templates/AirHandlersFans/package.mo b/Buildings/Templates/AirHandlersFans/package.mo
+index ecce01041c..018737416f 100644
+--- a/Buildings/Templates/AirHandlersFans/package.mo
++++ b/Buildings/Templates/AirHandlersFans/package.mo
+@@ -2,7 +2,9 @@ within Buildings.Templates;
+ package AirHandlersFans "Air handlers and fans"
+   extends Modelica.Icons.Package;
+ 
+-  annotation (Documentation(info="<html>
++  annotation (
++    __LinkageTemplate=true,
++    Documentation(info="<html>
+ <p>
+ This package contains templates for air handlers and fans.
+ </p>
 diff --git a/Buildings/Templates/ZoneEquipment/VAVBoxCoolingOnly.mo b/Buildings/Templates/ZoneEquipment/VAVBoxCoolingOnly.mo
 index 1e4106d60d..597e08c2d4 100644
 --- a/Buildings/Templates/ZoneEquipment/VAVBoxCoolingOnly.mo
@@ -40,3 +55,18 @@ index 28a423ac45..7b9c1135b2 100644
          Line(points={{300,-190},{-300,-190}},
                                              color={0,0,0}),
          Line(points={{300,-210},{-300,-210}},
+diff --git a/Buildings/Templates/ZoneEquipment/package.mo b/Buildings/Templates/ZoneEquipment/package.mo
+index ad01165130..8d4e3ffe19 100644
+--- a/Buildings/Templates/ZoneEquipment/package.mo
++++ b/Buildings/Templates/ZoneEquipment/package.mo
+@@ -2,7 +2,9 @@ within Buildings.Templates;
+ package ZoneEquipment "Zone equipment"
+   extends Modelica.Icons.Package;
+ 
+-annotation (Documentation(info="<html>
++annotation (
++  __LinkageTemplate=true,
++  Documentation(info="<html>
+ <p>
+ This package contains templates for zone equipment (HVAC terminal units).
+ </p>
