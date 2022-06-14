@@ -24,12 +24,6 @@ const EXTEND_NAME = "__extend";
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 
-const missedItems: string[] = [];
-
-export function dumpMissing() {
-  return missedItems;
-}
-
 interface ClassModification {
   element_modification_or_replaceable: {
     each: boolean;
@@ -118,8 +112,8 @@ class Store {
       }
     }
 
-    if (!typeFound && !path.startsWith("Modelica")) {
-      missedItems.push(`${path} : ${context}`)
+    if (!typeFound) {
+      // console.log(path, context)
     }
   }
 
@@ -240,9 +234,6 @@ export class InputGroup extends Element {
   }
 
   getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
-    if (this.name === "VAVMultiZone") {
-      console.log(this.name);
-    }
     // A group with no elementList is ignored
     if (this.modelicaPath in options || this.elementList.length === 0) {
       return options;
@@ -296,10 +287,6 @@ export class Input extends Element {
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
     const registered = this.registerPath(this.modelicaPath);
-
-    if (basePath === 'Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler' && this.name === 'dat') {
-      console.log('thing')
-    }
 
     if (!registered) {
       return; // PUNCH-OUT!
@@ -385,10 +372,6 @@ export class Input extends Element {
   }
 
   getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
-    if (this.modelicaPath === 'Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.dat') {
-      console.log('hey');
-    }
-
     if (this.modelicaPath in options) {
       return options;
     }
@@ -685,7 +668,6 @@ function _constructElement(
     case "block":
     case "record":
     case "package":
-
       const long_specifier =
         "long_class_specifier" in definition.class_specifier;
       element = long_specifier

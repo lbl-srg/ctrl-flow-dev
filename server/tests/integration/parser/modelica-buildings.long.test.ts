@@ -1,4 +1,4 @@
-import { getFile, dumpMissing } from "../../../src/parser/parser";
+import { getFile } from "../../../src/parser/parser";
 import { writeFileSync } from "fs";
 import { loadPackage } from "../../../src/parser";
 import { getTemplates } from "../../../src/parser/template";
@@ -23,7 +23,5 @@ describe("Parser extracts expected parts or modelica-buildings", () => {
     expect(templates.length).toBe(3);
     const [template1, ..._] = templates;
     const options = template1.getOptions();
-    // writeFileSync("/app/building-output.json", JSON.stringify(options));
-    console.log(dumpMissing());
   });
 });
