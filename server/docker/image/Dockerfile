@@ -14,6 +14,8 @@ RUN npm run install-modelica-deps
 WORKDIR /dependencies/modelica-buildings
 # TODO: remove patch when modelica-buildings repo is updated
 RUN git apply /app/bin/linkage-keyword.patch
+WORKDIR /dependencies/modelica-json
+RUN git apply /app/bin/ignore-cert.patch
 WORKDIR /dependencies
 ENV MODELICAPATH=/dependencies/ModelicaStandardLibrary:/dependencies/modelica-buildings
 RUN mkdir template-json
