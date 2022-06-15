@@ -24,22 +24,96 @@ const EXTEND_NAME = "__extend";
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 
+interface ClassModification {
+  element_modification_or_replaceable: {
+    each: boolean;
+    final: boolean;
+    element_modification: {
+      name: string;
+      modification: any; // modification
+      "description-string": string;
+    };
+    element_replaceable: any;
+  };
+}
+[];
+
+interface Description {
+  "description-string": string;
+  annotation: ClassModification;
+}
+
+interface ShortClassSpecifier {
+  identifier: string;
+  short_class_specifier_value: {
+    base_prefix: string;
+    name: string;
+    array_subscripts: any;
+    class_modification: any;
+    description: any;
+    enum_list: [
+      {
+        identifier: string;
+        description: any;
+      },
+    ];
+  };
+}
+
 class Store {
   _store: Map<string, any> = new Map();
 
-  set(path: string, element: Element) {
-    this._store.set(path, element);
+  set(path: string, element: Element): boolean {
+    if (!this.has(path)) {
+      this._store.set(path, element);
+      return true;
+    }
+    return false;
   }
 
-  get(path: string): Element | undefined {
-    // startsWith("Modelica"): Templates *should* have all types defined within
-    // a template so we do not need to rely on definitionals in the modelica standard library
-    if (!MODELICA_LITERALS.includes(path) && !path.startsWith("Modelica")) {
-      if (!this._store.has(path)) {
-        getFile(path);
+  /**
+   * TODO: This 'get' needs to match the lookup behavior for modelica type references
+   * where it is able to follow an order of searching based on the type. Full rules
+   * are defined here: https://mbe.modelica.university/components/packages/lookup/
+   *
+   * For now this does two types of lookup:
+   * 1. Try the path as an absolute path
+   * 2. Try it as a relative path (context + path)
+   *
+   * @param path
+   * @param context
+   * @returns
+   */
+  get(path: string, context = ""): Element | undefined {
+    if (MODELICA_LITERALS.includes(path)) {
+      return; // PUNCH-OUT! literals don't have a type definition
+    }
+
+    const paths = context ? [path, `${context}.${path}`] : [path];
+
+    // for each path
+    // check if either is in the store
+    const typeDef = this._store.has(path)
+      ? this._store.get(path)
+      : this._store.get(`${context}.${path}`);
+
+    if (typeDef) {
+      return typeDef; // PUNCH-OUT!
+    }
+
+    let typeFound = false;
+    // not found, attempt to load from json
+    for (const p of paths) {
+      const file = getFile(p);
+      if (file) {
+        assertType(p);
+        typeFound = true;
+        return this._store.get(p);
       }
-      assertType(path);
-      return this._store.get(path);
+    }
+
+    if (!typeFound) {
+      // console.log(path, context)
     }
   }
 
@@ -51,11 +125,7 @@ class Store {
 export const typeStore = new Store();
 
 function assertType(type: string) {
-  if (
-    !MODELICA_LITERALS.includes(type) &&
-    !typeStore.has(type) &&
-    !type.startsWith("Modelica")
-  ) {
+  if (!MODELICA_LITERALS.includes(type) && !typeStore.has(type)) {
     throw new Error(`${type} not defined`);
   }
 }
@@ -81,8 +151,18 @@ export abstract class Element {
   type = "";
   description = "";
   entryPoint = false;
+  duplicate = false;
 
-  abstract getOptions(recursive?: boolean): { [key: string]: OptionN };
+  abstract getOptions(
+    options?: { [key: string]: OptionN },
+    recursive?: boolean,
+  ): { [key: string]: OptionN };
+
+  registerPath(path: string): boolean {
+    const isSet = typeStore.set(path, this);
+    this.duplicate = !isSet;
+    return isSet;
+  }
 
   // 'Input' and 'InputGroup' and 'Extend' returns modifications and override
   // this method. Other elements do not have a modification
@@ -91,10 +171,32 @@ export abstract class Element {
   }
 }
 
-export class InputGroup extends Element {
-  annotation: Modification[];
-  elementList: Element[];
+export class InputGroupShort extends Element {
+  value: string;
   description: string;
+  constructor(definition: any, basePath: string) {
+    super();
+    const specifier = definition.class_specifier.short_class_specifier;
+    this.name = specifier.identifier;
+    const classValue = specifier?.value;
+    this.value = classValue.description?.description_string;
+    this.description = classValue.name;
+    this.modelicaPath = `${basePath}.${this.name}`;
+    const registered = this.registerPath(this.modelicaPath);
+    if (!registered) {
+      return; // PUNCH-OUT!
+    }
+  }
+
+  getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+    return options;
+  }
+}
+
+export class InputGroup extends Element {
+  annotation: Modification[] = [];
+  elementList: Element[] = [];
+  description: string = "";
   entryPoint = false;
   mod: Modification | undefined;
 
@@ -102,10 +204,17 @@ export class InputGroup extends Element {
     super();
     const specifier = definition.class_specifier.long_class_specifier;
     this.name = specifier.identifier;
+
     this.modelicaPath = basePath ? [basePath, this.name].join(".") : this.name;
-    typeStore.set(this.modelicaPath, this);
+    const registered = this.registerPath(this.modelicaPath);
+
+    if (!registered) {
+      return; // PUNCH-OUT!
+    }
+
     this.type = this.modelicaPath;
     this.description = specifier.description_string;
+
     this.elementList = specifier.composition.element_list.map((e: any) =>
       _constructElement(e, this.modelicaPath),
     );
@@ -124,17 +233,17 @@ export class InputGroup extends Element {
     }
   }
 
-  getOptions(recursive = true) {
-    // A group with no elementList is ignorecd
-    if (this.elementList.length === 0) {
-      return {};
+  getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+    // A group with no elementList is ignored
+    if (this.modelicaPath in options || this.elementList.length === 0) {
+      return options;
     }
 
     const children = this.elementList.filter(
-      (el) => Object.keys(el.getOptions(recursive)).length > 0,
+      (el) => Object.keys(el.getOptions(options, recursive)).length > 0,
     );
 
-    const option: OptionN = {
+    options[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       name: this.description,
@@ -144,10 +253,8 @@ export class InputGroup extends Element {
         .filter((c) => !(c in MODELICA_LITERALS)),
     };
 
-    let options: { [key: string]: OptionN } = { [option.modelicaPath]: option };
-
     children.map((el) => {
-      options = { ...options, ...el.getOptions(recursive) };
+      options = el.getOptions(options, recursive);
     });
 
     return options;
@@ -160,7 +267,7 @@ export class InputGroup extends Element {
 
 // a parameter with a type
 export class Input extends Element {
-  mod: Modification | null;
+  mod?: Modification | null;
   type = ""; // modelica path
   value: any; // modelica path?
   description = "";
@@ -179,7 +286,12 @@ export class Input extends Element {
     ).declaration as DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
-    typeStore.set(this.modelicaPath, this);
+    const registered = this.registerPath(this.modelicaPath);
+
+    if (!registered) {
+      return; // PUNCH-OUT!
+    }
+
     this.final = definition.final ? definition.final : this.final;
 
     this.type = componentClause.type_specifier;
@@ -259,13 +371,21 @@ export class Input extends Element {
       !this.final) as boolean;
   }
 
-  getOptions(recursive = true) {
+  getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+    if (this.modelicaPath in options) {
+      return options;
+    }
+
     const typeInstance = typeStore.get(this.type) || null;
-    const typeOptions = typeInstance ? typeInstance.getOptions(false) : {};
+    const typeOptions = typeInstance
+      ? typeInstance.getOptions(options, false)
+      : {};
     const childOptions = typeOptions[this.type]?.options || [];
     const visible = this._setOptionVisible(typeOptions[this.type]);
 
-    const option: OptionN = {
+    // if path is present, just return
+
+    options[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       value: this.value,
@@ -278,11 +398,9 @@ export class Input extends Element {
       options: childOptions,
     };
 
-    let options = { [option.modelicaPath]: option };
-
     if (recursive) {
       if (typeInstance) {
-        options = { ...options, ...typeInstance.getOptions() };
+        options = typeInstance.getOptions(options);
       }
     }
 
@@ -350,8 +468,12 @@ export class ReplaceableInput extends Input {
     }
   }
 
-  getOptions(recursive = true) {
-    const option: OptionN = {
+  getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+    if (this.modelicaPath in options) {
+      return options;
+    }
+
+    options[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       value: this.value,
@@ -362,12 +484,11 @@ export class ReplaceableInput extends Input {
       visible: true,
     };
 
-    let options = { [option.modelicaPath]: option };
     if (recursive) {
       this.choices.map((c) => {
         const typeInstance = typeStore.get(c) || null;
         if (typeInstance) {
-          options = { ...options, ...typeInstance.getOptions() };
+          options = typeInstance.getOptions(options);
         }
       });
     }
@@ -407,7 +528,10 @@ export class Enum extends Element {
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = this.modelicaPath;
     this.description = specifier.value.description.description_string;
-    typeStore.set(this.modelicaPath, this);
+    const registered = this.registerPath(this.modelicaPath);
+    if (!registered) {
+      return; // PUNCH-OUT!
+    }
 
     specifier.value.enum_list.map(
       (e: {
@@ -422,15 +546,17 @@ export class Enum extends Element {
     );
   }
 
-  getOptions(recursive = true) {
-    const options: { [key: string]: OptionN } = {
-      [this.modelicaPath]: {
-        modelicaPath: this.modelicaPath,
-        name: this.description,
-        type: this.type,
-        visible: true,
-        options: this.enumList.map((e) => e.modelicaPath),
-      },
+  getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+    if (this.modelicaPath in options) {
+      return options;
+    }
+
+    options[this.modelicaPath] = {
+      modelicaPath: this.modelicaPath,
+      name: this.description,
+      type: this.type,
+      visible: true,
+      options: this.enumList.map((e) => e.modelicaPath),
     };
 
     // outputs a parent option, then an option for each enum type
@@ -452,13 +578,17 @@ export class Enum extends Element {
 // Inherited properties by type with modifications
 export class InputGroupExtend extends Element {
   mods: Modification[] = [];
-  type: string;
-  value: string;
+  type: string = "";
+  value: string = "";
   constructor(definition: any, basePath: string) {
     super();
     this.name = EXTEND_NAME; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${this.name}`;
-    typeStore.set(this.modelicaPath, this);
+    const registered = this.registerPath(this.modelicaPath);
+    if (!registered) {
+      return; // PUNCH-OUT!
+    }
+
     this.type = definition.extends_clause.name;
     this.value = this.type;
     if (definition.extends_clause.class_modification) {
@@ -469,31 +599,23 @@ export class InputGroupExtend extends Element {
     }
   }
 
-  getOptions(recursive = true) {
-    const typeInstance = typeStore.get(this.type) as Element;
-
-    if (typeInstance) {
-      const childOptions = Object.keys(typeInstance.getOptions(false));
-      if (childOptions.length === 0) {
-        return {};
-      }
-
-      const option: OptionN = {
-        modelicaPath: this.modelicaPath,
-        type: this.type,
-        value: this.value,
-        name: typeInstance.name,
-        visible: false,
-        options: [this.type],
-      };
-
-      return {
-        ...{ [option.modelicaPath]: option },
-        ...typeInstance.getOptions(recursive),
-      };
-    } else {
-      return {};
+  getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+    if (this.modelicaPath in options) {
+      return options;
     }
+
+    const typeInstance = typeStore.get(this.type);
+
+    options[this.modelicaPath] = {
+      modelicaPath: this.modelicaPath,
+      type: this.type,
+      value: this.value,
+      name: typeInstance?.name || "",
+      visible: false,
+      options: this.type.startsWith("Modelica") ? [] : [this.type],
+    };
+
+    return typeInstance ? typeInstance.getOptions(options, recursive) : options;
   }
 
   getModifications() {
@@ -523,6 +645,10 @@ function _constructElement(
   let elementType = null;
   if ("class_prefixes" in definition) {
     elementType = definition.class_prefixes;
+    // TODO: class prefix descriptors like 'partial' and 'expandable' may
+    // need to be taken into account when constructing the appropriate element
+    elementType = elementType.replace("partial ", "");
+    elementType = elementType.replace("expandable ", "");
   } else if (extend in definition) {
     elementType = extend;
   } else if (replaceable in definition && definition.replaceable) {
@@ -531,21 +657,35 @@ function _constructElement(
     elementType = component;
   }
 
+  let element: Element | undefined;
+
   switch (elementType) {
     case "type":
-      return new Enum(definition, basePath);
+      element = new Enum(definition, basePath);
+      break;
+    case "connector":
     case "model":
-    case "partial model":
+    case "block":
     case "record":
     case "package":
-      return new InputGroup(definition, basePath);
+      const long_specifier =
+        "long_class_specifier" in definition.class_specifier;
+      element = long_specifier
+        ? new InputGroup(definition, basePath)
+        : new InputGroupShort(definition, basePath);
+      break;
     case extend:
-      return new InputGroupExtend(definition, basePath);
+      element = new InputGroupExtend(definition, basePath);
+      break;
     case component:
-      return new Input(definition, basePath);
+      element = new Input(definition, basePath);
+      break;
     case replaceable:
-      return new ReplaceableInput(definition, basePath);
+      element = new ReplaceableInput(definition, basePath);
+      break;
   }
+
+  return element?.duplicate ? typeStore.get(element?.modelicaPath) : element;
 }
 
 //
@@ -588,6 +728,8 @@ export const getFile = (filePath: string) => {
   const jsonData = loader(pathPrefix, filePath);
   if (jsonData) {
     return new File(jsonData, filePath);
+  } else {
+    // console.log(`Not found: ${filePath}`);
   }
 };
 

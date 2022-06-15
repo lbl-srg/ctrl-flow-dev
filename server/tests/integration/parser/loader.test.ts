@@ -1,5 +1,6 @@
 import * as parser from "../../../src/parser/parser";
 import { initializeTestModelicaJson } from "./utils";
+import * as publicParser from "../../../src/parser";
 
 const testTemplatePath = "TestPackage.Template.TestTemplate";
 const testPackagePath = "TestPackage.Template";

@@ -25,13 +25,15 @@ const modStore: Map<string, Modification> = new Map();
 
 type RedeclarationMod = {
   element_redeclaration: {
-    component_clause1: {
-      type_specifier: string; // Modelica Path
-      component_declaration1: {
-        declaration: DeclarationBlock;
-        description: DescriptionBlock;
+    element_replaceable: {
+      component_clause1: {
+        type_specifier: string; // Modelica Path
+        component_declaration1: {
+          declaration: DeclarationBlock;
+          description: DescriptionBlock;
+        };
       };
-    };
+    }
   };
 };
 
@@ -144,7 +146,7 @@ export function createModification(props: ModificationProps): Modification {
         const choiceMod = (mod as ClassMod)
           .class_modification[0] as RedeclarationMod;
         value =
-          choiceMod.element_redeclaration.component_clause1.type_specifier;
+          choiceMod.element_redeclaration.element_replaceable.component_clause1.type_specifier;
       } else if ("class_modification" in mod) {
         // const type = "";
         mods = getModificationList(mod as ClassMod, modelicaPath);
