@@ -2,10 +2,9 @@ import { OptionInterface } from "../../../../data/template";
 import { useState, Fragment, useEffect, ChangeEvent } from "react";
 
 const Option = ({ option }: { option: OptionInterface }) => {
-  const children = option.childOptions
-    ? option.childOptions.filter((child) => child.visible)
-    : [];
+  const children = option.childOptions ? option.childOptions : [];
 
+  // default selectedOption as the first of the children
   const [selectedOption, setSelectedOption] = useState(
     children[0] as OptionInterface,
   );
@@ -27,37 +26,50 @@ const Option = ({ option }: { option: OptionInterface }) => {
     if (childOption) setSelectedOption(childOption);
   }
 
-  return (
-    <Fragment>
-      <label>{option.name}</label>
+  // TODO: switch recursive 'option' rendering to use 'childOptions'
+  // once 'sets' are working as expected
 
-      {children.length ? (
-        <select
-          name={option.name}
-          defaultValue={option.value as string}
-          onChange={optionSelected}
-        >
-          {children.map((child) => {
-            return (
-              <option key={child.modelicaPath} value={child.value as string}>
-                {child.name}
-              </option>
-            );
-          })}
-        </select>
-      ) : (
-        <input
-          type="text"
-          name={option.name}
-          defaultValue={option.value as string}
-        />
-      )}
+  if (option.visible) {
+    return (
+      <Fragment>
+        <label>{option.name}</label>
 
-      {childOptions.map((child, index) => (
-        <Option key={child.name + index} option={child} />
-      ))}
-    </Fragment>
-  );
+        {children.length ? (
+          <select
+            name={option.name}
+            defaultValue={option.value as string}
+            onChange={optionSelected}
+          >
+            {children.map((child) => {
+              return (
+                <option key={child.modelicaPath} value={child.value as string}>
+                  {child.name}
+                </option>
+              );
+            })}
+          </select>
+        ) : (
+          <input
+            type="text"
+            name={option.name}
+            defaultValue={option.value as string}
+          />
+        )}
+
+        {childOptions.map((child, index) => (
+          <Option key={child.name + index} option={child} />
+        ))}
+      </Fragment>
+    );
+  } else {
+    return (
+      <Fragment>
+        {children.map((child, index) => (
+          <Option key={child.name + index} option={child} />
+        ))}
+      </Fragment>
+    );
+  }
 };
 
 export default Option;

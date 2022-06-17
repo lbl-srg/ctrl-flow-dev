@@ -1,4 +1,4 @@
-import tplData from "../templates/system-template-test-package.json";
+import tplData from "./templates.json";
 import RootStore from ".";
 
 export interface TemplateInterface {
@@ -18,8 +18,8 @@ export interface OptionInterface {
   visible?: boolean;
   options?: string[];
   childOptions?: OptionInterface[];
-  valueExpression?: { expression: string; modelicaPath: string };
-  enable?: { modelicaPath: string; expression: string };
+  valueExpression?: any; //{ expression: string; modelicaPath: string };
+  enable?: any; // { modelicaPath: string; expression: string };
 }
 
 export interface SystemTypeInterface {
