@@ -7,6 +7,7 @@ import { useStores } from "../../../data";
 import { OptionInterface } from "../../../data/template";
 import Option from "./options/Option";
 import { getFormData } from "../../../utils/dom-utils";
+import { poj } from "../../../utils/utils";
 
 const SlideOut = ({ configId }: { configId: string }) => {
   const { configStore, uiStore, templateStore } = useStores();
@@ -25,7 +26,15 @@ const SlideOut = ({ configId }: { configId: string }) => {
   function save(ev: FormEvent) {
     ev.preventDefault();
     ev.stopPropagation();
-    console.log(getFormData(ev.target as HTMLFormElement));
+
+    const data = getFormData(ev.target as HTMLFormElement);
+
+    configStore.setSelections(
+      config.id,
+      Object.entries(data).map(([name, value]) => ({ name, value })),
+    );
+
+    setOpen(false);
   }
 
   return (
@@ -51,7 +60,7 @@ const SlideOut = ({ configId }: { configId: string }) => {
           />
 
           {options.map((option: OptionInterface) => (
-            <Option option={option} key={option.modelicaPath} />
+            <Option option={option} config={config} key={option.modelicaPath} />
           ))}
 
           <button type="submit">{itl.terms.save}</button>

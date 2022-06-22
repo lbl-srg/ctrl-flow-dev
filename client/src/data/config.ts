@@ -39,7 +39,7 @@ export default class Config {
       id: uuid(),
       name: "Default",
       isLocked: false,
-      selections: [],
+      selections: [] as SelectionInterface[],
       quantity: 1,
 
       ...config,
@@ -74,6 +74,19 @@ export default class Config {
     )
       ? true
       : false;
+  }
+
+  findOptionValue(configId: string, optionPath: string): string | undefined {
+    const config = this.getById(configId);
+    if (!config?.selections) return undefined;
+
+    return config.selections.find((selection) => selection.name === optionPath)
+      ?.value;
+  }
+
+  setSelections(configId: string, selections: SelectionInterface[]) {
+    const config = this.getById(configId);
+    if (config) config.selections = selections;
   }
 
   getActiveConfigs(): ConfigInterface[] {

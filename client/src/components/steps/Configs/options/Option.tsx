@@ -1,8 +1,21 @@
 import { OptionInterface } from "../../../../data/template";
 import { useState, Fragment, useEffect, ChangeEvent } from "react";
+import { ConfigInterface } from "../../../../data/config";
+import { useStores } from "../../../../data";
+import { poj } from "../../../../utils/utils";
+export interface OptionProps {
+  option: OptionInterface;
+  config: ConfigInterface;
+}
 
-const Option = ({ option }: { option: OptionInterface }) => {
+const Option = ({ option, config }: OptionProps) => {
   const children = option.childOptions ? option.childOptions : [];
+  const { configStore } = useStores();
+
+  const defaultValue = configStore.findOptionValue(
+    config.id,
+    option.modelicaPath,
+  );
 
   // default selectedOption as the first of the children
   const [selectedOption, setSelectedOption] = useState(
@@ -36,28 +49,28 @@ const Option = ({ option }: { option: OptionInterface }) => {
 
         {children.length ? (
           <select
-            name={option.name}
-            defaultValue={option.value as string}
+            name={option.modelicaPath}
+            defaultValue={defaultValue}
             onChange={optionSelected}
           >
             {children.map((child) => {
               return (
-                <option key={child.modelicaPath} value={child.value as string}>
+                <option key={child.modelicaPath} value={child.modelicaPath}>
                   {child.name}
                 </option>
               );
             })}
           </select>
         ) : (
+          // TODO: this might need to be a checkbox for Boolean if no options
           <input
             type="text"
-            name={option.name}
+            name={option.modelicaPath}
             defaultValue={option.value as string}
           />
         )}
-
         {childOptions.map((child, index) => (
-          <Option key={child.name + index} option={child} />
+          <Option key={child.name + index} config={config} option={child} />
         ))}
       </Fragment>
     );
@@ -65,7 +78,7 @@ const Option = ({ option }: { option: OptionInterface }) => {
     return (
       <Fragment>
         {children.map((child, index) => (
-          <Option key={child.name + index} option={child} />
+          <Option key={child.name + index} config={config} option={child} />
         ))}
       </Fragment>
     );
