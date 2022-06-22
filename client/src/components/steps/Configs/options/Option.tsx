@@ -65,7 +65,7 @@ const Option = ({ option, config }: OptionProps) => {
           // TODO: this might need to be a checkbox for Boolean if no options
           <input
             type="text"
-            name={option.modelicaPath}
+            name={option.name}
             defaultValue={option.value as string}
           />
         )}
