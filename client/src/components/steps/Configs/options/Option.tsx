@@ -11,7 +11,8 @@ export interface OptionProps {
 const Option = ({ option, config }: OptionProps) => {
   const children = option.childOptions ? option.childOptions : [];
   const { configStore } = useStores();
-
+  const selections = config.selections;
+  const selection = selections?.find((s) => s.name === option.modelicaPath);
   const defaultValue = configStore.findOptionValue(
     config.id,
     option.modelicaPath,
@@ -19,18 +20,20 @@ const Option = ({ option, config }: OptionProps) => {
 
   // default selectedOption as the first of the children
   const [selectedOption, setSelectedOption] = useState(
-    children[0] as OptionInterface,
+    children?.find(
+      (c) => c.modelicaPath === selection?.value,
+    ) as OptionInterface,
   );
 
   const [childOptions, setChildOptions] = useState([] as OptionInterface[]);
 
-  useEffect(() => {
-    if (selectedOption && selectedOption.childOptions) {
-      setChildOptions(
-        selectedOption.childOptions.filter((child) => child.visible),
-      );
-    } else setChildOptions([]);
-  }, [selectedOption]);
+  // useEffect(() => {
+  //   if (selectedOption && selectedOption.childOptions) {
+  //     setChildOptions(
+  //       selectedOption.childOptions.filter((child) => child.visible),
+  //     );
+  //   } else setChildOptions([]);
+  // }, [selectedOption]);
 
   function optionSelected(ev: ChangeEvent<HTMLSelectElement>) {
     const childOption = children.find(
@@ -50,7 +53,7 @@ const Option = ({ option, config }: OptionProps) => {
         {children.length ? (
           <select
             name={option.modelicaPath}
-            defaultValue={defaultValue}
+            defaultValue={selectedOption?.modelicaPath || defaultValue}
             onChange={optionSelected}
           >
             {children.map((child) => {
@@ -69,9 +72,13 @@ const Option = ({ option, config }: OptionProps) => {
             defaultValue={option.value as string}
           />
         )}
-        {childOptions.map((child, index) => (
-          <Option key={child.name + index} config={config} option={child} />
-        ))}
+        {selectedOption ? (
+          <Option
+            key={selectedOption.modelicaPath}
+            config={config}
+            option={selectedOption}
+          />
+        ) : null}
       </Fragment>
     );
   } else {
