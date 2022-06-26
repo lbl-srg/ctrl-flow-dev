@@ -1,11 +1,12 @@
 import { Route, Routes, useLocation } from "react-router-dom";
-import Configs from "./components/steps/Configs/index";
-import Landing from "./components/steps/Landing";
-import Results from "./components/steps/Results/index";
-import Schedules from "./components/steps/Schedules";
-import Systems from "./components/steps/Systems";
 import Sidebarlayout from "./components/layouts/SidebarLayout";
 import LeftNav from "./components/LeftNavigation";
+import Landing from "./components/steps/Landing";
+import Systems from "./components/steps/Systems";
+import Configs from "./components/steps/Configs/index";
+import Schedules from "./components/steps/Schedules";
+import Results from "./components/steps/Results";
+import Sequence from "./components/steps/Results/Sequence";
 
 import "./styles/application.scss";
 
@@ -24,6 +25,7 @@ const App = () => {
           <Route path="/configs" element={<Configs />} />
           <Route path="/schedules" element={<Schedules />} />
           <Route path="/results" element={<Results />} />
+          <Route path="/results/sequence" element={<Sequence />} />
         </Routes>
       }
     />
