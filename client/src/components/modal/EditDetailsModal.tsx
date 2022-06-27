@@ -99,7 +99,7 @@ const EditDetailsModal = observer(
           </div>
 
           <label htmlFor="notes">{itl.terms.notes}:</label>
-          <textarea name="notes" defaultValue={details.notes}></textarea>
+          <textarea name="notes" defaultValue={details.notes} />
 
           <div className="action-bar">
             {cancelText ? (
