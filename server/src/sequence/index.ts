@@ -12,9 +12,7 @@ export type TemplateOptions = {
   dual_inlet_airflow_sensors: string;
 };
 
-const MARKDOWN_TEMPLATE_FILE_PATH = `${path.resolve(
-  __dirname,
-)}/template.md.txt`;
+const MARKDOWN_TEMPLATE_FILE_PATH = `${path.resolve(__dirname)}/template.md`;
 
 // TODO: Check that the copy below fits the client's needs
 const HTML_HEADER = `<p>&copy; ASHRAE (www.ashrae.org). For personal use only. Additional reproduction, distribution, or transmission in either print or digital form is not permitted without ASHRAE's prior written permission.</p>`;
