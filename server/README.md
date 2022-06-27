@@ -17,6 +17,7 @@
 ### Without a container
 
 1. Run `npm run install-modelica-deps` to install the modelica-json library, and modelica templates
+1. Run `npm i` in `/dependencies` to install packages.
 1. Ensure the `MODELICAPATH` environmental variable points to the correct location.
 
    e.g.
