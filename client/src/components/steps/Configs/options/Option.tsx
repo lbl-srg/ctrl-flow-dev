@@ -11,8 +11,9 @@ export interface OptionProps {
 const Option = ({ option, config }: OptionProps) => {
   const children = option.childOptions ? option.childOptions : [];
   const { configStore } = useStores();
-  const selections = config.selections;
-  const selection = selections?.find((s) => s.name === option.modelicaPath);
+  const selection = config.selections?.find(
+    (s) => s.name === option.modelicaPath,
+  );
   const defaultValue = configStore.findOptionValue(
     config.id,
     option.modelicaPath,
@@ -25,25 +26,12 @@ const Option = ({ option, config }: OptionProps) => {
     ) as OptionInterface,
   );
 
-  const [childOptions, setChildOptions] = useState([] as OptionInterface[]);
-
-  // useEffect(() => {
-  //   if (selectedOption && selectedOption.childOptions) {
-  //     setChildOptions(
-  //       selectedOption.childOptions.filter((child) => child.visible),
-  //     );
-  //   } else setChildOptions([]);
-  // }, [selectedOption]);
-
   function optionSelected(ev: ChangeEvent<HTMLSelectElement>) {
     const childOption = children.find(
-      (child) => child.value === ev.target.value,
+      (child) => child.modelicaPath === ev.target.value,
     );
     if (childOption) setSelectedOption(childOption);
   }
-
-  // TODO: switch recursive 'option' rendering to use 'childOptions'
-  // once 'sets' are working as expected
 
   if (option.visible) {
     return (
