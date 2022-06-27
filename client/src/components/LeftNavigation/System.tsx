@@ -4,6 +4,17 @@ import { useStores } from "../../data";
 import { observer } from "mobx-react";
 import { TemplateInterface } from "../../data/template";
 
+function getClasses(isEmpty: boolean, isActive: boolean, isOpen: boolean) {
+  const classes = ["system"];
+  if (isEmpty) classes.push("empty");
+  else {
+    if (isActive) classes.push("active");
+    if (isOpen) classes.push("open");
+  }
+
+  return classes;
+}
+
 const System = observer(({ systemPath }: { systemPath: string }) => {
   const { uiStore, templateStore } = useStores();
 
@@ -13,10 +24,11 @@ const System = observer(({ systemPath }: { systemPath: string }) => {
     icon: templateStore.getIconForSystem(systemPath),
   };
 
-  const classes = ["system"];
   const isEmpty = !templates.length;
   const isActive = systemPath === uiStore.activeSystemPath && !isEmpty;
   const isOpen = systemPath === uiStore.openSystemPath && !isEmpty;
+
+  const classes = getClasses(isEmpty, isActive, isOpen);
 
   if (isEmpty) classes.push("empty");
   else {
