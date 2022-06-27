@@ -3,12 +3,15 @@ import compression from "compression";
 import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
+import cors from "cors";
+import _ from "underscore";
 
 import fs from "fs";
 import tmp from "tmp";
 
 import config from "./config";
 import * as parser from "../../dependencies/modelica-json/lib/parser";
+import sequence, { TemplateOptions } from "./sequence";
 
 const app = express();
 
@@ -17,6 +20,7 @@ app.use(helmet());
 app.use(compression());
 app.use(bodyParser.json());
 app.use(express.static("public"));
+app.use(cors());
 
 const logMode = config.NODE_ENV == "development" ? "dev" : "combined";
 app.use(morgan(logMode));
@@ -79,6 +83,21 @@ app.post("/api/modelicatojson", async (req, res) => {
   // remove temp file
   modelicaFile.removeCallback();
   res.send(response);
+});
+
+app.post("/api/sequence", async (req, res) => {
+  // TODO: Replace with actual default parameters necessary to generate the document
+  const requestBody: TemplateOptions = {
+    optional: true,
+    dual_inlet_airflow_sensors: "yes",
+    ...req.body,
+  };
+  try {
+    const file = await sequence(requestBody);
+    res.send(file);
+  } catch (error) {
+    res.send(error);
+  }
 });
 
 app.listen(config.PORT, () => {
