@@ -20,18 +20,18 @@ const Sidebarlayout = observer(
     const location = useLocation();
 
     useEffect(() => {
-      const $rightCol = document.querySelector(".right-col");
-      if ($rightCol?.scrollTo) $rightCol.scrollTo(0, 0);
+      const rightCol = document.querySelector(".right-col");
+      if (rightCol?.scrollTo) rightCol.scrollTo(0, 0);
     }, [location]);
 
     function spy() {
       if (!uiStore.watchScroll) return;
-      const [$firstTpl] = getAll("[data-spy='template']").filter(isInViewPort);
-      if ($firstTpl) {
-        uiStore.setActiveTemplatePath(getPath($firstTpl));
-        const $system = $firstTpl.closest("[data-spy='system']");
-        if ($system) {
-          const path = getPath($system);
+      const [firstTpl] = getAll("[data-spy='template']").filter(isInViewPort);
+      if (firstTpl) {
+        uiStore.setActiveTemplatePath(getPath(firstTpl));
+        const system = firstTpl.closest("[data-spy='system']");
+        if (system) {
+          const path = getPath(system);
           if (path) uiStore.setActiveSystemPath(path);
         }
       }
