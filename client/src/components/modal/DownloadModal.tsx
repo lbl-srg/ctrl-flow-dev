@@ -2,21 +2,53 @@ import Modal, { ModalInterface } from "./Modal";
 import { useState, ChangeEvent } from "react";
 import itl from "../../translations";
 
+const CONTROL_SEQUENCE = "Control Sequence";
+const DOCX = "docx";
+
+const DOWNLOADABLE_FILE_LIST = [
+  { label: "Full Project", ext: "zip" },
+  { label: "Schematics", ext: "rvt" },
+  { label: CONTROL_SEQUENCE, ext: DOCX },
+  { label: "Points List", ext: "pdf" },
+  { label: "Equipment Schedules", ext: "csv" },
+  { label: "CDL", ext: "json" },
+];
+
 function DownloadModal({ isOpen, close }: ModalInterface) {
-  const files = [
-    { label: "Full Project", ext: "zip" },
-    { label: "Schematics", ext: "rvt" },
-    { label: "Control Sequence", ext: "doc" },
-    { label: "Points List", ext: "pdf" },
-    { label: "Equipment Schedules", ext: "csv" },
-    { label: "CDL", ext: "json" },
-  ];
+  const [checked, setChecked] = useState(
+    DOWNLOADABLE_FILE_LIST.map(({ label }) => label),
+  );
 
-  const [checked, setChecked] = useState(files.map(({ label }) => label));
+  function updateItem(event: ChangeEvent<HTMLInputElement>, label: string) {
+    if (event.target.checked) {
+      setChecked(checked.concat(label));
+      return;
+    }
 
-  function updateItem(ev: ChangeEvent<HTMLInputElement>, label: string) {
-    if (ev.target.checked) setChecked(checked.concat(label));
-    else setChecked(checked.filter((item) => item !== label));
+    setChecked(checked.filter((item) => item !== label));
+  }
+
+  async function downloadFiles() {
+    if (checked.includes(CONTROL_SEQUENCE)) {
+      const response = await fetch(`${process.env.REACT_APP_API}/sequence`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // TODO: Replace with actual parameters necessary to generate the document
+        body: JSON.stringify({
+          optional: false,
+          dual_inlet_airflow_sensors: "yes",
+        }),
+      });
+
+      // TODO: Handle error responses which do not contain an actual file
+      const sequenceDocument = await response.blob();
+      const placeholderLink = document.createElement("a");
+      placeholderLink.href = window.URL.createObjectURL(sequenceDocument);
+      placeholderLink.download = `${CONTROL_SEQUENCE}.${DOCX}`;
+      placeholderLink.click();
+    }
+
+    close();
   }
 
   return (
@@ -24,7 +56,7 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
       <h1>{itl.phrases.selectToDownload}</h1>
 
       <ul className="check-list">
-        {files.map(({ label, ext }) => (
+        {DOWNLOADABLE_FILE_LIST.map(({ label, ext }) => (
           <li key={label} className="template">
             <label>
               <input
@@ -40,7 +72,7 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
       </ul>
 
       <div className="action-bar margin-top-lg">
-        <button className="inline" onClick={close}>
+        <button className="inline" onClick={downloadFiles}>
           {itl.phrases.downloadSelected}
         </button>
       </div>
