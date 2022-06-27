@@ -2,7 +2,7 @@
 
 ## Quickstart
 
-1. Run `npm install` to install npm dependencies
+1. Run `npm install` to install NPM dependencies
 1. Copy the `.env.example` file and name it `.env`. Change `NODE_ENV` in this file to `development`
 
 ### With a container
