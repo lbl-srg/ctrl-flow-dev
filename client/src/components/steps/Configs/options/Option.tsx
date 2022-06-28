@@ -33,33 +33,26 @@ const Option = ({ option, config }: OptionProps) => {
     if (childOption) setSelectedOption(childOption);
   }
 
-  if (option.visible) {
+  // TODO: booleans may need to be rendered, in which case they would
+  // not have children
+  if (option.visible && children.length) {
     return (
       <Fragment>
         <label>{option.name}</label>
 
-        {children.length ? (
-          <select
-            name={option.modelicaPath}
-            defaultValue={selectedOption?.modelicaPath || defaultValue}
-            onChange={optionSelected}
-          >
-            {children.map((child) => {
-              return (
-                <option key={child.modelicaPath} value={child.modelicaPath}>
-                  {child.name}
-                </option>
-              );
-            })}
-          </select>
-        ) : (
-          // TODO: this might need to be a checkbox for Boolean if no options
-          <input
-            type="text"
-            name={option.name}
-            defaultValue={option.value as string}
-          />
-        )}
+        <select
+          name={option.modelicaPath}
+          defaultValue={selectedOption?.modelicaPath || defaultValue}
+          onChange={optionSelected}
+        >
+          {children.map((child) => {
+            return (
+              <option key={child.modelicaPath} value={child.modelicaPath}>
+                {child.name}
+              </option>
+            );
+          })}
+        </select>
         {selectedOption ? (
           <Option
             key={selectedOption.modelicaPath}
