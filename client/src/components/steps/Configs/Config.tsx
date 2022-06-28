@@ -19,7 +19,6 @@ const Config = observer(({ configId }: { configId: string }) => {
 
   return (
     <div className="config" id={`config-${configId}`} data-spy="config">
-      {/* <Debug item={config} /> */}
       <div className="input-container">
         <input
           type="text"
