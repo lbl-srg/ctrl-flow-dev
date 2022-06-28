@@ -2,7 +2,7 @@
 
 ## Quickstart
 
-1. Run `npm install` to install npm dependencies
+1. Run `npm install` to install NPM dependencies
 1. Copy the `.env.example` file and name it `.env`. Change `NODE_ENV` in this file to `development`
 
 ### With a container
@@ -17,6 +17,7 @@
 ### Without a container
 
 1. Run `npm run install-modelica-deps` to install the modelica-json library, and modelica templates
+1. Run `npm i` in `/dependencies` to install packages.
 1. Ensure the `MODELICAPATH` environmental variable points to the correct location.
 
    e.g.
