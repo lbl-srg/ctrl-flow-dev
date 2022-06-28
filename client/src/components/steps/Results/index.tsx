@@ -1,17 +1,16 @@
 import { Fragment, useState } from "react";
 import PageHeader from "../../PageHeader";
-import { useStore } from "../../../store/store";
 import itl from "../../../translations";
 
 import "../../../styles/steps/results.scss";
 import ImgControl from "./ImgControl";
+import { useStores } from "../../../data";
 
 function Results() {
   const [activeTab, setActiveTab] = useState("schematics");
+  const { uiStore } = useStores();
 
-  const { activeTemplate } = useStore((state) => {
-    return { activeTemplate: state.getActiveTemplate() };
-  });
+  const activeTemplate = uiStore.activeTemplate;
 
   function getClass(tab: string): string {
     return tab === activeTab ? "active" : "";

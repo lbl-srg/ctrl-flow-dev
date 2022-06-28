@@ -1,9 +1,7 @@
-import { UserSystemTableProps } from "./Types";
 import UserSystemRow from "./UserSystemRow";
-import { groupFields } from "./helpers";
 
-function UserSystems({ userSystems }: UserSystemTableProps) {
-  const groups = userSystems.length > 0 ? groupFields(userSystems[0]) : [];
+function UserSystems() {
+  // const groups = userSystems.length > 0 ? groupFields(userSystems[0]) : [];
 
   return (
     <div className="table-container">
@@ -13,13 +11,13 @@ function UserSystems({ userSystems }: UserSystemTableProps) {
             <th className="sticky index-col">&nbsp;</th>
             <th className="sticky">Tag</th>
             <th className="sticky">Config</th>
-            {groups.map((group) => {
+            {/* {groups.map((group) => {
               return group.fields.map((field) => <th key={field}>{field}</th>);
-            })}
+            })} */}
           </tr>
         </thead>
         <tbody>
-          {userSystems.map((userSystem, index) => {
+          {/* {userSystems.map((userSystem, index) => {
             return (
               <UserSystemRow
                 key={userSystem.id}
@@ -28,7 +26,7 @@ function UserSystems({ userSystems }: UserSystemTableProps) {
                 groups={groups}
               />
             );
-          })}
+          })} */}
         </tbody>
       </table>
     </div>

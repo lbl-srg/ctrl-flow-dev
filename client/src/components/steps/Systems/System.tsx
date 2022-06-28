@@ -1,65 +1,54 @@
-import { useStore } from "../../../store/store";
-import { findIcon } from "../../LeftNavigation/icon-mappings";
+import { useStores } from "../../../data";
+import { observer } from "mobx-react";
+import { OptionInterface } from "../../../data/template";
 
-interface SystemProps {
-  title: string;
-  id: number;
-  options: { id: number; text: string; checked: boolean }[];
-}
+const System = observer(({ systemPath }: { systemPath: string }) => {
+  const { uiStore, configStore, templateStore } = useStores();
 
-function System({ id, title, options }: SystemProps) {
-  const {
-    getTemplates,
-    addConfig,
-    getConfigs,
-    removeAllTemplateConfigs,
-    addUserSystems,
-    setOpenSystemId,
-  } = useStore((state) => state);
+  const { description } = templateStore.getSystemTypeByPath(systemPath);
+  const templates = templateStore.getTemplatesForSystem(systemPath);
+  const iconClass = templateStore.getIconForSystem(systemPath);
 
-  const templates = getTemplates();
-  const iconClass = findIcon(title);
+  function onSelect(option: OptionInterface, checked: boolean) {
+    uiStore.setOpenSystemPath(systemPath);
+    uiStore.setActiveSystemPath(systemPath);
 
-  function onSelect(selection: string, checked: boolean) {
-    setOpenSystemId(id);
+    const templatePath = option.modelicaPath;
 
-    const template = templates.find((s) => s.name === selection);
-    if (template) {
-      if (checked) {
-        addConfig(template, { name: "Default" });
-        const [config] = getConfigs(template);
-        addUserSystems(template.name, 1, 1, config);
-      } else {
-        removeAllTemplateConfigs(template);
-      }
-    }
+    if (checked) configStore.add({ systemPath, templatePath });
+    else configStore.removeAllForSystemTemplate(systemPath, templatePath);
   }
 
   return (
-    <li className="system" id={`system-${id}`} data-spy="system">
+    <li className="system" id={`system-${systemPath}`} data-spy="system">
       <h2 className="system-header">
         {iconClass && <i className={iconClass} />}
-        {title}
+        {description}
       </h2>
 
       <ul className="check-list">
-        {options.map((option) => {
-          const { text, checked, id } = option;
+        {templates.map((option: OptionInterface) => {
+          const { name, modelicaPath } = option;
+
+          const checked = configStore.hasSystemTemplateConfigs(
+            systemPath,
+            modelicaPath,
+          );
 
           return (
             <li
               className="template"
-              key={id}
-              id={`template-${id}`}
+              key={modelicaPath}
+              id={`template-${modelicaPath}`}
               data-spy={checked ? "template" : "disabled"}
             >
               <label>
                 <input
                   type="checkbox"
                   checked={checked}
-                  onChange={(e) => onSelect(text, e.target.checked)}
+                  onChange={(e) => onSelect(option, e.target.checked)}
                 />
-                {text}
+                {name}
                 <i className="icon-info-circled" />
               </label>
             </li>
@@ -68,6 +57,6 @@ function System({ id, title, options }: SystemProps) {
       </ul>
     </li>
   );
-}
+});
 
 export default System;

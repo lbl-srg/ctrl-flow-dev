@@ -1,5 +1,4 @@
-import { Configuration, UserSystem } from "../../../store/store";
-
+import { ConfigInterface } from "../../../data/config";
 export interface SystemWidgetForm {
   tag: string;
   start: number;
@@ -11,16 +10,12 @@ export interface GroupedField {
   groupName: string;
   fields: string[];
 }
-export interface AddUserSystemsWidgetProps {
-  configs: Configuration[];
-}
 
-export interface UserSystemTableProps {
-  userSystems: UserSystem[];
-}
+// export interface UserSystemTableProps {
+//   userSystems: UserSystem[];
+// }
 
 export interface UserSystemRowProps {
-  userSystem: UserSystem;
   index: number;
   groups: GroupedField[];
 }
@@ -36,5 +31,5 @@ export type AddUserSystemsAction = (
   tag: string,
   start: number,
   quantity: number,
-  config: Configuration,
+  config: ConfigInterface,
 ) => void;

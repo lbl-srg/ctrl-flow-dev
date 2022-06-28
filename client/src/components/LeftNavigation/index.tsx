@@ -1,28 +1,21 @@
-import { useStore } from "../../store/store";
 import System from "./System";
 import itl from "../../translations";
+import { useStores } from "../../data";
 
 import "../../styles/components/left-navigation.scss";
+import { SystemTypeInterface } from "../../data/template";
 
 const LeftNav = () => {
-  const { systemTypes, meta, templates } = useStore((state) => ({
-    ...state,
-    meta: state.getMetaConfigs(),
-    templates: state.getActiveTemplates(),
-  }));
+  const { templateStore } = useStores();
 
   return (
     <div className="left-nav">
       <h4>{itl.terms.systems}</h4>
 
-      {systemTypes.map((systemType) => (
+      {templateStore.systemTypes.map((systemType: SystemTypeInterface) => (
         <System
-          key={systemType.id}
-          systemType={systemType}
-          templates={templates.filter(
-            (tpl) => tpl.systemType.id === systemType.id,
-          )}
-          meta={meta}
+          key={systemType.modelicaPath}
+          systemPath={systemType.modelicaPath}
         />
       ))}
     </div>

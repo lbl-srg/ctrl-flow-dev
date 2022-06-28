@@ -1,26 +1,31 @@
-import { MouseEvent } from "react";
-import { useStore } from "../../../store/store";
-import { TemplateProps } from "./Types";
 import itl from "../../../translations";
 import Config from "./Config";
+import { useStores } from "../../../data";
+import { observer } from "mobx-react";
 
-function Template({ template }: TemplateProps) {
-  const { addConfig, configs, setOpenSystemId } = useStore((state) => ({
-    ...state,
-    configs: state.getConfigs(template, null),
-  }));
+const Template = ({ systemPath, templatePath }) => {
+  const { templateStore, configStore, uiStore } = useStores();
 
-  function add(ev: MouseEvent) {
+  const configs = configStore.getConfigsForSystemTemplate(
+    systemPath,
+    templatePath,
+  );
+
+  const { template } = {
+    template: templateStore.getTemplateByPath(templatePath),
+  };
+
+  function add(ev) {
     ev.preventDefault();
-    addConfig(template);
-    setOpenSystemId(template.systemType.id);
+    configStore.add({ systemPath, templatePath, name: "untitled" });
+    uiStore.setOpenSystemPath(systemPath);
   }
 
   return (
     <article
       className="template"
       data-spy="template"
-      id={`template-${template.id}`}
+      id={`template-${templatePath}`}
     >
       <h4 className="with-links">
         {template.name}
@@ -40,7 +45,7 @@ function Template({ template }: TemplateProps) {
 
       <div className="config-container">
         {configs.map((config) => (
-          <Config key={config.id} config={config} template={template} />
+          <Config key={config.id} configId={config.id} />
         ))}
       </div>
 
@@ -50,6 +55,6 @@ function Template({ template }: TemplateProps) {
       </a>
     </article>
   );
-}
+};
 
 export default Template;

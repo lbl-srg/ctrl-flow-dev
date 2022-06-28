@@ -1,17 +1,14 @@
 import { Fragment } from "react";
 import PageHeader from "../../PageHeader";
 import System from "./System";
-import { useStore } from "../../../store/store";
 import itl from "../../../translations";
+import { useStores } from "../../../data";
 
 import "../../../styles/steps/configs.scss";
 
 function Configs() {
-  const { systemTypes, templates, configs } = useStore((state) => ({
-    ...state,
-    configs: state.getConfigs(),
-    templates: state.getActiveTemplates(),
-  }));
+  const { templateStore } = useStores();
+  const systemTypes = templateStore.systemTypes;
 
   return (
     <Fragment>
@@ -20,16 +17,11 @@ function Configs() {
       <div className="configs-page">
         <h4>{itl.phrases.addConfigs}</h4>
 
-        {systemTypes.map((systemT) => {
-          const systemTypeTemplates = templates.filter(
-            (t) => t.systemType.id === systemT.id,
-          );
-
+        {systemTypes.map((systemType) => {
           return (
             <System
-              key={systemT.id}
-              systemType={systemT}
-              templates={systemTypeTemplates}
+              key={systemType.modelicaPath}
+              systemPath={systemType.modelicaPath}
             />
           );
         })}

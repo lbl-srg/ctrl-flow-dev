@@ -1,32 +1,24 @@
-import { MouseEvent, ChangeEvent } from "react";
-import { ConfigProps } from "./Types";
-import { useStore } from "../../../store/store";
-import ConfigSlideOut from "../../modal/ConfigSlideOut";
+import ConfigSlideOut from "./ConfigSlideOut";
 import { useDebouncedCallback } from "use-debounce";
+import { useStores } from "../../../data";
+import { observer } from "mobx-react";
+import { MouseEvent } from "react";
 
-function Config({ config, template }: ConfigProps) {
-  const { removeConfig, updateConfig, toggleConfigLock } = useStore(
-    (state) => state,
-  );
+const Config = observer(({ configId }: { configId: string }) => {
+  const { configStore } = useStores();
+  const config = configStore.getById(configId);
 
   function remove(ev: MouseEvent) {
     ev.preventDefault();
-    removeConfig(config);
+    configStore.remove(configId);
   }
 
-  const updateName = useDebouncedCallback(
-    (ev: ChangeEvent<HTMLInputElement>) => {
-      updateConfig(
-        { ...config, name: ev.target.value },
-        ev.target.value,
-        config.selections,
-      );
-    },
-    400,
-  );
+  const updateName = useDebouncedCallback((ev) => {
+    configStore.update(config.id, { name: ev.target.value });
+  }, 400);
 
   return (
-    <div className="config" id={`config-${config.id}`} data-spy="config">
+    <div className="config" id={`config-${configId}`} data-spy="config">
       <div className="input-container">
         <input
           type="text"
@@ -38,27 +30,21 @@ function Config({ config, template }: ConfigProps) {
 
         <div className="config-actions">
           <i
+            onClick={() => configStore.toggleConfigLock(configId)}
             className={
               config.isLocked
                 ? "lock-toggle icon-lock"
                 : "lock-toggle icon-lock-open"
             }
-            onClick={() => toggleConfigLock(config.id)}
           />
-
-          <ConfigSlideOut
-            disabled={config.isLocked}
-            template={template}
-            config={config}
-          />
+          <ConfigSlideOut configId={config.id} />
         </div>
       </div>
-
       <a href="#" className="remove" onClick={remove}>
         <i className="icon-close" />
       </a>
     </div>
   );
-}
+});
 
 export default Config;

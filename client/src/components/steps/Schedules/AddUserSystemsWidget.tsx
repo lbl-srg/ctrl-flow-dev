@@ -1,39 +1,42 @@
-import { useStore } from "../../../store/store";
-import { AddUserSystemsWidgetProps, AddUserSystemFormData } from "./Types";
 import { ChangeEvent, FormEvent } from "react";
 import { getFormData } from "../../../utils/dom-utils";
 import itl from "../../../translations";
+import { useStores } from "../../../data";
+import { observer } from "mobx-react";
+import { ConfigInterface } from "../../../data/config";
 
-function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
-  const { addUserSystems, activeConfig, setActiveConfigId } = useStore(
-    (state) => {
-      return { ...state, activeConfig: state.getActiveConfig() };
-    },
-  );
+type AddUserSystemFormData = {
+  tag: string;
+  start: string;
+  quantity: string;
+  configId: string;
+};
 
-  const config = activeConfig || configs[0];
+const AddUserSystemsWidget = observer(() => {
+  const { configStore } = useStores();
+  const configs = configStore.getActiveConfigs();
 
   const initValues = {
     tag: "",
     start: 1,
     quantity: 1,
-    configId: config?.id || undefined,
+    configId: configs[0]?.id,
   };
 
   function configChange(ev: ChangeEvent<HTMLSelectElement>) {
-    setActiveConfigId(Number(ev.target.value));
+    configStore.setActiveConfigId(ev.target.value);
   }
 
   function onWidgetSubmit(ev: FormEvent<HTMLFormElement>) {
     ev.preventDefault();
     const formValues = getFormData(ev.currentTarget) as AddUserSystemFormData;
 
-    addUserSystems(
-      formValues.tag,
-      Number(formValues.start),
-      Number(formValues.quantity),
-      config,
-    );
+    // addUserSystems(
+    //   formValues.tag,
+    //   Number(formValues.start),
+    //   Number(formValues.quantity),
+    //   config,
+    // );
   }
 
   return (
@@ -68,9 +71,9 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
               disabled={configs.length === 0}
               onChange={configChange}
             >
-              {configs.map(({ id, name }) => (
-                <option key={id} value={id}>
-                  {name}
+              {configs.map((config: ConfigInterface) => (
+                <option key={config.id} value={config.id}>
+                  {config.name}
                 </option>
               ))}
             </select>
@@ -95,6 +98,6 @@ function AddUserSystemsWidget({ configs }: AddUserSystemsWidgetProps) {
       </form>
     </div>
   );
-}
+});
 
 export default AddUserSystemsWidget;

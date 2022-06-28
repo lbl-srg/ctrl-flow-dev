@@ -1,73 +1,68 @@
-import { SystemTemplateProps } from "./Types";
-import { useStore } from "../../store/store";
-import { useRef, MouseEvent } from "react";
 import { scrollToSelector } from "../../utils/dom-utils";
+import { useStores } from "../../data";
+import { observer } from "mobx-react";
+import { SyntheticEvent } from "react";
+import { ConfigInterface } from "../../data/config";
 
-function Template({ template, meta, systemId }: SystemTemplateProps) {
-  const {
-    activeTemplateId,
-    setActiveTemplateId,
-    setActiveSystemId,
-    timeoutScroll,
-    setActiveConfigId,
-    activeConfigId,
-    clearNavState,
-  } = useStore((state) => state);
+const SystemTemplate = observer(
+  ({
+    systemPath,
+    templatePath,
+  }: {
+    systemPath: string;
+    templatePath: string;
+  }) => {
+    const { uiStore, templateStore, configStore } = useStores();
 
-  const active = activeTemplateId === template.id;
+    const template = templateStore.getTemplateByPath(templatePath);
+    const configs = configStore.getConfigsForSystemTemplate(
+      systemPath,
+      templatePath,
+    );
+    const active = uiStore.activeTemplate === templatePath;
+    const rootClass = active ? "active" : "";
 
-  const ref = useRef(null);
-  const rootClass = active ? "active" : "";
+    function selectTemplate(ev: SyntheticEvent) {
+      // prevent default since its a <a> with no valid href
+      ev.preventDefault();
+      uiStore.setActiveSystemPath(systemPath);
+      uiStore.setActiveTemplatePath(templatePath);
+      scrollToSelector(`#template-${templatePath}`);
+    }
 
-  function selectTemplate(ev: MouseEvent) {
-    // prevent default since its a <a> with no valid href
-    ev.preventDefault();
-    clearNavState();
-    setActiveSystemId(systemId);
-    setActiveTemplateId(template.id);
-    timeoutScroll();
-    scrollToSelector(`#template-${template.id}`);
-  }
+    function chooseConfig(configId: string | undefined, ev: SyntheticEvent) {
+      ev.preventDefault();
+      uiStore.setActiveSystemPath(systemPath);
+      uiStore.setActiveTemplatePath(template.modelicaPath);
+      uiStore.setActiveConfigId(configId);
+      scrollToSelector(`#config-${configId}`);
+    }
 
-  function chooseConfig(configId: number, ev: MouseEvent) {
-    ev.preventDefault();
-    clearNavState();
-    setActiveSystemId(systemId);
-    setActiveTemplateId(template.id);
-    setActiveConfigId(configId);
-    timeoutScroll();
-    scrollToSelector(`#config-${configId}`);
-  }
+    return (
+      <li className={rootClass}>
+        <a className="truncate" href="#" onClick={selectTemplate}>
+          {template.name}
+        </a>
 
-  return (
-    <li ref={ref} className={rootClass}>
-      <a
-        className="truncate"
-        key={template.id}
-        href="#"
-        onClick={selectTemplate}
-      >
-        {template.name}
-      </a>
+        <ul className="configs">
+          {configs.map((config: ConfigInterface) => (
+            <li key={config.id}>
+              <a
+                href="#"
+                className={
+                  config.id === uiStore.activeConfigId ? "grid active" : "grid"
+                }
+                onClick={(ev) => chooseConfig(config.id, ev)}
+              >
+                <div className="truncate">{config.name}</div>
+                <div>{`qty.${config.quantity}`}</div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </li>
+    );
+  },
+);
 
-      <ul className="configs">
-        {meta.map((m) => (
-          <li key={m.config.name}>
-            <a
-              href="#"
-              className={
-                m.config.id === activeConfigId ? "grid active" : "grid"
-              }
-              onClick={chooseConfig.bind(null, m.config.id)}
-            >
-              <div className="truncate">{`${m.config.name}`}</div>
-              <div>{`qty.${m.quantity}`}</div>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </li>
-  );
-}
-
-export default Template;
+export default SystemTemplate;

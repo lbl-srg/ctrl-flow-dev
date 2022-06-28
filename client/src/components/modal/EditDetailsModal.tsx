@@ -1,93 +1,105 @@
-import { Field, Form, Formik } from "formik";
-import { ProjectDetails, useStore } from "../../store/store";
+// import { Field, Form, Formik } from "formik";
 import Modal, { ModalInterface } from "./Modal";
 import itl from "../../translations";
+import { useStores } from "../../data";
+import { getFormData } from "../../utils/dom-utils";
+import { observer } from "mobx-react";
+import { SyntheticEvent } from "react";
+
 interface EditDetailsModalProps extends ModalInterface {
   afterSubmit?: () => void;
-  initialState?: Partial<ProjectDetails>;
   modalTitle: string;
   submitText: string;
   cancelText?: string;
 }
 
-const defaultState = {
-  name: "",
-  address: "",
-  type: "Multi-Story Office",
-  size: 0,
-  units: "IP",
-  code: "ashrae 90.1 20201",
-  notes: "",
-} as unknown as ProjectDetails;
+const EditDetailsModal = observer(
+  ({
+    afterSubmit,
+    modalTitle,
+    submitText,
+    cancelText,
+    isOpen,
+    close,
+  }: EditDetailsModalProps) => {
+    const { projectStore } = useStores();
 
-function EditDetailsModal({
-  afterSubmit,
-  initialState = defaultState,
-  modalTitle,
-  submitText,
-  cancelText,
-  isOpen,
-  close,
-}: EditDetailsModalProps) {
-  const { saveProjectDetails } = useStore((state) => state);
+    const details = projectStore.activeProject.projectDetails;
 
-  return (
-    <Modal close={close} isOpen={isOpen}>
-      <h1>{modalTitle}</h1>
+    function save(ev: SyntheticEvent) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      projectStore.setProjectDetails(getFormData(ev.target as HTMLFormElement));
+      if (afterSubmit) afterSubmit();
+    }
 
-      <Formik
-        initialValues={initialState}
-        onSubmit={(values: Partial<ProjectDetails>) => {
-          saveProjectDetails(values);
-          afterSubmit && afterSubmit();
-        }}
-      >
-        <Form className="no-margin">
+    return (
+      <Modal close={close} isOpen={isOpen}>
+        <h1>{modalTitle}</h1>
+
+        <form className="no-margin" onSubmit={save}>
           <label htmlFor="name">
             {itl.phrases.projectName}:
-            <Field id="name" name="name" type="text" />
+            <input name="name" type="text" defaultValue={details.name} />
           </label>
 
           <label htmlFor="address">
             Address:
-            <Field id="address" name="address" type="text" />
+            <input name="address" type="text" defaultValue={details.address} />
           </label>
 
           <div className="grid">
             <label htmlFor="type">
               {itl.terms.type}
-              <Field as="select" name="type" data-testid="type-input">
+              <select
+                name="type"
+                data-testid="type-input"
+                defaultValue={details.type}
+              >
                 <option value="multi-story office">Multi-Story Office</option>
                 <option value="warehouse">Warehouse</option>
                 <option value="something else">Something Else</option>
-              </Field>
+              </select>
             </label>
 
             <label htmlFor="size">
               {itl.terms.size}
-              <Field id="size" type="number" name="size" />
+              <input
+                id="size"
+                type="number"
+                name="size"
+                defaultValue={details.size}
+              />
             </label>
 
             <label htmlFor="units">
               {itl.terms.units}
-              <Field as="select" name="units" data-testid="units-input">
+              <select
+                name="units"
+                data-testid="units-input"
+                defaultValue={details.units}
+              >
                 <option value="ip">IP</option>
                 <option value="square feet">square ft</option>
                 <option value="something">Something</option>
-              </Field>
+              </select>
             </label>
 
             <label htmlFor="code">
               {itl.phrases.energyCode}
-              <Field as="select" name="code" data-testid="code-input">
+              <select
+                name="code"
+                data-testid="code-input"
+                defaultValue={details.code}
+              >
                 <option value="ashrae 90.1 20201">ASHRAE 90.1 20201</option>
                 <option value="a different one">A Different One</option>
-              </Field>
+              </select>
             </label>
           </div>
 
           <label htmlFor="notes">{itl.terms.notes}:</label>
-          <Field as="textarea" id="notes" name="notes" />
+          <textarea name="notes" defaultValue={details.notes} />
 
           <div className="action-bar">
             {cancelText ? (
@@ -97,10 +109,10 @@ function EditDetailsModal({
             ) : null}
             <input type="submit" className="inline" value={submitText} />
           </div>
-        </Form>
-      </Formik>
-    </Modal>
-  );
-}
+        </form>
+      </Modal>
+    );
+  },
+);
 
 export default EditDetailsModal;

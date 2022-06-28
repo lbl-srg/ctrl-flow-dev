@@ -1,15 +1,14 @@
-// const jp = require("jsonpath");
 import fs from "fs";
 import path from "path";
+
 import {
   loadPackage,
   getTemplates,
   getSystemTypes,
   getOptions,
 } from "../src/parser";
-import { fullTempDirPath } from "../tests/integration/parser/utils";
 
-loadPackage(`${fullTempDirPath}/TestPackage`);
+loadPackage("Buildings");
 
 const data = {
   templates: getTemplates(),
@@ -17,6 +16,8 @@ const data = {
   options: getOptions(),
 };
 
-const dest = path.resolve(`${__dirname}/../public/build/system-templates.json`);
+const dest = path.resolve(
+  `${__dirname}/../public/system-template-buildings-package.json`,
+);
 
 fs.writeFileSync(dest, JSON.stringify(data, null, 2));

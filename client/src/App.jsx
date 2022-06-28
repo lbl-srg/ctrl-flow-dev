@@ -1,11 +1,13 @@
 import { Route, Routes, useLocation } from "react-router-dom";
-import Configs from "./components/steps/Configs/index";
+import Configs from "./components/steps/Configs";
 import Landing from "./components/steps/Landing";
-import Results from "./components/steps/Results/index";
+import Results from "./components/steps/Results";
 import Schedules from "./components/steps/Schedules";
 import Systems from "./components/steps/Systems";
 import Sidebarlayout from "./components/layouts/SidebarLayout";
 import LeftNav from "./components/LeftNavigation";
+import { autorun } from "mobx";
+import { observer } from "mobx-react";
 
 import "./styles/application.scss";
 

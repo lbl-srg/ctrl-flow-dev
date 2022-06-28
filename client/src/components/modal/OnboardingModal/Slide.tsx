@@ -1,6 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
 import itl from "../../../translations";
-import { SlideProps } from "./types";
 
 const slides = [
   {
@@ -52,7 +50,7 @@ const slides = [
   },
 ];
 
-function Slide({ slideNum }: SlideProps) {
+function Slide({ slideNum }: { slideNum: number }) {
   const slide = { ...itl.onboarding[slideNum], ...slides[slideNum] };
 
   return (

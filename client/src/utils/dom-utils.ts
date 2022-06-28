@@ -1,4 +1,4 @@
-export function isInViewPort($el: Element): boolean {
+export function isInViewPort($el: HTMLElement): boolean {
   const bounding = $el.getBoundingClientRect();
 
   if (
@@ -15,8 +15,8 @@ export function isInViewPort($el: Element): boolean {
   }
 }
 
-export function scrollToSelector(selector: string): void {
-  const $el: HTMLElement | null = document.querySelector(selector);
+export function scrollToSelector(selector: string) {
+  const $el = document.querySelector(selector);
   if ($el) $el.scrollIntoView({ behavior: "smooth" });
 }
 
@@ -24,10 +24,9 @@ export function getAll(selector: string): HTMLElement[] {
   return Array.from(document.querySelectorAll(selector));
 }
 
-export function getNumericId($el: Element): number | null {
+export function getPath($el: HTMLElement): string {
   const idStr = $el.getAttribute("id") || "";
-  const [str, val] = idStr.split("-");
-  return val ? Number(val) : null;
+  return idStr.split("-")[1];
 }
 
 export function getFormData($form: HTMLFormElement): object {

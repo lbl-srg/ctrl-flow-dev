@@ -1,19 +1,13 @@
 import { Fragment } from "react";
 import PageHeader from "../../PageHeader";
-import { useStore } from "../../../store/store";
 import System from "./System";
+import { useStores } from "../../../data";
 
 import "../../../styles/steps/systems.scss";
+import { SystemTypeInterface } from "../../../data/template";
 
 const Systems = () => {
-  const { systemTypes, activeTemplates, templates } = useStore((state) => {
-    return {
-      ...state,
-      templates: state.getTemplates(),
-      activeTemplates: state.getActiveTemplates(),
-      activeTemplate: state.getActiveTemplate(),
-    };
-  });
+  const { templateStore } = useStores();
 
   return (
     <Fragment>
@@ -21,23 +15,10 @@ const Systems = () => {
       <h4>Select the systems types you will configure:</h4>
 
       <div className="systems-page">
-        {systemTypes.map((systemType) => (
+        {templateStore.systemTypes.map((systemType: SystemTypeInterface) => (
           <System
-            key={systemType.id}
-            title={systemType.name}
-            id={systemType.id}
-            options={templates
-              .filter((tpl) => tpl.systemType.id === systemType.id)
-              .map((sys) => {
-                const exists = activeTemplates.find(
-                  (userS) => userS.id === sys.id,
-                );
-                return {
-                  id: sys.id,
-                  text: sys.name,
-                  checked: exists ? true : false,
-                };
-              })}
+            key={systemType.modelicaPath}
+            systemPath={systemType.modelicaPath}
           />
         ))}
       </div>

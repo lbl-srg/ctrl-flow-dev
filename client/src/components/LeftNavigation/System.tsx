@@ -1,38 +1,44 @@
 import SystemTemplate from "./SystemTemplate";
-import { findIcon } from "./icon-mappings";
-import { SystemProps } from "./Types";
-import { useStore } from "../../store/store";
 import { scrollToSelector } from "../../utils/dom-utils";
+import { useStores } from "../../data";
+import { observer } from "mobx-react";
+import { TemplateInterface } from "../../data/template";
 
-function System({ systemType, templates, meta }: SystemProps) {
-  const {
-    openSystemId,
-    setOpenSystemId,
-    activeSystemId,
-    clearNavState,
-    setActiveSystemId,
-    timeoutScroll,
-  } = useStore((state) => state);
-
+function getClasses(isEmpty: boolean, isActive: boolean, isOpen: boolean) {
   const classes = ["system"];
-  const isActive = systemType.id === activeSystemId && templates.length > 0;
-  const isOpen = systemType.id === openSystemId && templates.length > 0;
-
-  if (!templates.length) classes.push("empty");
-  if (isActive) classes.push("active");
-  if (isOpen) classes.push("open");
-
-  const icon = findIcon(systemType.name) || "";
-
-  function setActive() {
-    clearNavState();
-    setActiveSystemId(systemType.id);
-    scrollToSelector(`#system-${systemType.id}`);
-    timeoutScroll();
+  if (isEmpty) classes.push("empty");
+  else {
+    if (isActive) classes.push("active");
+    if (isOpen) classes.push("open");
   }
 
-  function toggleOpen() {
-    setOpenSystemId(isOpen ? null : systemType.id);
+  return classes;
+}
+
+const System = observer(({ systemPath }: { systemPath: string }) => {
+  const { uiStore, templateStore } = useStores();
+
+  const { systemType, templates, icon } = {
+    templates: templateStore.getActiveTemplatesForSystem(systemPath),
+    systemType: templateStore.getSystemTypeByPath(systemPath),
+    icon: templateStore.getIconForSystem(systemPath),
+  };
+
+  const isEmpty = !templates.length;
+  const isActive = systemPath === uiStore.activeSystemPath && !isEmpty;
+  const isOpen = systemPath === uiStore.openSystemPath && !isEmpty;
+
+  const classes = getClasses(isEmpty, isActive, isOpen);
+
+  if (isEmpty) classes.push("empty");
+  else {
+    if (isActive) classes.push("active");
+    if (isOpen) classes.push("open");
+  }
+
+  function setActive() {
+    uiStore.setActiveSystemPath(systemPath);
+    scrollToSelector(`#system-${systemPath}`);
   }
 
   return (
@@ -40,26 +46,28 @@ function System({ systemType, templates, meta }: SystemProps) {
       <div className="title-bar">
         <a className="title truncate" onClick={setActive}>
           <i className={icon} />
-          {systemType.name}
+          {systemType.description}
         </a>
 
-        <i onClick={toggleOpen} className={"toggle icon-down-open"} />
+        <i
+          onClick={() => uiStore.toggleSystemOpenPath(systemPath)}
+          className={"toggle icon-down-open"}
+        />
       </div>
 
-      {isOpen && (
+      {isOpen && !isEmpty && (
         <ul className="templates">
-          {templates.map((tpl) => (
+          {templates.map((tpl: TemplateInterface) => (
             <SystemTemplate
-              systemId={systemType.id}
-              key={tpl.id}
-              template={tpl}
-              meta={meta.filter((m) => m.config.template.id === tpl.id)}
+              key={tpl.modelicaPath}
+              systemPath={systemPath}
+              templatePath={tpl.modelicaPath}
             />
           ))}
         </ul>
       )}
     </div>
   );
-}
+});
 
 export default System;
