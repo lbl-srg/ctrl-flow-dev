@@ -17,8 +17,6 @@ And a path to a parameter within the MutlizoneVAV template:
 
 `Buildings.Templates.AirHandlersFans.MultizoneVAV.supBlo`
 
-Modelica has lots of rules about how to potentially interpret these paths (like supporting relative vs. absolute) but the parser only deals in absolutes.
-
 ## Read-only Types
 
 ### SystemTypes
@@ -38,8 +36,6 @@ Holds meta info about a given template. Templates have a one to many relationshi
 `modelicaPath`: the UUID for the template, as well as the identifier for the entrypoint option in the options table.
 
 `systemTypes`: this is an in-order hierarchical list of categories. Currently modelica-buildings only has categories one level deep, but we need to support multiple levels.
-
-`options`: This is a flat list of all available options in the template.
 
 ```typescript
 export interface TemplateInterface {
@@ -66,7 +62,7 @@ An option represents a 'node' of info from the template that _could_ be rendered
 NOTE: expression integration is ongoing so `valueExpression` and `enable` are always null. When the parser starts extacting expressions it will do so in a TBD `Expression` format used for both `valueExpression` and `enable`.
 
 ```typescript
-export interface OptionInterface {
+interface OptionInterface {
   modelicaPath: string;
   type: string;
   name: string;
@@ -83,7 +79,7 @@ export interface OptionInterface {
 
 Options have a recursive structure with options having options. To traverse the entire list of options for a given template:
 
-1. Lookup the entrypoint option of a template by finding the matching modelica path
+1. Lookup the entrypoint option of a template by finding the option with a matching modelica path
 2. For each childOption, visit that option and each of it's childOptions
 
 TODO: there is an open question about separating option groups and single options as a data type.
@@ -92,9 +88,45 @@ TODO: there is an open question about separating option groups and single option
 
 ### Schedule Table reorganization
 
+Inputs for the schedule table are generically extracted in the same option tree used for configurations. The parser needs to be updated to unpack the tree into more convenient format as well as include grouping information for the schedule table.
+
+`ScheduleGroup`:
+
+```typescript
+interface ScheduleGroup {
+  modelicaPath: string;
+  name: string;
+
+```
+
+`ScheduleOption`:
+
+```typescript
+interface ScheduleOption extends OptionInterface {
+  ScheduleGroups: string[]; // in-order list of schedule groups
+}
+```
+
+From this example table:
+
+```
+                                   |              group1               |
+                 |    subgroup1    |    subgroup2    |     subgroup3   |
+        |--------|-----------------|--------|--------|-----------------|
+        | param1 | param2 | param3 | param4 | param5 | param6 | param7 |
+|-------|--------|--------|--------|--------|--------|--------|--------|
+| row1  |  val1  |  val2  |  val3  | val4   | val5   | val6   |  val7  |
+| row2  |  ...
+```
+
+- Each 'val' cell is its own `Option` with a unique modelica path
+- Each `Option` can be grouped in an arbitrary number of groups. `val1` is in no groups, `val2` in one ('subgroup1') and `val4` in two ('group1', 'subgroup2'). The `ScheduleGroups` array for `val4` would look as follows: `['group1', 'subgroup2']`
+
 ## Write Data - User Configurations
 
 ### Project
+
+`Project` contains metadata about a project. The linkage-widget store is setup to handle setting an active project, however UI has not been setup yet to switch the active project.
 
 ```typescript
 export interface ProjectDetailInterface {
@@ -115,4 +147,38 @@ export interface ProjectInterface {
 
 ### Configurations
 
+Configurations hold all input for a given template.
+
+```typescript
+export interface ConfigInterface {
+  [key: string]: string | number | undefined | boolean | SelectionInterface[];
+  id?: string; // TODO: likely remove, templatePath should be unique
+  name?: string; // user facing string
+  isLocked?: boolean; // TODO: likely remove
+  selections?: SelectionInterface[];
+  quantity?: number;
+  systemPath: string; // TODO: remove this - info already available in template
+  templatePath: string; // modelica path for a given template
+}
+```
+
 ### Selections
+
+Each input in the linkage widget gets captured using a selection.
+
+`name`: the modelica path of an option
+`value`: the selection/value
+
+TODO: this data type may need to be expanded to include `type` as `value` will need to hold the following types of input:
+
+- A modelica path for a component/enum selected in a dropdown
+- strings
+- numbers
+- booleans
+
+```typescript
+export interface SelectionInterface {
+  name: string; // TODO: rename to 'path'
+  value: any;
+}
+```
