@@ -5,6 +5,43 @@ Linkage Schema is the intermediate format extracted by the parser from modelica-
 1. Render available selections from a template
 2. Record selections to be used to write out a completed template in modelica
 
+## Overview of Data Types
+
+Read-Only Data types (static data extracted from modelica packages)
+
+- `SystemType`: template category
+- `Template`: Modelica Template
+- `Option`: a node of info from the template that either specifies how to render a dropdown or bit of UI, or links to a list of child options
+- `ScheduleOption`: Like an `Option` but it also has `ScheduleCategory` categories
+- `ScheduleCategory`: Categories for `ScheduleOption`
+
+Write Data types (data created from user input):
+
+- `Project`: User project that contains configs
+- `ProjectDetail`: project meta-data
+- `Configuration`: Container for a configuration that includes the template and the list of selections/inputs made
+- `Selection`: Each selection made in a template
+
+## Overview of Data-Flow:
+
+```mermaid
+sequenceDiagram
+    participant modelica_json
+    participant doc_pipeline
+    participant BE
+    Note over BE,FE: Linkage Schema
+    participant FE
+    modelica_json->>BE: Modelica-JSON
+    BE->>FE: RO Linkage Schema
+    FE->> BE: Linkage Schema (Selections)
+    BE->>BE: Write Selections to Modelica
+    BE->>modelica_json: Modelica
+    modelica_json->>FE: modelica-json
+    modelica_json->>FE: SVGs
+    BE->>doc_pipeline: Linkage Schema
+    doc_pipeline->>FE: docx
+```
+
 ## Modelica Paths as UUIDs
 
 The parser extracts portions of a template and uses `modelicaPath`s as a unique identifier for that portion of a template. This is leveraging modelica's path system that uses dot access to indicate where to find a given piece of modelica.
@@ -16,6 +53,8 @@ For example, this is the path to a MultizoneVAV template:
 And a path to a parameter within the MutlizoneVAV template:
 
 `Buildings.Templates.AirHandlersFans.MultizoneVAV.supBlo`
+
+Most of the linkage schema data types use this path (using the keyname `modelicaPath`) as a unique identifier.
 
 ## Read-only Types
 
