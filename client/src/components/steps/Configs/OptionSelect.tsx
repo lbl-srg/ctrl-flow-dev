@@ -9,9 +9,9 @@ export interface OptionProps {
   option: FlatConfigOption;
   configId: string;
   updateSelectedConfigOptions: (
-    parentModelicaPath: string,
-    parentName: string,
-    option: OptionInterface,
+    modelicaPath: string,
+    name: string,
+    selectedOption: OptionInterface,
   ) => void;
 }
 
