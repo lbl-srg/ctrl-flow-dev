@@ -8,7 +8,7 @@ export interface OptionProps {
   index: number;
   option: FlatConfigOption;
   configId: string;
-  updateSelectedConfigOptions: (
+  updateSelectedConfigOption: (
     modelicaPath: string,
     name: string,
     selectedOption: OptionInterface,
@@ -19,7 +19,7 @@ const OptionSelect = ({
   index,
   option,
   configId,
-  updateSelectedConfigOptions,
+  updateSelectedConfigOption,
 }: OptionProps) => {
   const { configStore } = useStores();
 
@@ -44,7 +44,7 @@ const OptionSelect = ({
     );
 
     if (selectedOption) {
-      updateSelectedConfigOptions(
+      updateSelectedConfigOption(
         option.modelicaPath,
         option.name,
         selectedOption,

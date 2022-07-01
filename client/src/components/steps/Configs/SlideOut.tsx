@@ -183,7 +183,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
   // TODO: Finish implementing grouping of options
   // const groupedConfigOptions = groupConfigOptions(flatConfigOptions);
 
-  function updateSelectedConfigOptions(
+  function updateSelectedConfigOption(
     parentModelicaPath: string,
     parentName: string,
     option: OptionInterface,
@@ -259,7 +259,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
               index={overallIndex}
               option={option}
               configId={config.id}
-              updateSelectedConfigOptions={updateSelectedConfigOptions}
+              updateSelectedConfigOption={updateSelectedConfigOption}
             />
           );
         })}
