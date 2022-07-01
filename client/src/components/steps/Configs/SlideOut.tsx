@@ -65,7 +65,7 @@ export function flattenConfigOptions(
         },
       ];
 
-      // Sees if there are child options for display based on the user selection or the default selection
+      // Sees if there are child options for this path for display based on the user selection or the default selection
       if (selectedOptions) {
         if (selectedOptions[option.modelicaPath]) {
           flatConfigOptions = [
