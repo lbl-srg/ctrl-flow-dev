@@ -2,8 +2,8 @@
 
 Linkage Schema is the intermediate format extracted by the parser from modelica-json to narrowly capture what is necessary to:
 
-1. Render available selections from a template
-2. Record selections to be used to write out a completed template in modelica
+1. Render available input from a template
+2. Record input to be used to write out a completed template in modelica
 
 ## Overview of Data Types
 
@@ -19,8 +19,9 @@ Write Data types (data created from user input):
 
 - `Project`: User project that contains configs
 - `ProjectDetail`: project meta-data
-- `Configuration`: Container for a configuration that includes the template and the list of selections/inputs made
-- `Selection`: Each selection made in a template
+- `Config`: Container for a configuration that includes the template and the list of component selections
+- `Selection`: Each selection made/input in a template
+- `FullConfig`: A configuration that is fully configured with component configuration (from the config page) and mechanical and control points specified (from the schedule page)
 
 ## Overview of Data-Flow:
 
@@ -189,9 +190,9 @@ export interface ProjectInterface {
 Configurations hold all input for a given template.
 
 ```typescript
-export interface ConfigInterface {
+export interface Config {
   [key: string]: string | number | undefined | boolean | SelectionInterface[];
-  id?: string; // TODO: likely remove, templatePath should be unique
+  id: string;
   name?: string; // user facing string
   isLocked?: boolean; // TODO: likely remove
   selections?: SelectionInterface[];
@@ -216,8 +217,20 @@ TODO: this data type may need to be expanded to include `type` as `value` will n
 - booleans
 
 ```typescript
-export interface SelectionInterface {
-  name: string; // TODO: rename to 'path'
+export interface Selection {
+  path: string;
   value: any;
+}
+```
+
+### FullConfig
+
+```typescript
+export interface FullConfig {
+  id: string;
+  config: string; // config id
+  tag: string;
+  controlPoints: Selection[];
+  mechanicalPoints: Selection[];
 }
 ```
