@@ -4,7 +4,7 @@ import { useStores } from "../../../data";
 import { OptionInterface } from "../../../data/template";
 import { FlatConfigOption } from "./SlideOut";
 
-export interface OptionProps {
+export interface OptionSelectProps {
   index: number;
   option: FlatConfigOption;
   configId: string;
@@ -20,7 +20,7 @@ const OptionSelect = ({
   option,
   configId,
   updateSelectedConfigOption,
-}: OptionProps) => {
+}: OptionSelectProps) => {
   const { configStore } = useStores();
 
   function getSavedSelectedOption() {
