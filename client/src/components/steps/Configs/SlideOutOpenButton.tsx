@@ -7,11 +7,9 @@ export interface SlideOutOpenButtonProps {
 }
 
 const SlideOutOpenButton = ({ disabled, onClick }: SlideOutOpenButtonProps) => (
-  <Fragment>
-    <button disabled={disabled} className="small" onClick={onClick}>
-      {itl.terms.edit}
-    </button>
-  </Fragment>
+  <button disabled={disabled} className="small" onClick={onClick}>
+    {itl.terms.edit}
+  </button>
 );
 
 export default SlideOutOpenButton;
