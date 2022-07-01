@@ -14,7 +14,7 @@ The linkage widget interacts with these templates parsed as [`modelica-json`](ht
 
 All examples are from the most complete template, VAVMultizone.
 
-For additional details about template inputs Refer to the requirements website for detailed information on [Parameter Dialog Annotations](https://lbl-srg.github.io/linkage.js/requirements.html#parameter-dialog-annotations).
+For additional details about template inputs refer to the requirements website for detailed information on [Parameter Dialog Annotations](https://lbl-srg.github.io/linkage.js/requirements.html#parameter-dialog-annotations).
 
 ### Variables
 
@@ -27,7 +27,7 @@ parameter Buildings.Templates.AirHandlersFans.Types.Configuration typ
     annotation (Evaluate=true, Dialog(group="Configuration"));
 ```
 
-From this paramter to extract three things:
+From this parameter we extract the following:
 
 - Input title is "Type of System"
 - This is put in the 'configuration' group
