@@ -1,12 +1,19 @@
+import { MouseEvent } from "react";
 import itl from "../../../translations";
 import Config from "./Config";
 import { useStores } from "../../../data";
-import { observer } from "mobx-react";
 
-const Template = ({ systemPath, templatePath }) => {
+import { ConfigInterface } from "../../../data/config";
+
+export interface TemplateProps {
+  systemPath: string;
+  templatePath: string;
+}
+
+const Template = ({ systemPath, templatePath }: TemplateProps) => {
   const { templateStore, configStore, uiStore } = useStores();
 
-  const configs = configStore.getConfigsForSystemTemplate(
+  const configs: [ConfigInterface] = configStore.getConfigsForSystemTemplate(
     systemPath,
     templatePath,
   );
@@ -15,8 +22,8 @@ const Template = ({ systemPath, templatePath }) => {
     template: templateStore.getTemplateByPath(templatePath),
   };
 
-  function add(ev) {
-    ev.preventDefault();
+  function add(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
     configStore.add({ systemPath, templatePath, name: "untitled" });
     uiStore.setOpenSystemPath(systemPath);
   }

@@ -13,7 +13,6 @@ function ImgControl() {
       if (!$el) return;
       const top = $el.getBoundingClientRect().top || 0;
       setHeight(window.innerHeight - top - 80);
-      console.log("resized");
     }
 
     window.addEventListener("resize", calcHeight);

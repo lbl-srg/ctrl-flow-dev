@@ -2,7 +2,13 @@ import Template from "./Template";
 import { useStores } from "../../../data";
 import { observer } from "mobx-react";
 
-const System = observer(({ systemPath }) => {
+import { SystemTypeInterface } from "../../../data/template";
+
+export interface SystemProps {
+  systemPath: string;
+}
+
+const System = observer(({ systemPath }: SystemProps) => {
   const { templateStore } = useStores();
 
   const { system, templates, icon } = {
@@ -18,7 +24,7 @@ const System = observer(({ systemPath }) => {
         {system.description}
       </h2>
 
-      {templates.map((template) => (
+      {templates.map((template: SystemTypeInterface) => (
         <Template
           key={template.modelicaPath}
           systemPath={systemPath}
