@@ -13,3 +13,8 @@ server/public/templates/**
 # Dependencies
 dependencies/*
 !dependencies/.gitkeep
+
+# Texmaker files
+.log
+.aux
+.synctex.gz
