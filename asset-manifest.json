@@ -1,16 +1,14 @@
 {
   "files": {
-    "main.css": "/LBL-Linkage-Widget-v2/static/css/main.8a8a1320.css",
-    "main.js": "/LBL-Linkage-Widget-v2/static/js/main.19240146.js",
-    "static/js/787.8322627b.chunk.js": "/LBL-Linkage-Widget-v2/static/js/787.8322627b.chunk.js",
+    "main.css": "/LBL-Linkage-Widget-v2/static/css/main.587323a8.css",
+    "main.js": "/LBL-Linkage-Widget-v2/static/js/main.fd6a85d0.js",
     "static/media/schematics-example.png": "/LBL-Linkage-Widget-v2/static/media/schematics-example.16ce403f7b95d823d558.png",
     "index.html": "/LBL-Linkage-Widget-v2/index.html",
-    "main.8a8a1320.css.map": "/LBL-Linkage-Widget-v2/static/css/main.8a8a1320.css.map",
-    "main.19240146.js.map": "/LBL-Linkage-Widget-v2/static/js/main.19240146.js.map",
-    "787.8322627b.chunk.js.map": "/LBL-Linkage-Widget-v2/static/js/787.8322627b.chunk.js.map"
+    "main.587323a8.css.map": "/LBL-Linkage-Widget-v2/static/css/main.587323a8.css.map",
+    "main.fd6a85d0.js.map": "/LBL-Linkage-Widget-v2/static/js/main.fd6a85d0.js.map"
   },
   "entrypoints": [
-    "static/css/main.8a8a1320.css",
-    "static/js/main.19240146.js"
+    "static/css/main.587323a8.css",
+    "static/js/main.fd6a85d0.js"
   ]
 }
