@@ -1,9 +1,11 @@
-within TestPackage.Template;
-package Data "Test Data Package"
-  extends Modelica.Icons.Package;
-
+within TestPackage.Template.Data;
   record TestRecord "Test Record"
-    extends Modelica.Icons.Record;
+    extends TestPackage.Template.Data.PartialTemplate(
+      redeclare TestPackage.Template.Components.Data.TestTemplateController
+      ctl(
+        final typSecRel=typSecRel
+      )
+    );
 
     parameter String record_parameter="Record Parameter"
     annotation (Evaluate=true, Dialog(group="Configuration"));
