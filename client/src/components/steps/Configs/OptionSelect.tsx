@@ -11,6 +11,7 @@ export interface OptionSelectProps {
   updateSelectedConfigOption: (
     modelicaPath: string,
     name: string,
+    indentationLevel: number,
     selectedOption: OptionInterface,
   ) => void;
 }
@@ -47,15 +48,17 @@ const OptionSelect = ({
       updateSelectedConfigOption(
         option.modelicaPath,
         option.name,
+        0,
         selectedOption,
       );
     }
   }
 
+  const label = option.name; // A less user friendly name: option.modelicaPath.replace(/.typ$/, "-typ").split(".").pop() || "").replace("-typ", ".typ"
   return (
     <Fragment>
       <label>
-        {index}. {option.name}
+        {index}. {label}
       </label>
       <select
         name={option.modelicaPath}

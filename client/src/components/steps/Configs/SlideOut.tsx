@@ -20,6 +20,7 @@ export interface FlatConfigOption {
   parentName: string;
   modelicaPath: string;
   name: string;
+  indentationLevel: number;
   choices?: OptionInterface[];
 }
 
@@ -42,6 +43,7 @@ export function flattenConfigOptions(
   optionsToFlatten: OptionInterface[],
   parentModelicaPath: string,
   parentName: string,
+  indentationLevel: number,
   selectedOptions?: SelectedConfigOptions,
 ): FlatConfigOption[] {
   let flatConfigOptions: FlatConfigOption[] = [];
@@ -61,6 +63,7 @@ export function flattenConfigOptions(
           parentName,
           modelicaPath: option.modelicaPath,
           name: option.name,
+          indentationLevel,
           choices: option.childOptions,
         },
       ];
@@ -76,12 +79,14 @@ export function flattenConfigOptions(
       }
     } else if (option.childOptions?.length) {
       // Gets one level deeper into the data structure
+      indentationLevel++;
       flatConfigOptions = [
         ...flatConfigOptions,
         ...flattenConfigOptions(
           option.childOptions,
           option.modelicaPath,
           option.name,
+          indentationLevel,
           selectedOptions,
         ),
       ];
@@ -89,6 +94,36 @@ export function flattenConfigOptions(
   });
 
   return flatConfigOptions;
+}
+
+// Helps indicate the depth of an option for the UI
+export function normalizeIndentation(
+  flatConfigOptions: FlatConfigOption[],
+): FlatConfigOption[] {
+  let minIndentation = 999; // An unrealistic number that is mostly guaranteed to be left out when looking for the smaller number with Math.min
+  flatConfigOptions.forEach((option) => {
+    minIndentation = Math.min(minIndentation, option.indentationLevel);
+  });
+
+  let normalizedFlatConfigOptions = flatConfigOptions;
+  normalizedFlatConfigOptions = flatConfigOptions.map((option, index) => {
+    const indentationLevel = option.indentationLevel - minIndentation;
+    if (
+      normalizedFlatConfigOptions[index - 1] &&
+      normalizedFlatConfigOptions[index - 1].indentationLevel + 1 <
+        option.indentationLevel
+    ) {
+      // indentationLevel =
+      normalizedFlatConfigOptions[index - 1].indentationLevel + 1;
+    }
+
+    return {
+      ...option,
+      indentationLevel,
+    };
+  });
+
+  return normalizedFlatConfigOptions;
 }
 
 // Takes a flat array of options and group them together according to their parent Modelica path.
@@ -148,7 +183,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
   // Looks up the store to make sure that the UI takes into consideration the choices selected by the user previously or first choices if nothing was selected
   function getInitialSelection() {
     let initialSelection = {};
-    const flatConfigOptions = flattenConfigOptions(options, "root", "");
+    const flatConfigOptions = flattenConfigOptions(options, "root", "", 0);
     flatConfigOptions.forEach((option) => {
       const savedOptionSelection = getSavedConfigOption(option);
       if (savedOptionSelection) {
@@ -156,6 +191,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
           [savedOptionSelection],
           option.modelicaPath,
           option.name,
+          0,
         );
         if (flatChildOptions.length > 0) {
           initialSelection = {
@@ -177,21 +213,28 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
     options,
     "root",
     "",
+    0,
     selectedOptions,
   );
 
-  // TODO: Finish implementing grouping of options
-  // const groupedConfigOptions = groupConfigOptions(flatConfigOptions);
+  const normalizedConfigOption = normalizeIndentation(flatConfigOptions);
+
+  // Alternate grouping strategy
+  const groupedConfigOptions = groupConfigOptions(flatConfigOptions);
+
+  // console.log({ normalizedConfigOption, groupedConfigOptions });
 
   function updateSelectedConfigOption(
     parentModelicaPath: string,
     parentName: string,
+    indentationLevel: number,
     option: OptionInterface,
   ) {
     const newOptions = flattenConfigOptions(
       [option],
       parentModelicaPath,
       parentName,
+      indentationLevel,
     );
 
     setSelectedOptions({
@@ -227,40 +270,61 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
           defaultValue={config.name}
           placeholder="Name Your Configuration"
         />
-        {/* TODO: Figure out how we want grouping logic to work. The way the logic is implemented right now, child options from selections are not necessarily displayed right before the parent they belong to because there might be other options in the group the parent belongs to that are displayed first. */}
-        {/*groupedConfigOptions.map((optionGroup) => (
-          <div key={optionGroup.parentModelicaPath}>
-            <label>{optionGroup.parentName}</label>
-            {optionGroup.options.map(
-              (option: FlatConfigOption, optionIndex) => {
-                overallIndex++;
-                return (
-                  <OptionSelect
-                    key={`${option.parentModelicaPath}---${
-                      option.modelicaPath
-                    }---${optionIndex + 1}`}
-                    index={overallIndex}
-                    option={option}
-                    configId={config.id}
-                    updateSelectedConfigOptions={updateSelectedConfigOptions}
-                  />
-                );
-              },
-            )}
-          </div>
-            ))*/}
-        {flatConfigOptions.map((option: FlatConfigOption, optionIndex) => {
+        {/* Alternate logic to group options */}
+        {/* configGrouping === "separate" &&
+          groupedConfigOptions &&
+          groupedConfigOptions.map((optionGroup) => (
+            <div
+              key={optionGroup.parentModelicaPath}
+              className="grouped-config"
+            >
+              <label className="group-name">
+                <span>{optionGroup.parentModelicaPath.split(".").pop()}</span>
+              </label>
+              {optionGroup.options.map(
+                (option: FlatConfigOption, optionIndex) => {
+                  overallIndex++;
+                  return (
+                    <OptionSelect
+                      key={`${option.parentModelicaPath}---${
+                        option.modelicaPath
+                      }---${optionIndex + 1}`}
+                      index={overallIndex}
+                      option={option}
+                      configId={config.id}
+                      updateSelectedConfigOption={updateSelectedConfigOption}
+                    />
+                  );
+                },
+              )}
+            </div>
+        ))*/}
+        {normalizedConfigOption.map((option: FlatConfigOption, optionIndex) => {
           overallIndex++;
+
+          const label =
+            option.parentName === template?.name
+              ? ""
+              : option.parentName.replace("Interface class for", ""); // A less user friendly name: option.parentModelicaPath.replace(/.typ$/, "-typ").split(".").pop() || "").replace("-typ", ".typ"
           return (
-            <OptionSelect
+            <div
               key={`${option.parentModelicaPath}---${option.modelicaPath}---${
                 optionIndex + 1
               }`}
-              index={overallIndex}
-              option={option}
-              configId={config.id}
-              updateSelectedConfigOption={updateSelectedConfigOption}
-            />
+              style={{ paddingLeft: `${option.indentationLevel * 10}px` }}
+            >
+              {normalizedConfigOption[optionIndex + 1] &&
+              normalizedConfigOption[optionIndex + 1].parentModelicaPath ===
+                option.parentModelicaPath ? null : (
+                <label>{label}</label>
+              )}
+              <OptionSelect
+                index={overallIndex}
+                option={option}
+                configId={config.id}
+                updateSelectedConfigOption={updateSelectedConfigOption}
+              />
+            </div>
           );
         })}
         <button type="submit">{itl.terms.save}</button>
