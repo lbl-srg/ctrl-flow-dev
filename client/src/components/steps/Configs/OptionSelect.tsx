@@ -48,7 +48,7 @@ const OptionSelect = ({
       updateSelectedConfigOption(
         option.modelicaPath,
         option.name,
-        0,
+        option.indentationLevel,
         selectedOption,
       );
     }
