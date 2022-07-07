@@ -11,7 +11,7 @@ import tmp from "tmp";
 
 import config from "./config";
 import * as parser from "../../dependencies/modelica-json/lib/parser";
-import sequence, { TemplateOptions } from "./sequence";
+import { writeSequenceDocumentation, TemplateOptions } from "./sequence";
 
 const app = express();
 
@@ -93,7 +93,7 @@ app.post("/api/sequence", async (req, res) => {
     ...req.body,
   };
   try {
-    const file = await sequence(requestBody);
+    const file = await writeSequenceDocumentation(requestBody);
     res.send(file);
   } catch (error) {
     res.send(error);
