@@ -1,6 +1,6 @@
 {
   "name": "lbl-linkage",
-  "version": "0.1.11",
+  "version": "0.1.14",
   "private": true,
   "homepage": "https://devetry.github.io/LBL-Linkage-Widget-v2",
   "dependencies": {
@@ -31,7 +31,7 @@
     "lint:fix": "eslint --fix .",
     "format": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --write .",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "NODE_DEBUG=gh-pages gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
