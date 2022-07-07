@@ -107,14 +107,14 @@ export function normalizeIndentation(
 
   let normalizedFlatConfigOptions = flatConfigOptions;
   normalizedFlatConfigOptions = flatConfigOptions.map((option, index) => {
-    const indentationLevel = option.indentationLevel - minIndentation;
+    let indentationLevel = option.indentationLevel - minIndentation;
     if (
       normalizedFlatConfigOptions[index - 1] &&
       normalizedFlatConfigOptions[index - 1].indentationLevel + 1 <
         option.indentationLevel
     ) {
-      // indentationLevel =
-      normalizedFlatConfigOptions[index - 1].indentationLevel + 1;
+      indentationLevel =
+        normalizedFlatConfigOptions[index - 1].indentationLevel + 1;
     }
 
     return {
@@ -222,7 +222,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
   // Alternate grouping strategy
   const groupedConfigOptions = groupConfigOptions(flatConfigOptions);
 
-  // console.log({ normalizedConfigOption, groupedConfigOptions });
+  console.log({ normalizedConfigOption, groupedConfigOptions });
 
   function updateSelectedConfigOption(
     parentModelicaPath: string,
