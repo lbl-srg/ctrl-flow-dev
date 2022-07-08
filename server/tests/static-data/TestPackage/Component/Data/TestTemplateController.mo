@@ -1,4 +1,4 @@
-within TestPackage.Component.Data
+within TestPackage.Component.Data;
 record TestTemplateController "Record for TestTemplate Controller"
     extends Modelica.Icons.Record;
 
