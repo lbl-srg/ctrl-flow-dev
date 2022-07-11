@@ -1,5 +1,5 @@
 within TestPackage.Template.Data;
-record TestRecord "Test Record"
+record TestTemplate "Test Record"
   extends TestPackage.Template.Data.PartialTemplate(
     redeclare TestPackage.Template.Components.Data.TestTemplateController
     ctl(
