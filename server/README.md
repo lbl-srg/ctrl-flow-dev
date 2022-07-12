@@ -68,8 +68,6 @@
 
 ## Document preparation with LaTeX
 
-This server leverages [LaTeX](https://www.latex-project.org/) files to generate documents from templates. [Pandoc](https://pandoc.org/) is used to convert `.tex` files into `.docx`.
-
 You may edit and compile `.tex` files using a graphic user interface like [Texmaker LaTeX editor](https://www.xm1math.net/texmaker/download.html). Texmaker requires to install a [Tex distribution](https://www.latex-project.org/get/) on your machine in order to compile your `.tex` documents.
 
 > ** Note** The recommended native Tex distribution for Mac ([MacTex](https://www.tug.org/mactex/mactex-download.html)) seems to be particularly sizeable as a 4.6G download as of July 6, 2022. Similarly, compiling files can be a lengthy process.
