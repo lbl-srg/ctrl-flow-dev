@@ -11,7 +11,11 @@ import tmp from "tmp";
 
 import config from "./config";
 import * as parser from "../../dependencies/modelica-json/lib/parser";
-import { writeSequenceDocumentation, TemplateOptions } from "./sequence";
+import {
+  writeControlSequenceDocument,
+  ControlSequenceInput,
+  EnergyCode,
+} from "./sequence";
 
 const app = express();
 
@@ -86,14 +90,18 @@ app.post("/api/modelicatojson", async (req, res) => {
 });
 
 app.post("/api/sequence", async (req, res) => {
-  // TODO: Replace with actual default parameters necessary to generate the document
-  const requestBody: TemplateOptions = {
-    optional: true,
-    dual_inlet_airflow_sensors: "yes",
-    ...req.body,
+  // The Control Sequence Input consists of mock data at the moment.
+  // Please note that this is a very naive data format.
+  // The shape of this object will most likely need to be modified and massaged when we work with real data.
+  const controlSequenceInput: ControlSequenceInput = {
+    energyCode: EnergyCode.Ashrae,
+    choices: {
+      BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet:
+        "Buildings.Templates.Components.Types.Fan.SingleConstant",
+    },
   };
   try {
-    const file = await writeSequenceDocumentation(requestBody);
+    const file = await writeControlSequenceDocument(controlSequenceInput);
     res.send(file);
   } catch (error) {
     res.send(error);
