@@ -75,3 +75,7 @@ You may edit and compile `.tex` files using a graphic user interface like [Texma
 > ** Note** The recommended native Tex distribution for Mac ([MacTex](https://www.tug.org/mactex/mactex-download.html)) seems to be particularly sizeable as a 4.6G download as of July 6, 2022. Similarly, compiling files can be a lengthy process.
 
 Online tools like [Papeeria](www.papeeria.com) also exist to edit and compile `.tex` files in your browser.
+
+## Docker container for Pandoc
+
+TODO
