@@ -101,8 +101,8 @@ export async function writeControlSequenceDocument(
   const outputPath = `${sequencePath}/output-documents`;
 
   const latexFilePath = `${outputPath}/${fileName}.tex`;
-  const odtRootFilePath = `${rootPath}/${fileName}.odt`;
   const odtFilePath = `${outputPath}/${fileName}.odt`;
+  const odtRootFilePath = `${rootPath}/${fileName}.odt`;
   const tempOdtRootFilePath = `${rootPath}/${fileName}`;
   const docxFilePath = `${outputPath}/${fileName}.docx`;
 
