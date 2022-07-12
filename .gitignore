@@ -14,6 +14,9 @@ server/public/templates/**
 dependencies/*
 !dependencies/.gitkeep
 
+# Document generation
+sequence/output-documents/*
+
 # Texmaker files
 .log
 .aux
