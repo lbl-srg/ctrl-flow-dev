@@ -123,7 +123,6 @@ export function createModification(props: ModificationProps): Modification {
   let { definition, value, basePath = "", name } = props;
   let modelicaPath = basePath ? `${basePath}.${name}` : "";
   // TODO: 'definition' can also directly be an 'element_redeclaration'
-  //
   if (definition) {
     let modBlock = definition;
 
@@ -132,6 +131,10 @@ export function createModification(props: ModificationProps): Modification {
         definition.element_modification_or_replaceable.element_modification;
     } else if ("element_redeclaration" in definition) {
       console.log(definition);
+      // TODO: the important part of an element redeclaration is that it also
+      // provides a 'type'. Expand the 'Modification' constructor to also include
+      // 'type' from 'component_clause1.type_specifier. Then treat component_clause1.declaration
+      // as a block to unpack modifiers from (as well as the place to get the name)
       // modBlock = definition.element_redeclaration.element_replaceable;
     }
 
