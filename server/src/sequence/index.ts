@@ -8,7 +8,7 @@ import _ from "underscore";
 // @ts-ignore
 import pandoc from "node-pandoc-promise";
 
-// Enables the use of async/await keywords when executing external processes
+// Enables the use of async/await keywords when executing external processes.
 const execPromise = util.promisify(exec);
 
 export enum EnergyCode {
