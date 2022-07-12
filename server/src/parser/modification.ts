@@ -33,7 +33,7 @@ type RedeclarationMod = {
           description: DescriptionBlock;
         };
       };
-    }
+    };
   };
 };
 
@@ -122,9 +122,20 @@ export function createModification(props: ModificationProps): Modification {
   let mods: Modification[] = [];
   let { definition, value, basePath = "", name } = props;
   let modelicaPath = basePath ? `${basePath}.${name}` : "";
-
+  // TODO: 'definition' can also directly be an 'element_redeclaration'
+  //
   if (definition) {
-    const modBlock =
+    let modBlock = definition;
+
+    if ("element_modification_or_replaceable" in definition) {
+      modBlock =
+        definition.element_modification_or_replaceable.element_modification;
+    } else if ("element_redeclaration" in definition) {
+      console.log(definition);
+      // modBlock = definition.element_redeclaration.element_replaceable;
+    }
+
+    modBlock =
       "element_modification_or_replaceable" in definition
         ? definition.element_modification_or_replaceable.element_modification
         : definition;
@@ -146,7 +157,8 @@ export function createModification(props: ModificationProps): Modification {
         const choiceMod = (mod as ClassMod)
           .class_modification[0] as RedeclarationMod;
         value =
-          choiceMod.element_redeclaration.element_replaceable.component_clause1.type_specifier;
+          choiceMod.element_redeclaration.element_replaceable.component_clause1
+            .type_specifier;
       } else if ("class_modification" in mod) {
         // const type = "";
         mods = getModificationList(mod as ClassMod, modelicaPath);
