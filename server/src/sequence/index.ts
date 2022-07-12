@@ -71,6 +71,8 @@ async function convertToODT(
   return conversionResult;
 }
 
+// Note that pandoc does not return anything when done with processing the file,
+// which makes debugging possible errors difficult.
 async function convertToDOCX(odtFilePath: string, docxFilePath: string) {
   const pandocArguments = `-f odt -o ${docxFilePath}`.split(" ");
 
