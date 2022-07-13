@@ -27,10 +27,7 @@ type RedeclareMod = {
   element_redeclaration: {
     component_clause1: {
       type_specifier: string;
-      component_declaration1: {
-        declaration: DeclarationBlock;
-        description?: DescriptionBlock;
-      }
+      component_declaration1: ComponentDeclaration1;
     }
   }
 }
@@ -40,10 +37,7 @@ type ReplaceableMod = {
     element_replaceable: {
       component_clause1: {
         type_specifier: string; // Modelica Path
-        component_declaration1: {
-          declaration: DeclarationBlock;
-          description: DescriptionBlock;
-        };
+        component_declaration1: ComponentDeclaration1
       };
     };
   };
@@ -81,6 +75,11 @@ export type DescriptionBlock = {
   description_string: string;
   annotation?: any;
 };
+
+type ComponentDeclaration1 = {
+  declaration: DeclarationBlock;
+  description?: DescriptionBlock;
+}
 
 export type Expression = {
   modelicaPath: string;
