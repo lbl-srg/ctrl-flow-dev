@@ -23,7 +23,19 @@
 
 const modStore: Map<string, Modification> = new Map();
 
-type RedeclarationMod = {
+type RedeclareMod = {
+  element_redeclaration: {
+    component_clause1: {
+      type_specifier: string;
+      component_declaration1: {
+        declaration: DeclarationBlock;
+        description?: DescriptionBlock;
+      }
+    }
+  }
+}
+
+type ReplaceableMod = {
   element_redeclaration: {
     element_replaceable: {
       component_clause1: {
@@ -38,7 +50,7 @@ type RedeclarationMod = {
 };
 
 type ClassMod = {
-  class_modification: (WrappedMod | RedeclarationMod)[];
+  class_modification: (WrappedMod | ReplaceableMod)[];
 };
 
 type Assignment = {
@@ -57,12 +69,12 @@ export type WrappedMod = {
 
 export type Mod = {
   name: string;
-  modification: ClassMod | WrappedMod | Assignment | RedeclarationMod;
+  modification: ClassMod | WrappedMod | Assignment | ReplaceableMod;
 };
 
 export type DeclarationBlock = {
   identifier: string;
-  modification?: ClassMod | WrappedMod | Assignment | RedeclarationMod;
+  modification?: ClassMod | WrappedMod | Assignment | ReplaceableMod;
 };
 
 export type DescriptionBlock = {
@@ -94,6 +106,7 @@ interface ModificationBasics {
   name?: string;
   value?: any;
   definition?: any;
+  type?: string;
 }
 
 interface ModificationWithDefinition extends ModificationBasics {
@@ -130,12 +143,13 @@ export function createModification(props: ModificationProps): Modification {
       modBlock =
         definition.element_modification_or_replaceable.element_modification;
     } else if ("element_redeclaration" in definition) {
-      console.log(definition);
-      // TODO: the important part of an element redeclaration is that it also
-      // provides a 'type'. Expand the 'Modification' constructor to also include
-      // 'type' from 'component_clause1.type_specifier. Then treat component_clause1.declaration
-      // as a block to unpack modifiers from (as well as the place to get the name)
-      // modBlock = definition.element_redeclaration.element_replaceable;
+      const componentClause1 = (definition as RedeclareMod).element_redeclaration.component_clause1;
+      const type = componentClause1.type_specifier;
+      const redeclareDefinition = componentClause1.component_declaration1.declaration;
+      const modProps = {...props, type, definition: redeclareDefinition};
+      console.log(redeclareDefinition);
+      const redeclareMod = createModification(modProps);
+      return redeclareMod;
     }
 
     modBlock =
@@ -158,7 +172,7 @@ export function createModification(props: ModificationProps): Modification {
         value = (mod as Assignment).expression.simple_expression;
       } else if (name == "choice") {
         const choiceMod = (mod as ClassMod)
-          .class_modification[0] as RedeclarationMod;
+          .class_modification[0] as ReplaceableMod;
         value =
           choiceMod.element_redeclaration.element_replaceable.component_clause1
             .type_specifier;
