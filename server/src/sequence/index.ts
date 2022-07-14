@@ -23,7 +23,7 @@ export type ControlSequenceInput = {
   };
 };
 
-async function writeLatexFile(
+export async function writeLatexFile(
   controlSequenceInput: ControlSequenceInput,
   latexFilePath: string,
 ) {
@@ -57,23 +57,30 @@ async function writeLatexFile(
 // (e.g., https://github.com/jgm/pandoc/issues/8029, https://github.com/jgm/pandoc/issues/7757, https://github.com/jgm/pandoc/issues/8027).
 // The result of converting LaTeX files to Microsoft Word Documents with Pandoc are pretty unpredictable as to what will work as expected or not.
 // So we use make4ht as an intermediary to create an Open Office Document that we then convert into a Microsoft Word Document with Pandoc.
-async function convertToODT(
+export async function convertToODT(
   latexFilePath: string,
   odtFilePath: string,
   odtRootFilePath: string,
   tempOdtRootFilePath: string,
 ) {
-  const conversionResult = await execPromise(`make4ht -f odt ${latexFilePath}`);
-  // Moves the .odt file to the output folder.
-  await fs.rename(odtRootFilePath, odtFilePath);
-  // Removes temporary file at the root of the server folder.
-  await execPromise(`rm ${tempOdtRootFilePath}.*`);
-  return conversionResult;
+  try {
+    const conversionResult = await execPromise(
+      `make4ht -f odt ${latexFilePath}`,
+    );
+    // Moves the .odt file to the output folder.
+    await fs.rename(odtRootFilePath, odtFilePath);
+    // Removes temporary file at the root of the server folder.
+    await execPromise(`rm ${tempOdtRootFilePath}.*`);
+    return conversionResult;
+  } catch (error) {
+    console.error(error);
+    throw new Error("An error occurred while converting to ODT.");
+  }
 }
 
 // Note that pandoc does not return anything when done with processing the file,
 // which makes debugging possible errors difficult.
-async function convertToDOCX(odtFilePath: string, docxFilePath: string) {
+export async function convertToDOCX(odtFilePath: string, docxFilePath: string) {
   const pandocArguments = `-f odt -o ${docxFilePath}`.split(" ");
 
   console.log(
@@ -85,7 +92,7 @@ async function convertToDOCX(odtFilePath: string, docxFilePath: string) {
   await pandoc(odtFilePath, pandocArguments);
 }
 
-async function getConvertedDocument(convertedDocumentPath: string) {
+export async function getConvertedDocument(convertedDocumentPath: string) {
   const file = await fs.readFile(convertedDocumentPath);
   return file;
 }
