@@ -9,6 +9,7 @@ import _ from "underscore";
 import fs from "fs";
 import tmp from "tmp";
 
+import { name, version } from "../package.json";
 import config from "./config";
 import * as parser from "../../dependencies/modelica-json/lib/parser";
 import {
@@ -38,7 +39,8 @@ if (!fs.existsSync(tempDirPath)) {
 
 // accept json in body, hand off to service
 app.get("/", (req, res) => {
-  res.send("Hello world");
+  const appSignature = `${name}@${version}`;
+  res.send(appSignature);
 });
 
 app.post("/api/jsontomodelica", async (req, res) => {
