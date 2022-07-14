@@ -1,4 +1,6 @@
 {
+  "name": "linkage-api",
+  "version": "0.0.1",
   "dependencies": {
     "@types/cors": "^2.8.12",
     "compression": "^1.7.4",
@@ -44,6 +46,9 @@
     "docker:logs": "docker-compose -f docker/docker-compose.yaml logs -f",
     "docker:rebuild": "docker-compose -f docker/docker-compose.yaml build --pull --no-cache",
     "docker:shell": "docker exec -it linkage-widget /bin/sh",
+    "docker:build-pandoc": "cd docker-pandoc && docker build -t docker_pandoc .",
+    "docker:run-pandoc": "docker run -d --name docker_pandoc --volume \"`pwd`:/data\" --user `id -u`:`id -g` docker_pandoc",
+    "docker:pandoc-version": "docker exec docker_pandoc pandoc -v",
     "debug": "nodemon --exec 'node -r ts-node/register --inspect=0.0.0.0:9229 src/index.ts'",
     "format": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --write .",
     "test": "jest",
