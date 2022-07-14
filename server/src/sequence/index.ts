@@ -27,7 +27,7 @@ async function writeLatexFile(
   controlSequenceInput: ControlSequenceInput,
   latexFilePath: string,
 ) {
-  const { energyCode, choices } = controlSequenceInput;
+  const { choices } = controlSequenceInput;
   const {
     BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet,
   } = choices;
@@ -47,7 +47,7 @@ async function writeLatexFile(
     
     % Inject LaTeX template for the Control Sequence Document.
     
-    \input{${path.resolve(__dirname)}/template-${energyCode}.tex}
+    \input{${path.resolve(__dirname)}/template.tex}
   `;
 
   return fs.writeFile(latexFilePath, latexFileContent);
