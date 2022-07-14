@@ -46,7 +46,8 @@
     "docker:shell": "docker exec -it linkage-widget /bin/sh",
     "debug": "nodemon --exec 'node -r ts-node/register --inspect=0.0.0.0:9229 src/index.ts'",
     "format": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --write .",
-    "test": "npm run integration-test",
-    "integration-test": "jest"
+    "test": "jest",
+    "integration-test": "jest -t --testPathPattern=integration",
+    "unit-test": "jest -t --testPathPattern=unit"
   }
 }
