@@ -66,7 +66,9 @@
 1. The VS Code instance running in the container will have its own unique set of extensions. To run tests, install the `Jest` extension. This should create a new entry in the left hand column of VS Code that looks like an Erlenmeyer flask (aka a beaker). If the entry doesn't show, you may need to close and re-open VS Code.
 1. The extension will take a moment to discover tests, but after that process is done, you should be up and running to set breakpoints and debug tests.
 
-## Document preparation with LaTeX
+## Document generation
+
+### Document preparation with LaTeX
 
 You may edit and compile `.tex` files using a graphic user interface like [Texmaker LaTeX editor](https://www.xm1math.net/texmaker/download.html). Texmaker requires to install a [Tex distribution](https://www.latex-project.org/get/) on your machine in order to compile your `.tex` documents.
 
@@ -74,6 +76,44 @@ You may edit and compile `.tex` files using a graphic user interface like [Texma
 
 Online tools like [Papeeria](www.papeeria.com) also exist to edit and compile `.tex` files in your browser.
 
-## Docker container for Pandoc
+### Docker container for `make4ht`
+
+`make4ht` is used to convert LaTeX documents to Open Office documents. `make4ht` can be containerized for portability purposes.
 
 TODO
+
+### Docker container for Pandoc
+
+Pandoc is used to convert Open Office documents to Microsoft Word documents. Pandoc can be containerized for portability purposes.
+
+To build the Pandoc Docker image, run the command below:
+
+```
+npm run docker:build-pandoc
+```
+
+Then, Pandoc can be ran continuously by executing the following command at the root of the server:
+
+```
+npm run docker:run-pandoc
+```
+
+Once the Docker image is running, you can use the following command to check if the containerized Pandoc image is working as expected:
+
+```
+npm run docker:pandoc-version
+```
+
+The command above should return the version of the containerized Pandoc binary. If it doesn't, something went wrong.
+
+## GitHub Actions
+
+This repository leverages GitHub Actions to run continuous integration scripts. You can debug these scripts locally thanks to a tool called [act](https://github.com/nektos/act).
+
+For instance, the command below locally executes a dry run of the `server-tests` GitHub Action as if it received a `pull_request` event:
+
+```
+sudo act pull_request -W .github/workflows/server-tests.yml -n
+```
+
+> ** Note** `act` must be executed at the root level of the repository to avoid errors that are essentially false negative.
