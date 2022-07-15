@@ -21,3 +21,6 @@ sequence/output-documents/*
 .log
 .aux
 .synctex.gz
+
+# Pandoc Docker image
+docker-pandoc/pandoc
