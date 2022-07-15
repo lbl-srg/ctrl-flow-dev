@@ -4,10 +4,6 @@ import util from "util";
 import process from "process";
 import { exec } from "child_process";
 import _ from "underscore";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import pandoc from "node-pandoc-promise";
-
 // Enables the use of async/await keywords when executing external processes.
 const execPromise = util.promisify(exec);
 
@@ -81,15 +77,16 @@ export async function convertToODT(
 // Note that pandoc does not return anything when done with processing the file,
 // which makes debugging possible errors difficult.
 export async function convertToDOCX(odtFilePath: string, docxFilePath: string) {
-  const pandocArguments = `-f odt -o ${docxFilePath}`.split(" ");
+  const pandocBinary = `docker exec docker_pandoc pandoc `;
+  const pandocArguments = `${odtFilePath.replace(
+    process.cwd(),
+    ".",
+  )} -o ${docxFilePath.replace(process.cwd(), ".")}`;
+  const pandocCommand = `${pandocBinary} ${pandocArguments}`;
 
-  console.log(
-    "Running Pandoc with the following arguments:",
-    odtFilePath,
-    pandocArguments.join(" "),
-  );
+  console.log("Running containerized Pandoc:", pandocCommand);
 
-  await pandoc(odtFilePath, pandocArguments);
+  return execPromise(pandocCommand);
 }
 
 export async function getConvertedDocument(convertedDocumentPath: string) {
