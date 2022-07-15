@@ -6,6 +6,8 @@ import {
   convertToDOCX,
 } from "../../../src/sequence";
 
+const TIMEOUT_IN_MILLISECONDS = 30000;
+
 describe("Control Sequence Document", () => {
   it("writeLatexFile executes without error", async () => {
     const input: ControlSequenceInput = {
@@ -37,11 +39,15 @@ describe("Control Sequence Document", () => {
     );
   });
 
-  it("convertToDOCX executes without error", async () => {
-    const sequencePath = `${process.cwd()}/src/sequence`;
-    const outputPath = `${sequencePath}/output-documents`;
-    const odtFilePath = `${outputPath}/unit-tests.odt`;
-    const docxFilePath = `${outputPath}/unit-test.docx`;
-    await convertToDOCX(odtFilePath, docxFilePath);
-  });
+  it(
+    "convertToDOCX executes without error",
+    async () => {
+      const sequencePath = `${process.cwd()}/src/sequence`;
+      const outputPath = `${sequencePath}/output-documents`;
+      const odtFilePath = `${outputPath}/unit-test.odt`;
+      const docxFilePath = `${outputPath}/unit-test.docx`;
+      await convertToDOCX(odtFilePath, docxFilePath);
+    },
+    TIMEOUT_IN_MILLISECONDS,
+  );
 });
