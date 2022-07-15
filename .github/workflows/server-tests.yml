@@ -23,18 +23,24 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Set up Node ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
-          cache-dependency-path: server/package-lock.json
-      - name: Build Modelica Dependencies
-        run: npm run install-modelica-deps
-      - name: Build Other Server Dependencies
+          # cache: "npm"
+          # cache-dependency-path: server/package-lock.json
+      # - name: Install Modelica dependencies
+      #   run: npm run install-modelica-deps
+      - name: Build Pandoc container
+        run: npm run docker:build-pandoc
+      - name: Run Pandoc container
+        run: npm run docker:run-pandoc
+      - name: Containerized Pandoc version check
+        run: npm run docker:pandoc-version
+      - name: Install NPM packages
         run: npm ci
-      - name: Run integration tests
+      - name: Run tests
         run: |
-          npx ts-node src/index.ts &
+          npm start &
           sleep 5 # wait for server to start
-          npx jest --testPathIgnorePatterns=\(/node_modules/ long\)
+          npm run test
