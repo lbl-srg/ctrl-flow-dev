@@ -1,7 +1,7 @@
 within TestPackage.Template.Data;
 record TestTemplate "Test Record"
   extends TestPackage.Template.Data.PartialTemplate(
-    redeclare TestPackage.Template.Components.Data.TestTemplateController
+    redeclare TestPackage.Component.Data.TestTemplateController
     ctl(
       final typSecRel=typSecRel
     )
