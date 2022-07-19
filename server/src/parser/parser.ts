@@ -234,13 +234,16 @@ export class InputGroup extends Element {
   }
 
   getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+    if (this.modelicaPath === "TestPackage.Template.Data.PartialTemplate") {
+      console.log("stop");
+    }
     // A group with no elementList is ignored
     if (this.modelicaPath in options || this.elementList.length === 0) {
       return options;
     }
 
     const children = this.elementList.filter(
-      (el) => Object.keys(el.getOptions(options, recursive)).length > 0,
+      (el) => Object.keys(el.getOptions({}, false)).length > 0,
     );
 
     options[this.modelicaPath] = {
@@ -372,14 +375,19 @@ export class Input extends Element {
   }
 
   getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+    if (
+      this.modelicaPath ===
+      "TestPackage.Template.Data.PartialTemplate.partialData"
+    ) {
+      console.log("stop");
+    }
+
     if (this.modelicaPath in options) {
       return options;
     }
 
     const typeInstance = typeStore.get(this.type) || null;
-    const typeOptions = typeInstance
-      ? typeInstance.getOptions(options, false)
-      : {};
+    const typeOptions = typeInstance ? typeInstance.getOptions({}, false) : {};
     const childOptions = typeOptions[this.type]?.options || [];
     const visible = this._setOptionVisible(typeOptions[this.type]);
 
@@ -395,7 +403,7 @@ export class Input extends Element {
       visible: visible,
       valueExpression: this.valueExpression,
       enable: this.enable,
-      options: childOptions,
+      options: [this.type], // TODO: try and just use type to link to child options to prevent duplicates
     };
 
     if (recursive) {
