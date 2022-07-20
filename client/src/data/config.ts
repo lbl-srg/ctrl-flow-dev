@@ -89,6 +89,10 @@ export default class Config {
     if (config) config.selections = selections;
   }
 
+  getAllConfigs():ConfigInterface[] {
+    return this.configs;
+  }
+
   getActiveConfigs(): ConfigInterface[] {
     const system = this.rootStore.uiStore.activeSystemPath;
     const template = this.rootStore.uiStore.activeTemplatePath;

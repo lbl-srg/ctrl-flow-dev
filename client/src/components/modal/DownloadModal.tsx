@@ -2,6 +2,8 @@ import Modal, { ModalInterface } from "./Modal";
 import { useState, ChangeEvent } from "react";
 import itl from "../../translations";
 
+import { useStores } from "../../data";
+
 const CONTROL_SEQUENCE = "Control Sequence";
 const DOCX = "docx";
 
@@ -18,6 +20,8 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
   const [checked, setChecked] = useState(
     DOWNLOADABLE_FILE_LIST.map(({ label }) => label),
   );
+
+  const { configStore } = useStores();
 
   function updateItem(event: ChangeEvent<HTMLInputElement>, label: string) {
     if (event.target.checked) {
@@ -45,6 +49,29 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
       const placeholderLink = document.createElement("a");
       placeholderLink.href = window.URL.createObjectURL(sequenceDocument);
       placeholderLink.download = `${CONTROL_SEQUENCE}.${DOCX}`;
+      placeholderLink.click();
+    }
+
+    if (checked.includes('CDL')) {
+      const configs = configStore.getAllConfigs();
+
+      console.log('CONFIGS:', configs);
+
+      const response = await fetch(`${process.env.REACT_APP_API}/modelica-builder`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // TODO: Replace with actual parameters necessary to generate the document
+        body: JSON.stringify({
+          optional: false,
+          data: configs,
+        }),
+      });
+
+      // TODO: Handle error responses which do not contain an actual file
+      const modelicaDocument = await response.blob();
+      const placeholderLink = document.createElement("a");
+      placeholderLink.href = window.URL.createObjectURL(modelicaDocument);
+      placeholderLink.download = `cdl.mo`;
       placeholderLink.click();
     }
 

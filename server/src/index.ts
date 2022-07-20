@@ -12,6 +12,7 @@ import tmp from "tmp";
 import config from "./config";
 import * as parser from "../../dependencies/modelica-json/lib/parser";
 import sequence, { TemplateOptions } from "./sequence";
+import modelicaBuilder, { ModelicaOptions } from "./modelica-builder";
 
 const app = express();
 
@@ -94,6 +95,23 @@ app.post("/api/sequence", async (req, res) => {
   };
   try {
     const file = await sequence(requestBody);
+    res.send(file);
+  } catch (error) {
+    res.send(error);
+  }
+});
+
+app.post("/api/modelica-builder", async (req, res) => {
+  // TODO: Replace with actual default parameters necessary to generate the document
+  const requestBody: ModelicaOptions = {
+    optional: true,
+    data: "yes",
+    ...req.body,
+  };
+
+  console.log('requestBody:', requestBody);
+  try {
+    const file = await modelicaBuilder(requestBody);
     res.send(file);
   } catch (error) {
     res.send(error);
