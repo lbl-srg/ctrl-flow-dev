@@ -62,7 +62,15 @@ model TestTemplate "Test Template"
   */
   parameter Boolean expression_bool=dat.nested_bool;
 
-  // TODO: add values for annotation variations
+  // TODO: add complex value expression like below
+
+  // final parameter Boolean have_senPreBui=
+  //     secOutRel.typSecRel==Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReliefDamper or
+  //     secOutRel.typSecRel==Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReliefFan or
+  //     secOutRel.typSecRel==Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReturnFan and
+  //     secOutRel.typCtlFanRet==Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.BuildingPressure
+  //     "Set to true if building static pressure sensor is used"
+  //     annotation (Evaluate=true, Dialog(group="Configuration"));
 
   parameter String test_string_uninitialized
     "Test String that is uninitialized";
