@@ -39,7 +39,6 @@
     "docker:logs": "docker compose -p linkage-containers -f docker/docker-compose.yaml logs -f",
     "docker:build": "docker compose -f docker/docker-compose.yaml build --pull --no-cache",
     "docker:shell": "docker exec -it linkage-api /bin/sh",
-    "docker:test": "docker compose -p linkage-containers -f docker/docker-compose.yaml -f docker/docker-compose.test.yaml --env-file ./.env up -d && npm run docker:logs",
     "start": "nodemon src/index.ts",
     "debug": "nodemon --inspect=0.0.0.0:9229 --exec node -r ts-node/register src/index.ts",
     "build": "tsc",
