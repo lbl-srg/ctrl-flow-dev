@@ -5,7 +5,7 @@ RUN pandoc --version
 RUN tex --version
 RUN make4ht --version
 
-# Installs Node 16.16.0 LTS with NVM for a x86-64 architecture
+# Installs Node 16.16.0 LTS with NVM
 FROM ubuntu-pandoc as ubuntu-pandoc-node
 ENV NVM_DIR=/root/.nvm
 ENV NODE_VERSION=16.16.0
