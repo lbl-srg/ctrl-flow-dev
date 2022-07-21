@@ -12,7 +12,7 @@ env:
   MODELICA_DEPENDENCIES: ../dependencies
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: server
