@@ -33,7 +33,7 @@ jobs:
         run: cp .env.example .env
       - name: Install NPM packages
         run: npm ci
-      - name: Start application
-        run: npm run docker:start
+      - name: Build Docker image
+        run: npm run docker:build
       - name: Run tests
         run: npm run docker:test
