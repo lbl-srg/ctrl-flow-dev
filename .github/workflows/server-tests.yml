@@ -29,11 +29,14 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
           cache-dependency-path: server/package-lock.json
-      - name: Copy ENV example
-        run: cp .env.example .env
+      - name: Install Modelica dependencies
+        run: npm run install-modelica-deps
+      - name: Install Pandoc
+        run: npm run install-pandoc
       - name: Install NPM packages
         run: npm ci
-      - name: Build Docker image
-        run: npm run docker:build
       - name: Run tests
-        run: npm run docker:test
+        run: |
+          npm run start &
+          sleep 5 # wait for server to start
+          npm run test
