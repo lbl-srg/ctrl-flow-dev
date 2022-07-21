@@ -36,4 +36,4 @@ jobs:
       - name: Start application
         run: npm run docker:start
       - name: Run tests
-        run: npm run test
+        run: npm run docker:test
