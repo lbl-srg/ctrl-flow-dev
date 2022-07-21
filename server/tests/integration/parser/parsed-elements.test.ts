@@ -1,5 +1,5 @@
 import * as parser from "../../../src/parser/parser";
-import { initializeTestModelicaJson } from "./utils";
+import { initializeTestModelicaJson, optionTree } from "./utils";
 const testModelicaFile = "TestPackage.Template.TestTemplate";
 
 describe("Basic parser functionality", () => {
@@ -191,6 +191,7 @@ describe("Expected Options are extracted", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
     const options = template.getOptions();
+    const denormalizedOptions = optionTree(options, template.modelicaPath);
     expect(Object.values(options).length).toBe(optionTotal);
   });
 
@@ -219,6 +220,8 @@ describe("Expected Options are extracted", () => {
     const template = file.elementList[0] as parser.InputGroup;
     const options = template.getOptions();
 
+    const optionCount: {[key: string]: number} = {};
+
     Object.values(options).map((o) => {
       const childOptions = o.options;
       if (childOptions) {
@@ -226,10 +229,18 @@ describe("Expected Options are extracted", () => {
           if (!(option in options)) {
             console.log(o, option);
           }
+          if (option !in options) {
+            console.log(option);
+          }
           expect(option in options).toBeTruthy();
+          optionCount[option] = optionCount[option] ? optionCount[option] + 1 : 1;
+          if (optionCount[option] > 1) {
+            console.log(`${o.modelicaPath} - ${option}`);
+          }
         });
       }
     });
+    console.log(optionCount);
   });
 });
 
@@ -247,6 +258,7 @@ describe("Schedule Options", () => {
     const element = template.elementList.find((e) => e.modelicaPath === expectedPath);
     expect(element).toBeTruthy();
     const options = (element as parser.Element).getOptions();
+    const simpleOptions = optionTree(options, expectedPath);
     console.log(options);
   });
 });
