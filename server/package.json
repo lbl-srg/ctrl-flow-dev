@@ -33,25 +33,22 @@
     "typescript": "^4.5.4"
   },
   "scripts": {
-    "build": "tsc",
-    "parseTestModelica": "sh bin/parse-test-package.sh",
-    "parseTestJSON": "npx ts-node scripts/parse-test-package.ts",
-    "parseTemplateJSON": "npx ts-node scripts/parse-template-package.ts",
+    "docker:start": "docker compose -p linkage-containers -f docker/docker-compose.yaml --env-file ./.env up -d && npm run docker:logs",
+    "docker:debug": "docker compose -p linkage-containers -f docker/docker-compose.yaml -f docker/docker-compose.debug.yaml --env-file ./.env up -d && npm run docker:logs",
+    "docker:stop": "docker compose -p linkage-containers -f docker/docker-compose.yaml down --remove-orphans",
+    "docker:logs": "docker compose -p linkage-containers -f docker/docker-compose.yaml logs -f",
+    "docker:build": "docker compose -f docker/docker-compose.yaml build --pull --no-cache",
+    "docker:shell": "docker exec -it linkage-api /bin/sh",
     "start": "nodemon src/index.ts",
+    "debug": "nodemon  --inspect=0.0.0.0:9229 --exec node -r ts-node/register src/index.ts",
+    "build": "tsc",
     "install-modelica-deps": "./bin/install-modelica-dependencies.sh",
-    "docker:start": "docker-compose -f docker/docker-compose.yaml --env-file ./.env up -d",
-    "docker:debug": "docker-compose -f docker/docker-compose.yaml -f docker/docker-compose.debug.yaml --env-file ./.env up -d",
-    "docker:stop": "docker-compose -f docker/docker-compose.yaml down",
-    "docker:logs": "docker-compose -f docker/docker-compose.yaml logs -f",
-    "docker:rebuild": "docker-compose -f docker/docker-compose.yaml build --pull --no-cache",
-    "docker:shell": "docker exec -it linkage-widget /bin/sh",
-    "docker:build-pandoc": "cd docker-pandoc && docker build -t docker_pandoc .",
-    "docker:run-pandoc": "docker run -d --name docker_pandoc --volume \"`pwd`:/data\" --user `id -u`:`id -g` docker_pandoc",
-    "docker:pandoc-version": "docker exec docker_pandoc pandoc -v",
-    "debug": "nodemon --exec 'node -r ts-node/register --inspect=0.0.0.0:9229 src/index.ts'",
     "format": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --write .",
     "test": "jest",
     "integration-test": "jest -t --testPathPattern=integration",
-    "unit-test": "jest -t --testPathPattern=unit"
+    "unit-test": "jest -t --testPathPattern=unit",
+    "parseTestModelica": "sh bin/parse-test-package.sh",
+    "parseTestJSON": "npx ts-node scripts/parse-test-package.ts",
+    "parseTemplateJSON": "npx ts-node scripts/parse-template-package.ts"
   }
 }
