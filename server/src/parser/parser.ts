@@ -243,7 +243,7 @@ export class InputGroup extends Element {
     }
 
     const children = this.elementList.filter(
-      (el) => Object.keys(el.getOptions({}, false)).length > 0,
+      (el) => Object.keys(el.getOptions(options)).length > 0,
     );
 
     options[this.modelicaPath] = {
@@ -255,10 +255,6 @@ export class InputGroup extends Element {
         .map((c) => c.modelicaPath)
         .filter((c) => !(c in MODELICA_LITERALS)),
     };
-
-    children.map((el) => {
-      options = el.getOptions(options, recursive);
-    });
 
     return options;
   }
@@ -377,7 +373,7 @@ export class Input extends Element {
   getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
     if (
       this.modelicaPath ===
-      "TestPackage.Template.Data.PartialTemplate.partialData"
+      'TestPackage.Template.Data.PartialTemplate.ctl'
     ) {
       console.log("stop");
     }
@@ -403,7 +399,7 @@ export class Input extends Element {
       visible: visible,
       valueExpression: this.valueExpression,
       enable: this.enable,
-      options: [this.type], // TODO: try and just use type to link to child options to prevent duplicates
+      options: childOptions, // TODO: try and just use type to link to child options to prevent duplicates
     };
 
     if (recursive) {
@@ -477,23 +473,31 @@ export class ReplaceableInput extends Input {
   }
 
   getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+
+    if (this.modelicaPath === 'TestPackage.Template.Data.PartialTemplate.ctl') {
+      console.log('stop');
+    }
     if (this.modelicaPath in options) {
       return options;
     }
+
+    // if an annotation has been provided, use the choices from that annotation
+    // otherwise fallback to using the parameter type
+    const childTypes = (this.choices.length) ? this.choices : [this.type];
 
     options[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       value: this.value,
       name: this.description,
-      options: this.choices,
+      options: childTypes,
       group: this.group,
       tab: this.tab,
       visible: true,
     };
 
     if (recursive) {
-      this.choices.map((c) => {
+      childTypes.map((c) => {
         const typeInstance = typeStore.get(c) || null;
         if (typeInstance) {
           options = typeInstance.getOptions(options);
