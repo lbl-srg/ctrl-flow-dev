@@ -1,12 +1,13 @@
 version: "3.8"
 
 services:
-  linkage-widget:
+  linkage-api:
+    image: linkage-api
+    container_name: linkage-api
     build:
       context: ../
-      dockerfile: docker/image/Dockerfile
+      dockerfile: docker/Dockerfile
     command: npm run start
-    container_name: linkage-widget
     env_file:
       - ../.env
     environment:

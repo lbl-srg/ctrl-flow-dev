@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  linkage-widget:
+  linkage-api:
     command: npm run debug
     ports:
       - ${PORT:-3000}:${PORT:-3000}
