@@ -17,7 +17,6 @@ RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
 ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 RUN node --version
 RUN npm --version
-WORKDIR /app
 
 # Prepares Modelica dependency scripts
 FROM node:16-alpine as alpine-node-prep-modelica
@@ -36,5 +35,7 @@ ENV MODELICAPATH=/dependencies/ModelicaStandardLibrary:/dependencies/modelica-bu
 RUN mkdir template-json
 RUN node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d template-json
 
+# Adds Modelica dependencies to the resulting image
 FROM ubuntu-pandoc-node as ubuntu-pandoc-node-modelica
 COPY --from=alpine-node-modelica /dependencies /dependencies
+WORKDIR /app
