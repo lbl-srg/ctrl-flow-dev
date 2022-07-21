@@ -77,7 +77,7 @@ export async function convertToODT(
 // Note that pandoc does not return anything when done with processing the file,
 // which makes debugging possible errors difficult.
 export async function convertToDOCX(odtFilePath: string, docxFilePath: string) {
-  const pandocBinary = `docker exec docker_pandoc pandoc `;
+  const pandocBinary = `pandoc`;
   const pandocArguments = `${odtFilePath.replace(
     process.cwd(),
     ".",
