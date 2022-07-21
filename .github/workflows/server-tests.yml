@@ -27,20 +27,12 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          # cache: "npm"
-          # cache-dependency-path: server/package-lock.json
-      # - name: Install Modelica dependencies
-      #   run: npm run install-modelica-deps
-      - name: Build Pandoc container
-        run: npm run docker:build-pandoc
-      - name: Run Pandoc container
-        run: npm run docker:run-pandoc
-      - name: Containerized Pandoc version check
-        run: npm run docker:pandoc-version
+          cache: "npm"
+          cache-dependency-path: server/package-lock.json
       - name: Install NPM packages
         run: npm ci
       - name: Run tests
         run: |
-          npm start &
-          sleep 5 # wait for server to start
+          npm run docker:start &
+          sleep 5
           npm run test
