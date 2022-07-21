@@ -4,14 +4,13 @@ RUN apt-get --assume-yes update && apt-get --assume-yes install wget pandoc=2.9.
 RUN pandoc --version
 RUN tex --version
 RUN make4ht --version
-#RUN tlmgr install make4ht
 
 # Installs Node 16.16.0 LTS with NVM for a x86-64 architecture
 FROM ubuntu-pandoc as ubuntu-pandoc-node
-RUN apt-get --assume-yes update && apt-get --assume-yes install curl bash
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 ENV NVM_DIR=/root/.nvm
 ENV NODE_VERSION=16.16.0
+RUN apt-get --assume-yes update && apt-get --assume-yes install curl bash
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
@@ -26,7 +25,7 @@ RUN apk update && apk --no-cache add openjdk13
 RUN mkdir dependencies
 WORKDIR /app
 COPY bin/ bin/
-COPY package* .
+COPY package*.json .
 
 # Installs Modelica dependencies
 FROM alpine-node-prep-modelica as alpine-node-modelica
