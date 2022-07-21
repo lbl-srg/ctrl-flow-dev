@@ -5,13 +5,13 @@
 1. Install Docker on your machine.
 1. Copy the `.env.example` file and name it `.env`. In the newly created file, change the value of `NODE_ENV` to be `development`.
 1. Run `npm install` to install NPM dependencies.
-1. Run `npm run docker:start` to start the application in Docker. This command runs the following containers in [detached mode](https://docs.docker.com/engine/reference/commandline/compose_up/#options) and outputs logs from the development server:
+1. Run `npm run docker:start` to start the application in Docker. The container outputs logs from the development server in the terminal. The container is set up to add a couple of crucial dependencies to the environment for the service to work properly:
 
+   - Modelica dependencies.
    - Pandoc CLI.
    - `make4ht` CLI.
-   - Modelica dependencies.
 
-1. Run `npm run docker:stop` to stop the application when you are done or if you want to switch to debug mode.
+1. Run `npm run docker:stop` to stop the server when you are done or if you want to switch to debug mode.
 
 ## Debugging the development server
 
