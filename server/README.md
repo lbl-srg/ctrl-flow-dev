@@ -5,7 +5,7 @@
 1. Install Docker on your machine.
 1. Copy the `.env.example` file and name it `.env`. In the newly created file, change the value of `NODE_ENV` to be `development`.
 1. Run `npm install` to install NPM dependencies.
-1. Run `npm run docker:start` to start the application in Docker. The container outputs logs from the development server in the terminal. The container is set up to add a couple of crucial dependencies to the environment for the service to work properly:
+1. Run `npm run docker:start` to start the Node application in Docker. If you haven't built the Docker image before, this might take several minutes. Once the image is ready, the container outputs logs from the development server in the terminal. The container is set up to add a couple of crucial dependencies to the environment for the service to work properly:
 
    - Modelica dependencies.
    - Pandoc CLI.
@@ -14,6 +14,10 @@
 1. Run `npm run docker:stop` to stop the server when you are done or if you want to switch to debug mode.
 
 ## Debugging the development server
+
+### Debugging the container
+
+Run `npm run docker:shell` to access the filesystem of the running Docker image with a terminal prompt.
 
 ### Debugging code with Chrome
 
