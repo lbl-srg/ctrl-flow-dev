@@ -39,4 +39,4 @@ jobs:
         run: |
           npm run start &
           sleep 5 # wait for server to start
-          npm run test
+          npm run test:ci

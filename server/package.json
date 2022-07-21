@@ -46,6 +46,7 @@
     "install-pandoc": "./bin/install-pandoc.sh",
     "format": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --write .",
     "test": "jest",
+    "test:ci": "jest --testPathIgnorePatterns=\\(/node_modules/ long\\)",
     "integration-test": "jest -t --testPathPattern=integration",
     "unit-test": "jest -t --testPathPattern=unit",
     "parseTestModelica": "sh bin/parse-test-package.sh",

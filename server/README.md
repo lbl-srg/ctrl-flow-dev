@@ -63,8 +63,10 @@ Run `npm run docker:shell` to access the filesystem of the running Docker image 
 ## Testing
 
 This project uses Jest to tests functionalities.
+.
 
 - Run `npm run test` to execute all tests.
+- Run `npm run test:ci` to execute all tests intended for the continuous integration workflow.
 - Run `npm run unit-test` to execute unit tests.
 - Run `npm run integration-test` to execute integration tests.
 
