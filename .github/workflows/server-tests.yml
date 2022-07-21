@@ -39,4 +39,4 @@ jobs:
         run: |
           npm run start &
           sleep 5 # wait for server to start
-          npx jest --testPathIgnorePatterns=\(/node_modules/ long\)
+          npm run test
