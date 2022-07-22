@@ -9,9 +9,14 @@ import _ from "underscore";
 import fs from "fs";
 import tmp from "tmp";
 
+import { name, version } from "../package.json";
 import config from "./config";
 import * as parser from "../../dependencies/modelica-json/lib/parser";
-import sequence, { TemplateOptions } from "./sequence";
+import {
+  writeControlSequenceDocument,
+  ControlSequenceInput,
+  EnergyCode,
+} from "./sequence";
 
 const app = express();
 
@@ -34,7 +39,8 @@ if (!fs.existsSync(tempDirPath)) {
 
 // accept json in body, hand off to service
 app.get("/", (req, res) => {
-  res.send("Hello world");
+  const appSignature = `${name}@${version}`;
+  res.send(appSignature);
 });
 
 app.post("/api/jsontomodelica", async (req, res) => {
@@ -86,16 +92,21 @@ app.post("/api/modelicatojson", async (req, res) => {
 });
 
 app.post("/api/sequence", async (req, res) => {
-  // TODO: Replace with actual default parameters necessary to generate the document
-  const requestBody: TemplateOptions = {
-    optional: true,
-    dual_inlet_airflow_sensors: "yes",
-    ...req.body,
+  // The Control Sequence Input consists of mock data at the moment.
+  // Please note that this is a very naive data format.
+  // The shape of this object will most likely need to be modified and massaged when we work with real data.
+  const controlSequenceInput: ControlSequenceInput = {
+    energyCode: EnergyCode.Ashrae,
+    choices: {
+      BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet:
+        "Buildings.Templates.Components.Types.Fan.SingleConstant",
+    },
   };
   try {
-    const file = await sequence(requestBody);
+    const file = await writeControlSequenceDocument(controlSequenceInput);
     res.send(file);
   } catch (error) {
+    console.error(error);
     res.send(error);
   }
 });

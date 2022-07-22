@@ -1,5 +1,4 @@
 import { getFile } from "../../../src/parser/parser";
-import { writeFileSync } from "fs";
 import { loadPackage } from "../../../src/parser";
 import { getTemplates } from "../../../src/parser/template";
 
