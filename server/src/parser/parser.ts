@@ -43,7 +43,7 @@ interface Description {
   annotation: ClassModification;
 }
 
-interface ShortClassSpecifier {
+export interface ShortClassSpecifier {
   identifier: string;
   short_class_specifier_value: {
     base_prefix: string;

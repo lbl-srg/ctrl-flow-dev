@@ -1,3 +1,5 @@
+import { ShortClassSpecifier } from "./parser";
+
 /**
  * Modifications are places where there is an assignment, e.g.
  * 'my_param=5'. Modifications can also contain groups of modifications, e.g.
@@ -23,28 +25,47 @@
 
 const modStore: Map<string, Modification> = new Map();
 
+type ComponentDeclaration1 = {
+  declaration: DeclarationBlock;
+  description?: DescriptionBlock;
+}
+
+type ComponentClause1 = {
+  type_specifier: string; // Modelica Path
+  component_declaration1: ComponentDeclaration1;
+
+}
+
+type ShortClassDefinition = {
+  class_prefixes: string; // //(PARTIAL)? (CLASS | MODEL | (OPERATOR)? RECORD | BLOCK | (EXPANDABLE)? CONNECTOR | TYPE | PACKAGE | ((PURE | IMPURE))? (OPERATOR)? FUNCTION | OPERATOR),
+  short_class_specifier: ShortClassSpecifier; // from 'parser.ts'
+}
+
+type ElementReplaceable = {
+  component_clause1: ComponentClause1;
+  short_class_definition: ShortClassDefinition;
+}
+
 type RedeclareMod = {
   element_redeclaration: {
-    component_clause1: {
-      type_specifier: string;
-      component_declaration1: ComponentDeclaration1;
-    }
+    each: boolean;
+    final: boolean;
+    short_class_definition?: ShortClassDefinition;
+    element_replaceable?: ElementReplaceable;
+    component_clause1?: ComponentClause1;
   }
 }
 
 type ReplaceableMod = {
   element_redeclaration: {
     element_replaceable: {
-      component_clause1: {
-        type_specifier: string; // Modelica Path
-        component_declaration1: ComponentDeclaration1
-      };
+      component_clause1: ComponentClause1;
     };
   };
 };
 
 type ClassMod = {
-  class_modification: (WrappedMod | ReplaceableMod)[];
+  class_modification: (WrappedMod | RedeclareMod)[];
 };
 
 type Assignment = {
@@ -63,12 +84,12 @@ export type WrappedMod = {
 
 export type Mod = {
   name: string;
-  modification: ClassMod | WrappedMod | Assignment | ReplaceableMod;
+  modification: ClassMod | WrappedMod | Assignment | RedeclareMod;
 };
 
 export type DeclarationBlock = {
   identifier: string;
-  modification?: ClassMod | WrappedMod | Assignment | ReplaceableMod;
+  modification?: ClassMod | WrappedMod | Assignment | RedeclareMod;
 };
 
 export type DescriptionBlock = {
@@ -76,10 +97,7 @@ export type DescriptionBlock = {
   annotation?: any;
 };
 
-type ComponentDeclaration1 = {
-  declaration: DeclarationBlock;
-  description?: DescriptionBlock;
-}
+
 
 export type Expression = {
   modelicaPath: string;
@@ -90,14 +108,15 @@ export function getModificationList(
   classMod: ClassMod,
   modelicaPath: string,
   name = "",
-): Modification[] {
-  return classMod.class_modification.map((m) =>
-    createModification({
-      definition: m as WrappedMod,
-      basePath: modelicaPath,
-      name: name,
-    }),
-  );
+ ) {
+  return classMod.class_modification
+    .map((m) =>
+      createModification({
+        definition: m as WrappedMod,
+        basePath: modelicaPath,
+        name: name,
+      }),
+  ).filter((m) => m !== undefined) as Modification[];
 }
 
 interface ModificationBasics {
@@ -121,6 +140,65 @@ interface ModificationWithValue extends ModificationBasics {
 
 type ModificationProps = ModificationWithDefinition | ModificationWithValue;
 
+function unpackRedeclaration(definition: RedeclareMod, props: ModificationProps) {
+  const redeclaration = definition.element_redeclaration;
+  if ("component_clause1" in redeclaration) {
+    const componentClause1 = redeclaration.component_clause1 as ComponentClause1;
+    if (!componentClause1?.type_specifier) {
+      console.log('yep');
+    }
+    const type = componentClause1.type_specifier;
+    const redeclareDefinition = componentClause1.component_declaration1.declaration;
+    const modProps = {...props, type, definition: redeclareDefinition};
+    console.log(redeclareDefinition);
+    const redeclareMod = createModification(modProps);
+    return redeclareMod;
+  } else if ("short_class_definition" in redeclaration) {
+
+  } else if ("element_replaceable" in redeclaration) {
+
+  }
+}
+
+function unpackModblock(modBlock:): {name: string, value: any, modes: Modifcation[]} {
+  let modBlock = definition;
+
+  if ("element_modification_or_replaceable" in definition) {
+    modBlock =
+      definition.element_modification_or_replaceable.element_modification;
+  }
+
+  modBlock =
+    "element_modification_or_replaceable" in definition
+      ? definition.element_modification_or_replaceable.element_modification
+      : definition;
+
+  if ("name" in modBlock) {
+    name = modBlock.name;
+  } else if ("identifier" in modBlock) {
+    name = modBlock.identifier;
+  }
+
+  const mod = modBlock.modification;
+  if (mod) {
+    // test if an assignment
+    if ("equal" in mod) {
+      // simple_expression can potentially be an expression
+      // TODO be ready to feed that into Expression generator
+      value = (mod as Assignment).expression.simple_expression;
+    } else if (name == "choice") {
+      const choiceMod = (mod as ClassMod)
+        .class_modification[0] as RedeclareMod;
+      value =
+        choiceMod.element_redeclaration.element_replaceable.component_clause1
+          .type_specifier;
+    } else if ("class_modification" in mod) {
+      // const type = "";
+      mods = getModificationList(mod as ClassMod, modelicaPath);
+    }
+  }
+}
+
 /**
  * Factory method that can create a Modification from two approaches:
  *
@@ -130,25 +208,22 @@ type ModificationProps = ModificationWithDefinition | ModificationWithValue;
  * @param props: ModificationProps
  * @returns Modification
  */
-export function createModification(props: ModificationProps): Modification {
+export function createModification(props: ModificationProps): Modification | undefined{
   let mods: Modification[] = [];
   let { definition, value, basePath = "", name } = props;
   let modelicaPath = basePath ? `${basePath}.${name}` : "";
-  // TODO: 'definition' can also directly be an 'element_redeclaration'
+
   if (definition) {
+    if ("element_redeclaration" in definition) {
+      return unpackRedeclaration(definition, props);
+    }
+
+    // TODO: migrate modblock unpacking to 'modblock' method. Fix typing
     let modBlock = definition;
 
     if ("element_modification_or_replaceable" in definition) {
       modBlock =
         definition.element_modification_or_replaceable.element_modification;
-    } else if ("element_redeclaration" in definition) {
-      const componentClause1 = (definition as RedeclareMod).element_redeclaration.component_clause1;
-      const type = componentClause1.type_specifier;
-      const redeclareDefinition = componentClause1.component_declaration1.declaration;
-      const modProps = {...props, type, definition: redeclareDefinition};
-      console.log(redeclareDefinition);
-      const redeclareMod = createModification(modProps);
-      return redeclareMod;
     }
 
     modBlock =
@@ -171,7 +246,7 @@ export function createModification(props: ModificationProps): Modification {
         value = (mod as Assignment).expression.simple_expression;
       } else if (name == "choice") {
         const choiceMod = (mod as ClassMod)
-          .class_modification[0] as ReplaceableMod;
+          .class_modification[0] as RedeclareMod;
         value =
           choiceMod.element_redeclaration.element_replaceable.component_clause1
             .type_specifier;
