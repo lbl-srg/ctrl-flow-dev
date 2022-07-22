@@ -186,15 +186,6 @@ describe("Expected Options are extracted", () => {
     });
   });
 
-  it("Extracts the expected number of options for the TestTemplate", () => {
-    const optionTotal = 44;
-    const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.elementList[0] as parser.InputGroup;
-    const options = template.getOptions();
-    const denormalizedOptions = optionTree(options, template.modelicaPath);
-    expect(Object.values(options).length).toBe(optionTotal);
-  });
-
   it("Extracts expected InputGroup options", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const inputGroup = file.elementList[0] as parser.InputGroup;
@@ -258,7 +249,8 @@ describe("Schedule Options", () => {
     const element = template.elementList.find((e) => e.modelicaPath === expectedPath);
     expect(element).toBeTruthy();
     const options = (element as parser.Element).getOptions();
+    const visibleOptions = Object.entries(options).filter(([k, v]) => v.visible);
     const simpleOptions = optionTree(options, expectedPath);
-    console.log(options);
+    console.log(visibleOptions);
   });
 });
