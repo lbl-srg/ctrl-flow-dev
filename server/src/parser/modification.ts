@@ -55,14 +55,6 @@ type RedeclareMod = {
   };
 };
 
-type ReplaceableMod = {
-  element_redeclaration: {
-    element_replaceable: {
-      component_clause1: ComponentClause1;
-    };
-  };
-};
-
 type ClassMod = {
   class_modification: (WrappedMod | RedeclareMod)[];
 };
@@ -159,18 +151,12 @@ function unpackRedeclaration(props: ModificationProps) {
   }
 }
 
-function unpackModblock(props: ModificationWithDefinition): {
-  name: string;
-  value: any;
-  modes: Modifcation[];
-} {
-  const { definition } = props;
-  let modBlock = definition;
+function unpackModblock(props: ModificationProps) {
+  let mods: Modification[] = [];
+  let value: string = "";
+  let { definition, basePath = "", name } = props as ModificationWithDefinition;
 
-  if ("element_modification_or_replaceable" in definition) {
-    modBlock =
-      definition.element_modification_or_replaceable.element_modification;
-  }
+  let modBlock = definition;
 
   modBlock =
     "element_modification_or_replaceable" in definition
@@ -183,7 +169,8 @@ function unpackModblock(props: ModificationWithDefinition): {
     name = modBlock.identifier;
   }
 
-  const mod = modBlock.modification;
+  let modelicaPath = basePath ? `${basePath}.${name}` : "";
+  const mod = (modBlock as Mod).modification;
   if (mod) {
     // test if an assignment
     if ("equal" in mod) {
@@ -192,14 +179,17 @@ function unpackModblock(props: ModificationWithDefinition): {
       value = (mod as Assignment).expression.simple_expression;
     } else if (name == "choice") {
       const choiceMod = (mod as ClassMod).class_modification[0] as RedeclareMod;
-      value =
-        choiceMod.element_redeclaration.element_replaceable.component_clause1
-          .type_specifier;
+      if (choiceMod.element_redeclaration) {
+        const replaceable = choiceMod.element_redeclaration
+          .element_replaceable as ElementReplaceable;
+        value = replaceable.component_clause1.type_specifier;
+      }
     } else if ("class_modification" in mod) {
-      // const type = "";
       mods = getModificationList(mod as ClassMod, modelicaPath);
     }
   }
+
+  return new Modification(basePath, name, value, mods);
 }
 
 /**
@@ -220,46 +210,10 @@ export function createModification(
 
   if (definition) {
     if ("element_redeclaration" in definition) {
-      return unpackRedeclaration(definition, props);
+      return unpackRedeclaration(props);
     }
 
-    // TODO: migrate modblock unpacking to 'modblock' method. Fix typing
-    let modBlock = definition;
-
-    if ("element_modification_or_replaceable" in definition) {
-      modBlock =
-        definition.element_modification_or_replaceable.element_modification;
-    }
-
-    modBlock =
-      "element_modification_or_replaceable" in definition
-        ? definition.element_modification_or_replaceable.element_modification
-        : definition;
-
-    if ("name" in modBlock) {
-      name = modBlock.name;
-    } else if ("identifier" in modBlock) {
-      name = modBlock.identifier;
-    }
-
-    const mod = modBlock.modification;
-    if (mod) {
-      // test if an assignment
-      if ("equal" in mod) {
-        // simple_expression can potentially be an expression
-        // TODO be ready to feed that into Expression generator
-        value = (mod as Assignment).expression.simple_expression;
-      } else if (name == "choice") {
-        const choiceMod = (mod as ClassMod)
-          .class_modification[0] as RedeclareMod;
-        value =
-          choiceMod.element_redeclaration.element_replaceable.component_clause1
-            .type_specifier;
-      } else if ("class_modification" in mod) {
-        // const type = "";
-        mods = getModificationList(mod as ClassMod, modelicaPath);
-      }
-    }
+    return unpackModblock(props);
   }
 
   return new Modification(basePath, name, value, mods);
