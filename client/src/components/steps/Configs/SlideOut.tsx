@@ -127,6 +127,7 @@ export function normalizeIndentation(
 }
 
 // Takes a flat array of options and group them together according to their parent Modelica path.
+/*
 export function groupConfigOptions(flatOptions: FlatConfigOption[]) {
   let groupedConfigOptions: FlatConfigOptionGroup[] = [];
   flatOptions.forEach((option) => {
@@ -155,6 +156,7 @@ export function groupConfigOptions(flatOptions: FlatConfigOption[]) {
 
   return groupedConfigOptions;
 }
+*/
 
 const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
   const { configStore, templateStore } = useStores();
@@ -220,9 +222,8 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
   const normalizedConfigOption = normalizeIndentation(flatConfigOptions);
 
   // Alternate grouping strategy
-  const groupedConfigOptions = groupConfigOptions(flatConfigOptions);
-
-  console.log({ normalizedConfigOption, groupedConfigOptions });
+  // const groupedConfigOptions = groupConfigOptions(flatConfigOptions);
+  // console.log({ normalizedConfigOption, groupedConfigOptions });
 
   function updateSelectedConfigOption(
     parentModelicaPath: string,
