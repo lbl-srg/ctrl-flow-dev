@@ -28,23 +28,22 @@ const modStore: Map<string, Modification> = new Map();
 type ComponentDeclaration1 = {
   declaration: DeclarationBlock;
   description?: DescriptionBlock;
-}
+};
 
 type ComponentClause1 = {
   type_specifier: string; // Modelica Path
   component_declaration1: ComponentDeclaration1;
-
-}
+};
 
 type ShortClassDefinition = {
   class_prefixes: string; // //(PARTIAL)? (CLASS | MODEL | (OPERATOR)? RECORD | BLOCK | (EXPANDABLE)? CONNECTOR | TYPE | PACKAGE | ((PURE | IMPURE))? (OPERATOR)? FUNCTION | OPERATOR),
   short_class_specifier: ShortClassSpecifier; // from 'parser.ts'
-}
+};
 
 type ElementReplaceable = {
   component_clause1: ComponentClause1;
   short_class_definition: ShortClassDefinition;
-}
+};
 
 type RedeclareMod = {
   element_redeclaration: {
@@ -53,8 +52,8 @@ type RedeclareMod = {
     short_class_definition?: ShortClassDefinition;
     element_replaceable?: ElementReplaceable;
     component_clause1?: ComponentClause1;
-  }
-}
+  };
+};
 
 type ReplaceableMod = {
   element_redeclaration: {
@@ -97,8 +96,6 @@ export type DescriptionBlock = {
   annotation?: any;
 };
 
-
-
 export type Expression = {
   modelicaPath: string;
   expression: string;
@@ -108,7 +105,7 @@ export function getModificationList(
   classMod: ClassMod,
   modelicaPath: string,
   name = "",
- ) {
+) {
   return classMod.class_modification
     .map((m) =>
       createModification({
@@ -116,7 +113,8 @@ export function getModificationList(
         basePath: modelicaPath,
         name: name,
       }),
-  ).filter((m) => m !== undefined) as Modification[];
+    )
+    .filter((m) => m !== undefined) as Modification[];
 }
 
 interface ModificationBasics {
@@ -128,7 +126,7 @@ interface ModificationBasics {
 }
 
 interface ModificationWithDefinition extends ModificationBasics {
-  definition: WrappedMod | Mod | DeclarationBlock;
+  definition: WrappedMod | Mod | DeclarationBlock | RedeclareMod;
   value?: never;
 }
 
@@ -140,27 +138,33 @@ interface ModificationWithValue extends ModificationBasics {
 
 type ModificationProps = ModificationWithDefinition | ModificationWithValue;
 
-function unpackRedeclaration(definition: RedeclareMod, props: ModificationProps) {
-  const redeclaration = definition.element_redeclaration;
+function unpackRedeclaration(props: ModificationProps) {
+  let { definition } = props;
+  const redeclaration = (definition as RedeclareMod).element_redeclaration;
   if ("component_clause1" in redeclaration) {
-    const componentClause1 = redeclaration.component_clause1 as ComponentClause1;
+    const componentClause1 =
+      redeclaration.component_clause1 as ComponentClause1;
     if (!componentClause1?.type_specifier) {
-      console.log('yep');
+      console.log("yep");
     }
     const type = componentClause1.type_specifier;
-    const redeclareDefinition = componentClause1.component_declaration1.declaration;
-    const modProps = {...props, type, definition: redeclareDefinition};
+    const redeclareDefinition =
+      componentClause1.component_declaration1.declaration;
+    const modProps = { ...props, type, definition: redeclareDefinition };
     console.log(redeclareDefinition);
     const redeclareMod = createModification(modProps);
     return redeclareMod;
   } else if ("short_class_definition" in redeclaration) {
-
   } else if ("element_replaceable" in redeclaration) {
-
   }
 }
 
-function unpackModblock(modBlock:): {name: string, value: any, modes: Modifcation[]} {
+function unpackModblock(props: ModificationWithDefinition): {
+  name: string;
+  value: any;
+  modes: Modifcation[];
+} {
+  const { definition } = props;
   let modBlock = definition;
 
   if ("element_modification_or_replaceable" in definition) {
@@ -187,8 +191,7 @@ function unpackModblock(modBlock:): {name: string, value: any, modes: Modifcatio
       // TODO be ready to feed that into Expression generator
       value = (mod as Assignment).expression.simple_expression;
     } else if (name == "choice") {
-      const choiceMod = (mod as ClassMod)
-        .class_modification[0] as RedeclareMod;
+      const choiceMod = (mod as ClassMod).class_modification[0] as RedeclareMod;
       value =
         choiceMod.element_redeclaration.element_replaceable.component_clause1
           .type_specifier;
@@ -208,7 +211,9 @@ function unpackModblock(modBlock:): {name: string, value: any, modes: Modifcatio
  * @param props: ModificationProps
  * @returns Modification
  */
-export function createModification(props: ModificationProps): Modification | undefined{
+export function createModification(
+  props: ModificationProps,
+): Modification | undefined {
   let mods: Modification[] = [];
   let { definition, value, basePath = "", name } = props;
   let modelicaPath = basePath ? `${basePath}.${name}` : "";
