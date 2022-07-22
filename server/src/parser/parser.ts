@@ -215,9 +215,9 @@ export class InputGroup extends Element {
     this.type = this.modelicaPath;
     this.description = specifier.description_string;
 
-    this.elementList = specifier.composition.element_list.map((e: any) =>
-      _constructElement(e, this.modelicaPath),
-    );
+    this.elementList = specifier.composition.element_list
+      .map((e: any) => _constructElement(e, this.modelicaPath))
+      .filter((e: Element | undefined) => e !== undefined);
 
     this.annotation = specifier.composition.annotation?.map(
       (m: Mod | WrappedMod) => createModification({ definition: m }),
@@ -234,17 +234,14 @@ export class InputGroup extends Element {
   }
 
   getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
-    if (this.modelicaPath === "TestPackage.Template.Data.PartialTemplate") {
-      console.log("stop");
-    }
     // A group with no elementList is ignored
     if (this.modelicaPath in options || this.elementList.length === 0) {
       return options;
     }
 
-    const children = this.elementList.filter(
-      (el) => Object.keys(el.getOptions(options)).length > 0,
-    );
+    const children = this.elementList.filter((el) => {
+      return Object.keys(el.getOptions(options)).length > 0;
+    });
 
     options[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
@@ -371,10 +368,7 @@ export class Input extends Element {
   }
 
   getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
-    if (
-      this.modelicaPath ===
-      'TestPackage.Template.Data.PartialTemplate.ctl'
-    ) {
+    if (this.modelicaPath === "TestPackage.Template.Data.PartialTemplate.ctl") {
       console.log("stop");
     }
 
@@ -436,13 +430,15 @@ export class ReplaceableInput extends Input {
     // the default value is original type provided
     this.value = this.type;
 
-    this.mods.push(
-      createModification({
-        name: this.name,
-        value: this.value,
-        basePath: basePath,
-      }),
-    );
+    const mod = createModification({
+      name: this.name,
+      value: this.value,
+      basePath: basePath,
+    });
+
+    if (mod) {
+      this.mods.push(mod);
+    }
 
     // modifiers for replaceables are specified in a constraining
     // interface. Check if one is present to extract modifiers
@@ -473,9 +469,8 @@ export class ReplaceableInput extends Input {
   }
 
   getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
-
-    if (this.modelicaPath === 'TestPackage.Template.Data.PartialTemplate.ctl') {
-      console.log('stop');
+    if (this.modelicaPath === "TestPackage.Template.Data.PartialTemplate.ctl") {
+      console.log("stop");
     }
     if (this.modelicaPath in options) {
       return options;
@@ -483,7 +478,7 @@ export class ReplaceableInput extends Input {
 
     // if an annotation has been provided, use the choices from that annotation
     // otherwise fallback to using the parameter type
-    const childTypes = (this.choices.length) ? this.choices : [this.type];
+    const childTypes = this.choices.length ? this.choices : [this.type];
 
     options[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
@@ -635,6 +630,31 @@ export class InputGroupExtend extends Element {
   }
 }
 
+type ImportClause = {
+  identifier: string;
+  name: string;
+};
+
+export class Import extends Element {
+  value: string;
+
+  constructor(definition: any, basePath: string) {
+    super();
+    const importClause = definition.import_clause as ImportClause; // arbitrary name. Important that this will not collide with other param names
+    this.name = importClause.identifier;
+    this.value = importClause.name; // path to imported type
+    this.modelicaPath = `${basePath}.${this.name}`;
+    const registered = this.registerPath(this.modelicaPath);
+    if (!registered) {
+      return; // PUNCH-OUT!
+    }
+  }
+
+  getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+    return options;
+  }
+}
+
 /**
  * Given a list of elements, discovers and returns the formatted type
  *
@@ -649,6 +669,7 @@ function _constructElement(
   const extend = "extends_clause";
   const component = "component_clause";
   const replaceable = "replaceable";
+  const importClause = "import_clause";
 
   definition =
     "class_definition" in definition ? definition.class_definition : definition;
@@ -667,6 +688,8 @@ function _constructElement(
     elementType = replaceable;
   } else if (component in definition) {
     elementType = component;
+  } else if (importClause in definition) {
+    elementType = importClause;
   }
 
   let element: Element | undefined;
@@ -695,9 +718,19 @@ function _constructElement(
     case replaceable:
       element = new ReplaceableInput(definition, basePath);
       break;
+    case importClause:
+      element = new Import(definition, basePath);
+      break;
   }
 
-  return element?.duplicate ? typeStore.get(element?.modelicaPath) : element;
+  const result = element?.duplicate
+    ? typeStore.get(element?.modelicaPath)
+    : element;
+  if (!result) {
+    // TODO: anytime this is happening
+    console.log(`Unable to parse the following block:\n${definition}`);
+  }
+  return result;
 }
 
 //
