@@ -53,7 +53,7 @@ describe("Basic parser functionality", () => {
     ) as Template;
 
     const systemTemplate = template.getSystemTemplate();
-    const options = getOptions();
+    const { options, scheduleOptions } = getOptions();
 
     const systemTemplateOptions = options.find(
       (o) => o.modelicaPath === systemTemplate.modelicaPath,

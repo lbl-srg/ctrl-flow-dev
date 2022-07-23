@@ -13,10 +13,13 @@ loadPackage(`${fullTempDirPath}/TestPackage`);
 // const buildDir = `${process.cwd()}/build/modelica-json/json`;
 // loadPackage(`${buildDir}/Buildings/Templates`);
 
+const { options, scheduleOptions } = getOptions();
+
 const data = {
   templates: getTemplates(),
   systemTypes: getSystemTypes(),
-  options: getOptions(),
+  options: options,
+  scheduleOptions: scheduleOptions,
 };
 
 const dest = path.resolve(

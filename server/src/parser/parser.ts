@@ -19,7 +19,7 @@ import {
   getModificationList,
 } from "./modification";
 
-const EXTEND_NAME = "__extend";
+export const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
