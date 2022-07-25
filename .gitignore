@@ -18,6 +18,7 @@ dependencies/*
 sequence/output-documents/*
 
 # Texmaker files
-.log
-.aux
-.synctex.gz
+sequence/*.aux
+sequence/*.log
+sequence/*.pdf
+sequence/*.synctex.gz
