@@ -1,8 +1,0 @@
-version: "3.8"
-
-services:
-  linkage-api:
-    command: npm run debug
-    ports:
-      - ${PORT:-3000}:${PORT:-3000}
-      - 9229:9229
