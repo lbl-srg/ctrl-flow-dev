@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  linkage-api:
+    image: linkage-api
+    container_name: linkage-api
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    command: npm run start
+    env_file:
+      - ../.env
+    environment:
+      - MODELICAPATH=/dependencies/ModelicaStandardLibrary:/dependencies/modelica-buildings
+    ports:
+      - ${PORT:-3000}:${PORT:-3000}
+    volumes:
+      - ../:/app

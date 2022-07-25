@@ -1,0 +1,131 @@
+% Progress:
+% Figured out dynamic numbering and sections.
+% Figured out labels to refer to sections dynamically.
+% Basic table creation
+% SVG (requires Inkscape)
+
+% Next:
+% Table styles/borders
+% What are the deciding factors to show/hide content? (where should I look?)
+% Label for figures
+% Reusable styles
+% Chart
+% Table of content (error when converting to ODT)
+
+% Percentage characters "%" need to be escaped like so: \%.
+
+\documentclass[letterpaper]{article}
+\usepackage{etoolbox} % Provides \ifdefstring command.
+\usepackage{svg} % Provides \includesvg command.
+
+%% Copy and paste the code snippet below to add more content displayed conditionally (i.e., content to show if a particular value was selected for an option).
+%% "OptionModelicaPath" should be replaced by the modelica path without dots of the option.
+%% "Modelica.Path.Of.Selected.Value" should be replaced by the modelica path with dots of the selected value that should trigger the content to show in the document.
+% \ifdefined\OptionModelicaPath
+% \ifdefstring{\OptionModelicaPath}{Modelica.Path.Of.Selected.Value}{
+% Text to display if the value returned by \OptionModelicaPath is equal to Modelica.Path.Of.Selected.Value.
+% }{}
+% \fi
+
+% Formats title
+% https://en.wikibooks.org/wiki/LaTeX/Title_Creation
+\title{Control Sequence}
+\author{}
+\date{}
+
+% How deep the nested headings get numbered.
+\setcounter{secnumdepth}{4}
+
+% Sets offset for the first numbered headings.
+% Goes to 3.
+\setcounter{section}{2}
+
+% Sets path to directory containing SVG files.
+\svgpath{latex-assets/}
+
+\begin{document}
+
+% Sets header/footer.
+% https://en.wikibooks.org/wiki/LaTeX/Customizing_Page_Headers_and_Footers#Standard_page_styles
+\pagestyle{plain}
+
+\maketitle
+
+% Sets table of content.
+\renewcommand*\contentsname{\centering CONTENTS}
+% \tableofcontents
+
+% Adds a page break.
+% http://www.personal.ceu.hu/tex/breaking.htm
+\newpage
+
+% https://overleaf.com/learn/latex/Sections_and_chapters#Document_sectioning
+% https://en.wikibooks.org/wiki/LaTeX/Labels_and_Cross-referencing
+\section{SETPOINTS, DESIGN and FIELD DETERMINED }
+\subsection{Information Provided by Designer}
+
+% Goes to 3.1.2.
+\addtocounter{subsubsection}{1}
+
+\subsubsection{VAV Box Design Information}
+\paragraph{VAV Cooling-Only Terminal Unit} \label{vav_cooling_only_terminal_unit}
+
+% Goes to 5.
+\addtocounter{section}{1}  
+
+\section{SEQUENCES OF OPERATIONS}
+
+% Goes to 5.2.
+\addtocounter{subsection}{1}
+
+\subsection{Generic Ventilation Zones} \label{generic_ventilation_zones}
+\subsection{Generic Thermal Zones} \label{generic_thermal_zones}
+
+% Goes to 5.5.
+\addtocounter{subsection}{1}
+
+\subsection{VAV Terminal Unit—Cooling Only}
+\subsubsection{See “Generic Thermal Zones” (Section \ref{generic_thermal_zones}) for setpoints, loops, control modes, alarms, etc.}
+\subsubsection{See “Generic Ventilation Zones” (Section \ref{generic_ventilation_zones}) for calculation of zone minimum outdoor airflow.}
+
+CO2 DCV for cooling-only zones can lead to overcooling due to the faster rise in CO2 levels from people in the room versus the increase in cooling loads from people. Including heat in all zones with CO2 DCV is therefore recommended. 
+
+\subsubsection{See Section \ref{vav_cooling_only_terminal_unit} for zone minimum airflow setpoint Vmin, zone maximum cooling airflow setpoint Vcool-max, and zone maximum heating airflow setpoint Vheat-max.}
+
+If the minimum ventilation rate is more than 25\% or so of the cooling maximum, or DCV is used, a reheat box is recommended to avoid overcooling. DCV logic is not provided for cooling-only boxes, because doing so results in periods of overcooling, as the CO2 levels due to occupants rises much faster than the cooling load due to occupants because of thermal mass.
+
+Cooling-only terminal units can provide heating only when the AHU supply air temperature is more than 3°C (5°F) above the room temperature.
+
+\subsubsection{Active endpoints used in the control logic depicted in Figure 5.5.5 shall vary depending on the mode of the Zone Group the zone is a part of (see Table \ref{fig:zone_group_mode}).}
+
+\begin{center}
+Table \ref{fig:zone_group_mode} Endpoints as a Function of Zone Group Mode \label{fig:zone_group_mode}
+\end{center}
+
+% https://es.overleaf.com/learn/latex/Tables
+\begin{tabular}{ c|c|c|c|c|c|c } 
+ \hline
+ Endpoint & Occupied & Cooldown & Setup & Warmup & Setback & Unoccupied \\ 
+ \hline
+ Cooling maximum & Vcool-max & Vcool-max & Vcool-max & 0 & 0 & 0 \\ 
+ \hline
+ Minimum & Vmin* & 0 & 0 & 0 & 0 & 0 \\ 
+ \hline
+ Heating maximum & Vheat-max & 0 & 0 & Vcool-max & Vcool-max & 0 \\ 
+ \hline
+\end{tabular}
+
+\subsubsection{Control logic is depicted schematically in Figure \ref{fig:control_logic} and described in the following subsections.} \label{fig:control_logic}
+
+\begin{figure}
+  \centering
+  \includesvg{control-logic}
+\end{figure}
+
+\ifdefined\BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet
+\ifdefstring{\BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet}{Buildings.Templates.Components.Types.Fan.SingleConstant}{
+Type of return fan: Single fan - Constant speed
+}{}
+\fi
+
+\end{document}
