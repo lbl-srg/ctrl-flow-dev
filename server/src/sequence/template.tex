@@ -1,22 +1,20 @@
 % Progress:
 % Figured out dynamic numbering and sections.
 % Figured out labels to refer to sections dynamically.
-% Basic table creation
-% SVG (requires Inkscape)
+% Page footer with numbered pages.
+% Basic table creation.
+% Label for figures.
+% Section styles.
+% Page margins.
+% SVGs (add Inkscape to Path for make4ht/Pandoc).
 
 % Next:
-% Table styles/borders
+% Reusable styles (use DOCX template with Pandoc).
+% Table of content (error when converting to ODT).
+% Table styles/borders.
 % What are the deciding factors to show/hide content? (where should I look?)
-% Label for figures
-% Reusable styles
-% Chart
-% Table of content (error when converting to ODT)
 
-% Percentage characters "%" need to be escaped like so: \%.
-
-\documentclass[letterpaper]{article}
-\usepackage{etoolbox} % Provides \ifdefstring command.
-\usepackage{svg} % Provides \includesvg command.
+% Percentage characters "%" that are meant to be printed need to be escaped like so: \%.
 
 %% Copy and paste the code snippet below to add more content displayed conditionally (i.e., content to show if a particular value was selected for an option).
 %% "OptionModelicaPath" should be replaced by the modelica path without dots of the option.
@@ -27,11 +25,30 @@
 % }{}
 % \fi
 
+\documentclass[10pt]{article}
+\usepackage[letterpaper]{geometry} % Sets margins of the document based on US letter standard
+\usepackage{etoolbox} % Provides \ifdefstring command.
+\usepackage{svg} % Provides \includesvg command. Please note that Inkscape must be in the path.
+\usepackage{titlesec} % Provides \titleformat command.
+
+% Sets the path where SVGs are found.
+\svgpath{latex-assets/}
+
 % Formats title
 % https://en.wikibooks.org/wiki/LaTeX/Title_Creation
 \title{Control Sequence}
 \author{}
 \date{}
+
+% Removes paragraph indentation
+\setlength{\parindent}{0pt}
+
+% Sets the style of titles
+\titleformat{\section}{\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont}{\thesubsubsection}{1em}{}
+\titleformat{\paragraph}{\normalfont}{\theparagraph}{1em}{}
+\titlespacing{\paragraph}{1.6em}{0em}{0.8em}
 
 % How deep the nested headings get numbered.
 \setcounter{secnumdepth}{4}
@@ -40,9 +57,7 @@
 % Goes to 3.
 \setcounter{section}{2}
 
-% Sets path to directory containing SVG files.
-\svgpath{latex-assets/}
-
+% https://latex-programming.fandom.com/wiki/LaTeX_environment
 \begin{document}
 
 % Sets header/footer.
@@ -53,7 +68,7 @@
 
 % Sets table of content.
 \renewcommand*\contentsname{\centering CONTENTS}
-% \tableofcontents
+%\tableofcontents
 
 % Adds a page break.
 % http://www.personal.ceu.hu/tex/breaking.htm
@@ -61,7 +76,7 @@
 
 % https://overleaf.com/learn/latex/Sections_and_chapters#Document_sectioning
 % https://en.wikibooks.org/wiki/LaTeX/Labels_and_Cross-referencing
-\section{SETPOINTS, DESIGN and FIELD DETERMINED }
+\section{SETPOINTS, DESIGN and FIELD DETERMINED}
 \subsection{Information Provided by Designer}
 
 % Goes to 3.1.2.
@@ -96,12 +111,14 @@ If the minimum ventilation rate is more than 25\% or so of the cooling maximum, 
 
 Cooling-only terminal units can provide heating only when the AHU supply air temperature is more than 3°C (5°F) above the room temperature.
 
-\subsubsection{Active endpoints used in the control logic depicted in Figure 5.5.5 shall vary depending on the mode of the Zone Group the zone is a part of (see Table \ref{fig:zone_group_mode}).}
+\subsubsection{Active endpoints used in the control logic depicted in Figure \ref{fig_control_logic} shall vary depending on the mode of the Zone Group the zone is a part of (see Table \ref{fig_zone_group_mode}).}
 
+\label{fig_zone_group_mode}
+% Inserts a table.
 \begin{center}
-Table \ref{fig:zone_group_mode} Endpoints as a Function of Zone Group Mode \label{fig:zone_group_mode}
+Table \ref{fig_zone_group_mode} Endpoints as a Function of Zone Group Mode 
 \end{center}
-
+%
 % https://es.overleaf.com/learn/latex/Tables
 \begin{tabular}{ c|c|c|c|c|c|c } 
  \hline
@@ -115,11 +132,12 @@ Table \ref{fig:zone_group_mode} Endpoints as a Function of Zone Group Mode \labe
  \hline
 \end{tabular}
 
-\subsubsection{Control logic is depicted schematically in Figure \ref{fig:control_logic} and described in the following subsections.} \label{fig:control_logic}
+\subsubsection{Control logic is depicted schematically in Figure \ref{fig_control_logic} and described in the following subsections.} \label{fig_control_logic}
 
-\begin{figure}
+% Inserts an SVG.
+\begin{figure}[h]
   \centering
-  \includesvg{control-logic}
+  \includesvg[width=\textwidth]{control-logic}
 \end{figure}
 
 \ifdefined\BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet
