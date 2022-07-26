@@ -15,10 +15,12 @@ dependencies/*
 !dependencies/.gitkeep
 
 # Document generation
-sequence/output-documents/*
+output-documents
 
 # Texmaker files
-sequence/*.aux
-sequence/*.log
-sequence/*.pdf
-sequence/*.synctex.gz
+*.aux
+*.log
+*.pdf_tex
+*.-tex.pdf
+*.pdf
+*.synctex.gz
