@@ -49,42 +49,30 @@ export async function writeLatexFile(
   return fs.writeFile(latexFilePath, latexFileContent);
 }
 
-// Pandoc does not support all LaTeX functionalities that other compilers support
-// (e.g., https://github.com/jgm/pandoc/issues/8029, https://github.com/jgm/pandoc/issues/7757, https://github.com/jgm/pandoc/issues/8027).
-// The result of converting LaTeX files to Microsoft Word Documents with Pandoc are pretty unpredictable as to what will work as expected or not.
-// So we use make4ht as an intermediary to create an Open Office Document that we then convert into a Microsoft Word Document with Pandoc.
-export async function convertToODT(
-  latexFilePath: string,
-  odtFilePath: string,
-  odtRootFilePath: string,
-  tempOdtRootFilePath: string,
-) {
-  try {
-    const conversionResult = await execPromise(
-      `make4ht -f odt ${latexFilePath}`,
-    );
-    // Moves the .odt file to the output folder.
-    await fs.rename(odtRootFilePath, odtFilePath);
-    // Removes temporary file at the root of the server folder.
-    await execPromise(`rm ${tempOdtRootFilePath}.*`);
-    return conversionResult;
-  } catch (error) {
-    console.error(error);
-    throw new Error("An error occurred while converting to ODT.");
-  }
-}
-
 // Note that pandoc does not return anything when done with processing the file,
 // which makes debugging possible errors difficult.
-export async function convertToDOCX(odtFilePath: string, docxFilePath: string) {
+export async function convertToDOCX(
+  latexFilePath: string,
+  docxFilePath: string,
+) {
   const pandocBinary = `pandoc`;
-  const pandocArguments = `${odtFilePath.replace(
+  const pandocArguments = `${latexFilePath.replace(
     process.cwd(),
     ".",
   )} -o ${docxFilePath.replace(process.cwd(), ".")}`;
   const pandocCommand = `${pandocBinary} ${pandocArguments}`;
 
   console.log("Running containerized Pandoc:", pandocCommand);
+
+  // DEBUG: ALSO GENERATE PDF
+  const PDFpandocBinary = `pandoc`;
+  const PDFpandocArguments = `${latexFilePath.replace(
+    process.cwd(),
+    ".",
+  )} -o ${latexFilePath.replace(process.cwd(), ".").replace(".tex", ".pdf")}`;
+  const PDFpandocCommand = `${PDFpandocBinary} ${PDFpandocArguments}`;
+  await execPromise(PDFpandocCommand);
+  // END OF DEBUG
 
   return execPromise(pandocCommand);
 }
@@ -100,23 +88,13 @@ export async function writeControlSequenceDocument(
   const timeMarker = new Date().toISOString();
   const fileName = `sequence-${timeMarker}`;
 
-  const rootPath = process.cwd();
   const sequencePath = path.resolve(__dirname);
   const outputPath = `${sequencePath}/output-documents`;
 
   const latexFilePath = `${outputPath}/${fileName}.tex`;
-  const odtFilePath = `${outputPath}/${fileName}.odt`;
-  const odtRootFilePath = `${rootPath}/${fileName}.odt`;
-  const tempOdtRootFilePath = `${rootPath}/${fileName}`;
   const docxFilePath = `${outputPath}/${fileName}.docx`;
 
   await writeLatexFile(controlSequenceInput, latexFilePath);
-  await convertToODT(
-    latexFilePath,
-    odtFilePath,
-    odtRootFilePath,
-    tempOdtRootFilePath,
-  );
-  await convertToDOCX(odtFilePath, docxFilePath);
+  await convertToDOCX(latexFilePath, docxFilePath);
   return getConvertedDocument(docxFilePath);
 }
