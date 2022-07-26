@@ -17,10 +17,12 @@ dependencies/*
 # Document generation
 output-documents
 
-# Texmaker files
+# Texmaker/Word files
 *.aux
 *.log
 *.pdf_tex
 *.-tex.pdf
 *.pdf
 *.synctex.gz
+*~$*.docx
+template.docx
