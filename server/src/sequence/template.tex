@@ -1,10 +1,10 @@
 % Progress:
+% SVGs (add Inkscape to Path for make4ht/Pandoc).
+% Basic table creation.
+% Page footer with numbered pages.
+% Label for figures.
 % Figured out dynamic numbering and sections.
 % Figured out labels to refer to sections dynamically.
-% Page footer with numbered pages.
-% Basic table creation.
-% Label for figures.
-% SVGs (add Inkscape to Path for make4ht/Pandoc). X
 
 % Next:
 % Table styles/borders.
@@ -35,13 +35,6 @@
 \title{Control Sequence}
 \author{}
 \date{}
-
-% How deep the nested headings get numbered.
-\setcounter{secnumdepth}{4}
-
-% Sets offset for the first numbered headings.
-% Goes to 3.
-\setcounter{section}{2}
 
 % https://latex-programming.fandom.com/wiki/LaTeX_environment
 \begin{document}
@@ -100,11 +93,14 @@ Table \ref{figure:zone_group_mode} Endpoints as a Function of Zone Group Mode
 
 \subsubsection{Control logic is depicted schematically in Figure \ref{figure:control_logic} and described in the following subsections.} \label{figure:control_logic}
 
+% Alt insert SVG
+% TODO
+
 % Inserts an SVG.
-\begin{figure}[h]
-  \centering
-  \includesvg[width=\textwidth]{control-logic}
-\end{figure}
+%\begin{figure}[h]
+%  \centering
+%  \includesvg[width=\textwidth]{control-logic}
+%\end{figure}
 
 \ifdefined\BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet
 \ifdefstring{\BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet}{Buildings.Templates.Components.Types.Fan.SingleConstant}{
