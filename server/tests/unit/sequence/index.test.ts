@@ -2,7 +2,6 @@ import {
   ControlSequenceInput,
   EnergyCode,
   writeLatexFile,
-  convertToODT,
   convertToDOCX,
 } from "../../../src/sequence";
 
