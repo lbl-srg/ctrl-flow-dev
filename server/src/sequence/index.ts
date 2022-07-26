@@ -7,6 +7,10 @@ import _ from "underscore";
 // Enables the use of async/await keywords when executing external processes.
 const execPromise = util.promisify(exec);
 
+const SEQUENCE_PATH = path.resolve(__dirname).replace(process.cwd(), ".");
+const SEQUENCE_OUTPUT_PATH = `${SEQUENCE_PATH}/output-documents`;
+const STYLE_REFERENCE_DOCUMENT = `${SEQUENCE_PATH}/source-styles.docx`;
+
 export enum EnergyCode {
   Ashrae = "ashrae",
   California = "california",
@@ -56,20 +60,16 @@ export async function convertToDOCX(
   docxFilePath: string,
 ) {
   const pandocBinary = `pandoc`;
-  const pandocArguments = `${latexFilePath.replace(
-    process.cwd(),
-    ".",
-  )} -o ${docxFilePath.replace(process.cwd(), ".")}`;
+  const pandocArguments = `--reference-doc=${STYLE_REFERENCE_DOCUMENT} ${latexFilePath} -o ${docxFilePath}`;
   const pandocCommand = `${pandocBinary} ${pandocArguments}`;
-
   console.log("Running containerized Pandoc:", pandocCommand);
 
   // DEBUG: ALSO GENERATE PDF
   const PDFpandocBinary = `pandoc`;
-  const PDFpandocArguments = `${latexFilePath.replace(
-    process.cwd(),
-    ".",
-  )} -o ${latexFilePath.replace(process.cwd(), ".").replace(".tex", ".pdf")}`;
+  const PDFpandocArguments = `${latexFilePath} -o ${latexFilePath.replace(
+    ".tex",
+    ".pdf",
+  )}`;
   const PDFpandocCommand = `${PDFpandocBinary} ${PDFpandocArguments}`;
   await execPromise(PDFpandocCommand);
   // END OF DEBUG
@@ -87,12 +87,8 @@ export async function writeControlSequenceDocument(
 ) {
   const timeMarker = new Date().toISOString();
   const fileName = `sequence-${timeMarker}`;
-
-  const sequencePath = path.resolve(__dirname);
-  const outputPath = `${sequencePath}/output-documents`;
-
-  const latexFilePath = `${outputPath}/${fileName}.tex`;
-  const docxFilePath = `${outputPath}/${fileName}.docx`;
+  const latexFilePath = `${SEQUENCE_OUTPUT_PATH}/${fileName}.tex`;
+  const docxFilePath = `${SEQUENCE_OUTPUT_PATH}/${fileName}.docx`;
 
   await writeLatexFile(controlSequenceInput, latexFilePath);
   await convertToDOCX(latexFilePath, docxFilePath);
