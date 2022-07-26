@@ -9,7 +9,7 @@
 
    - Modelica dependencies.
    - Pandoc CLI.
-   - `make4ht` CLI.
+   - LaTeX.
 
 1. Run `npm run docker:stop` to stop the server when you are done or if you want to switch to debug mode.
 
