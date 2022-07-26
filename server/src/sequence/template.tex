@@ -4,13 +4,9 @@
 % Page footer with numbered pages.
 % Basic table creation.
 % Label for figures.
-% Section styles.
-% Page margins.
-% SVGs (add Inkscape to Path for make4ht/Pandoc).
+% SVGs (add Inkscape to Path for make4ht/Pandoc). X
 
 % Next:
-% Reusable styles (use DOCX template with Pandoc).
-% Table of content (error when converting to ODT).
 % Table styles/borders.
 % What are the deciding factors to show/hide content? (where should I look?)
 
@@ -40,16 +36,6 @@
 \author{}
 \date{}
 
-% Removes paragraph indentation
-\setlength{\parindent}{0pt}
-
-% Sets the style of titles
-\titleformat{\section}{\bfseries}{\thesection}{1em}{}
-\titleformat{\subsection}{\normalfont}{\thesubsection}{1em}{}
-\titleformat{\subsubsection}{\normalfont}{\thesubsubsection}{1em}{}
-\titleformat{\paragraph}{\normalfont}{\theparagraph}{1em}{}
-\titlespacing{\paragraph}{1.6em}{0em}{0.8em}
-
 % How deep the nested headings get numbered.
 \setcounter{secnumdepth}{4}
 
@@ -60,15 +46,7 @@
 % https://latex-programming.fandom.com/wiki/LaTeX_environment
 \begin{document}
 
-% Sets header/footer.
-% https://en.wikibooks.org/wiki/LaTeX/Customizing_Page_Headers_and_Footers#Standard_page_styles
-\pagestyle{plain}
-
 \maketitle
-
-% Sets table of content.
-\renewcommand*\contentsname{\centering CONTENTS}
-%\tableofcontents
 
 % Adds a page break.
 % http://www.personal.ceu.hu/tex/breaking.htm
@@ -79,25 +57,13 @@
 \section{SETPOINTS, DESIGN and FIELD DETERMINED}
 \subsection{Information Provided by Designer}
 
-% Goes to 3.1.2.
-\addtocounter{subsubsection}{1}
-
 \subsubsection{VAV Box Design Information}
 \paragraph{VAV Cooling-Only Terminal Unit} \label{vav_cooling_only_terminal_unit}
 
-% Goes to 5.
-\addtocounter{section}{1}  
-
 \section{SEQUENCES OF OPERATIONS}
-
-% Goes to 5.2.
-\addtocounter{subsection}{1}
 
 \subsection{Generic Ventilation Zones} \label{generic_ventilation_zones}
 \subsection{Generic Thermal Zones} \label{generic_thermal_zones}
-
-% Goes to 5.5.
-\addtocounter{subsection}{1}
 
 \subsection{VAV Terminal Unit—Cooling Only}
 \subsubsection{See “Generic Thermal Zones” (Section \ref{generic_thermal_zones}) for setpoints, loops, control modes, alarms, etc.}
@@ -111,12 +77,12 @@ If the minimum ventilation rate is more than 25\% or so of the cooling maximum, 
 
 Cooling-only terminal units can provide heating only when the AHU supply air temperature is more than 3°C (5°F) above the room temperature.
 
-\subsubsection{Active endpoints used in the control logic depicted in Figure \ref{fig_control_logic} shall vary depending on the mode of the Zone Group the zone is a part of (see Table \ref{fig_zone_group_mode}).}
+\subsubsection{Active endpoints used in the control logic depicted in Figure \ref{figure:control_logic} shall vary depending on the mode of the Zone Group the zone is a part of (see Table \ref{figure:zone_group_mode}).}
 
-\label{fig_zone_group_mode}
+\label{figure:zone_group_mode}
 % Inserts a table.
 \begin{center}
-Table \ref{fig_zone_group_mode} Endpoints as a Function of Zone Group Mode 
+Table \ref{figure:zone_group_mode} Endpoints as a Function of Zone Group Mode 
 \end{center}
 %
 % https://es.overleaf.com/learn/latex/Tables
@@ -132,7 +98,7 @@ Table \ref{fig_zone_group_mode} Endpoints as a Function of Zone Group Mode
  \hline
 \end{tabular}
 
-\subsubsection{Control logic is depicted schematically in Figure \ref{fig_control_logic} and described in the following subsections.} \label{fig_control_logic}
+\subsubsection{Control logic is depicted schematically in Figure \ref{figure:control_logic} and described in the following subsections.} \label{figure:control_logic}
 
 % Inserts an SVG.
 \begin{figure}[h]
