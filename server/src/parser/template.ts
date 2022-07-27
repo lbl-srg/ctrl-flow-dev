@@ -130,7 +130,7 @@ export class Template {
         break;
       } else {
         curPath = `${curPath}.${parser.EXTEND_NAME}`;
-        if (curPath! in options) {
+        if (!(curPath in options)) {
           break;
         }
         const extendOption = options[curPath];
