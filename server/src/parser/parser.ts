@@ -326,6 +326,7 @@ export class Input extends Element {
 
     // if type is a literal type we can convert it from a string
     if (MODELICA_LITERALS.includes(this.type) && this.value !== undefined) {
+      // Expression
       try {
         this.value = JSON.parse(this.value);
       } catch (error) {

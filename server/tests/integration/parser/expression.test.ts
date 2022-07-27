@@ -5,7 +5,7 @@ import { loadPackage, getSystemTypes, Template } from "../../../src/parser/";
 const templatePath = "TestPackage.Template.TestTemplate";
 let template: Template | undefined;
 
-describe("Expressions", () => {
+describe("Expression", () => {
   beforeAll(() => {
     createTestModelicaJson();
     loadPackage(`${fullTempDirPath}/TestPackage`);

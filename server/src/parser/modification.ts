@@ -21,6 +21,8 @@
  * don't end up going this route, the store should be removed.
  */
 
+import { getExpression } from "./expression";
+
 const modStore: Map<string, Modification> = new Map();
 
 type RedeclarationMod = {
@@ -141,7 +143,8 @@ export function createModification(props: ModificationProps): Modification {
       if ("equal" in mod) {
         // simple_expression can potentially be an expression
         // TODO be ready to feed that into Expression generator
-        value = (mod as Assignment).expression.simple_expression;
+        value = getExpression((mod as Assignment).expression);
+        console.log('VALUE: ', value);
       } else if (name == "choice") {
         const choiceMod = (mod as ClassMod)
           .class_modification[0] as RedeclarationMod;

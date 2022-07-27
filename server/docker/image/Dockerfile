@@ -4,7 +4,7 @@ RUN apk update && apk --no-cache add openjdk13
 RUN mkdir dependencies
 WORKDIR /app
 COPY bin/ bin/
-COPY package* .
+COPY package* ./
 
 
 FROM base as dependencies

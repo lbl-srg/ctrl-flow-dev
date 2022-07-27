@@ -72,6 +72,14 @@ model TestTemplate "Test Template"
   //     "Set to true if building static pressure sensor is used"
   //     annotation (Evaluate=true, Dialog(group="Configuration"));
 
+  final parameter Boolean complex_expression_bool=
+    first.container==TestPackage.Types.Container.Hand or
+    first.container==TestPackage.Types.Container.Bowl or
+    first.container==TestPackage.Types.Container.Cone and
+    first.icecream==TestPackage.Types.IceCream.Chocolate
+    "Set to true if IceCream is Chocolate with a container"
+    annotation (Evaluate=true, Dialog(group="Configuration"));
+
   parameter String test_string_uninitialized
     "Test String that is uninitialized";
 
