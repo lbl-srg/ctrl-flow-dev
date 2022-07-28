@@ -39,6 +39,8 @@ export async function writeLatexFile(
     % These commands are used to decide which parts of the Control Sequence Document are displayed.
     
     % Type of return fan
+
+    \newcommand\basepath{${path.resolve(__dirname)}}
     
     ${
       BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet &&
@@ -47,7 +49,7 @@ export async function writeLatexFile(
     
     % Inject LaTeX template for the Control Sequence Document.
     
-    \input{${path.resolve(__dirname)}/template.tex}
+    \input{\basepath/template.tex}
   `;
 
   return fs.writeFile(latexFilePath, latexFileContent);

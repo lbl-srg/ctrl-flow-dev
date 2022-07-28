@@ -32,7 +32,10 @@
 \usepackage{titlesec} % Provides \titleformat command.
 
 % Sets the path where SVGs are found.
-\svgpath{/Users/yves/Projects/lbnl/LBL-Linkage-Widget-v2/server/src/sequence/latex-assets/}
+% \svgpath{/Users/yves/Projects/lbnl/LBL-Linkage-Widget-v2/server/src/sequence/latex-assets/}
+
+% If \basepath is not defined, use a fallback. Useful for editing the template outside of the backend.
+\providecommand{\basepath}{/Users/yves/Projects/lbnl/LBL-Linkage-Widget-v2/server/src/sequence}
 
 % Formats title
 % https://en.wikibooks.org/wiki/LaTeX/Title_Creation
@@ -99,13 +102,13 @@ Table \ref{figure:zone_group_mode} Endpoints as a Function of Zone Group Mode
 
 % Inserts PDF image
 \begin{figure}[h]
-  \includegraphics{/Users/yves/Projects/lbnl/LBL-Linkage-Widget-v2/server/src/sequence/svg-inkscape/control-logic_svg-tex.pdf}
+  \includegraphics{\basepath/svg-inkscape/control-logic_svg-tex.pdf}
 %  \includesvg{control-logic}
 \end{figure}
 
 % Inserts PNG
 \begin{figure}[h]
-  \includegraphics{/Users/yves/Projects/lbnl/LBL-Linkage-Widget-v2/server/src/sequence/latex-assets/image6.png}
+  \includegraphics{\basepath/latex-assets/image6.png}
 \end{figure}
 
 \ifdefined\BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet
