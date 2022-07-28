@@ -60,19 +60,9 @@ export async function convertToDOCX(
   docxFilePath: string,
 ) {
   const pandocBinary = `pandoc`;
-  const pandocArguments = `--reference-doc=${STYLE_REFERENCE_DOCUMENT} ${latexFilePath} -o ${docxFilePath}`;
+  const pandocArguments = `--reference-doc=${STYLE_REFERENCE_DOCUMENT} --table-of-contents ${latexFilePath} -o ${docxFilePath}`;
   const pandocCommand = `${pandocBinary} ${pandocArguments}`;
   console.log("Running containerized Pandoc:", pandocCommand);
-
-  // DEBUG: ALSO GENERATE PDF
-  const PDFpandocBinary = `pandoc`;
-  const PDFpandocArguments = `${latexFilePath} -o ${latexFilePath.replace(
-    ".tex",
-    ".pdf",
-  )}`;
-  const PDFpandocCommand = `${PDFpandocBinary} ${PDFpandocArguments}`;
-  await execPromise(PDFpandocCommand);
-  // END OF DEBUG
 
   return execPromise(pandocCommand);
 }
