@@ -45,11 +45,11 @@ export async function writeLatexFile(
       String.raw`\newcommand\BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet{${BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet}}`
     }
 
-    % Set absolute path to help Pandoc access external assets
+    % Sets absolute path to help Pandoc access external assets.
 
     \newcommand\basepath{${path.resolve(__dirname)}}
     
-    % Inject LaTeX template for the Control Sequence Document.
+    % Injects LaTeX template for the Control Sequence Document.
     
     \input{\basepath/template.tex}
   `;
