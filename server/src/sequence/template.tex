@@ -1,5 +1,9 @@
 % Progress:
-% SVGs (add Inkscape to Path for make4ht/Pandoc).
+% SVGs <--
+%%% Some of the SVGs in the Guidelines are saved as inline SVGs! Might want to get the source files.
+%%% Necessary to convert SVGs to PDF. LaTeX does not support SVGs natively and Pandoc struggles with them.
+%%% Pandoc needs full path to image to work.
+
 % Basic table creation.
 % Page footer with numbered pages.
 % Label for figures.
@@ -28,7 +32,7 @@
 \usepackage{titlesec} % Provides \titleformat command.
 
 % Sets the path where SVGs are found.
-\svgpath{latex-assets/}
+\svgpath{/Users/yves/Projects/lbnl/LBL-Linkage-Widget-v2/server/src/sequence/latex-assets/}
 
 % Formats title
 % https://en.wikibooks.org/wiki/LaTeX/Title_Creation
@@ -93,14 +97,16 @@ Table \ref{figure:zone_group_mode} Endpoints as a Function of Zone Group Mode
 
 \subsubsection{Control logic is depicted schematically in Figure \ref{figure:control_logic} and described in the following subsections.} \label{figure:control_logic}
 
-% Alt insert SVG
-% TODO
+% Inserts PDF image
+\begin{figure}[h]
+  \includegraphics{/Users/yves/Projects/lbnl/LBL-Linkage-Widget-v2/server/src/sequence/svg-inkscape/control-logic_svg-tex.pdf}
+%  \includesvg{control-logic}
+\end{figure}
 
-% Inserts an SVG.
-%\begin{figure}[h]
-%  \centering
-%  \includesvg[width=\textwidth]{control-logic}
-%\end{figure}
+% Inserts PNG
+\begin{figure}[h]
+  \includegraphics{/Users/yves/Projects/lbnl/LBL-Linkage-Widget-v2/server/src/sequence/latex-assets/image6.png}
+\end{figure}
 
 \ifdefined\BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet
 \ifdefstring{\BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet}{Buildings.Templates.Components.Types.Fan.SingleConstant}{
