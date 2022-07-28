@@ -24,5 +24,6 @@ output-documents
 *.-tex.pdf
 *.pdf
 *.synctex.gz
+*.dvi
 *~$*.docx
 template.docx
