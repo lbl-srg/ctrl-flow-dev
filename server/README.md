@@ -111,15 +111,17 @@ The `.docx` document returned by the endpoint is created in the following manner
 - The starting point is the request input, which should be used to dictate which parts of the LaTeX template are shown/hidden as well as whatever aspects of the Control Sequence Document are meant to be dynamic.
 - This input is processed in the `writeLatexFile` function. The function generates a dated `.tex` file (e.g., `sequence-2022-07-28T20:07:15.746Z.tex`) in `/output-documents`. This file contains LaTeX commands that can then be used in the `template.tex` file to work as expected. These commands are essentially variables that return a string but the logic or the nature of these commands can be customized by developers as needed. If the shape or the properties of the request input object changes, developers should most likely edit the commands defined in the [raw template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/raw) to reflect the change. The created `.tex` file includes a `\input` command at the end that injects the `template.tex` file to this `.tex` file. Since LaTeX files are not dynamic by nature, creating an additional `.tex` file on the fly is necessary to accomodate for input.
 - Once the `.tex` file is written, the `convertToDOCX` function summons [Pandoc](https://pandoc.org/MANUAL.html) as an external process to convert the LaTeX file to a Microsoft Word Document. Pandoc uses the `source-styles.docx` reference document to customize the styles available in the Control Sequence Document. Pandoc also auto-magically generates a table of contents dynamically based on the [various sections found in the LaTeX template](https://www.overleaf.com/learn/latex/Sections_and_chapters#Document_sectioning).
-- Finally, `getConvertedDocument` serves the Control Sequence Document that was generated (if any).
+- Finally, the `getConvertedDocument` function serves the Control Sequence Document that was generated (if any).
 
 ### Editing the LaTeX template
 
+#### Graphic user interfaces
+
 You may edit and compile the `template.tex` files using a graphic user interface (GUI) like [Texmaker LaTeX editor](https://www.xm1math.net/texmaker/download.html). Texmaker requires to install a [Tex distribution](https://www.latex-project.org/get/) on your machine in order to compile your `.tex` documents.
 
-A GUI made for the purpose of editing LaTeX files can provide valuable niceties. However, you will need to re-create the environment that the backend is using in order to make sure that the results you see are consistent with the results from the backend, so be wary.
+A GUI made for the purpose of editing LaTeX files can provide valuable niceties. However, you will need to re-create the environment that the backend is using in order to make sure that the results you see are consistent with the results from the backend.
 
-Furthermore, the backend takes into account request input by creating a `.tex` file dynamically that `/input`s the `template.tex` file. If you're working with `template.tex` directly, you might need to add these commands by hand in the template to try out their behavior when they return a particular value.
+Furthermore, the backend takes into account request input by creating a `.tex` file dynamically that `/input`s the `template.tex` file. When you're editing the `template.tex` directly, you might need to add these commands by hand in the template to try out their behavior when they return a particular value.
 
 Similarly, LaTeX editors with a GUI typically output PDF files. You might need to configure your editor to use Pandoc as summoned by the backend to ensure that the compiled Microsoft Word document looks like what the backend produces.
 
@@ -127,13 +129,27 @@ Online tools like [Papeeria](www.papeeria.com) also exist to edit and compile `.
 
 > **Note** The recommended native Tex distribution for Mac ([MacTex](https://www.tug.org/mactex/mactex-download.html)) seems to be particularly sizeable as a 4.6G download as of July 6, 2022. Similarly, compiling files can be a lengthy process.
 
+#### Showing/hiding content conditionally
+
+You can use the code snippet below in the LaTeX template to add content displayed conditionally (i.e., content to show if a particular value was selected for an option. `OptionModelicaPath` should be replaced by the Modelica path without dots of the option. `Modelica.Path.Of.Selected.Value` should be replaced by the Modelica path with dots of the selected value that should trigger the content to show in the document.
+
+      \ifdefined\OptionModelicaPath
+      \ifdefstring{\OptionModelicaPath}{Modelica.Path.Of.Selected.Value}{
+      Text to display if the value returned by \OptionModelicaPath is equal to Modelica.Path.Of.Selected.Value.
+      }{}
+      \fi
+
+Make sure that the corresponding command is created in the dynamically generated `.tex` file:
+
+      \newcommand\OptionModelicaPath{Modelica.Path.Of.Selected.Value}
+
 ### Converting SVG assets
 
 LaTeX does not support rendering SVG assets natively but packages can be used to alleviate this issue. Unfortunately, it seems like using Pandoc adds complexity to this issue since [Pandoc does not appear to support SVGs in LaTeX](https://github.com/jgm/pandoc/issues/265). Further research on this topic could prove to be successful in finding a method to use SVGs directly in the LaTeX template with Pandoc. In the meantime, it seems that converting SVGs to PDFs ahead of time as part of the process of processing the ASHRAE Guideline 36-2021 document as a basis for the Control Sequence Docuemnt template is satisfactory and also avoids the time-consuming task of converting SVGs every time a request is sent to the endpoint.
 
 Inkscape can be used to convert SVGs to PDFs with the following command where `SOURCE_SVG_FILE` is the path to the SVG file to be converted and `DESTINATION_PDF_FILE` is the path of the resulting PDF file:
 
-inkscape -D -z --file=SOURCE_SVG_FILE.svg --export-pdf=DESTINATION_PDF_FILE.pdf --export-latex
+      inkscape -D -z --file=SOURCE_SVG_FILE.svg --export-pdf=DESTINATION_PDF_FILE.pdf --export-latex
 
 It is recommended to store the PDF files into the `/converted-latex-assets` subfolder but this is not required.
 
