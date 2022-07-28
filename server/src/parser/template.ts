@@ -103,7 +103,12 @@ export class Template {
     options: { [key: string]: parser.OptionN },
     scheduleOptions: { [key: string]: ScheduleOption },
   ) {
+    if (path in scheduleOptions) {
+      return; // BREAK-OUT: path already split out
+      // TODO: this is necessary if 'dat' records re-use types
+    }
     const option = options[path];
+
     // TODO: determine how to build up group list
     scheduleOptions[path] = { groups: [], ...option };
     delete options[option.modelicaPath];
