@@ -39,13 +39,15 @@ export async function writeLatexFile(
     % These commands are used to decide which parts of the Control Sequence Document are displayed.
     
     % Type of return fan
-
-    \newcommand\basepath{${path.resolve(__dirname)}}
     
     ${
       BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet &&
       String.raw`\newcommand\BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet{${BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet}}`
     }
+
+    % Set absolute path to help Pandoc access external assets
+
+    \newcommand\basepath{${path.resolve(__dirname)}}
     
     % Inject LaTeX template for the Control Sequence Document.
     
