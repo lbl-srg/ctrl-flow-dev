@@ -368,10 +368,6 @@ export class Input extends Element {
   }
 
   getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
-    if (this.modelicaPath === "TestPackage.Template.Data.PartialTemplate.ctl") {
-      console.log("stop");
-    }
-
     if (this.modelicaPath in options) {
       return options;
     }
@@ -469,9 +465,6 @@ export class ReplaceableInput extends Input {
   }
 
   getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
-    if (this.modelicaPath === "TestPackage.Template.Data.PartialTemplate.ctl") {
-      console.log("stop");
-    }
     if (this.modelicaPath in options) {
       return options;
     }
@@ -727,8 +720,8 @@ function _constructElement(
     ? typeStore.get(element?.modelicaPath)
     : element;
   if (!result) {
-    // TODO: anytime this is happening
-    console.log(`Unable to parse the following block:\n${definition}`);
+    // TODO: log `definition` that could not be parsed
+    // console.log(`Unable to parse the following block:\n${definition}`);
   }
   return result;
 }

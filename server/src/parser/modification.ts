@@ -136,14 +136,10 @@ function unpackRedeclaration(props: ModificationProps) {
   if ("component_clause1" in redeclaration) {
     const componentClause1 =
       redeclaration.component_clause1 as ComponentClause1;
-    if (!componentClause1?.type_specifier) {
-      console.log("yep");
-    }
     const type = componentClause1.type_specifier;
     const redeclareDefinition =
       componentClause1.component_declaration1.declaration;
     const modProps = { ...props, type, definition: redeclareDefinition };
-    console.log(redeclareDefinition);
     const redeclareMod = createModification(modProps);
     return redeclareMod;
   } else if ("short_class_definition" in redeclaration) {
