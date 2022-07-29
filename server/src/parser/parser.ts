@@ -19,7 +19,7 @@ import {
   getModificationList,
 } from "./modification";
 
-const EXTEND_NAME = "__extend";
+export const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
@@ -43,7 +43,7 @@ interface Description {
   annotation: ClassModification;
 }
 
-interface ShortClassSpecifier {
+export interface ShortClassSpecifier {
   identifier: string;
   short_class_specifier_value: {
     base_prefix: string;
@@ -215,9 +215,9 @@ export class InputGroup extends Element {
     this.type = this.modelicaPath;
     this.description = specifier.description_string;
 
-    this.elementList = specifier.composition.element_list.map((e: any) =>
-      _constructElement(e, this.modelicaPath),
-    );
+    this.elementList = specifier.composition.element_list
+      .map((e: any) => _constructElement(e, this.modelicaPath))
+      .filter((e: Element | undefined) => e !== undefined);
 
     this.annotation = specifier.composition.annotation?.map(
       (m: Mod | WrappedMod) => createModification({ definition: m }),
@@ -239,9 +239,9 @@ export class InputGroup extends Element {
       return options;
     }
 
-    const children = this.elementList.filter(
-      (el) => Object.keys(el.getOptions(options, recursive)).length > 0,
-    );
+    const children = this.elementList.filter((el) => {
+      return Object.keys(el.getOptions(options)).length > 0;
+    });
 
     options[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
@@ -252,10 +252,6 @@ export class InputGroup extends Element {
         .map((c) => c.modelicaPath)
         .filter((c) => !(c in MODELICA_LITERALS)),
     };
-
-    children.map((el) => {
-      options = el.getOptions(options, recursive);
-    });
 
     return options;
   }
@@ -377,9 +373,7 @@ export class Input extends Element {
     }
 
     const typeInstance = typeStore.get(this.type) || null;
-    const typeOptions = typeInstance
-      ? typeInstance.getOptions(options, false)
-      : {};
+    const typeOptions = typeInstance ? typeInstance.getOptions({}, false) : {};
     const childOptions = typeOptions[this.type]?.options || [];
     const visible = this._setOptionVisible(typeOptions[this.type]);
 
@@ -395,7 +389,7 @@ export class Input extends Element {
       visible: visible,
       valueExpression: this.valueExpression,
       enable: this.enable,
-      options: childOptions,
+      options: childOptions, // TODO: try and just use type to link to child options to prevent duplicates
     };
 
     if (recursive) {
@@ -432,13 +426,15 @@ export class ReplaceableInput extends Input {
     // the default value is original type provided
     this.value = this.type;
 
-    this.mods.push(
-      createModification({
-        name: this.name,
-        value: this.value,
-        basePath: basePath,
-      }),
-    );
+    const mod = createModification({
+      name: this.name,
+      value: this.value,
+      basePath: basePath,
+    });
+
+    if (mod) {
+      this.mods.push(mod);
+    }
 
     // modifiers for replaceables are specified in a constraining
     // interface. Check if one is present to extract modifiers
@@ -473,19 +469,23 @@ export class ReplaceableInput extends Input {
       return options;
     }
 
+    // if an annotation has been provided, use the choices from that annotation
+    // otherwise fallback to using the parameter type
+    const childTypes = this.choices.length ? this.choices : [this.type];
+
     options[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       value: this.value,
       name: this.description,
-      options: this.choices,
+      options: childTypes,
       group: this.group,
       tab: this.tab,
       visible: true,
     };
 
     if (recursive) {
-      this.choices.map((c) => {
+      childTypes.map((c) => {
         const typeInstance = typeStore.get(c) || null;
         if (typeInstance) {
           options = typeInstance.getOptions(options);
@@ -623,6 +623,31 @@ export class InputGroupExtend extends Element {
   }
 }
 
+type ImportClause = {
+  identifier: string;
+  name: string;
+};
+
+export class Import extends Element {
+  value: string;
+
+  constructor(definition: any, basePath: string) {
+    super();
+    const importClause = definition.import_clause as ImportClause; // arbitrary name. Important that this will not collide with other param names
+    this.name = importClause.identifier;
+    this.value = importClause.name; // path to imported type
+    this.modelicaPath = `${basePath}.${this.name}`;
+    const registered = this.registerPath(this.modelicaPath);
+    if (!registered) {
+      return; // PUNCH-OUT!
+    }
+  }
+
+  getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+    return options;
+  }
+}
+
 /**
  * Given a list of elements, discovers and returns the formatted type
  *
@@ -637,6 +662,7 @@ function _constructElement(
   const extend = "extends_clause";
   const component = "component_clause";
   const replaceable = "replaceable";
+  const importClause = "import_clause";
 
   definition =
     "class_definition" in definition ? definition.class_definition : definition;
@@ -655,6 +681,8 @@ function _constructElement(
     elementType = replaceable;
   } else if (component in definition) {
     elementType = component;
+  } else if (importClause in definition) {
+    elementType = importClause;
   }
 
   let element: Element | undefined;
@@ -683,9 +711,19 @@ function _constructElement(
     case replaceable:
       element = new ReplaceableInput(definition, basePath);
       break;
+    case importClause:
+      element = new Import(definition, basePath);
+      break;
   }
 
-  return element?.duplicate ? typeStore.get(element?.modelicaPath) : element;
+  const result = element?.duplicate
+    ? typeStore.get(element?.modelicaPath)
+    : element;
+  if (!result) {
+    // TODO: log `definition` that could not be parsed
+    // console.log(`Unable to parse the following block:\n${definition}`);
+  }
+  return result;
 }
 
 //

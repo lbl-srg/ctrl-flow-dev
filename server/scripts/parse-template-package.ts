@@ -10,10 +10,13 @@ import {
 
 loadPackage("Buildings");
 
+const { options, scheduleOptions } = getOptions();
+
 const data = {
   templates: getTemplates(),
   systemTypes: getSystemTypes(),
-  options: getOptions(),
+  options: options,
+  scheduleOptions: scheduleOptions,
 };
 
 const dest = path.resolve(

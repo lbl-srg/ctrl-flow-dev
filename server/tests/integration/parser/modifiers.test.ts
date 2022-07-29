@@ -22,6 +22,9 @@ describe("Modifications", () => {
     // just check shape
     modifiers.map((m) => {
       expect(m.modelicaPath).toBeDefined();
+      if (!m.value) {
+        console.log(m);
+      }
       expect(m.value).toBeDefined();
     });
   });
