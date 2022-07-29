@@ -234,23 +234,3 @@ describe("Expected Options are extracted", () => {
     console.log(optionCount);
   });
 });
-
-describe("Schedule Options", () => {
-  beforeAll(() => {
-    initializeTestModelicaJson();
-  });
-
-  it("Extracts Schedule Options", () => {
-    const paramName = "dat";
-
-    const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.elementList[0] as parser.InputGroup;
-    const expectedPath = `${template.modelicaPath}.${paramName}`;
-    const element = template.elementList.find((e) => e.modelicaPath === expectedPath);
-    expect(element).toBeTruthy();
-    const options = (element as parser.Element).getOptions();
-    const visibleOptions = Object.entries(options).filter(([k, v]) => v.visible);
-    const simpleOptions = optionTree(options, expectedPath);
-    console.log(visibleOptions);
-  });
-});

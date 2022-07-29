@@ -12,7 +12,7 @@ const templatePath = "TestPackage.Template.TestTemplate";
 const nestedTemplatePath =
   "TestPackage.NestedTemplate.Subcategory.SecondTemplate";
 
-describe("Basic parser functionality", () => {
+describe("Template wrapper class functionality", () => {
   beforeAll(() => {
     createTestModelicaJson();
     loadPackage(`${fullTempDirPath}/TestPackage`);
@@ -61,6 +61,14 @@ describe("Basic parser functionality", () => {
     expect(systemTemplateOptions?.options?.length).toBe(
       expectedTemplateValues.optionLength,
     );
+  });
+
+  it("Templates generate separate schedule options and configuration options", () => {
+    const datPath = 'TestPackage.Template.TestTemplate.dat';
+
+    const { scheduleOptions } = getOptions();
+    const datScheduleOption = scheduleOptions.find( o => o.modelicaPath === datPath);
+    expect(datScheduleOption).toBeTruthy();
   });
 
   it("Keeps system types in correct order", () => {
