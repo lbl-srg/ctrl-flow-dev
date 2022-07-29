@@ -109,11 +109,11 @@ export class Template {
     }
     const option = options[path];
 
-    // TODO: determine how to build up group list
+    // TODO: build up group list
     scheduleOptions[path] = { groups: [], ...option };
     delete options[option.modelicaPath];
 
-    option.options?.map((o) => this.splitOptions(o, options, scheduleOptions));
+    // option.options?.map((o) => this.splitOptions(o, options, scheduleOptions));
   }
 
   getOptions() {
