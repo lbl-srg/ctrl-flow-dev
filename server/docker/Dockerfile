@@ -3,7 +3,6 @@ FROM ubuntu:22.04 as ubuntu-pandoc
 RUN apt-get --assume-yes update && apt-get --assume-yes install pandoc=2.9.2.1-3ubuntu2 texlive=2021.20220204-1 texlive-extra-utils=2021.20220204-1
 RUN pandoc --version
 RUN tex --version
-RUN make4ht --version
 
 # Installs Node 16.16.0 LTS with NVM
 FROM ubuntu-pandoc as ubuntu-pandoc-node

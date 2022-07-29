@@ -15,9 +15,13 @@ dependencies/*
 !dependencies/.gitkeep
 
 # Document generation
-sequence/output-documents/*
+output-documents
 
-# Texmaker files
-.log
-.aux
-.synctex.gz
+# Texmaker/Word files
+*.aux
+*.log
+*.pdf_tex
+*.synctex.gz
+*.dvi
+*~$*.docx
+template.docx
