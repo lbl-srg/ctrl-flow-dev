@@ -1,4 +1,6 @@
 {
+  "name": "linkage-api",
+  "version": "0.0.1",
   "dependencies": {
     "@types/cors": "^2.8.12",
     "compression": "^1.7.4",
@@ -6,11 +8,9 @@
     "dotenv": "^14.2.0",
     "express": "^4.17.2",
     "helmet": "^5.0.1",
-    "html-to-docx": "^1.4.0",
     "jsonpath": "^1.1.1",
     "marked": "^3.0.8",
     "morgan": "^1.10.0",
-    "texlive": "^1.2.0",
     "tmp": "^0.2.1",
     "underscore": "^1.13.4"
   },
@@ -33,21 +33,24 @@
     "typescript": "^4.5.4"
   },
   "scripts": {
+    "docker:start": "docker compose -p linkage-containers -f docker/docker-compose.yaml --env-file ./.env up -d && npm run docker:logs",
+    "docker:debug": "docker compose -p linkage-containers -f docker/docker-compose.yaml -f docker/docker-compose.debug.yaml --env-file ./.env up -d && npm run docker:logs",
+    "docker:stop": "docker compose -p linkage-containers -f docker/docker-compose.yaml down --remove-orphans",
+    "docker:logs": "docker compose -p linkage-containers -f docker/docker-compose.yaml logs -f",
+    "docker:build": "docker compose -f docker/docker-compose.yaml build --pull --no-cache",
+    "docker:shell": "docker exec -it linkage-api /bin/sh",
+    "start": "nodemon src/index.ts",
+    "debug": "nodemon --inspect=0.0.0.0:9229 --exec node -r ts-node/register src/index.ts",
     "build": "tsc",
+    "install-modelica-deps": "./bin/install-modelica-dependencies.sh",
+    "install-pandoc": "./bin/install-pandoc.sh",
+    "format": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --write .",
+    "test": "jest",
+    "test:ci": "jest --testPathIgnorePatterns=\\(/node_modules/ long\\)",
+    "integration-test": "jest -t --testPathPattern=integration",
+    "unit-test": "jest -t --testPathPattern=unit",
     "parseTestModelica": "sh bin/parse-test-package.sh",
     "parseTestJSON": "npx ts-node scripts/parse-test-package.ts",
-    "parseTemplateJSON": "npx ts-node scripts/parse-template-package.ts",
-    "start": "nodemon src/index.ts",
-    "install-modelica-deps": "./bin/install-modelica-dependencies.sh",
-    "docker:start": "docker-compose -f docker/docker-compose.yaml --env-file ./.env up -d",
-    "docker:debug": "docker-compose -f docker/docker-compose.yaml -f docker/docker-compose.debug.yaml --env-file ./.env up -d",
-    "docker:stop": "docker-compose -f docker/docker-compose.yaml down",
-    "docker:logs": "docker-compose -f docker/docker-compose.yaml logs -f",
-    "docker:rebuild": "docker-compose -f docker/docker-compose.yaml build --pull --no-cache",
-    "docker:shell": "docker exec -it linkage-widget /bin/sh",
-    "debug": "nodemon --exec 'node -r ts-node/register --inspect=0.0.0.0:9229 src/index.ts'",
-    "format": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --write .",
-    "test": "npm run integration-test",
-    "integration-test": "jest"
+    "parseTemplateJSON": "npx ts-node scripts/parse-template-package.ts"
   }
 }

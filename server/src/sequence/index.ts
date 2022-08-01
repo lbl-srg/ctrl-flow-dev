@@ -1,63 +1,90 @@
 import fs from "fs/promises";
 import path from "path";
+import util from "util";
+import process from "process";
+import { exec } from "child_process";
 import _ from "underscore";
-import marked from "marked";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import HTMLtoDOCX from "html-to-docx";
+// Enables the use of async/await keywords when executing external processes.
+const execPromise = util.promisify(exec);
 
-// TODO: Replace this mock type definition with the actual parameters necessary to generate the document
-export type TemplateOptions = {
-  optional: boolean;
-  dual_inlet_airflow_sensors: string;
+const SEQUENCE_PATH = path.resolve(__dirname).replace(process.cwd(), ".");
+const SEQUENCE_OUTPUT_PATH = `${SEQUENCE_PATH}/output-documents`;
+const STYLE_REFERENCE_DOCUMENT = `${SEQUENCE_PATH}/source-styles.docx`;
+
+export enum EnergyCode {
+  Ashrae = "ashrae",
+  California = "california",
+}
+
+export type ControlSequenceInput = {
+  energyCode: EnergyCode;
+  choices: {
+    BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet: string;
+  };
 };
 
-const MARKDOWN_TEMPLATE_FILE_PATH = `${path.resolve(__dirname)}/template.md`;
-
-// TODO: Check that the copy below fits the client's needs
-const HTML_HEADER = `<p>&copy; ASHRAE (www.ashrae.org). For personal use only. Additional reproduction, distribution, or transmission in either print or digital form is not permitted without ASHRAE's prior written permission.</p>`;
-
-// TODO: Check that the copy below fits the client's needs
-const HTML_FOOTER = `<p>ASHRAE Guideline 36-2018</p>`;
-
-const DOCUMENT_OPTIONS = {};
-
-async function getTemplate() {
-  try {
-    return fs.readFile(MARKDOWN_TEMPLATE_FILE_PATH, {
-      encoding: "utf8",
-    });
-  } catch (err) {
-    console.log(err);
-    return;
-  }
-}
-
-// TODO: As we figure out parameters to create the document, add business logic here
-function configureTemplateOptions(parameters: TemplateOptions) {
-  return parameters;
-}
-
-async function fillInTemplate(
-  template: string,
-  templateOptions: TemplateOptions,
+export async function writeLatexFile(
+  controlSequenceInput: ControlSequenceInput,
+  latexFilePath: string,
 ) {
-  return _.template(template)(templateOptions);
+  const { choices } = controlSequenceInput;
+  const {
+    BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet,
+  } = choices;
+
+  const latexFileContent = String.raw`
+    % Below are commands that define the input for the Control Sequence Document.
+    % These commands are named after the modelica path of the option they represent without dot characters (e.g., \BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet).
+    % These commands return the modelica path of the selected value with dot characters (e.g., Buildings.Templates.Components.Types.Fan.SingleConstant).
+    % These commands are used to decide which parts of the Control Sequence Document are displayed.
+    
+    % Type of return fan
+    
+    ${
+      BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet &&
+      String.raw`\newcommand\BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet{${BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet}}`
+    }
+
+    % Sets absolute path to help Pandoc access external assets.
+
+    \newcommand\basepath{${path.resolve(__dirname)}}
+    
+    % Injects LaTeX template for the Control Sequence Document.
+    
+    \input{\basepath/template.tex}
+  `;
+
+  return fs.writeFile(latexFilePath, latexFileContent);
 }
 
-async function generateDocument(filledInTemplate: string) {
-  const htmlBody = marked(filledInTemplate);
-  return HTMLtoDOCX(htmlBody, HTML_HEADER, DOCUMENT_OPTIONS, HTML_FOOTER);
+// Note that pandoc does not return anything when done with processing the file,
+// which makes debugging possible errors difficult.
+export async function convertToDOCX(
+  latexFilePath: string,
+  docxFilePath: string,
+) {
+  const pandocBinary = `pandoc`;
+  const pandocArguments = `--reference-doc=${STYLE_REFERENCE_DOCUMENT} --table-of-contents ${latexFilePath} -o ${docxFilePath}`;
+  const pandocCommand = `${pandocBinary} ${pandocArguments}`;
+  console.log("Running containerized Pandoc:", pandocCommand);
+
+  return execPromise(pandocCommand);
 }
 
-export default async function (parameters: TemplateOptions) {
-  const template = await getTemplate();
-  if (!template) {
-    // TODO: Return an error so that the frontend can communicate to the user that something went wrong
-    return;
-  }
+export async function getConvertedDocument(convertedDocumentPath: string) {
+  const file = await fs.readFile(convertedDocumentPath);
+  return file;
+}
 
-  const templateOptions = configureTemplateOptions(parameters);
-  const filledInTemplate = await fillInTemplate(template, templateOptions);
-  return generateDocument(filledInTemplate);
+export async function writeControlSequenceDocument(
+  controlSequenceInput: ControlSequenceInput,
+) {
+  const timeMarker = new Date().toISOString();
+  const fileName = `sequence-${timeMarker}`;
+  const latexFilePath = `${SEQUENCE_OUTPUT_PATH}/${fileName}.tex`;
+  const docxFilePath = `${SEQUENCE_OUTPUT_PATH}/${fileName}.docx`;
+
+  await writeLatexFile(controlSequenceInput, latexFilePath);
+  await convertToDOCX(latexFilePath, docxFilePath);
+  return getConvertedDocument(docxFilePath);
 }

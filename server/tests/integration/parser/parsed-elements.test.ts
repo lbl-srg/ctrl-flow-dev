@@ -1,5 +1,5 @@
 import * as parser from "../../../src/parser/parser";
-import { initializeTestModelicaJson } from "./utils";
+import { initializeTestModelicaJson, optionTree } from "./utils";
 const testModelicaFile = "TestPackage.Template.TestTemplate";
 
 describe("Basic parser functionality", () => {
@@ -26,7 +26,9 @@ describe("Basic parser functionality", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
     const expectedPath = `${template.modelicaPath}.${paramName}`;
-    const element = template.elementList.find((e) => e.modelicaPath === expectedPath)
+    const element = template.elementList.find(
+      (e) => e.modelicaPath === expectedPath,
+    );
     expect(element).toBeTruthy();
   });
 
@@ -104,7 +106,7 @@ describe("Expected Options are extracted", () => {
   Check that instead of a value, the option has a value expression
   */
   it("Extracts literal value expression", () => {
-    const file = parser.getFile(testModelicaFile) as    parser.File;
+    const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
     const options = template.getOptions();
     const option = options[
@@ -181,17 +183,9 @@ describe("Expected Options are extracted", () => {
     expect(expectedValues.length).toBe(0);
 
     enumOption?.options?.map((o) => {
-      const childOption = options[o]
+      const childOption = options[o];
       expect(childOption?.visible).toBeFalsy();
     });
-  });
-
-  it("Extracts the expected number of options for the TestTemplate", () => {
-    const optionTotal = 44;
-    const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.elementList[0] as parser.InputGroup;
-    const options = template.getOptions();
-    expect(Object.values(options).length).toBe(optionTotal);
   });
 
   it("Extracts expected InputGroup options", () => {
@@ -219,16 +213,23 @@ describe("Expected Options are extracted", () => {
     const template = file.elementList[0] as parser.InputGroup;
     const options = template.getOptions();
 
+    // debugging structure to track option generation
+    // const optionCount: { [key: string]: number } = {};
+
     Object.values(options).map((o) => {
       const childOptions = o.options;
       if (childOptions) {
         childOptions.map((option) => {
-          if (!(option in options)) {
-            console.log(o, option);
-          }
           expect(option in options).toBeTruthy();
+          // optionCount[option] = optionCount[option]
+          //   ? optionCount[option] + 1
+          //   : 1;
+          // if (optionCount[option] > 1) {
+          //   console.log(`${o.modelicaPath} - ${option}`);
+          // }
         });
       }
     });
+    // console.log(optionCount);
   });
 });
