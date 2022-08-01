@@ -139,6 +139,7 @@ export function createModification(props: ModificationProps): Modification {
 
     const mod = modBlock.modification;
     if (mod) {
+      console.log('mod: ', mod);
       // test if an assignment
       if ("equal" in mod) {
         // simple_expression can potentially be an expression
