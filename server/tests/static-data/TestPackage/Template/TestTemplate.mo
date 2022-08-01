@@ -39,7 +39,7 @@ model TestTemplate "Test Template"
   /*
     Test Record
   */
-  parameter TestPackage.Template.Data.TestRecord dat(
+  parameter TestPackage.Template.Data.TestTemplate dat(
     final container_selectable_component=selectable_component.container)
     "Record with additional parameters";
 

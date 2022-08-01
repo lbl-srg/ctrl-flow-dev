@@ -76,6 +76,7 @@ export default class Config {
       : false;
   }
 
+  // Look in the config for the value of the first option that matches a given modelicaPath
   findOptionValue(configId: string, optionPath: string): string | undefined {
     const config = this.getById(configId);
     if (!config?.selections) return undefined;

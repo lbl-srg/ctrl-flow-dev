@@ -6,28 +6,26 @@ import { useStores } from "../../../data";
 
 import "../../../styles/steps/configs.scss";
 
-function Configs() {
+import { SystemTypeInterface } from "../../../data/template";
+
+const Configs = () => {
   const { templateStore } = useStores();
-  const systemTypes = templateStore.systemTypes;
+  const systemTypes: [SystemTypeInterface] = templateStore.systemTypes;
 
   return (
     <Fragment>
       <PageHeader headerText="Configurations" />
-
       <div className="configs-page">
         <h4>{itl.phrases.addConfigs}</h4>
-
-        {systemTypes.map((systemType) => {
-          return (
-            <System
-              key={systemType.modelicaPath}
-              systemPath={systemType.modelicaPath}
-            />
-          );
-        })}
+        {systemTypes.map((systemType) => (
+          <System
+            key={systemType.modelicaPath}
+            systemPath={systemType.modelicaPath}
+          />
+        ))}
       </div>
     </Fragment>
   );
-}
+};
 
 export default Configs;
