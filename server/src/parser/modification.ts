@@ -23,7 +23,7 @@ import { ShortClassSpecifier } from "./parser";
  * don't end up going this route, the store should be removed.
  */
 
-import { getExpression } from "./expression";
+import { Expression, getExpression } from "./expression";
 
 const modStore: Map<string, Modification> = new Map();
 
@@ -90,10 +90,10 @@ export type DescriptionBlock = {
   annotation?: any;
 };
 
-export type Expression = {
-  modelicaPath: string;
-  expression: string;
-};
+// export type Expression = {
+//   modelicaPath: string;
+//   expression: string;
+// };
 
 export function getModificationList(
   classMod: ClassMod,
@@ -151,7 +151,7 @@ function unpackRedeclaration(props: ModificationProps) {
 
 function unpackModblock(props: ModificationProps) {
   let mods: Modification[] = [];
-  let value: string = "";
+  let value: Expression | string = '';
   let { definition, basePath = "", name } = props as ModificationWithDefinition;
 
   let modBlock = definition;

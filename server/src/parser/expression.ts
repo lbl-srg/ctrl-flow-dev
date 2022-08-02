@@ -1,3 +1,6 @@
+// TODO: Move all types/interfaces that will be shared with the frontend to a common directory as an type/interface
+// TODO: Fix any typing unless it is necessary for the any typing
+// TODO: Clean up Literal typing
 // export type Literal =
 //   | { type: 'boolean', value: boolean } 
 //   | { type: 'string', value: string }
@@ -6,14 +9,15 @@
 
 export type Literal = boolean | string | number;
 
+// TODO: Clean up other Expression types in other files as they are not correct anymore
 export type Expression = {
   operator: string;
   operands: Array<Literal | Expression>;
 }
 
-function buildArithmeticExpression(expression: any): Expression {
+function buildArithmeticExpression(expression: any, operator: any): Expression {
   const arithmetic_expression: Expression = {
-    operator: expression.relation_operator,
+    operator: operator === '<>' ? '!=' : operator,
     operands: [expression[0].name, expression[1].name]
   };
 
@@ -26,28 +30,28 @@ function buildLogicalExpression(expression: any): Expression {
     operands: ['unknown_logical_expression']
   };
 
-  if (expression?.arithmetic_expressions) {
-    return buildArithmeticExpression(expression.arithmetic_expressions);
+  if (expression.arithmetic_expressions) {
+    return buildArithmeticExpression(expression.arithmetic_expressions, expression.relation_operator);
   }
 
-  if (expression?.logical_or && expression.logical_or.length <= 1) {
+  if (expression.logical_or?.length === 1) {
     return buildLogicalExpression(expression.logical_or[0]);
   }
 
-  if (expression?.logical_and && expression.logical_and.length <= 1) {
+  if (expression.logical_and?.length === 1) {
     return buildLogicalExpression(expression.logical_and[0]);
   }
 
-  if (expression?.logical_or && expression.logical_or.length > 1) {
+  if (expression.logical_or?.length > 1) {
     return {
-      operator: 'or',
+      operator: '||',
       operands: expression.logical_or.map((element: any) => buildLogicalExpression(element))
     }
   }
 
-  if (expression?.logical_and && expression.logical_and.length > 1) {
+  if (expression.logical_and?.length > 1) {
     return {
-      operator: 'and',
+      operator: '&&',
       operands: expression.logical_and.map((element: any) => buildLogicalExpression(element))
     }
   }
@@ -83,28 +87,54 @@ function buildElseExpression(expression: any): Expression {
 }
 
 function buildIfExpression(expression: any): Expression {
-  let if_expression: Expression = {
+  const if_expression: Expression = {
     operator: 'if_elseif',
-    operands: []
+    operands: [
+      expression.if_elseif?.map((condition_expression: any, index: number) => {
+        buildConditionExpression(condition_expression, index);
+      }),
+      buildElseExpression(expression.else_expression)
+    ]
   };
-
-  if (expression?.if_elseif) {
-    if_expression.operands.push(expression.if_elseif.map(
-      (condition_expression: any, index: number) => buildConditionExpression(condition_expression, index)
-    ));
-  }
-
-  if (expression?.else_expression) {
-    if_expression.operands.push(buildElseExpression(expression.else_expression));
-  }
 
   return if_expression;
 }
 
+// TODO: Move to Common Directory as a helper
+export function parseExpression(expression: Expression): any {
+  let parsed_expression: any = 'case not setup';
+
+  switch (expression.operator) {
+    case 'none':
+      parsed_expression = expression.operands[0];
+      break;
+    // case '<':
+    // case '<=':
+    // case '>':
+    // case '>=':
+    // case '==':
+    // case '!=':
+    //   parsed_expression = `${expression.operands[0]} ${expression.operator} ${expression.operands[1]}`;
+    //   break;
+    // case '||':
+    // case '&&':
+    //   parsed_expression = `${parseExpression(expression.operands[0])} ${expression.operator} ${parseExpression(expression.operands[1])}`;
+    //   break;
+    // case 'if_elseif':
+    // case 'if':
+    // case 'else_if':
+    // case 'else':
+    default:
+      break;
+  }
+
+  return parsed_expression;
+}
+
 export function getExpression(value: any): Expression {
-  const simple_expression = value?.simple_expression;
-  const logical_expression = simple_expression?.logical_expression || null;
-  const if_expression = value?.if_expression;
+  const simple_expression = value.simple_expression;
+  const logical_expression = simple_expression?.logical_expression;
+  const if_expression = value.if_expression;
 
   const expression: Expression = {
     operator: 'other_expression',

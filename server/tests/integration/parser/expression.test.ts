@@ -17,7 +17,8 @@ describe("Expression", () => {
 
   it("Parses Simple Value Expression", () => {
     const paramPath = "TestPackage.Template.TestTemplate.expression_bool";
-    const option = (template as Template).getOptions()[paramPath];
+    const { options } = (template as Template).getOptions();
+    const option = options[paramPath];
     expect(option.valueExpression).toBeTruthy();
     //
   });

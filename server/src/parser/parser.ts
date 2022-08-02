@@ -7,6 +7,8 @@
  * that element is available if referenced by another piece of modelica-json.
  */
 
+ // TODO: Fix any typings unless any is really necessary
+
 import { findPackageEntryPoints, loader, TEMPLATE_IDENTIFIER } from "./loader";
 import { Template } from "./template";
 import {
@@ -14,15 +16,22 @@ import {
   Mod,
   Modification,
   WrappedMod,
-  Expression,
+  // Expression,
   DeclarationBlock,
   getModificationList,
 } from "./modification";
+
+import { Literal, parseExpression } from "./expression";
 
 export const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
+
+export type Expression = {
+  modelicaPath: string;
+  expression: string;
+};
 
 interface ClassModification {
   element_modification_or_replaceable: {
@@ -138,7 +147,7 @@ export interface OptionN {
   modelicaPath: string;
   visible: boolean;
   options?: string[];
-  group?: string;
+  group?: Literal | string;
   tab?: string;
   value?: any;
   valueExpression?: any;
@@ -270,7 +279,8 @@ export class Input extends Element {
   final = false;
   annotation: Modification[] = [];
   tab? = "";
-  group? = "";
+  // TODO: Fix any typing
+  group?: any = "";
   enable: Expression = { expression: "", modelicaPath: "" };
   valueExpression: Expression = { expression: "", modelicaPath: "" };
 
@@ -351,8 +361,8 @@ export class Input extends Element {
       const tab = dialog.mods.find((m) => m.name === "tab")?.value;
       const expression = dialog.mods.find((m) => m.name === "enable")?.value;
 
-      this.group = group ? JSON.parse(group) : "";
-      this.tab = tab ? JSON.parse(tab) : "";
+      this.group = group ? parseExpression(group) : "";
+      this.tab = tab ? parseExpression(tab) : "";
 
       this.enable = {
         modelicaPath: this.modelicaPath,
