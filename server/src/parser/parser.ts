@@ -150,7 +150,6 @@ export interface OptionN {
   group?: Literal | string;
   tab?: string;
   value?: any;
-  valueExpression?: any;
   enable?: any;
 }
 
@@ -282,7 +281,6 @@ export class Input extends Element {
   // TODO: Fix any typing
   group?: any = "";
   enable: Expression = { expression: "", modelicaPath: "" };
-  valueExpression: Expression = { expression: "", modelicaPath: "" };
 
   constructor(definition: any, basePath: string) {
     super();
@@ -328,25 +326,6 @@ export class Input extends Element {
 
     if (this.mod && !this.mod.empty) {
       this.value = this.mod.value;
-    }
-
-    // if type is a literal type we can convert it from a string
-    if (MODELICA_LITERALS.includes(this.type) && this.value !== undefined) {
-      // Expression
-      try {
-        this.value = JSON.parse(this.value);
-      } catch (error) {
-        if (error instanceof SyntaxError) {
-          // if parsing the value fails assume an expression
-          this.valueExpression = {
-            expression: this.value,
-            modelicaPath: this.modelicaPath,
-          };
-          this.value = null;
-        } else {
-          throw error;
-        }
-      }
     }
   }
 
@@ -398,7 +377,6 @@ export class Input extends Element {
       group: this.group,
       tab: this.tab,
       visible: visible,
-      valueExpression: this.valueExpression,
       enable: this.enable,
       options: childOptions, // TODO: try and just use type to link to child options to prevent duplicates
     };

@@ -91,7 +91,7 @@ function buildIfExpression(expression: any): Expression {
     operator: 'if_elseif',
     operands: [
       expression.if_elseif?.map((condition_expression: any, index: number) => {
-        buildConditionExpression(condition_expression, index);
+        return buildConditionExpression(condition_expression, index);
       }),
       buildElseExpression(expression.else_expression)
     ]

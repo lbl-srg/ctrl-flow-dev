@@ -19,7 +19,11 @@ model TestTemplate "Test Template"
     TestPackage.Component.SecondComponent
     selectable_component constrainedby
     TestPackage.Interface.PartialComponent(
-      final container=TestPackage.Types.Container.Cone)
+      final container=TestPackage.Types.Container.Cone,
+      final icecream=if
+        first.icecream <> TestPackage.Types.IceCream.Chocolate then
+        first.icecream elseif third.icecream <> TestPackage.Types.IceCream.Chocolate
+        then third.icecream else TestPackage.Types.IceCream.Chocolate)
     "Replaceable Component"
     annotation (
       choices(
@@ -34,7 +38,8 @@ model TestTemplate "Test Template"
   /*
   Test that a subcomponent has access to an outer declaration
   */
-  TestPackage.Component.ThirdComponent third_component;
+  TestPackage.Component.ThirdComponent third(
+    component_param="Third Component Template Override");
 
   /*
     Test Record

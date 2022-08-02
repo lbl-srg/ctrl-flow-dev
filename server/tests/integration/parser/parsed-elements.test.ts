@@ -113,8 +113,7 @@ describe("Expected Options are extracted", () => {
       "TestPackage.Template.TestTemplate.expression_bool"
     ] as parser.OptionN;
 
-    expect(option.value).toBeNull();
-    expect(option.valueExpression).toBeTruthy();
+    expect(option.value).toBeTruthy();
   });
 
   it("Extracts 'choices'", () => {
