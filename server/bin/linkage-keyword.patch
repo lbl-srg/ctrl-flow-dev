@@ -1,8 +1,8 @@
 diff --git a/Buildings/Templates/AirHandlersFans/VAVMultiZone.mo b/Buildings/Templates/AirHandlersFans/VAVMultiZone.mo
-index 5f6f674a6f..cb7ee23d7d 100644
+index 50225a86ef..75a2977eb2 100644
 --- a/Buildings/Templates/AirHandlersFans/VAVMultiZone.mo
 +++ b/Buildings/Templates/AirHandlersFans/VAVMultiZone.mo
-@@ -400,6 +400,7 @@ equation
+@@ -406,6 +406,7 @@ equation
    connect(fanSupBlo.port_b, coiHeaPre.port_a)
      annotation (Line(points={{-30,-200},{10,-200}}, color={0,127,255}));
    annotation (
@@ -26,35 +26,29 @@ index ecce01041c..018737416f 100644
  This package contains templates for air handlers and fans.
  </p>
 diff --git a/Buildings/Templates/ZoneEquipment/VAVBoxCoolingOnly.mo b/Buildings/Templates/ZoneEquipment/VAVBoxCoolingOnly.mo
-index 1e4106d60d..597e08c2d4 100644
+index 6d3893617b..986c7fa3f8 100644
 --- a/Buildings/Templates/ZoneEquipment/VAVBoxCoolingOnly.mo
 +++ b/Buildings/Templates/ZoneEquipment/VAVBoxCoolingOnly.mo
-@@ -70,7 +70,9 @@ equation
-     annotation (Line(points={{-180,-200},{-130,-200}}, color={0,127,255}));
-   connect(damVAV.port_b, port_Dis)
-     annotation (Line(points={{-110,-200},{300,-200}}, color={0,127,255}));
--  annotation (Diagram(graphics={
-+  annotation (
-+    __LinkageTemplate=true,
-+    Diagram(graphics={
-         Line(points={{300,-190},{-300,-190}},
-                                             color={0,0,0}),
-         Line(points={{300,-210},{-300,-210}},
+@@ -5,6 +5,7 @@ model VAVBoxCoolingOnly "VAV terminal unit cooling only"
+     redeclare final Buildings.Templates.Components.Coils.None coiHea);
+ 
+   annotation (
++  __LinkageTemplate=true,
+   defaultComponentName="VAVBox",
+     Documentation(info="<html>
+ <h4>Description</h4>
 diff --git a/Buildings/Templates/ZoneEquipment/VAVBoxReheat.mo b/Buildings/Templates/ZoneEquipment/VAVBoxReheat.mo
-index 28a423ac45..7b9c1135b2 100644
+index 05359d8bb0..f9e23f0735 100644
 --- a/Buildings/Templates/ZoneEquipment/VAVBoxReheat.mo
 +++ b/Buildings/Templates/ZoneEquipment/VAVBoxReheat.mo
-@@ -129,7 +129,9 @@ equation
-     annotation (Line(points={{-300,-200},{-200,-200}}, color={0,127,255}));
-   connect(VAirDis_flow.port_b, damVAV.port_a)
-     annotation (Line(points={{-180,-200},{-130,-200}}, color={0,127,255}));
--  annotation (Diagram(graphics={
-+  annotation (
-+    __LinkageTemplate=true,
-+    Diagram(graphics={
-         Line(points={{300,-190},{-300,-190}},
-                                             color={0,0,0}),
-         Line(points={{300,-210},{-300,-210}},
+@@ -4,6 +4,7 @@ model VAVBoxReheat "VAV terminal unit with reheat"
+     final typ=Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat);
+ 
+   annotation (
++   __LinkageTemplate=true,
+    defaultComponentName="VAVBox",
+     Documentation(info="<html>
+ <h4>Description</h4>
 diff --git a/Buildings/Templates/ZoneEquipment/package.mo b/Buildings/Templates/ZoneEquipment/package.mo
 index ad01165130..8d4e3ffe19 100644
 --- a/Buildings/Templates/ZoneEquipment/package.mo
