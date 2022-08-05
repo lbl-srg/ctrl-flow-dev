@@ -1,4 +1,4 @@
-import { ShortClassSpecifier } from "./parser";
+import { ShortClassSpecifier } from "./mj-types";
 
 /**
  * Modifications are places where there is an assignment, e.g.
