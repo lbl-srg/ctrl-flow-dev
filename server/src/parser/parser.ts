@@ -60,6 +60,70 @@ export interface ShortClassSpecifier {
   };
 }
 
+
+type ImportClause = {
+  identifier: string;
+  name: string;
+};
+
+type ExtendClause = {
+  name: string;
+  class_modification: ClassModification
+  annotation: ClassModification;
+}
+
+interface ComponentClause {
+  type_prefix: string;
+  type_specifier: string;
+  array_subscripts: any; // TODO
+  component_list: any;
+}
+
+interface ElementSection {
+  public_element_list: Array<ProtectedElement>;
+  protected_element_list: Array<ProtectedElement>;
+  equation_section: any;
+  algorithm_section: any;
+}
+
+interface LongClassSpecifier {
+  identifier: string;
+  description_string: string;
+  composition: {
+    element_list: Array<ProtectedElement>;
+    element_sections: Array<ElementSection>;
+  }
+}
+
+interface ClassSpecifier {
+  final: boolean;
+  encapsulated: boolean;
+  class_prefixes: string;
+  class_specifier: {
+    long_class_specifier?: LongClassSpecifier;
+    short_class_specifier?: ShortClassSpecifier;
+    der_class_specifier?: DerClassSpecifier
+  }
+}
+
+type ClassDefinition = Array<ClassSpecifier>;
+
+interface ProtectedElement {
+  import_clause: ImportClause;
+  extends_clause: ExtendClause;
+  redeclare: boolean;
+  final: boolean;
+  inner: boolean;
+  outer: boolean;
+  replaceable: boolean;
+  constraining_clause: {
+    name: string;
+    class_modification: ClassModification;
+  };
+  class_definition: ClassDefinition;
+  component_clause: any
+}
+
 class Store {
   _store: Map<string, any> = new Map();
 
@@ -268,6 +332,8 @@ export class Input extends Element {
   value: any; // modelica path?
   description = "";
   final = false;
+  inner: boolean | null = null;
+  visible = false; // 
   annotation: Modification[] = [];
   tab? = "";
   group? = "";
@@ -289,8 +355,9 @@ export class Input extends Element {
     }
 
     this.final = definition.final ? definition.final : this.final;
-
+    this.inner = definition.
     this.type = componentClause.type_specifier;
+    this.visible = this._setVisible(definition)
 
     // description block (where the annotation is) can be in different locations
     // constrainby changes this location
@@ -357,6 +424,15 @@ export class Input extends Element {
         modelicaPath: this.modelicaPath,
         expression: expression || "",
       };
+    }
+  }
+
+  _getVisible(definition: any) {
+    if (!(this.type in MODELICA_LITERALS)) {
+      const typeInstance = typeStore.get(this.type) || null;
+      const isParam = ("parameter" in definition) {
+
+      }
     }
   }
 
@@ -623,10 +699,6 @@ export class InputGroupExtend extends Element {
   }
 }
 
-type ImportClause = {
-  identifier: string;
-  name: string;
-};
 
 export class Import extends Element {
   value: string;
