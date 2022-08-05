@@ -36,12 +36,6 @@ interface ClassModification {
     element_replaceable: any;
   };
 }
-[];
-
-interface Description {
-  "description-string": string;
-  annotation: ClassModification;
-}
 
 export interface ShortClassSpecifier {
   identifier: string;
@@ -60,7 +54,6 @@ export interface ShortClassSpecifier {
   };
 }
 
-
 type ImportClause = {
   identifier: string;
   name: string;
@@ -68,16 +61,9 @@ type ImportClause = {
 
 type ExtendClause = {
   name: string;
-  class_modification: ClassModification
+  class_modification: ClassModification;
   annotation: ClassModification;
-}
-
-interface ComponentClause {
-  type_prefix: string;
-  type_specifier: string;
-  array_subscripts: any; // TODO
-  component_list: any;
-}
+};
 
 interface ElementSection {
   public_element_list: Array<ProtectedElement>;
@@ -92,12 +78,12 @@ interface LongClassSpecifier {
   composition: {
     element_list: Array<ProtectedElement>;
     element_sections: Array<ElementSection>;
-  }
+  };
 }
 
 interface Description {
   description_string: string;
-  annotation: ClassModification;
+  annotation: Array<ClassModification>;
 }
 
 interface DerClassSpecifier {
@@ -106,7 +92,7 @@ interface DerClassSpecifier {
     type_specifier: string;
     identifier: Array<string>;
     description: Description;
-  }
+  };
 }
 
 interface ClassSpecifier {
@@ -116,11 +102,26 @@ interface ClassSpecifier {
   class_specifier: {
     long_class_specifier?: LongClassSpecifier;
     short_class_specifier?: ShortClassSpecifier;
-    der_class_specifier?: DerClassSpecifier
-  }
+    der_class_specifier?: DerClassSpecifier;
+  };
 }
 
 type ClassDefinition = Array<ClassSpecifier>;
+
+interface Component {
+  declaration: DeclarationBlock;
+  condition_attribute: {
+    expression: any;
+  };
+  description: Description;
+}
+
+interface ComponentClause {
+  type_prefix: string; // [ flow | stream ] [ discrete | parameter | constant ] [ input | output ]
+  type_specifier: string;
+  array_subscripts: any;
+  component_list: Array<Component>;
+}
 
 interface ProtectedElement {
   import_clause: ImportClause;
@@ -135,7 +136,8 @@ interface ProtectedElement {
     class_modification: ClassModification;
   };
   class_definition: ClassDefinition;
-  component_clause: any
+  component_clause: ComponentClause;
+  description: Description;
 }
 
 class Store {
@@ -347,7 +349,7 @@ export class Input extends Element {
   description = "";
   final = false;
   inner: boolean | null = null;
-  visible = false; // 
+  visible = false; //
   annotation: Modification[] = [];
   tab? = "";
   group? = "";
@@ -359,7 +361,7 @@ export class Input extends Element {
     const componentClause = definition.component_clause;
     const declarationBlock = componentClause.component_list.find(
       (c: any) => "declaration" in c,
-    ).declaration as DeclarationBlock;
+    )?.declaration as DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
     const registered = this.registerPath(this.modelicaPath);
@@ -382,9 +384,11 @@ export class Input extends Element {
     if (descriptionBlock) {
       this.description = descriptionBlock?.description_string || "";
       if (descriptionBlock?.annotation) {
-        this.annotation = descriptionBlock.annotation.map(
-          (mod: Mod | WrappedMod) => createModification({ definition: mod }),
-        );
+        this.annotation = descriptionBlock.annotation
+          .map((mod: Mod | WrappedMod) =>
+            createModification({ definition: mod }),
+          )
+          .filter((m) => m !== undefined) as Modification[];
         this._setUIInfo();
       }
     }
@@ -712,7 +716,6 @@ export class InputGroupExtend extends Element {
     return this.mods ? this.mods.flatMap((m) => m.getModifications()) : [];
   }
 }
-
 
 export class Import extends Element {
   value: string;
