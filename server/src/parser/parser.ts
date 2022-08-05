@@ -95,6 +95,20 @@ interface LongClassSpecifier {
   }
 }
 
+interface Description {
+  description_string: string;
+  annotation: ClassModification;
+}
+
+interface DerClassSpecifier {
+  identifier: string;
+  der_class_specifier_value: {
+    type_specifier: string;
+    identifier: Array<string>;
+    description: Description;
+  }
+}
+
 interface ClassSpecifier {
   final: boolean;
   encapsulated: boolean;
@@ -340,7 +354,7 @@ export class Input extends Element {
   enable: Expression = { expression: "", modelicaPath: "" };
   valueExpression: Expression = { expression: "", modelicaPath: "" };
 
-  constructor(definition: any, basePath: string) {
+  constructor(definition: ProtectedElement, basePath: string) {
     super();
     const componentClause = definition.component_clause;
     const declarationBlock = componentClause.component_list.find(
@@ -355,9 +369,9 @@ export class Input extends Element {
     }
 
     this.final = definition.final ? definition.final : this.final;
-    this.inner = definition.
+    this.inner = definition.inner;
     this.type = componentClause.type_specifier;
-    this.visible = this._setVisible(definition)
+    this.visible = this._getVisible(definition);
 
     // description block (where the annotation is) can be in different locations
     // constrainby changes this location
@@ -430,10 +444,10 @@ export class Input extends Element {
   _getVisible(definition: any) {
     if (!(this.type in MODELICA_LITERALS)) {
       const typeInstance = typeStore.get(this.type) || null;
-      const isParam = ("parameter" in definition) {
-
-      }
+      // TODO: continue implementation
     }
+
+    return false;
   }
 
   // Helper method to determine if the given input's option reprensentation
