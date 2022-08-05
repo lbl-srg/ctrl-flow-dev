@@ -19,126 +19,12 @@ import {
   getModificationList,
 } from "./modification";
 
+import * as mj from "./mj-types";
+
 export const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
-
-interface ClassModification {
-  element_modification_or_replaceable: {
-    each: boolean;
-    final: boolean;
-    element_modification: {
-      name: string;
-      modification: any; // modification
-      "description-string": string;
-    };
-    element_replaceable: any;
-  };
-}
-
-export interface ShortClassSpecifier {
-  identifier: string;
-  short_class_specifier_value: {
-    base_prefix: string;
-    name: string;
-    array_subscripts: any;
-    class_modification: any;
-    description: any;
-    enum_list: [
-      {
-        identifier: string;
-        description: any;
-      },
-    ];
-  };
-}
-
-type ImportClause = {
-  identifier: string;
-  name: string;
-};
-
-type ExtendClause = {
-  name: string;
-  class_modification: ClassModification;
-  annotation: ClassModification;
-};
-
-interface ElementSection {
-  public_element_list: Array<ProtectedElement>;
-  protected_element_list: Array<ProtectedElement>;
-  equation_section: any;
-  algorithm_section: any;
-}
-
-interface LongClassSpecifier {
-  identifier: string;
-  description_string: string;
-  composition: {
-    element_list: Array<ProtectedElement>;
-    element_sections: Array<ElementSection>;
-  };
-}
-
-interface Description {
-  description_string: string;
-  annotation: Array<ClassModification>;
-}
-
-interface DerClassSpecifier {
-  identifier: string;
-  der_class_specifier_value: {
-    type_specifier: string;
-    identifier: Array<string>;
-    description: Description;
-  };
-}
-
-interface ClassSpecifier {
-  final: boolean;
-  encapsulated: boolean;
-  class_prefixes: string;
-  class_specifier: {
-    long_class_specifier?: LongClassSpecifier;
-    short_class_specifier?: ShortClassSpecifier;
-    der_class_specifier?: DerClassSpecifier;
-  };
-}
-
-type ClassDefinition = Array<ClassSpecifier>;
-
-interface Component {
-  declaration: DeclarationBlock;
-  condition_attribute: {
-    expression: any;
-  };
-  description: Description;
-}
-
-interface ComponentClause {
-  type_prefix: string; // [ flow | stream ] [ discrete | parameter | constant ] [ input | output ]
-  type_specifier: string;
-  array_subscripts: any;
-  component_list: Array<Component>;
-}
-
-interface ProtectedElement {
-  import_clause: ImportClause;
-  extends_clause: ExtendClause;
-  redeclare: boolean;
-  final: boolean;
-  inner: boolean;
-  outer: boolean;
-  replaceable: boolean;
-  constraining_clause: {
-    name: string;
-    class_modification: ClassModification;
-  };
-  class_definition: ClassDefinition;
-  component_clause: ComponentClause;
-  description: Description;
-}
 
 class Store {
   _store: Map<string, any> = new Map();
@@ -356,7 +242,7 @@ export class Input extends Element {
   enable: Expression = { expression: "", modelicaPath: "" };
   valueExpression: Expression = { expression: "", modelicaPath: "" };
 
-  constructor(definition: ProtectedElement, basePath: string) {
+  constructor(definition: mj.ProtectedElement, basePath: string) {
     super();
     const componentClause = definition.component_clause;
     const declarationBlock = componentClause.component_list.find(
@@ -514,7 +400,7 @@ export class ReplaceableInput extends Input {
   choices: string[] = [];
   constraint: Element | undefined;
   mods: Modification[] = [];
-  constructor(definition: any, basePath: string) {
+  constructor(definition: mj.ProtectedElement, basePath: string) {
     super(definition, basePath);
 
     // the default value is original type provided
@@ -722,7 +608,7 @@ export class Import extends Element {
 
   constructor(definition: any, basePath: string) {
     super();
-    const importClause = definition.import_clause as ImportClause; // arbitrary name. Important that this will not collide with other param names
+    const importClause = definition.import_clause as mj.ImportClause; // arbitrary name. Important that this will not collide with other param names
     this.name = importClause.identifier;
     this.value = importClause.name; // path to imported type
     this.modelicaPath = `${basePath}.${this.name}`;
