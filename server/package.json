@@ -33,12 +33,12 @@
     "typescript": "^4.5.4"
   },
   "scripts": {
-    "docker:start": "docker compose -p linkage-containers -f docker/docker-compose.yaml --env-file ./.env up -d && npm run docker:logs",
-    "docker:debug": "docker compose -p linkage-containers -f docker/docker-compose.yaml -f docker/docker-compose.debug.yaml --env-file ./.env up -d && npm run docker:logs",
-    "docker:stop": "docker compose -p linkage-containers -f docker/docker-compose.yaml down --remove-orphans",
-    "docker:logs": "docker compose -p linkage-containers -f docker/docker-compose.yaml logs -f",
-    "docker:build": "docker compose -f docker/docker-compose.yaml build --pull --no-cache",
-    "docker:build-cached": "docker compose -f docker/docker-compose.yaml build --pull",
+    "docker:start": "docker-compose -p linkage-containers -f docker/docker-compose.yaml --env-file ./.env up -d && npm run docker:logs",
+    "docker:debug": "docker-compose -p linkage-containers -f docker/docker-compose.yaml -f docker/docker-compose.debug.yaml --env-file ./.env up -d && npm run docker:logs",
+    "docker:stop": "docker-compose -p linkage-containers -f docker/docker-compose.yaml down --remove-orphans",
+    "docker:logs": "docker-compose -p linkage-containers -f docker/docker-compose.yaml logs -f",
+    "docker:build": "docker-compose -f docker/docker-compose.yaml build --pull --no-cache",
+    "docker:build-cached": "docker-compose -f docker/docker-compose.yaml build --pull",
     "docker:shell": "docker exec -it linkage-api /bin/bash",
     "start": "nodemon src/index.ts",
     "debug": "nodemon --inspect=0.0.0.0:9229 --exec node -r ts-node/register src/index.ts",
