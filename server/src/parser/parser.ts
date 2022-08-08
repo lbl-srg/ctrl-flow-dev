@@ -38,35 +38,49 @@ class Store {
   }
 
   /**
-   * TODO: This 'get' needs to match the lookup behavior for modelica type references
-   * where it is able to follow an order of searching based on the type. Full rules
-   * are defined here: https://mbe.modelica.university/components/packages/lookup/
+   * Attempts to 'get the specified modelica path and if not found attempts
+   * to load additional json files to parse and populate the type store.
    *
-   * For now this does two types of lookup:
-   * 1. Try the path as an absolute path
-   * 2. Try it as a relative path (context + path)
-   *
-   * @param path
-   * @param context
-   * @returns
+   * @exception if a provided path is not found in the expected file/model!
    */
-  get(path: string, context = ""): Element | undefined {
+  get(path: string, context = "", load = true): Element | undefined {
     if (MODELICA_LITERALS.includes(path)) {
       return; // PUNCH-OUT! literals don't have a type definition
     }
 
-    const paths = context ? [path, `${context}.${path}`] : [path];
+    const paths = this._generatePaths(path, context);
 
     // for each path
     // check if either is in the store
-    const typeDef = this._store.has(path)
-      ? this._store.get(path)
-      : this._store.get(`${context}.${path}`);
-
-    if (typeDef) {
-      return typeDef; // PUNCH-OUT!
+    for(const p of paths) {
+      if (this._store.has(p)) {
+        return this._store.get(p)
+      }
     }
 
+    if (load) {
+      return this._load(paths);
+    }
+  }
+
+  /**
+   * Generates all the potential paths that a given path might reference
+   * For now this does two types of lookup:
+   * 1. Try the path as an absolute path
+   * 2. Try it as a relative path (context + path)
+   * 
+   * 
+   * TODO: This needs to match the lookup behavior for modelica type references
+   * where it is able to follow an order of searching based on the type. Full rules
+   * are defined here: https://mbe.modelica.university/components/packages/lookup/
+   *
+   */ 
+  _generatePaths(path:string, context:string): Array<string> {
+    return context ? [path, `${context}.${path}`] : [path];
+  }
+
+  _load(paths: Array<string>) {
+    // debug var for logging variables that are not found
     let typeFound = false;
     // not found, attempt to load from json
     for (const p of paths) {
@@ -83,6 +97,13 @@ class Store {
     }
   }
 
+  /**
+   * Attempts to find an element. Does NOT error if a path is not found
+   */
+  find(path: string, context = "") {
+    return this.get(path, context, false);
+  }
+
   has(path: string): boolean {
     return this._store.has(path);
   }
@@ -91,8 +112,8 @@ class Store {
 export const typeStore = new Store();
 
 // expects an absolute path
-export const getElement = (modelicaPath: string) => {
-  return typeStore.get(modelicaPath);
+export const findElement = (modelicaPath: string) => {
+  return typeStore.find(modelicaPath);
 };
 
 function assertType(type: string) {
@@ -741,7 +762,9 @@ export function setPathPrefix(prefix: string) {
   pathPrefix = prefix;
 }
 
-// Extracts models/packages
+/**
+ * Extracts the given file into the type store
+ */
 export const getFile = (filePath: string) => {
   const jsonData = loader(pathPrefix, filePath);
   if (jsonData) {

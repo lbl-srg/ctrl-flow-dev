@@ -70,7 +70,7 @@ export class Template {
 
   constructor(public element: parser.Element) {
     this._extractSystemTypes(element);
-
+    this._extractOptions();
     templateStore.set(this.modelicaPath, this);
   }
 
@@ -86,7 +86,7 @@ export class Template {
     const path = element.modelicaPath.split(".");
     path.pop();
     while (path.length) {
-      const type = parser.getElement(path.join("."));
+      const type = parser.findElement(path.join("."));
       if (type && type.entryPoint) {
         const systemType = {
           description: type.description,
@@ -112,11 +112,11 @@ export class Template {
     // try and find 'dat' param by checking the class definition,
     // then going through each extended class
     let curPath = this.modelicaPath;
-    let dat: parser.OptionN | null = null;
+    let element: parser.Element | undefined | null = null;
 
-    while (!dat) {
+    while (!element) {
       // iterate through ch
-      const element = parser.getElement(`${curPath}.dat`);
+      element = parser.findElement(`${curPath}.dat`);
 
       if (element) {
         // NOTE: we could just remove 'dat' as a child option preventing
@@ -124,7 +124,7 @@ export class Template {
         // through and deleting keys if we run into issues with performance
         break;
       } else {
-        const extendElement = parser.getElement(
+        const extendElement = parser.findElement(
           `${curPath}.${parser.EXTEND_NAME}`,
         );
         // check if in type store
@@ -136,7 +136,7 @@ export class Template {
       }
     }
 
-    if (dat) {
+    if (element) {
       console.log("dat");
     }
 
