@@ -67,7 +67,20 @@ export class Template {
   systemTypes: SystemTypeN[] = [];
 
   constructor(public element: parser.Element) {
-    // extract system type by getting descriptions for each type
+    this._extractSystemTypes(element);
+
+    templateStore.set(this.modelicaPath, this);
+  }
+
+  get modelicaPath() {
+    return this.element.modelicaPath;
+  }
+
+  get description() {
+    return this.element.description;
+  }
+
+  _extractSystemTypes(element: parser.Element) {
     const path = element.modelicaPath.split(".");
     path.pop();
     while (path.length) {
@@ -82,16 +95,18 @@ export class Template {
       }
       path.pop();
     }
-
-    templateStore.set(this.modelicaPath, this);
   }
 
-  get modelicaPath() {
-    return this.element.modelicaPath;
-  }
-
-  get description() {
-    return this.element.description;
+  // Finds 'dat' as entry point for schedule options
+  // recursively steps through each child of 'dat' to extract
+  // schedule options in it
+  // Then finds all options and removes all options that already are in
+  // 'scheduleOptions'
+  _extractOptions(): {
+    options: { [key: string]: parser.OptionN };
+    scheduleOptions: { [key: string]: ScheduleOption };
+  } {
+    return { options: {}, scheduleOptions: {} };
   }
 
   /* Descends tree of options removing all nodes that originate
