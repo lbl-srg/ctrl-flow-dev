@@ -3,6 +3,8 @@
  *
  * Templates sit in front of all parsed elements that represent a single template
  * and provide accessor methods to extract what is needed in linkage schema format
+ *
+ * Templates hold logic to understand multiple parsed elements as a cohesive template
  */
 
 import * as parser from "./parser";
@@ -84,7 +86,7 @@ export class Template {
     const path = element.modelicaPath.split(".");
     path.pop();
     while (path.length) {
-      const type = parser.typeStore.get(path.join("."));
+      const type = parser.getElement(path.join("."));
       if (type && type.entryPoint) {
         const systemType = {
           description: type.description,
@@ -106,6 +108,38 @@ export class Template {
     options: { [key: string]: parser.OptionN };
     scheduleOptions: { [key: string]: ScheduleOption };
   } {
+    // find 'dat'
+    // try and find 'dat' param by checking the class definition,
+    // then going through each extended class
+    let curPath = this.modelicaPath;
+    let dat: parser.OptionN | null = null;
+
+    while (!dat) {
+      // iterate through ch
+      const element = parser.getElement(`${curPath}.dat`);
+
+      if (element) {
+        // NOTE: we could just remove 'dat' as a child option preventing
+        // traversal to all schedule table related options instead of going
+        // through and deleting keys if we run into issues with performance
+        break;
+      } else {
+        const extendElement = parser.getElement(
+          `${curPath}.${parser.EXTEND_NAME}`,
+        );
+        // check if in type store
+        if (!extendElement) {
+          break; // 'dat' not found - PUNCH-OUT!
+        }
+        // use extend 'type' to get to extend class options
+        curPath = extendElement.type;
+      }
+    }
+
+    if (dat) {
+      console.log("dat");
+    }
+
     return { options: {}, scheduleOptions: {} };
   }
 

@@ -90,6 +90,11 @@ class Store {
 
 export const typeStore = new Store();
 
+// expects an absolute path
+export const getElement = (modelicaPath: string) => {
+  return typeStore.get(modelicaPath);
+};
+
 function assertType(type: string) {
   if (!MODELICA_LITERALS.includes(type) && !typeStore.has(type)) {
     throw new Error(`${type} not defined`);
