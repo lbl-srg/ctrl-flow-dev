@@ -18,16 +18,15 @@ RUN node --version
 RUN npm --version
 
 # Prepares Modelica dependency scripts
-FROM node:16-alpine as alpine-node-prep-modelica
-RUN apk update && apk --no-cache add openjdk13
+FROM ubuntu-pandoc-node as alpine-node-modelica
+RUN apt-get update && apt-get -y install default-jdk
 RUN mkdir dependencies
 WORKDIR /app
 COPY bin/ bin/
 COPY package*.json .
 
 # Installs Modelica dependencies
-FROM alpine-node-prep-modelica as alpine-node-modelica
-RUN apk update && apk --no-cache add make curl git
+RUN apt-get -y install make curl git
 RUN npm run install-modelica-deps
 WORKDIR /dependencies
 ENV MODELICAPATH=/dependencies/ModelicaStandardLibrary:/dependencies/modelica-buildings
@@ -35,6 +34,6 @@ RUN mkdir template-json
 RUN node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d template-json
 
 # Adds Modelica dependencies to the resulting image
-FROM ubuntu-pandoc-node as ubuntu-pandoc-node-modelica
+FROM alpine-node-modelica as ubuntu-pandoc-node-modelica
 COPY --from=alpine-node-modelica /dependencies /dependencies
 WORKDIR /app
