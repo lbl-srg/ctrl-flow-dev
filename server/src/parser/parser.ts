@@ -123,7 +123,7 @@ function assertType(type: string) {
 }
 
 // TODO: remove this once types are shared between FE and BE
-export interface OptionN {
+export interface TemplateInput {
   // id: number;
   type: string;
   name: string;
@@ -135,6 +135,11 @@ export interface OptionN {
   value?: any;
   valueExpression?: any;
   enable?: any;
+  elementType: string;
+}
+
+export interface ScheduleOption extends TemplateInput {
+  groups: string[];
 }
 
 export abstract class Element {
@@ -145,10 +150,10 @@ export abstract class Element {
   entryPoint = false;
   duplicate = false;
 
-  abstract getOptions(
-    options?: { [key: string]: OptionN },
+  abstract getInputs(
+    options?: { [key: string]: TemplateInput },
     recursive?: boolean,
-  ): { [key: string]: OptionN };
+  ): { [key: string]: TemplateInput };
 
   registerPath(path: string): boolean {
     const isSet = typeStore.set(path, this);
@@ -166,7 +171,7 @@ export abstract class Element {
 export class InputGroupShort extends Element {
   value: string;
   description: string;
-  constructor(definition: any, basePath: string) {
+  constructor(definition: any, basePath: string, public elementType: string) {
     super();
     const specifier = definition.class_specifier.short_class_specifier;
     this.name = specifier.identifier;
@@ -180,7 +185,7 @@ export class InputGroupShort extends Element {
     }
   }
 
-  getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+  getInputs(options: { [key: string]: TemplateInput } = {}, recursive = true) {
     return options;
   }
 }
@@ -192,7 +197,7 @@ export class InputGroup extends Element {
   entryPoint = false;
   mod: Modification | undefined;
 
-  constructor(definition: any, basePath: string) {
+  constructor(definition: any, basePath: string, public elementType: string) {
     super();
     const specifier = definition.class_specifier.long_class_specifier;
     this.name = specifier.identifier;
@@ -225,14 +230,14 @@ export class InputGroup extends Element {
     }
   }
 
-  getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+  getInputs(options: { [key: string]: TemplateInput } = {}, recursive = true) {
     // A group with no elementList is ignored
     if (this.modelicaPath in options || this.elementList.length === 0) {
       return options;
     }
 
     const children = this.elementList.filter((el) => {
-      return Object.keys(el.getOptions(options)).length > 0;
+      return Object.keys(el.getInputs(options)).length > 0;
     });
 
     options[this.modelicaPath] = {
@@ -246,6 +251,10 @@ export class InputGroup extends Element {
     };
 
     return options;
+  }
+
+  getScheduleOptions(scheduleOptions: {[key: string]: ScheduleOption }, groupList: Array<string>) {
+    
   }
 
   getModifications() {
@@ -268,7 +277,7 @@ export class Input extends Element {
   enable: Expression = { expression: "", modelicaPath: "" };
   valueExpression: Expression = { expression: "", modelicaPath: "" };
 
-  constructor(definition: mj.ProtectedElement, basePath: string) {
+  constructor(definition: mj.ProtectedElement, basePath: string, public elementType: string) {
     super();
     const componentClause = definition.component_clause;
     const declarationBlock = componentClause.component_list.find(
@@ -368,18 +377,18 @@ export class Input extends Element {
 
   // Helper method to determine if the given input's option reprensentation
   // should be marked as 'visible'.
-  _setOptionVisible(typeOption: OptionN | undefined): boolean {
+  _setOptionVisible(typeOption: TemplateInput | undefined): boolean {
     return ((this.type in MODELICA_LITERALS || typeOption?.visible) &&
       !this.final) as boolean;
   }
 
-  getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+  getInputs(options: { [key: string]: TemplateInput } = {}, recursive = true) {
     if (this.modelicaPath in options) {
       return options;
     }
 
     const typeInstance = typeStore.get(this.type) || null;
-    const typeOptions = typeInstance ? typeInstance.getOptions({}, false) : {};
+    const typeOptions = typeInstance ? typeInstance.getInputs({}, false) : {};
     const childOptions = typeOptions[this.type]?.options || [];
     const visible = this._setOptionVisible(typeOptions[this.type]);
 
@@ -400,7 +409,7 @@ export class Input extends Element {
 
     if (recursive) {
       if (typeInstance) {
-        options = typeInstance.getOptions(options);
+        options = typeInstance.getInputs(options);
       }
     }
 
@@ -426,8 +435,8 @@ export class ReplaceableInput extends Input {
   choices: string[] = [];
   constraint: Element | undefined;
   mods: Modification[] = [];
-  constructor(definition: mj.ProtectedElement, basePath: string) {
-    super(definition, basePath);
+  constructor(definition: mj.ProtectedElement, basePath: string, elementType: string) {
+    super(definition, basePath, elementType);
 
     // the default value is original type provided
     this.value = this.type;
@@ -470,7 +479,7 @@ export class ReplaceableInput extends Input {
     }
   }
 
-  getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+  getInputs(options: { [key: string]: TemplateInput } = {}, recursive = true) {
     if (this.modelicaPath in options) {
       return options;
     }
@@ -494,7 +503,7 @@ export class ReplaceableInput extends Input {
       childTypes.map((c) => {
         const typeInstance = typeStore.get(c) || null;
         if (typeInstance) {
-          options = typeInstance.getOptions(options);
+          options = typeInstance.getInputs(options);
         }
       });
     }
@@ -527,7 +536,7 @@ export class Enum extends Element {
   }[] = [];
   description: string = "";
 
-  constructor(definition: any, basePath: string) {
+  constructor(definition: any, basePath: string, public elementType: string) {
     super();
     const specifier = definition.class_specifier.short_class_specifier;
     this.name = specifier.identifier;
@@ -552,7 +561,7 @@ export class Enum extends Element {
     );
   }
 
-  getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+  getInputs(options: { [key: string]: TemplateInput } = {}, recursive = true) {
     if (this.modelicaPath in options) {
       return options;
     }
@@ -586,7 +595,7 @@ export class InputGroupExtend extends Element {
   mods: Modification[] = [];
   type: string = "";
   value: string = "";
-  constructor(definition: any, basePath: string) {
+  constructor(definition: any, basePath: string, public elementType: string) {
     super();
     this.name = EXTEND_NAME; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${this.name}`;
@@ -605,7 +614,7 @@ export class InputGroupExtend extends Element {
     }
   }
 
-  getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+  getInputs(options: { [key: string]: TemplateInput } = {}, recursive = true) {
     if (this.modelicaPath in options) {
       return options;
     }
@@ -621,7 +630,7 @@ export class InputGroupExtend extends Element {
       options: this.type.startsWith("Modelica") ? [] : [this.type],
     };
 
-    return typeInstance ? typeInstance.getOptions(options, recursive) : options;
+    return typeInstance ? typeInstance.getInputs(options, recursive) : options;
   }
 
   getModifications() {
@@ -632,7 +641,7 @@ export class InputGroupExtend extends Element {
 export class Import extends Element {
   value: string;
 
-  constructor(definition: any, basePath: string) {
+  constructor(definition: any, basePath: string, public elementType: string) {
     super();
     const importClause = definition.import_clause as mj.ImportClause; // arbitrary name. Important that this will not collide with other param names
     this.name = importClause.identifier;
@@ -644,7 +653,7 @@ export class Import extends Element {
     }
   }
 
-  getOptions(options: { [key: string]: OptionN } = {}, recursive = true) {
+  getInputs(options: { [key: string]: TemplateInput } = {}, recursive = true) {
     return options;
   }
 }
@@ -690,7 +699,7 @@ function _constructElement(
 
   switch (elementType) {
     case "type":
-      element = new Enum(definition, basePath);
+      element = new Enum(definition, basePath, elementType);
       break;
     case "connector":
     case "model":
@@ -700,20 +709,20 @@ function _constructElement(
       const long_specifier =
         "long_class_specifier" in definition.class_specifier;
       element = long_specifier
-        ? new InputGroup(definition, basePath)
-        : new InputGroupShort(definition, basePath);
+        ? new InputGroup(definition, basePath, elementType)
+        : new InputGroupShort(definition, basePath, elementType);
       break;
     case extend:
-      element = new InputGroupExtend(definition, basePath);
+      element = new InputGroupExtend(definition, basePath, elementType);
       break;
     case component:
-      element = new Input(definition, basePath);
+      element = new Input(definition, basePath, elementType);
       break;
     case replaceable:
-      element = new ReplaceableInput(definition, basePath);
+      element = new ReplaceableInput(definition, basePath, elementType);
       break;
     case importClause:
-      element = new Import(definition, basePath);
+      element = new Import(definition, basePath, elementType);
       break;
   }
 
