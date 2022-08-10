@@ -185,8 +185,8 @@ export class InputGroupShort extends Element {
     }
   }
 
-  getInputs(options: { [key: string]: TemplateInput } = {}, recursive = true) {
-    return options;
+  getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
+    return inputs;
   }
 }
 
@@ -230,17 +230,17 @@ export class InputGroup extends Element {
     }
   }
 
-  getInputs(options: { [key: string]: TemplateInput } = {}, recursive = true) {
+  getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
     // A group with no elementList is ignored
-    if (this.modelicaPath in options || this.elementList.length === 0) {
-      return options;
+    if (this.modelicaPath in inputs || this.elementList.length === 0) {
+      return inputs;
     }
 
     const children = this.elementList.filter((el) => {
-      return Object.keys(el.getInputs(options)).length > 0;
+      return Object.keys(el.getInputs(inputs)).length > 0;
     });
 
-    options[this.modelicaPath] = {
+    inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       name: this.description,
@@ -248,13 +248,10 @@ export class InputGroup extends Element {
       options: children
         .map((c) => c.modelicaPath)
         .filter((c) => !(c in MODELICA_LITERALS)),
+      elementType: this.elementType
     };
 
-    return options;
-  }
-
-  getScheduleOptions(scheduleOptions: {[key: string]: ScheduleOption }, groupList: Array<string>) {
-    
+    return inputs;
   }
 
   getModifications() {
@@ -382,9 +379,9 @@ export class Input extends Element {
       !this.final) as boolean;
   }
 
-  getInputs(options: { [key: string]: TemplateInput } = {}, recursive = true) {
-    if (this.modelicaPath in options) {
-      return options;
+  getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
+    if (this.modelicaPath in inputs) {
+      return inputs;
     }
 
     const typeInstance = typeStore.get(this.type) || null;
@@ -394,7 +391,7 @@ export class Input extends Element {
 
     // if path is present, just return
 
-    options[this.modelicaPath] = {
+    inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       value: this.value,
@@ -405,15 +402,16 @@ export class Input extends Element {
       valueExpression: this.valueExpression,
       enable: this.enable,
       options: childOptions, // TODO: try and just use type to link to child options to prevent duplicates
+      elementType: this.elementType
     };
 
     if (recursive) {
       if (typeInstance) {
-        options = typeInstance.getInputs(options);
+        inputs = typeInstance.getInputs(inputs);
       }
     }
 
-    return options;
+    return inputs;
   }
 
   getModifications(): Modification[] {
@@ -479,16 +477,16 @@ export class ReplaceableInput extends Input {
     }
   }
 
-  getInputs(options: { [key: string]: TemplateInput } = {}, recursive = true) {
-    if (this.modelicaPath in options) {
-      return options;
+  getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
+    if (this.modelicaPath in inputs) {
+      return inputs;
     }
 
     // if an annotation has been provided, use the choices from that annotation
     // otherwise fallback to using the parameter type
     const childTypes = this.choices.length ? this.choices : [this.type];
 
-    options[this.modelicaPath] = {
+    inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       value: this.value,
@@ -497,18 +495,19 @@ export class ReplaceableInput extends Input {
       group: this.group,
       tab: this.tab,
       visible: true,
+      elementType: this.elementType
     };
 
     if (recursive) {
       childTypes.map((c) => {
         const typeInstance = typeStore.get(c) || null;
         if (typeInstance) {
-          options = typeInstance.getInputs(options);
+          inputs = typeInstance.getInputs(inputs);
         }
       });
     }
 
-    return options;
+    return inputs;
   }
 
   getModifications(): Modification[] {
@@ -561,32 +560,34 @@ export class Enum extends Element {
     );
   }
 
-  getInputs(options: { [key: string]: TemplateInput } = {}, recursive = true) {
-    if (this.modelicaPath in options) {
-      return options;
+  getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
+    if (this.modelicaPath in inputs) {
+      return inputs;
     }
 
-    options[this.modelicaPath] = {
+    inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
       name: this.description,
       type: this.type,
       visible: true,
       options: this.enumList.map((e) => e.modelicaPath),
+      elementType: this.elementType,
     };
 
     // outputs a parent option, then an option for each enum type
     this.enumList.map(
       (e) =>
-        (options[e.modelicaPath] = {
+        (inputs[e.modelicaPath] = {
           modelicaPath: e.modelicaPath,
           name: e.description,
           type: this.type,
           value: e.modelicaPath,
           visible: false,
+          elementType: this.elementType
         }),
     );
 
-    return options;
+    return inputs;
   }
 }
 
@@ -614,23 +615,24 @@ export class InputGroupExtend extends Element {
     }
   }
 
-  getInputs(options: { [key: string]: TemplateInput } = {}, recursive = true) {
-    if (this.modelicaPath in options) {
-      return options;
+  getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
+    if (this.modelicaPath in inputs) {
+      return inputs;
     }
 
     const typeInstance = typeStore.get(this.type);
 
-    options[this.modelicaPath] = {
+    inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
       type: this.type,
       value: this.value,
       name: typeInstance?.name || "",
       visible: false,
       options: this.type.startsWith("Modelica") ? [] : [this.type],
+      elementType: this.elementType
     };
 
-    return typeInstance ? typeInstance.getInputs(options, recursive) : options;
+    return typeInstance ? typeInstance.getInputs(inputs, recursive) : inputs;
   }
 
   getModifications() {

@@ -43,6 +43,53 @@ export function getOptions(): {
   };
 }
 
+function _extractScheduleOption(scheduleOptions: {[key: string]: parser.ScheduleOption}, inputs: {[key: string]: parser.TemplateInput}, inputPath: string, groups: string[]=[]) {
+  const input = inputs[inputPath];
+  scheduleOptions[input.modelicaPath] = {...input, groups};
+  if (input.elementType === 'record') {
+    const groupList =[...groups, input.modelicaPath];
+    input.options?.map(i => _extractScheduleOption(
+      scheduleOptions,
+      inputs,
+      i,
+      groupList));
+  }
+}
+
+function _extractScheduleOptions(modelicaPath: string) {
+  // try and find 'dat'
+  let curPath = modelicaPath;
+  let dat: parser.Element | undefined | null = null;
+  const scheduleOptions: {[key: string]: parser.ScheduleOption} = {};
+
+  while (!dat) {
+    dat = parser.findElement(`${curPath}.dat`);
+    if (dat) {
+      break;
+    } else {
+      const extendElement = parser.findElement(`${curPath}.${parser.EXTEND_NAME}`);
+      if (!extendElement) {
+        break; // bottomed out, 'dat' not found - PUNCH-OUT!
+      }
+      // use extend 'type' to get to extend class options
+      curPath = extendElement.type;
+    }
+  }
+
+
+  if (dat) {
+    const inputs = dat.getInputs();
+    let inputRoot = inputs[dat.modelicaPath];
+
+    inputRoot.options?.map(i => _extractScheduleOption(
+      scheduleOptions,
+      inputs,
+      i));
+  }
+
+  return scheduleOptions;
+}
+
 export interface SystemTypeN {
   description: string;
   modelicaPath: string;
@@ -95,31 +142,7 @@ export class Template {
     }
   }
 
-  _processScheduleOptionNode(scheduleOptions: {[key: string]: parser.ScheduleOption}, node: parser.TemplateInput, group: string[]) {
-    let current = node;
-    const element = parser.findElement(node.modelicaPath);
 
-    if (element) {
-      // check if record
-    }
-  }
-
-  _extractScheduleOptions(dat: parser.Element) {
-    const options = dat.getInputs();
-    let optionRoot = options[dat.modelicaPath];
-    const scheduleOptions: {[key: string]: parser.ScheduleOption} = {};
-    // go through each child option
-    // if record, add path to groups list
-      // go through options
-      // pop off group from group list
-    // if input, add option + groups to scheduleOptions
-    const groups:string[] = [];
-    while (optionRoot) {
-      scheduleOptions[optionRoot.modelicaPath] = {...optionRoot, groups};
-
-      // go through each child option
-    }
-  }
 
   // Finds 'dat' as entry point for schedule options
   // recursively steps through each child of 'dat' to extract
@@ -130,32 +153,11 @@ export class Template {
     options: { [key: string]: parser.TemplateInput };
     scheduleOptions: { [key: string]: parser.ScheduleOption };
   } {
-    // try and find 'dat'
-    let curPath = this.modelicaPath;
-    let element: parser.Element | undefined | null = null;
+    const scheduleOptions = _extractScheduleOptions(this.modelicaPath);
+    const options = this.element.getInputs();
+    // remove 'scheduleOptions' that are also present in options
 
-    while (!element) {
-      element = parser.findElement(`${curPath}.dat`);
-      if (element) {
-        break;
-      } else {
-        const extendElement = parser.findElement(`${curPath}.${parser.EXTEND_NAME}`);
-        if (!extendElement) {
-          break; // bottomed out, 'dat' not found - PUNCH-OUT!
-        }
-        // use extend 'type' to get to extend class options
-        curPath = extendElement.type;
-      }
-    }
-
-    if (element) {
-      // dat found
-      // call get scheduleOptions
-      const typeDef = parser.findElement(element.type);
-      const options = element.getInputs();
-    }
-
-    return { options: {}, scheduleOptions: {} };
+    return { options: {}, scheduleOptions};
   }
 
   /* Descends tree of options removing all nodes that originate
