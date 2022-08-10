@@ -21,7 +21,7 @@ import {
   getModificationList,
 } from "./modification";
 
-import { Literal, parseExpression } from "./expression";
+import { Literal, evaluateExpression } from "./expression";
 
 export const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
@@ -340,8 +340,8 @@ export class Input extends Element {
       const tab = dialog.mods.find((m) => m.name === "tab")?.value;
       const expression = dialog.mods.find((m) => m.name === "enable")?.value;
 
-      this.group = group ? parseExpression(group) : "";
-      this.tab = tab ? parseExpression(tab) : "";
+      this.group = group ? evaluateExpression(group) : "";
+      this.tab = tab ? evaluateExpression(tab) : "";
 
       this.enable = {
         modelicaPath: this.modelicaPath,

@@ -59,11 +59,59 @@ function buildLogicalExpression(expression: any): Expression {
   return logical_expression;
 }
 
+function buildLoopConditionExpression(expression: any): Expression {
+  const loop_condition_expression: Expression = {
+    operator: 'loop_condition',
+    operands: [expression.name, expression.range]
+  };
+
+  return loop_condition_expression;
+}
+
+function buildForLoopExpression(expression: any): Expression {
+  const for_loop_expression: Expression = {
+    operator: 'for',
+    operands: [
+      expression.for_loop?.map((loop_condition_expression: any) => {
+        return buildLoopConditionExpression(loop_condition_expression);
+      }),
+      getExpression(expression.expression)
+    ]
+  };
+
+  return for_loop_expression;
+}
+
+function buildArgumentExpression(expression: any): Expression {
+  const argument_expression: Expression = {
+    operator: 'argument',
+    operands: [getExpression(expression.name)]
+  };
+
+  return argument_expression;
+}
+
+function buildFunctionCallExpression(expression: any): Expression {
+  const function_call_expression: Expression = {
+    operator: 'function_call',
+    operands: [
+      expression.name,
+      expression.arguments?.map((argument_expression: any) => {
+        return buildArgumentExpression(argument_expression);
+      })
+    ]
+  };
+
+  return function_call_expression;
+}
+
 function buildSimpleExpression(expression: any): Expression {
   const simple_expression: Expression = {
     operator: 'none',
     operands: [expression]
   };
+
+  if (typeof expression === 'object') console.log("Unknown Expression: ", expression);
 
   return simple_expression;
 }
@@ -93,7 +141,7 @@ function buildIfExpression(expression: any): Expression {
       expression.if_elseif?.map((condition_expression: any, index: number) => {
         return buildConditionExpression(condition_expression, index);
       }),
-      buildElseExpression(expression.else_expression)
+      buildElseExpression(expression.else_expression || expression.else)
     ]
   };
 
@@ -101,7 +149,7 @@ function buildIfExpression(expression: any): Expression {
 }
 
 // TODO: Move to Common Directory as a helper
-export function parseExpression(expression: Expression): any {
+export function evaluateExpression(expression: Expression): any {
   let parsed_expression: any = 'case not setup';
 
   switch (expression.operator) {
@@ -118,12 +166,16 @@ export function parseExpression(expression: Expression): any {
     //   break;
     // case '||':
     // case '&&':
-    //   parsed_expression = `${parseExpression(expression.operands[0])} ${expression.operator} ${parseExpression(expression.operands[1])}`;
+    //   parsed_expression = `${evaluateExpression(expression.operands[0])} ${expression.operator} ${evaluateExpression(expression.operands[1])}`;
     //   break;
     // case 'if_elseif':
     // case 'if':
     // case 'else_if':
     // case 'else':
+    // case 'for':
+    // case 'loop_condition':
+    // case 'function_call':
+    // case 'argument':
     default:
       break;
   }
@@ -134,18 +186,20 @@ export function parseExpression(expression: Expression): any {
 export function getExpression(value: any): Expression {
   const simple_expression = value.simple_expression;
   const logical_expression = simple_expression?.logical_expression;
+  const for_loop_expression = simple_expression?.for_loop;
+  const function_call_expression = simple_expression?.function_call;
+  const if_array_expression = simple_expression?.if_expression;
   const if_expression = value.if_expression;
-
-  const expression: Expression = {
-    operator: 'other_expression',
-    operands: ['some_other_expression']
-  };
 
   if (logical_expression) return buildLogicalExpression(logical_expression);
 
-  if (simple_expression) return buildSimpleExpression(simple_expression);
+  if (for_loop_expression) return buildForLoopExpression(for_loop_expression);
 
-  if (if_expression) return buildIfExpression(if_expression);
+  if (function_call_expression) return buildFunctionCallExpression(function_call_expression);
+
+  if (if_array_expression) return if_array_expression?.map((expression: any) => buildIfExpression(expression));
   
-  return expression;
+  if (if_expression) return buildIfExpression(if_expression);
+
+  return buildSimpleExpression(simple_expression || value);
 }
