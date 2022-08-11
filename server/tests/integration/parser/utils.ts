@@ -30,8 +30,8 @@ type SimpleOption = {
 /*
  * De-normalizes options and returns the denormalized shape
  */
-export function optionTree(optionsN: {[key: string]: parser.TemplateInput}, rootPath: string): SimpleOption  {
+export function inputTree(optionsN: {[key: string]: parser.TemplateInput}, rootPath: string): SimpleOption  {
   const root = optionsN[rootPath];
-  const options = (root.options) ? root.options.map(o => optionTree(optionsN, o)) : [];
+  const options = (root.inputs) ? root.inputs.map(o => inputTree(optionsN, o)) : [];
   return { name: root.name, path: root.modelicaPath, options: options};
 }

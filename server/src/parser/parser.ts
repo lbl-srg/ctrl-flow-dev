@@ -129,7 +129,7 @@ export interface TemplateInput {
   name: string;
   modelicaPath: string;
   visible: boolean;
-  options?: string[];
+  inputs?: string[];
   group?: string;
   tab?: string;
   value?: any;
@@ -151,7 +151,7 @@ export abstract class Element {
   duplicate = false;
 
   abstract getInputs(
-    options?: { [key: string]: TemplateInput },
+    inputs?: { [key: string]: TemplateInput },
     recursive?: boolean,
   ): { [key: string]: TemplateInput };
 
@@ -245,7 +245,7 @@ export class InputGroup extends Element {
       type: this.type,
       name: this.description,
       visible: false,
-      options: children
+      inputs: children
         .map((c) => c.modelicaPath)
         .filter((c) => !(c in MODELICA_LITERALS)),
       elementType: this.elementType
@@ -267,6 +267,8 @@ export class Input extends Element {
   description = "";
   final = false;
   inner: boolean | null = null;
+  outer: boolean | null = null;
+  connectorSizing = false;
   visible = false; //
   annotation: Modification[] = [];
   tab? = "";
@@ -290,8 +292,8 @@ export class Input extends Element {
 
     this.final = definition.final ? definition.final : this.final;
     this.inner = definition.inner;
+    this.outer = definition.outer;
     this.type = componentClause.type_specifier;
-    this.visible = this._getVisible(definition);
 
     // description block (where the annotation is) can be in different locations
     // constrainby changes this location
@@ -344,39 +346,30 @@ export class Input extends Element {
 
   /**
    * Sets tab and group if found
-   * assigns 'enable' expression
+   * Sets a couple params that determine if an input should be visible
    */
   _setUIInfo() {
     const dialog = this.annotation.find((m) => m.name === "Dialog");
     if (dialog) {
       const group = dialog.mods.find((m) => m.name === "group")?.value;
       const tab = dialog.mods.find((m) => m.name === "tab")?.value;
-      const expression = dialog.mods.find((m) => m.name === "enable")?.value;
-
+      this.enable = dialog.mods.find((m) => m.name === "enable")?.value;
+      this.connectorSizing = dialog.mods.find((m) => m.name === "connectorSizing")?.value || false;
       this.group = group ? JSON.parse(group) : "";
       this.tab = tab ? JSON.parse(tab) : "";
-
-      this.enable = {
-        modelicaPath: this.modelicaPath,
-        expression: expression || "",
-      };
     }
   }
 
-  _getVisible(definition: any) {
-    if (!(this.type in MODELICA_LITERALS)) {
-      const typeInstance = typeStore.get(this.type) || null;
-      // TODO: continue implementation
-    }
+  _setInputVisible(inputType: TemplateInput | undefined): boolean {
+    let isVisible = !(
+      this.outer ||
+      this.final ||
+      // this.enable || // TODO: evaluate the expression and use if it returns a literal
+      this.connectorSizing
+    );
 
-    return false;
-  }
-
-  // Helper method to determine if the given input's option reprensentation
-  // should be marked as 'visible'.
-  _setOptionVisible(typeOption: TemplateInput | undefined): boolean {
-    return ((this.type in MODELICA_LITERALS || typeOption?.visible) &&
-      !this.final) as boolean;
+    const isLiteral = (this.type in MODELICA_LITERALS);
+    return (isVisible && (isLiteral || inputType?.visible === true));
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
@@ -385,9 +378,9 @@ export class Input extends Element {
     }
 
     const typeInstance = typeStore.get(this.type) || null;
-    const typeOptions = typeInstance ? typeInstance.getInputs({}, false) : {};
-    const childOptions = typeOptions[this.type]?.options || [];
-    const visible = this._setOptionVisible(typeOptions[this.type]);
+    const inputTypes = typeInstance ? typeInstance.getInputs({}, false) : {};
+    const childInputs = inputTypes[this.type]?.inputs || [];
+    const visible = this._setInputVisible(inputTypes[this.type]);
 
     // if path is present, just return
 
@@ -401,7 +394,7 @@ export class Input extends Element {
       visible: visible,
       valueExpression: this.valueExpression,
       enable: this.enable,
-      options: childOptions, // TODO: try and just use type to link to child options to prevent duplicates
+      inputs: childInputs,
       elementType: this.elementType
     };
 
@@ -491,7 +484,7 @@ export class ReplaceableInput extends Input {
       type: this.type,
       value: this.value,
       name: this.description,
-      options: childTypes,
+      inputs: childTypes,
       group: this.group,
       tab: this.tab,
       visible: true,
@@ -570,11 +563,11 @@ export class Enum extends Element {
       name: this.description,
       type: this.type,
       visible: true,
-      options: this.enumList.map((e) => e.modelicaPath),
+      inputs: this.enumList.map((e) => e.modelicaPath),
       elementType: this.elementType,
     };
 
-    // outputs a parent option, then an option for each enum type
+    // outputs a parent input, then an input for each enum type
     this.enumList.map(
       (e) =>
         (inputs[e.modelicaPath] = {
@@ -628,7 +621,7 @@ export class InputGroupExtend extends Element {
       value: this.value,
       name: typeInstance?.name || "",
       visible: false,
-      options: this.type.startsWith("Modelica") ? [] : [this.type],
+      inputs: this.type.startsWith("Modelica") ? [] : [this.type],
       elementType: this.elementType
     };
 
@@ -655,8 +648,8 @@ export class Import extends Element {
     }
   }
 
-  getInputs(options: { [key: string]: TemplateInput } = {}, recursive = true) {
-    return options;
+  getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
+    return inputs;
   }
 }
 

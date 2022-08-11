@@ -68,7 +68,7 @@ function _extractScheduleOptionHelper(scheduleOptions: {[key: string]: parser.Sc
   // and this class does not generate an option
   if (inputType && inputType.elementType === 'record') {
     const groupList =[...groups, input.modelicaPath];
-    input.options?.map(i => _extractScheduleOptionHelper(
+    input.inputs?.map(i => _extractScheduleOptionHelper(
       scheduleOptions,
       inputs,
       i,
@@ -108,7 +108,7 @@ function _extractScheduleOptions(modelicaPath: string) {
     let inputRoot = inputs[dat.modelicaPath];
     scheduleOptions[dat.modelicaPath] = {...inputRoot, groups: []};
 
-    inputRoot.options?.map(i => _extractScheduleOptionHelper(
+    inputRoot.inputs?.map(i => _extractScheduleOptionHelper(
       scheduleOptions,
       inputs,
       i));
