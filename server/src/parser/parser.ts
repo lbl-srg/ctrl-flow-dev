@@ -604,8 +604,8 @@ export class InputGroupExtend extends Element {
     if (!registered) {
       return; // PUNCH-OUT!
     }
-
     this.type = definition.extends_clause.name;
+
     this.value = this.type;
     if (definition.extends_clause.class_modification) {
       this.mods = getModificationList(
