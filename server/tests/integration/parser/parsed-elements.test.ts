@@ -1,4 +1,5 @@
 import * as parser from "../../../src/parser/parser";
+import { evaluateExpression } from "../../../src/parser/expression";
 import { initializeTestModelicaJson } from "./utils";
 const testModelicaFile = "TestPackage.Template.TestTemplate";
 
@@ -87,7 +88,7 @@ describe("Expected Inputs are extracted", () => {
     const unInitializedInput = templateInputs[uninitializedParamPath];
     expect(unInitializedInput?.value).toBeUndefined();
     const initializedInput = templateInputs[initializedParamPath];
-    expect(initializedInput?.value).toEqual(expectedValue);
+    expect(evaluateExpression(initializedInput?.value)).toEqual(expectedValue);
 
     // check that other literals are extracted to a good value
     const boolPath = `${template.modelicaPath}.nullable_bool`;

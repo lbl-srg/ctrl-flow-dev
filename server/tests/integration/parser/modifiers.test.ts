@@ -1,6 +1,7 @@
 import { createTestModelicaJson, fullTempDirPath } from "./utils";
 import { ModifiersN, getTemplates } from "../../../src/parser/template";
 import { loadPackage, getSystemTypes, Template } from "../../../src/parser/";
+import { evaluateExpression } from "../../../src/parser/expression";
 
 const templatePath = "TestPackage.Template.TestTemplate";
 
@@ -39,7 +40,7 @@ describe("Modifications", () => {
     expectedMods.map((expectedMod) => {
       const [path, value] = expectedMod;
       const extendMod = modifiers.find((m) => m.modelicaPath === path);
-      expect(extendMod?.value).toEqual(value);
+      expect(evaluateExpression(extendMod?.value)).toEqual(value);
     });
   });
 
@@ -58,7 +59,7 @@ describe("Modifications", () => {
     expectedMods.map((expectedMod) => {
       const [path, value] = expectedMod;
       const extendMod = modifiers.find((m) => m.modelicaPath === path);
-      expect(extendMod?.value).toEqual(value);
+      expect(evaluateExpression(extendMod?.value)).toEqual(value);
     });
   });
 
@@ -88,7 +89,7 @@ describe("Modifications", () => {
     expectedMods.map((expectedMod) => {
       const [path, value] = expectedMod;
       const extendMod = modifiers.find((m) => m.modelicaPath === path);
-      expect(extendMod?.value).toEqual(value);
+      expect(evaluateExpression(extendMod?.value)).toEqual(value);
     });
   });
 });
