@@ -105,15 +105,13 @@ function buildFunctionCallExpression(expression: any): Expression {
   return function_call_expression;
 }
 
-function buildSimpleExpression(expression: any): Expression {
-  const simple_expression: Expression = {
-    operator: 'none',
-    operands: [expression]
+function buildIfArrayExpression(expression: any): Expression {
+  const if_array_expression: Expression = {
+    operator: 'if_array',
+    operands: expression?.map((expression: any) => buildIfExpression(expression))
   };
 
-  if (typeof expression === 'object') console.log("Unknown Expression: ", expression);
-
-  return simple_expression;
+  return if_array_expression;
 }
 
 function buildConditionExpression(expression: any, index: number): Expression {
@@ -146,6 +144,17 @@ function buildIfExpression(expression: any): Expression {
   };
 
   return if_expression;
+}
+
+function buildSimpleExpression(expression: any): Expression {
+  const simple_expression: Expression = {
+    operator: 'none',
+    operands: [expression]
+  };
+
+  if (typeof expression === 'object') console.log("Unknown Expression: ", expression);
+
+  return simple_expression;
 }
 
 // TODO: Move to Common Directory as a helper
@@ -185,11 +194,10 @@ export function evaluateExpression(expression: Expression): any {
 
 export function getExpression(value: any): Expression {
   const simple_expression = value.simple_expression;
-  const logical_expression = simple_expression?.logical_expression;
-  const for_loop_expression = simple_expression?.for_loop;
-  const function_call_expression = simple_expression?.function_call;
-  const if_array_expression = simple_expression?.if_expression;
-  const if_expression = value.if_expression;
+  const logical_expression = simple_expression?.logical_expression || value.logical_expression;
+  const for_loop_expression = simple_expression?.for_loop || value.for_loop;
+  const function_call_expression = simple_expression?.function_call || value.function_call;
+  const if_expression = simple_expression?.if_expression || value.if_expression;
 
   if (logical_expression) return buildLogicalExpression(logical_expression);
 
@@ -197,7 +205,7 @@ export function getExpression(value: any): Expression {
 
   if (function_call_expression) return buildFunctionCallExpression(function_call_expression);
 
-  if (if_array_expression) return if_array_expression?.map((expression: any) => buildIfExpression(expression));
+  if (if_expression && Array.isArray(if_expression)) return buildIfArrayExpression(if_expression);
   
   if (if_expression) return buildIfExpression(if_expression);
 
