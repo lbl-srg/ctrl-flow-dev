@@ -3,6 +3,8 @@
  *
  * Templates sit in front of all parsed elements that represent a single template
  * and provide accessor methods to extract what is needed in linkage schema format
+ *
+ * Templates hold logic to understand multiple parsed elements as a cohesive template
  */
 
 import * as parser from "./parser";
@@ -18,12 +20,12 @@ export function getSystemTypes() {
   return [...systemTypeStore.values()];
 }
 
-type Options = { [key: string]: parser.OptionN };
-type ScheduleOptions = { [key: string]: ScheduleOption };
+type Options = { [key: string]: parser.TemplateInput };
+type ScheduleOptions = { [key: string]: parser.ScheduleOption };
 
 export function getOptions(): {
-  options: parser.OptionN[];
-  scheduleOptions: ScheduleOption[];
+  options: parser.TemplateInput[];
+  scheduleOptions: parser.ScheduleOption[];
 } {
   const templates = [...templateStore.values()];
   let allConfigOptions = {};
@@ -41,8 +43,78 @@ export function getOptions(): {
   };
 }
 
-export interface ScheduleOption extends parser.OptionN {
-  groups: string[];
+
+
+function _mapInputsToOptions(inputs: {[key: string]: parser.TemplateInput}) {
+  const keysToRemove = ['elementType'];
+  const options: {[key: string]: parser.TemplateInput} = {};
+
+  Object.entries(inputs).map(([key, option]) => {
+    options[key] = Object.fromEntries(
+      Object.entries(option)
+            .filter(([key]) => !(key in keysToRemove))
+    ) as parser.TemplateInput
+  });
+
+  return options;
+}
+
+function _extractScheduleOptionHelper(scheduleOptions: {[key: string]: parser.ScheduleOption}, inputs: {[key: string]: parser.TemplateInput}, inputPath: string, groups: string[]=[]) {
+  const input = inputs[inputPath];
+  // get the type. If the 'type' is a record do record things if not, treat as a param
+  const inputType = inputs[input.type];
+
+  // `Modelica.Icons.Record` is often the class being extended
+  // and this class does not generate an option
+  if (inputType && inputType.elementType === 'record') {
+    const groupList =[...groups, input.modelicaPath];
+    input.inputs?.map(i => _extractScheduleOptionHelper(
+      scheduleOptions,
+      inputs,
+      i,
+      groupList));
+  } else {
+    scheduleOptions[input.modelicaPath] = {...input, groups};
+  }
+}
+
+/**
+ * Attempts to find the 'dat' element, then follows the tree
+ * of options connected to that 'dat'
+ */
+function _extractScheduleOptions(modelicaPath: string) {
+  // try and find 'dat'
+  let curPath = modelicaPath;
+  let dat: parser.Element | undefined | null = null;
+  const scheduleOptions: ScheduleOptions = {};
+
+  while (!dat) {
+    dat = parser.findElement(`${curPath}.dat`);
+    if (dat) {
+      break;
+    } else {
+      const extendElement = parser.findElement(`${curPath}.${parser.EXTEND_NAME}`);
+      if (!extendElement) {
+        break; // bottomed out, 'dat' not found - PUNCH-OUT!
+      }
+      // use extend 'type' to get to extend class options
+      curPath = extendElement.type;
+    }
+  }
+
+
+  if (dat) {
+    const inputs = dat.getInputs();
+    let inputRoot = inputs[dat.modelicaPath];
+    scheduleOptions[dat.modelicaPath] = {...inputRoot, groups: []};
+
+    inputRoot.inputs?.map(i => _extractScheduleOptionHelper(
+      scheduleOptions,
+      inputs,
+      i));
+  }
+
+  return scheduleOptions;
 }
 
 export interface SystemTypeN {
@@ -64,25 +136,13 @@ export interface ModifiersN {
 
 export class Template {
   scheduleOptionPath: string = "";
+  options: Options = {};
+  scheduleOptions: ScheduleOptions = {};
   systemTypes: SystemTypeN[] = [];
 
   constructor(public element: parser.Element) {
-    // extract system type by getting descriptions for each type
-    const path = element.modelicaPath.split(".");
-    path.pop();
-    while (path.length) {
-      const type = parser.typeStore.get(path.join("."));
-      if (type && type.entryPoint) {
-        const systemType = {
-          description: type.description,
-          modelicaPath: type.modelicaPath,
-        };
-        this.systemTypes.unshift(systemType);
-        systemTypeStore.set(type.modelicaPath, systemType);
-      }
-      path.pop();
-    }
-
+    this._extractSystemTypes(element);
+    this._extractOptions();
     templateStore.set(this.modelicaPath, this);
   }
 
@@ -94,62 +154,38 @@ export class Template {
     return this.element.description;
   }
 
-  /* Descends tree of options removing all nodes that originate
-   * from the 'dat' parameter and assigns that parameter to a
-   * schedule options dictionary
-   */
-  splitOptions(
-    path: string,
-    options: { [key: string]: parser.OptionN },
-    scheduleOptions: { [key: string]: ScheduleOption },
-  ) {
-    if (path in scheduleOptions) {
-      return; // BREAK-OUT: path already split out
-      // TODO: this is necessary if 'dat' records re-use types
+  _extractSystemTypes(element: parser.Element) {
+    const path = element.modelicaPath.split(".");
+    path.pop();
+    while (path.length) {
+      const type = parser.findElement(path.join("."));
+      if (type && type.entryPoint) {
+        const systemType = {
+          description: type.description,
+          modelicaPath: type.modelicaPath,
+        };
+        this.systemTypes.unshift(systemType);
+        systemTypeStore.set(type.modelicaPath, systemType);
+      }
+      path.pop();
     }
-    const option = options[path];
+  }
 
-    // TODO: build up group list
-    scheduleOptions[path] = { groups: [], ...option };
-    delete options[option.modelicaPath];
+  _extractOptions() {
+    this.scheduleOptions = _extractScheduleOptions(this.modelicaPath);
+    const inputs = this.element.getInputs();
+    Object.keys(this.scheduleOptions).map(k => delete inputs[k]);
+    this.options = _mapInputsToOptions(inputs);
 
-    // option.options?.map((o) => this.splitOptions(o, options, scheduleOptions));
+    // kludge: 'Modelica.Icons.Record' is useful for schematics but
+    // never for 'Options'
+    const modelicaIconsPath = "Modelica.Icons.Record";
+    delete this.scheduleOptions[modelicaIconsPath];
+    delete this.options[modelicaIconsPath];
   }
 
   getOptions() {
-    const options = this.element.getOptions();
-    const scheduleOptions: { [key: string]: ScheduleOption } = {};
-
-    // try and find 'dat' param by checking the class definition,
-    // then going through each extended class
-    let curPath = this.modelicaPath;
-    let dat: parser.OptionN | null = null;
-
-    while (!dat) {
-      dat = options[`${curPath}.dat`];
-
-      if (dat) {
-        // NOTE: we could just remove 'dat' as a child option preventing
-        // traversal to all schedule table related options instead of going
-        // through and deleting keys if we run into issues with performance
-        break;
-      } else {
-        curPath = `${curPath}.${parser.EXTEND_NAME}`;
-        if (!(curPath in options)) {
-          break;
-        }
-        const extendOption = options[curPath];
-        // use extend 'type' to get to extend class options
-        curPath = extendOption.type;
-      }
-    }
-
-    if (dat) {
-      this.scheduleOptionPath = dat.modelicaPath;
-      this.splitOptions(dat.modelicaPath, options, scheduleOptions);
-    }
-
-    return { options, scheduleOptions };
+    return { options: this.options, scheduleOptions: this.scheduleOptions };
   }
 
   getSystemTypes() {
