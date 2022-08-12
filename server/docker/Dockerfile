@@ -5,25 +5,26 @@ RUN pandoc --version
 RUN tex --version
 
 # Installs Node 16.16.0 LTS with NVM
-FROM ubuntu-pandoc as ubuntu-pandoc-node
-ENV NVM_DIR=/root/.nvm
-ENV NODE_VERSION=16.16.0
+# FROM ubuntu-pandoc as ubuntu-pandoc-node
 RUN apt-get --assume-yes update && apt-get --assume-yes install curl bash
+ENV NVM_DIR=/usr/local/nvm
+ENV NODE_VERSION=16.16.0
+RUN mkdir $NVM_DIR
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
-ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+ENV PATH="${NVM_DIR}/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 RUN node --version
 RUN npm --version
 
 # Prepares Modelica dependency scripts
-FROM ubuntu-pandoc-node as alpine-node-modelica
+# FROM ubuntu-pandoc-node as alpine-node-modelica
 RUN apt-get update && apt-get -y install default-jdk
 RUN mkdir dependencies
 WORKDIR /app
 COPY bin/ bin/
-COPY package*.json .
+COPY package*.json ./
 
 # Installs Modelica dependencies
 RUN apt-get -y install make curl git
@@ -34,6 +35,6 @@ RUN mkdir template-json
 RUN node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d template-json
 
 # Adds Modelica dependencies to the resulting image
-FROM alpine-node-modelica as ubuntu-pandoc-node-modelica
-COPY --from=alpine-node-modelica /dependencies /dependencies
+# FROM alpine-node-modelica as ubuntu-pandoc-node-modelica
+# COPY --from=alpine-node-modelica /dependencies /dependencies
 WORKDIR /app
