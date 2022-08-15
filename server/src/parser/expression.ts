@@ -147,7 +147,15 @@ function buildIfExpression(expression: any): Expression {
 }
 
 function buildSimpleExpression(expression: any): Expression {
-  const operand = (typeof expression === 'string') ? JSON.parse(expression as string) : expression;
+  let operand = expression;
+
+  if (typeof expression === 'string') {
+    try {
+      operand = JSON.parse(expression as string)
+    } catch {
+      /** deserialization failed */
+    }
+  }
 
   const simple_expression: Expression = {
     operator: 'none',
