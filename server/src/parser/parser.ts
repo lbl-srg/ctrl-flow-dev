@@ -337,15 +337,9 @@ export class Input extends Element {
     if (dialog) {
       const group = dialog.mods.find((m) => m.name === "group")?.value;
       const tab = dialog.mods.find((m) => m.name === "tab")?.value;
-      const expression = dialog.mods.find((m) => m.name === "enable")?.value;
 
       this.group = group ? evaluateExpression(group) : "";
       this.tab = tab ? evaluateExpression(tab) : "";
-
-      this.enable = {
-        modelicaPath: this.modelicaPath,
-        expression: expression || "",
-      };
       this.enable = dialog.mods.find((m) => m.name === "enable")?.value;
       this.connectorSizing = dialog.mods.find((m) => m.name === "connectorSizing")?.value || false;
     }

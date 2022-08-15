@@ -88,6 +88,7 @@ describe("Expected Inputs are extracted", () => {
     const unInitializedInput = templateInputs[uninitializedParamPath];
     expect(unInitializedInput?.value).toBeUndefined();
     const initializedInput = templateInputs[initializedParamPath];
+
     expect(evaluateExpression(initializedInput?.value)).toEqual(expectedValue);
 
     // check that other literals are extracted to a good value
