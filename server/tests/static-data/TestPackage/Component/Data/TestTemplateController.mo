@@ -1,5 +1,5 @@
 within TestPackage.Component.Data;
-record TestTemplateController "Record for TestTemplate Controller"
+record TestTemplateController "Controller"
     extends Modelica.Icons.Record;
 
     parameter Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection typSecRel

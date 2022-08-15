@@ -147,9 +147,11 @@ function buildIfExpression(expression: any): Expression {
 }
 
 function buildSimpleExpression(expression: any): Expression {
+  const operand = (typeof expression === 'string') ? JSON.parse(expression as string) : expression;
+
   const simple_expression: Expression = {
     operator: 'none',
-    operands: [expression]
+    operands: [operand]
   };
 
   if (typeof expression === 'object') console.log("Unknown Expression: ", expression);

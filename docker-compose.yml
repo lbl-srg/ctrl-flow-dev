@@ -1,0 +1,62 @@
+version: "2"
+
+services:
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - conf:/etc/nginx/conf.d
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - certs:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  acme-companion:
+    image: nginxproxy/acme-companion
+    volumes_from:
+      - nginx-proxy
+    volumes:
+      - certs:/etc/nginx/certs:rw
+      - acme:/etc/acme.sh
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  client:
+    image: node
+    expose:
+      - 3000
+    command: "npm run start"
+    working_dir: "/home/node/app"
+    volumes:
+      - "./client:/home/node/app"
+    environment:
+      - VIRTUAL_HOST=ec2-52-35-179-192.us-west-2.compute.amazonaws.com
+      - LETSENCRYPT_HOST=ec2-52-35-179-192.us-west-2.compute.amazonaws.com
+      - VIRTUAL_PATH=/
+    env_file:
+      - ./client/.env
+
+  server:
+    build:
+      context: ./server
+      dockerfile: ./docker/Dockerfile
+    expose:
+      - 3000
+    environment:
+      - VIRTUAL_HOST=ec2-52-35-179-192.us-west-2.compute.amazonaws.com
+      - LETSENCRYPT_HOST=ec2-52-35-179-192.us-west-2.compute.amazonaws.com
+      - VIRTUAL_PATH=/api
+      - MODELICAPATH=/dependencies/ModelicaStandardLibrary:/dependencies/modelica-buildings
+    command: npm run start
+    env_file:
+      - ./server/.env
+    volumes:
+      - ./server:/app
+
+volumes:
+  conf:
+  vhost:
+  html:
+  certs:
+  acme:
