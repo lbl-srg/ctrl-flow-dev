@@ -163,7 +163,12 @@ export function evaluateExpression(expression: Expression): any {
 
   switch (expression.operator) {
     case 'none':
-      parsed_expression = expression.operands[0];
+      // Try to deserialize the operand
+      try {
+        parsed_expression = JSON.parse(expression.operands[0] as string);
+      } catch {
+        parsed_expression = expression.operands[0];
+      }
       break;
     // case '<':
     // case '<=':
