@@ -1,4 +1,5 @@
 import * as parser from "../../../src/parser/parser";
+import { evaluateExpression } from "../../../src/parser/expression";
 import { initializeTestModelicaJson } from "./utils";
 const testModelicaFile = "TestPackage.Template.TestTemplate";
 
@@ -87,19 +88,35 @@ describe("Expected Inputs are extracted", () => {
     const unInitializedInput = templateInputs[uninitializedParamPath];
     expect(unInitializedInput?.value).toBeUndefined();
     const initializedInput = templateInputs[initializedParamPath];
-    expect(initializedInput?.value).toEqual(expectedValue);
+
+    expect(evaluateExpression(initializedInput?.value)).toEqual(expectedValue);
 
     // check that other literals are extracted to a good value
     const boolPath = `${template.modelicaPath}.nullable_bool`;
-    expect(templateInputs[boolPath]?.value).toBe(false);
+    expect(evaluateExpression(templateInputs[boolPath]?.value)).toBe(false);
 
     const realNumPath = `${template.modelicaPath}.test_real`;
-    expect(templateInputs[realNumPath]?.value).toBe(1);
+    expect(evaluateExpression(templateInputs[realNumPath]?.value)).toBe(1);
 
     const intPath = `${template.modelicaPath}.test_int`;
-    expect(templateInputs[intPath]?.value).toBe(2);
+    expect(evaluateExpression(templateInputs[intPath]?.value)).toBe(2);
   });
 
+  /*
+  Literals can also be assigned expressions instead of a value.
+
+  Check that instead of a value, the option has a value expression
+  */
+  it("Extracts literal value expression", () => {
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.elementList[0] as parser.InputGroup;
+    const inputs = template.getInputs();
+    const input = inputs[
+      "TestPackage.Template.TestTemplate.expression_bool"
+    ] as parser.TemplateInput;
+
+    expect(input.value).toBeTruthy();
+  });
 
   it("Extracts 'choices'", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;

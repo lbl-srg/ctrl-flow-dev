@@ -23,6 +23,8 @@ import { ShortClassSpecifier } from "./mj-types";
  * don't end up going this route, the store should be removed.
  */
 
+import { Expression, getExpression } from "./expression";
+
 const modStore: Map<string, Modification> = new Map();
 
 type ComponentDeclaration1 = {
@@ -88,10 +90,10 @@ export type DescriptionBlock = {
   annotation?: any;
 };
 
-export type Expression = {
-  modelicaPath: string;
-  expression: string;
-};
+// export type Expression = {
+//   modelicaPath: string;
+//   expression: string;
+// };
 
 export function getModificationList(
   classMod: ClassMod,
@@ -149,7 +151,7 @@ function unpackRedeclaration(props: ModificationProps) {
 
 function unpackModblock(props: ModificationProps) {
   let mods: Modification[] = [];
-  let value: string = "";
+  let value: Expression | string = '';
   let { definition, basePath = "", name } = props as ModificationWithDefinition;
 
   let modBlock = definition;
@@ -172,7 +174,7 @@ function unpackModblock(props: ModificationProps) {
     if ("equal" in mod) {
       // simple_expression can potentially be an expression
       // TODO be ready to feed that into Expression generator
-      value = (mod as Assignment).expression.simple_expression;
+      value = getExpression((mod as Assignment).expression);
     } else if (name == "choice") {
       const choiceMod = (mod as ClassMod).class_modification[0] as RedeclareMod;
       if (choiceMod.element_redeclaration) {

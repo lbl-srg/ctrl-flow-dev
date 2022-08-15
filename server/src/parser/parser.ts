@@ -7,6 +7,8 @@
  * that element is available if referenced by another piece of modelica-json.
  */
 
+ // TODO: Fix any typings unless any is really necessary
+
 import { findPackageEntryPoints, loader, TEMPLATE_IDENTIFIER } from "./loader";
 import { Template } from "./template";
 import {
@@ -14,11 +16,12 @@ import {
   Mod,
   Modification,
   WrappedMod,
-  Expression,
+  // Expression,
   DeclarationBlock,
   getModificationList,
 } from "./modification";
 
+import { Literal, evaluateExpression } from "./expression";
 import * as mj from "./mj-types";
 
 export const EXTEND_NAME = "__extend";
@@ -130,10 +133,9 @@ export interface TemplateInput {
   modelicaPath: string;
   visible: boolean;
   inputs?: string[];
-  group?: string;
+  group?: Literal | string;
   tab?: string;
   value?: any;
-  valueExpression?: any;
   enable?: any;
   elementType: string;
 }
@@ -272,9 +274,9 @@ export class Input extends Element {
   visible = false; //
   annotation: Modification[] = [];
   tab? = "";
-  group? = "";
-  enable: Expression = { expression: "", modelicaPath: "" };
-  valueExpression: Expression = { expression: "", modelicaPath: "" };
+  // TODO: Fix any typing
+  group?: any = "";
+  enable: any; // Expression = { expression: "", modelicaPath: "" };
 
   constructor(definition: mj.ProtectedElement, basePath: string, public elementType: string) {
     super();
@@ -324,24 +326,6 @@ export class Input extends Element {
     if (this.mod && !this.mod.empty) {
       this.value = this.mod.value;
     }
-
-    // if type is a literal type we can convert it from a string
-    if (MODELICA_LITERALS.includes(this.type) && this.value !== undefined) {
-      try {
-        this.value = JSON.parse(this.value);
-      } catch (error) {
-        if (error instanceof SyntaxError) {
-          // if parsing the value fails assume an expression
-          this.valueExpression = {
-            expression: this.value,
-            modelicaPath: this.modelicaPath,
-          };
-          this.value = null;
-        } else {
-          throw error;
-        }
-      }
-    }
   }
 
   /**
@@ -353,10 +337,11 @@ export class Input extends Element {
     if (dialog) {
       const group = dialog.mods.find((m) => m.name === "group")?.value;
       const tab = dialog.mods.find((m) => m.name === "tab")?.value;
+
+      this.group = group ? evaluateExpression(group) : "";
+      this.tab = tab ? evaluateExpression(tab) : "";
       this.enable = dialog.mods.find((m) => m.name === "enable")?.value;
       this.connectorSizing = dialog.mods.find((m) => m.name === "connectorSizing")?.value || false;
-      this.group = group ? JSON.parse(group) : "";
-      this.tab = tab ? JSON.parse(tab) : "";
     }
   }
 
@@ -392,7 +377,6 @@ export class Input extends Element {
       group: this.group,
       tab: this.tab,
       visible: visible,
-      valueExpression: this.valueExpression,
       enable: this.enable,
       inputs: childInputs,
       elementType: this.elementType

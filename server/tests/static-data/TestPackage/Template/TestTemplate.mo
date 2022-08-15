@@ -19,7 +19,11 @@ model TestTemplate "Test Template"
     TestPackage.Component.SecondComponent
     selectable_component constrainedby
     TestPackage.Interface.PartialComponent(
-      final container=TestPackage.Types.Container.Cone)
+      final container=TestPackage.Types.Container.Cone,
+      final icecream=if
+        first.icecream <> TestPackage.Types.IceCream.Chocolate then
+        first.icecream elseif third.icecream <> TestPackage.Types.IceCream.Chocolate
+        then third.icecream else TestPackage.Types.IceCream.Chocolate)
     "Replaceable Component"
     annotation (
       choices(
@@ -34,7 +38,8 @@ model TestTemplate "Test Template"
   /*
   Test that a subcomponent has access to an outer declaration
   */
-  TestPackage.Component.ThirdComponent third_component;
+  TestPackage.Component.ThirdComponent third(
+    component_param="Third Component Template Override");
 
   /*
     Test Record
@@ -62,7 +67,23 @@ model TestTemplate "Test Template"
   */
   parameter Boolean expression_bool=dat.nested_bool;
 
-  // TODO: add values for annotation variations
+  // TODO: add complex value expression like below
+
+  // final parameter Boolean have_senPreBui=
+  //     secOutRel.typSecRel==Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReliefDamper or
+  //     secOutRel.typSecRel==Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReliefFan or
+  //     secOutRel.typSecRel==Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReturnFan and
+  //     secOutRel.typCtlFanRet==Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.BuildingPressure
+  //     "Set to true if building static pressure sensor is used"
+  //     annotation (Evaluate=true, Dialog(group="Configuration"));
+
+  final parameter Boolean complex_expression_bool=
+    first.container==TestPackage.Types.Container.Hand or
+    first.container==TestPackage.Types.Container.Bowl or
+    first.container==TestPackage.Types.Container.Cone and
+    first.icecream==TestPackage.Types.IceCream.Chocolate
+    "Set to true if IceCream is Chocolate with a container"
+    annotation (Evaluate=true, Dialog(group="Configuration"));
 
   parameter String test_string_uninitialized
     "Test String that is uninitialized";
