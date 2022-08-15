@@ -92,13 +92,13 @@ describe("Expected Inputs are extracted", () => {
 
     // check that other literals are extracted to a good value
     const boolPath = `${template.modelicaPath}.nullable_bool`;
-    expect(templateInputs[boolPath]?.value).toBe(false);
+    expect(evaluateExpression(templateInputs[boolPath]?.value)).toBe(false);
 
     const realNumPath = `${template.modelicaPath}.test_real`;
-    expect(templateInputs[realNumPath]?.value).toBe(1);
+    expect(evaluateExpression(templateInputs[realNumPath]?.value)).toBe(1);
 
     const intPath = `${template.modelicaPath}.test_int`;
-    expect(templateInputs[intPath]?.value).toBe(2);
+    expect(evaluateExpression(templateInputs[intPath]?.value)).toBe(2);
   });
 
   /*

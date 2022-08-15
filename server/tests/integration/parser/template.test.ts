@@ -43,7 +43,7 @@ describe("Template wrapper class functionality", () => {
   it("Templates output expected linkage schema for SystemTemplates", () => {
     const expectedTemplateValues = {
       modelicaPath: "TestPackage.Template.TestTemplate",
-      optionLength: 13,
+      optionLength: 14,
       systemTypeLength: 1,
     };
 

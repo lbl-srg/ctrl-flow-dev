@@ -34,7 +34,7 @@ describe("Modifications", () => {
     const expectedMods = [
       [
         "TestPackage.Template.TestTemplate.__extend.interface_param",
-        '"Updated Value"',
+        "Updated Value",
       ],
     ];
     expectedMods.map((expectedMod) => {
@@ -52,7 +52,7 @@ describe("Modifications", () => {
       ],
       [
         "TestPackage.Component.FirstComponent.component_param",
-        '"First Component Param"',
+        "First Component Param",
       ],
     ];
 
