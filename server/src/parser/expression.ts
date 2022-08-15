@@ -202,11 +202,11 @@ export function evaluateExpression(expression: Expression): any {
 }
 
 export function getExpression(value: any): Expression {
-  const simple_expression = value.simple_expression;
-  const logical_expression = simple_expression?.logical_expression || value.logical_expression;
-  const for_loop_expression = simple_expression?.for_loop || value.for_loop;
-  const function_call_expression = simple_expression?.function_call || value.function_call;
-  const if_expression = simple_expression?.if_expression || value.if_expression;
+  const simple_expression = value?.simple_expression;
+  const logical_expression = simple_expression?.logical_expression || value?.logical_expression;
+  const for_loop_expression = simple_expression?.for_loop || value?.for_loop;
+  const function_call_expression = simple_expression?.function_call || value?.function_call;
+  const if_expression = simple_expression?.if_expression || value?.if_expression;
 
   if (logical_expression) return buildLogicalExpression(logical_expression);
 
