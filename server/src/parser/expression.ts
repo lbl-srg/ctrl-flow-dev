@@ -147,9 +147,15 @@ function buildIfExpression(expression: any): Expression {
 }
 
 function buildSimpleExpression(expression: any): Expression {
+    let operand = expression;
+    // Try to deserialize the operand
+    try {
+      operand = JSON.parse(expression as string);
+    } catch { /** deserialization failed */}
+    
   const simple_expression: Expression = {
     operator: 'none',
-    operands: [expression]
+    operands: [operand]
   };
 
   if (typeof expression === 'object') console.log("Unknown Expression: ", expression);
@@ -163,12 +169,7 @@ export function evaluateExpression(expression: Expression): any {
 
   switch (expression.operator) {
     case 'none':
-      // Try to deserialize the operand
-      try {
-        parsed_expression = JSON.parse(expression.operands[0] as string);
-      } catch {
-        parsed_expression = expression.operands[0];
-      }
+      parsed_expression = expression.operands[0];
       break;
     // case '<':
     // case '<=':
