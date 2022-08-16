@@ -312,8 +312,8 @@ export class Input extends Element {
           )
           .filter((m) => m !== undefined) as Modification[];
       }
+      this._setUIInfo();
     }
-    this._setUIInfo();
 
     this.mod = declarationBlock.modification
       ? createModification({
@@ -333,17 +333,18 @@ export class Input extends Element {
    * Sets a couple params that determine if an input should be visible
    */
   _setUIInfo() {
-    this.enable = true;
     const dialog = this.annotation.find((m) => m.name === "Dialog");
 
     if (dialog) {
       const group = dialog.mods.find((m) => m.name === "group")?.value;
       const tab = dialog.mods.find((m) => m.name === "tab")?.value;
       const enable = dialog.mods.find((m) => m.name === "enable")?.value;
+      const connectorSizing = dialog.mods.find((m) => m.name === "connectorSizing")?.value;
+
       this.group = group ? evaluateExpression(group) : "";
       this.tab = tab ? evaluateExpression(tab) : "";
       this.enable = enable ? evaluateExpression(enable) : true;
-      this.connectorSizing = dialog.mods.find((m) => m.name === "connectorSizing")?.value || false;
+      this.connectorSizing = connectorSizing ? evaluateExpression(connectorSizing) : false;
     }
   }
 
@@ -351,8 +352,8 @@ export class Input extends Element {
     let isVisible = !(
       this.outer ||
       this.final ||
-      this.connectorSizing ||
-      (!this.enable)
+      (this.connectorSizing === true) ||
+      (this.enable === false)
     );
 
     const isLiteral = MODELICA_LITERALS.includes(this.type);

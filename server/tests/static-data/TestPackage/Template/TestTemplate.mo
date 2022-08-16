@@ -91,12 +91,28 @@ model TestTemplate "Test Template"
   parameter String test_string_initialized="I'm all set"
     "Test string that is initialized";
 
+  // 'enable': no annotation specified, default true
   parameter Real test_real=1.0
     "Test real number";
 
+  // disable condition: explicit disable
   parameter Integer test_int=2
     "Test Integer"
     annotation (Dialog(enable=false));
+
+  // disable condition: an outer declaration
+  outer parameter Integer outer_param
+    "Outer param";
+
+  // disable condition: 'connectorSizing=true'
+  parameter Integer connector_param
+    "Connector Param"
+    annotation (Dialog(enable=true, connectorSizing=true));
+
+  // enable condition: 'connectorSizing=false'
+  parameter Integer connector_param_false
+    "Connector Param with 'connectorSizing=false'"
+    annotation (Dialog(connectorSizing=false));
 
   parameter TestPackage.Types.IceCream typ = TestPackage.Types.IceCream.Chocolate
     "Test Enum"

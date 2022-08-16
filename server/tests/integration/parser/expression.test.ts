@@ -55,14 +55,24 @@ describe("Template Input visible/enable expressions", () => {
   });
 
   it("'final' param sets false", () => {
-
+    const falsyPath = 'TestPackage.Template.TestTemplate.should_ignore';
+    const falsyInput = inputs[falsyPath];
+    expect(falsyInput.visible).toBeFalsy();
   });
 
   it("'outer' prefix sets false", () => {
-    // test that 'outer' overrides 'enable=true'
+    const falsyPath = 'TestPackage.Template.TestTemplate.outer_param';
+    const falsyInput = inputs[falsyPath];
+    expect(falsyInput.visible).toBeFalsy();
   });
 
-  it("if 'connectorSizing' set false", () => {
-  
+  it("'connectorSizing' handled correctly", () => {
+    const falsyPath = 'TestPackage.Template.TestTemplate.connector_param';
+    const falsyInput = inputs[falsyPath];
+    expect(falsyInput.visible).toBeFalsy();
+
+    const truthyPath = 'TestPackage.Template.TestTemplate.connector_param_false';
+    const truthyInput = inputs[truthyPath];
+    expect(truthyInput.visible).toBeTruthy();
   });
 });
