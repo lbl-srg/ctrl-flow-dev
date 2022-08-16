@@ -311,9 +311,9 @@ export class Input extends Element {
             createModification({ definition: mod }),
           )
           .filter((m) => m !== undefined) as Modification[];
-        this._setUIInfo();
       }
     }
+    this._setUIInfo();
 
     this.mod = declarationBlock.modification
       ? createModification({
@@ -333,15 +333,16 @@ export class Input extends Element {
    * Sets a couple params that determine if an input should be visible
    */
   _setUIInfo() {
+    this.enable = true;
     const dialog = this.annotation.find((m) => m.name === "Dialog");
+
     if (dialog) {
       const group = dialog.mods.find((m) => m.name === "group")?.value;
       const tab = dialog.mods.find((m) => m.name === "tab")?.value;
       const enable = dialog.mods.find((m) => m.name === "enable")?.value;
-
       this.group = group ? evaluateExpression(group) : "";
       this.tab = tab ? evaluateExpression(tab) : "";
-      this.enable = enable ? evaluateExpression(enable) : true; // TODO: implicit true?
+      this.enable = enable ? evaluateExpression(enable) : true;
       this.connectorSizing = dialog.mods.find((m) => m.name === "connectorSizing")?.value || false;
     }
   }
@@ -354,7 +355,7 @@ export class Input extends Element {
       (!this.enable)
     );
 
-    const isLiteral = (this.type in MODELICA_LITERALS);
+    const isLiteral = MODELICA_LITERALS.includes(this.type);
     return (isVisible && (isLiteral || inputType?.visible === true));
   }
 
@@ -367,8 +368,6 @@ export class Input extends Element {
     const inputTypes = typeInstance ? typeInstance.getInputs({}, false) : {};
     const childInputs = inputTypes[this.type]?.inputs || [];
     const visible = this._setInputVisible(inputTypes[this.type]);
-
-    // if path is present, just return
 
     inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
