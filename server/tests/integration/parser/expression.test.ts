@@ -62,7 +62,7 @@ describe("Template Input visible/enable expressions", () => {
     // test that 'outer' overrides 'enable=true'
   });
 
-  it("if 'connectorSizing' set false"), () => {
-
-  }
+  it("if 'connectorSizing' set false", () => {
+  
+  });
 });

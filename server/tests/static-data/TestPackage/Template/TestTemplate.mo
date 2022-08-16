@@ -53,7 +53,7 @@ model TestTemplate "Test Template"
   */
   final parameter String should_ignore="ignore me"
     "Final parameter that should be ignored"
-    annotation(Dialog(group="Configuration"));
+    annotation(Dialog(group="Configuration", enable=true));
 
   /*
     Test boolean
@@ -96,7 +96,7 @@ model TestTemplate "Test Template"
 
   parameter Integer test_int=2
     "Test Integer"
-    annotation (Dailog(enable=false));
+    annotation (Dialog(enable=false));
 
   parameter TestPackage.Types.IceCream typ = TestPackage.Types.IceCream.Chocolate
     "Test Enum"
