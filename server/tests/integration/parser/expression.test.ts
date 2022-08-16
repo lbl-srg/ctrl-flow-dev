@@ -27,6 +27,8 @@ describe("Expression", () => {
   });
 });
 
+let inputs: {[key: string]: parser.TemplateInput} = {};
+
 function getInputs() {
   const file = parser.getFile(testModelicaFile) as parser.File;
   const template = file.elementList[0] as parser.InputGroup;
@@ -36,17 +38,24 @@ function getInputs() {
 describe("Template Input visible/enable expressions", () => {
   beforeAll(() => {
     initializeTestModelicaJson();
+    inputs = getInputs();
   });
 
   it("'enable=false' sets false", () => {
-    const inputs = getInputs();
-    
-    // test implicit true if 'enable' is not provided
+    const falsyPath = 'TestPackage.Template.TestTemplate.test_int';
+    const falsyInput = inputs[falsyPath];
+  
+    expect(falsyInput.visible).toBeFalsy();
 
+    const truthyPath = 'TestPackage.Template.TestTemplate.test_real';
+    const truthyInput = inputs[truthyPath];
+
+    // implicit 'true' if no 'enable' is specified
+    expect(truthyInput.visible).toBeTruthy();
   });
 
   it("'final' param sets false", () => {
-    
+
   });
 
   it("'outer' prefix sets false", () => {

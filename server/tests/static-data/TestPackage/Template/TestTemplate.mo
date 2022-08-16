@@ -95,7 +95,8 @@ model TestTemplate "Test Template"
     "Test real number";
 
   parameter Integer test_int=2
-    "Test Integer";
+    "Test Integer"
+    annotation (Dailog(enable=false));
 
   parameter TestPackage.Types.IceCream typ = TestPackage.Types.IceCream.Chocolate
     "Test Enum"
