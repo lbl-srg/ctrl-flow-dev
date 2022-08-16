@@ -180,6 +180,8 @@ function unpackModblock(props: ModificationProps) {
       if (choiceMod.element_redeclaration) {
         const replaceable = choiceMod.element_redeclaration
           .element_replaceable as ElementReplaceable;
+          // TODO: pass this path into `getExpression` and return
+          // as a simple expression ('none')
         value = replaceable.component_clause1.type_specifier;
       }
     } else if ("class_modification" in mod) {
