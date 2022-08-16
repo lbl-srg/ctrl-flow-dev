@@ -157,8 +157,11 @@ export abstract class Element {
     recursive?: boolean,
   ): { [key: string]: TemplateInput };
 
-  registerPath(path: string): boolean {
+  registerPath(path: string, type: string = ""): boolean {
     const isSet = typeStore.set(path, this);
+    if (type) {
+      typeStore.get(type);
+    }
     this.duplicate = !isSet;
     return isSet;
   }
@@ -181,7 +184,7 @@ export class InputGroupShort extends Element {
     this.value = classValue.description?.description_string;
     this.description = classValue.name;
     this.modelicaPath = `${basePath}.${this.name}`;
-    const registered = this.registerPath(this.modelicaPath);
+    const registered = this.registerPath(this.modelicaPath, this.type);
     if (!registered) {
       return; // PUNCH-OUT!
     }
@@ -205,13 +208,13 @@ export class InputGroup extends Element {
     this.name = specifier.identifier;
 
     this.modelicaPath = basePath ? [basePath, this.name].join(".") : this.name;
-    const registered = this.registerPath(this.modelicaPath);
+    this.type = this.modelicaPath;
+    const registered = this.registerPath(this.modelicaPath, this.type);
 
     if (!registered) {
       return; // PUNCH-OUT!
     }
 
-    this.type = this.modelicaPath;
     this.description = specifier.description_string;
 
     this.elementList = specifier.composition.element_list
@@ -286,16 +289,16 @@ export class Input extends Element {
     )?.declaration as DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
-    const registered = this.registerPath(this.modelicaPath);
+    this.type = componentClause.type_specifier;
+    this.final = definition.final ? definition.final : this.final;
+    this.inner = definition.inner;
+    this.outer = definition.outer;
+    const registered = this.registerPath(this.modelicaPath, this.type);
 
     if (!registered) {
       return; // PUNCH-OUT!
     }
 
-    this.final = definition.final ? definition.final : this.final;
-    this.inner = definition.inner;
-    this.outer = definition.outer;
-    this.type = componentClause.type_specifier;
 
     // description block (where the annotation is) can be in different locations
     // constrainby changes this location
@@ -365,6 +368,8 @@ export class Input extends Element {
       return inputs;
     }
 
+    // if a replaceable and in modification store - use that type
+    // if not in mod store, use 'this.type'
     const typeInstance = typeStore.get(this.type) || null;
     const inputTypes = typeInstance ? typeInstance.getInputs({}, false) : {};
     const childInputs = inputTypes[this.type]?.inputs || [];
@@ -520,7 +525,7 @@ export class Enum extends Element {
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = this.modelicaPath;
     this.description = specifier.value.description.description_string;
-    const registered = this.registerPath(this.modelicaPath);
+    const registered = this.registerPath(this.modelicaPath, this.type);
     if (!registered) {
       return; // PUNCH-OUT!
     }
@@ -578,11 +583,12 @@ export class InputGroupExtend extends Element {
     super();
     this.name = EXTEND_NAME; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${this.name}`;
-    const registered = this.registerPath(this.modelicaPath);
+    this.type = definition.extends_clause.name;
+
+    const registered = this.registerPath(this.modelicaPath, this.type);
     if (!registered) {
       return; // PUNCH-OUT!
     }
-    this.type = definition.extends_clause.name;
 
     this.value = this.type;
     if (definition.extends_clause.class_modification) {

@@ -64,18 +64,22 @@ function _extractScheduleOptionHelper(scheduleOptions: {[key: string]: parser.Sc
   // get the type. If the 'type' is a record do record things if not, treat as a param
   const inputType = inputs[input.type];
 
+  // TODO: fix issues with building group list:
+  // 1. param description and Record description: we only need one of these
+  // 2. Root record description doesn't need to be added 
+
   // `Modelica.Icons.Record` is often the class being extended
   // and this class does not generate an option
-  if (inputType && inputType.elementType === 'record') {
+  if (inputType && inputType.elementType === 'record') {    
     const groupList =[...groups, input.modelicaPath];
     input.inputs?.map(i => _extractScheduleOptionHelper(
       scheduleOptions,
       inputs,
       i,
       groupList));
-  } else {
-    scheduleOptions[input.modelicaPath] = {...input, groups};
   }
+
+  scheduleOptions[input.modelicaPath] = {...input, groups};
 }
 
 /**
@@ -172,8 +176,8 @@ export class Template {
   }
 
   _extractOptions() {
-    this.scheduleOptions = _extractScheduleOptions(this.modelicaPath);
     const inputs = this.element.getInputs();
+    this.scheduleOptions = _extractScheduleOptions(this.modelicaPath);
     Object.keys(this.scheduleOptions).map(k => delete inputs[k]);
     this.options = _mapInputsToOptions(inputs);
 
