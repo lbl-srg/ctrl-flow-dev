@@ -337,10 +337,11 @@ export class Input extends Element {
     if (dialog) {
       const group = dialog.mods.find((m) => m.name === "group")?.value;
       const tab = dialog.mods.find((m) => m.name === "tab")?.value;
+      const enable = dialog.mods.find((m) => m.name === "enable")?.value;
 
       this.group = group ? evaluateExpression(group) : "";
       this.tab = tab ? evaluateExpression(tab) : "";
-      this.enable = dialog.mods.find((m) => m.name === "enable")?.value;
+      this.enable = enable ? evaluateExpression(enable) : true; // TODO: implicit true?
       this.connectorSizing = dialog.mods.find((m) => m.name === "connectorSizing")?.value || false;
     }
   }
@@ -349,8 +350,8 @@ export class Input extends Element {
     let isVisible = !(
       this.outer ||
       this.final ||
-      // this.enable || // TODO: evaluate the expression and use if it returns a literal
-      this.connectorSizing
+      this.connectorSizing ||
+      (!this.enable)
     );
 
     const isLiteral = (this.type in MODELICA_LITERALS);
