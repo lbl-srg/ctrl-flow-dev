@@ -1,5 +1,5 @@
 import { ShortClassSpecifier } from "./mj-types";
-
+import { typeStore } from "./parser";
 /**
  * Modifications are places where there is an assignment, e.g.
  * 'my_param=5'. Modifications can also contain groups of modifications, e.g.
@@ -97,22 +97,22 @@ export type DescriptionBlock = {
 
 export function getModificationList(
   classMod: ClassMod,
-  modelicaPath: string,
+  typePath: string,
   name = "",
 ) {
   return classMod.class_modification
     .map((m) =>
       createModification({
         definition: m as WrappedMod,
-        basePath: modelicaPath,
-        name: name,
+        typePath,
+        name,
       }),
     )
     .filter((m) => m !== undefined) as Modification[];
 }
 
 interface ModificationBasics {
-  basePath?: string;
+  typePath?: string;
   name?: string;
   value?: any;
   definition?: any;
@@ -139,6 +139,8 @@ function unpackRedeclaration(props: ModificationProps) {
     const componentClause1 =
       redeclaration.component_clause1 as ComponentClause1;
     const type = componentClause1.type_specifier;
+    // force redeclared type to load if it is not already loaded
+    typeStore.get(type);
     const redeclareDefinition =
       componentClause1.component_declaration1.declaration;
     const modProps = { ...props, type, definition: redeclareDefinition };
@@ -152,7 +154,7 @@ function unpackRedeclaration(props: ModificationProps) {
 function unpackModblock(props: ModificationProps) {
   let mods: Modification[] = [];
   let value: Expression | string = '';
-  let { definition, basePath = "", name } = props as ModificationWithDefinition;
+  let { definition, typePath = "", name } = props as ModificationWithDefinition;
 
   let modBlock = definition;
 
@@ -167,7 +169,7 @@ function unpackModblock(props: ModificationProps) {
     name = modBlock.identifier;
   }
 
-  let modelicaPath = basePath ? `${basePath}.${name}` : "";
+  let modelicaPath = typePath ? `${typePath}.${name}` : "";
   const mod = (modBlock as Mod).modification;
   if (mod) {
     // test if an assignment
@@ -189,7 +191,7 @@ function unpackModblock(props: ModificationProps) {
     }
   }
 
-  return new Modification(basePath, name, value, mods);
+  return new Modification(typePath, name, value, mods);
 }
 
 /**
@@ -204,9 +206,10 @@ function unpackModblock(props: ModificationProps) {
 export function createModification(
   props: ModificationProps,
 ): Modification | undefined {
-  let mods: Modification[] = [];
-  let { definition, value, basePath = "", name } = props;
-  let modelicaPath = basePath ? `${basePath}.${name}` : "";
+  const mods: Modification[] = [];
+  const { definition, value, typePath = "", name } = props;
+  const input = typeStore.get(typePath);
+  // modelicaPath = basePath ? `${basePath}.${name}` : "";
 
   if (definition) {
     if ("element_redeclaration" in definition) {
@@ -216,7 +219,7 @@ export function createModification(
     return unpackModblock(props);
   }
 
-  return new Modification(basePath, name, value, mods);
+  return new Modification(typePath, name, value, mods);
 }
 
 /**
