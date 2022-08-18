@@ -125,9 +125,7 @@ function assertType(type: string) {
   }
 }
 
-// TODO: remove this once types are shared between FE and BE
 export interface TemplateInput {
-  // id: number;
   type: string;
   name: string;
   modelicaPath: string;
@@ -137,11 +135,8 @@ export interface TemplateInput {
   tab?: string;
   value?: any;
   enable?: any;
+  modifier?: Modification | null;
   elementType: string;
-}
-
-export interface ScheduleOption extends TemplateInput {
-  groups: string[];
 }
 
 export abstract class Element {
@@ -321,7 +316,7 @@ export class Input extends Element {
     this.mod = declarationBlock.modification
       ? createModification({
           definition: declarationBlock,
-          basePath,
+          typePath: this.type,
           name: this.name,
         })
       : null;
@@ -385,8 +380,12 @@ export class Input extends Element {
       visible: visible,
       enable: this.enable,
       inputs: childInputs,
-      elementType: this.elementType
+      modifier: this.mod,
+      elementType: this.elementType,
     };
+
+    if (this.modelicaPath === '')
+    console.log()
 
     if (recursive) {
       if (typeInstance) {
@@ -425,7 +424,7 @@ export class ReplaceableInput extends Input {
     const mod = createModification({
       name: this.name,
       value: this.value,
-      basePath: basePath,
+      typePath: this.type,
     });
 
     if (mod) {
@@ -483,6 +482,7 @@ export class ReplaceableInput extends Input {
 
     if (recursive) {
       childTypes.map((c) => {
+        // TODO: applying mods from the parameter to child types?
         const typeInstance = typeStore.get(c) || null;
         if (typeInstance) {
           inputs = typeInstance.getInputs(inputs);
