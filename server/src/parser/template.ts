@@ -26,7 +26,7 @@ type Options = { [key: string]: Option };
 type ScheduleOptions = { [key: string]: ScheduleOption };
 
 export function getOptions(): {
-  options: parser.TemplateInput[];
+  options: Option[];
   scheduleOptions: ScheduleOption[];
 } {
   const templates = [...templateStore.values()];
@@ -56,6 +56,7 @@ interface Option {
   value?: any;
   enable?: any;
   modifier?: Mod;
+  replaceable: boolean;
   elementType: string;
 }
 
@@ -71,7 +72,7 @@ interface Mod {
  * Extracts the modifier from a TemplateInput and maps it to the 'Mod' format
  * 
  */
-function _mapToMod(modifier: Modification | undefined, inputs: {[key: string]: parser.TemplateInput}): Mod {
+function _mapToMod(modifier: Modification | undefined | null, inputs: {[key: string]: parser.TemplateInput}): Mod {
   let mod: Mod = {};
   if (modifier?.value) {
     mod = {[modifier.modelicaPath]: modifier.value}

@@ -28,9 +28,6 @@ export function getSystemTypes(): templates.SystemTypeN[] {
   return templates.getSystemTypes();
 }
 
-export function getOptions(): {
-  options: parser.TemplateInput[];
-  scheduleOptions: parser.ScheduleOption[];
-} {
+export function getOptions() {
   return templates.getOptions();
 }
