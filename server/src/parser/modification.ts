@@ -169,7 +169,6 @@ function unpackModblock(props: ModificationProps) {
     name = modBlock.identifier;
   }
 
-  let modelicaPath = typePath ? `${typePath}.${name}` : "";
   const mod = (modBlock as Mod).modification;
   if (mod) {
     // test if an assignment
@@ -187,7 +186,7 @@ function unpackModblock(props: ModificationProps) {
         value = replaceable.component_clause1.type_specifier;
       }
     } else if ("class_modification" in mod) {
-      mods = getModificationList(mod as ClassMod, modelicaPath);
+      mods = getModificationList(mod as ClassMod, typePath);
     }
   }
 
@@ -208,6 +207,8 @@ export function createModification(
 ): Modification | undefined {
   const mods: Modification[] = [];
   const { definition, value, typePath = "", name } = props;
+  // TODO: fix type look up. Nested types are not yet being correctly
+  // assigned
   const input = typeStore.get(typePath);
   // modelicaPath = basePath ? `${basePath}.${name}` : "";
 
