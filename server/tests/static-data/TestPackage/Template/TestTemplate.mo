@@ -120,4 +120,23 @@ model TestTemplate "Test Template"
       Evaluate=true,
       Dialog(group="Configuration"));
   annotation (__LinkageTemplate=true);
+
+  parameter TestPackage.Component.FourthComponent redeclare_param_01(
+    redeclare TestPackage.Component.SecondComponent replaceable_param
+  )
+    "First Param to test component redeclares"
+    annotation(
+      Dialog(enable=true)
+    );
+
+  parameter TestPackage.Component.FourthComponent redeclare_param_02(
+    redeclare TestPackage.Component.ThirdComponent replaceable_param(
+      component_param="Redeclare_param_02 override"
+    )
+  )
+    "Second Param to test component redeclares"
+    annotation(
+      Dialog(enable=true)
+    );
+
 end TestTemplate;
