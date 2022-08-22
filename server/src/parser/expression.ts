@@ -7,6 +7,9 @@
 //   | { type: 'reference', value: string } // reference might not be the best name, but something like "Types.IceCream.Chocolate" 
 //   | { type: 'number', value: number } // are all the numbers integers? floats? do we need to distinguish?
 
+
+// TODO: take in to account absolute paths (convert relative to absolute)
+
 export type Literal = boolean | string | number;
 
 // TODO: Clean up other Expression types in other files as they are not correct anymore
@@ -166,39 +169,99 @@ function buildSimpleExpression(expression: any): Expression {
   return simple_expression;
 }
 
-// TODO: Move to Common Directory as a helper
+// TODO: reslove path function
+// path priority selection, mods, options
+
+// TODO: Move to Common Directory as a helper (potentially need 2 helpers 1 front-end and 1 back-end)
+// pass mods as well
 export function evaluateExpression(expression: Expression): any {
-  let parsed_expression: any = 'case not setup';
+  // (BE) If expression operator isn't none just return the expression
+  // TODO: If expression operand is path should we keep as expression or just return the path?
+  return expression.operator === 'none' ? expression.operands[0] : expression;
 
-  switch (expression.operator) {
-    case 'none':
-      parsed_expression = expression.operands[0];
-      break;
-    // case '<':
-    // case '<=':
-    // case '>':
-    // case '>=':
-    // case '==':
-    // case '!=':
-    //   parsed_expression = `${expression.operands[0]} ${expression.operator} ${expression.operands[1]}`;
-    //   break;
-    // case '||':
-    // case '&&':
-    //   parsed_expression = `${evaluateExpression(expression.operands[0])} ${expression.operator} ${evaluateExpression(expression.operands[1])}`;
-    //   break;
-    // case 'if_elseif':
-    // case 'if':
-    // case 'else_if':
-    // case 'else':
-    // case 'for':
-    // case 'loop_condition':
-    // case 'function_call':
-    // case 'argument':
-    default:
-      break;
-  }
+  // TODO: (FE) If operand is a path to a value look up path, if the value isn't known return the expression
+  // let parsed_expression: any = 'case not setup';
 
-  return parsed_expression;
+  // switch (expression.operator) {
+  //   case 'none':
+  //     // TODO: Include FE function that resolves paths if path is in operand.
+  //     // If path doesn't resolve to a value return expression
+  //     parsed_expression = expression.operands[0];
+  //     break;
+  //   case '<':
+  //     // TODO: Include FE function that resolves paths if path is in operand.
+  //     // If path doesn't resolve to a value return expression
+  //     parsed_expression = expression.operands[0] < expression.operands[1];
+  //     break;
+  //   case '<=':
+  //     // TODO: Include FE function that resolves paths if path is in operand.
+  //     // If path doesn't resolve to a value return expression
+  //     parsed_expression = expression.operands[0] <= expression.operands[1];
+  //     break;
+  //   case '>':
+  //     // TODO: Include FE function that resolves paths if path is in operand.
+  //     // If path doesn't resolve to a value return expression
+  //     parsed_expression = expression.operands[0] > expression.operands[1];
+  //     break;
+  //   case '>=':
+  //     // TODO: Include FE function that resolves paths if path is in operand.
+  //     // If path doesn't resolve to a value return expression
+  //     parsed_expression = expression.operands[0] >= expression.operands[1];
+  //     break;
+  //   case '==':
+  //     // TODO: Include FE function that resolves paths if path is in operand.
+  //     // If path doesn't resolve to a value return expression
+  //     parsed_expression = expression.operands[0] == expression.operands[1];
+  //     break;
+  //   case '!=':
+  //     // TODO: Include FE function that resolves paths if path is in operand.
+  //     // If path doesn't resolve to a value return expression
+  //     parsed_expression = expression.operands[0] != expression.operands[1];
+  //     break;
+  //   case '||':
+  //     // TODO: If path doesn't resolve to a value return expression
+  //     let firstOperand = evaluateExpression(expression.operands[0]);
+  //     let secondOperand = evaluateExpression(expression.operands[1]);
+  //     parsed_expression = (typeof firstOperand === 'object' || typeof secondOperand === 'object')
+  //       ? expression
+  //       : firstOperand || secondOperand;
+  //     break;
+  //   case '&&':
+  //     // TODO: If path doesn't resolve to a value return expression
+  //     let firstOperand = evaluateExpression(expression.operands[0]);
+  //     let secondOperand = evaluateExpression(expression.operands[1]);
+  //     parsed_expression = (typeof firstOperand === 'object' || typeof secondOperand === 'object')
+  //       ? expression
+  //       : firstOperand && secondOperand;
+  //     break;
+  //   case 'if_elseif':
+  //     // TODO
+  //     break;
+  //   case 'if':
+  //   case 'else_if':
+  //     // TODO: If path doesn't resolve to a value return expression
+  //     let conditionOperand = evaluateExpression(expression.operands[0]);
+  //     let thenOperand = evaluateExpression(expression.operands[1]);
+  //     if (typeof conditionOperand !== 'object' && typeof thenOperand !== 'object') {
+  //       parsed_expression = conditionOperand ? thenOperand : null;
+  //     } else {
+  //       parsed_expression = expression;
+  //     }
+  //     break;
+  //   case 'else':
+  //     // TODO: If path doesn't resolve to a value return expression
+  //     let operand = evaluateExpression(expression.operands[0]);
+  //     parsed_expression = (typeof operand === 'object') ? expression : operand;
+  //     break;   
+  //   // case 'for':
+  //   // case 'loop_condition':
+  //   // case 'function_call':
+  //   // case 'argument':
+  //   default:
+  //     break;
+  // }
+
+  // return parsed_expression;
 }
 
 export function getExpression(value: any): Expression {
