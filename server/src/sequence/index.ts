@@ -27,7 +27,7 @@ export async function writeLatexFile(
   controlSequenceInput: ControlSequenceInput,
   latexFilePath: string,
 ) {
-  const { choices } = controlSequenceInput;
+  const { energyCode, choices } = controlSequenceInput;
   const {
     BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet,
   } = choices;
@@ -43,6 +43,13 @@ export async function writeLatexFile(
     ${
       BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet &&
       String.raw`\newcommand\BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet{${BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet}}`
+    }
+
+    % Configure Energy Code Standard
+    \newcommand${
+      energyCode === EnergyCode.Ashrae
+        ? "\\ASHRAEStandard{}"
+        : "\\CaliforniaTitle{}"
     }
 
     % Sets absolute path to help Pandoc access external assets.
@@ -85,6 +92,8 @@ export async function writeControlSequenceDocument(
   const docxFilePath = `${SEQUENCE_OUTPUT_PATH}/${fileName}.docx`;
 
   await writeLatexFile(controlSequenceInput, latexFilePath);
-  await convertToDOCX(latexFilePath, docxFilePath);
+  const { stdout, stderr } = await convertToDOCX(latexFilePath, docxFilePath);
+  console.log(stdout);
+  console.log(stderr);
   return getConvertedDocument(docxFilePath);
 }
