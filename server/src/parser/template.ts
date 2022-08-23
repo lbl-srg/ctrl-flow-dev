@@ -72,7 +72,7 @@ export interface Mod {
  * Extracts the modifier from a TemplateInput and maps it to the 'Mod' format
  * 
  */
-export function _mapToMod(modifier: Modification | undefined | null, inputs: {[key: string]: parser.TemplateInput}): Mod {
+export function mapToMod(modifier: Modification | undefined | null, inputs: {[key: string]: parser.TemplateInput}): Mod {
   let mod: Mod = {};
   if (modifier?.value) {
     mod = {[modifier.modelicaPath]: modifier.value}
@@ -84,7 +84,7 @@ export function _mapToMod(modifier: Modification | undefined | null, inputs: {[k
         const path = `${input.modelicaPath}.${m.name}`;
         const nestedModifier = inputs[path]?.modifier;
         if (nestedModifier) {
-          mod[path] = _mapToMod(nestedModifier, inputs);
+          mod[path] = mapToMod(nestedModifier, inputs);
         }
       });
     }
@@ -101,7 +101,7 @@ function _mapInputToOption(input: parser.TemplateInput, inputs: {[key:string]: p
           .filter(([key]) => !(key in keysToRemove))
   ) as Option;
 
-  option.modifier = _mapToMod(input.modifier, inputs);
+  option.modifier = mapToMod(input.modifier, inputs);
   return option;
 }
 

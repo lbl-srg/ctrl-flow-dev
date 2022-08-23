@@ -536,7 +536,7 @@ export class Enum extends Element {
 
 // Inherited properties by type with modifications
 export class InputGroupExtend extends Element {
-  mods: Modification[] = [];
+  mod?: Modification | null;
   type: string = "";
   value: string = "";
   constructor(definition: any, basePath: string, public elementType: string) {
@@ -552,10 +552,9 @@ export class InputGroupExtend extends Element {
 
     this.value = this.type;
     if (definition.extends_clause.class_modification) {
-      this.mods = getModificationList(
-        definition.extends_clause,
-        this.modelicaPath,
-      );
+      this.mod = createModification({
+        definition: definition,
+      });
     }
   }
 
@@ -573,7 +572,8 @@ export class InputGroupExtend extends Element {
       name: typeInstance?.name || "",
       visible: false,
       inputs: this.type.startsWith("Modelica") ? [] : [this.type],
-      elementType: this.elementType
+      elementType: this.elementType,
+      modifier: this.mod
     };
 
     return typeInstance ? typeInstance.getInputs(inputs, recursive) : inputs;
