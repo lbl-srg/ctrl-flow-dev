@@ -45,7 +45,7 @@ export function getOptions(): {
   };
 }
 
-interface Option {
+export interface Option {
   type: string;
   name: string;
   modelicaPath: string;
@@ -64,7 +64,7 @@ export interface ScheduleOption extends Option {
   groups: string[];
 }
 
-interface Mod {
+export interface Mod {
   [key: string]: Mod | Expression
 }
 
@@ -72,7 +72,7 @@ interface Mod {
  * Extracts the modifier from a TemplateInput and maps it to the 'Mod' format
  * 
  */
-function _mapToMod(modifier: Modification | undefined | null, inputs: {[key: string]: parser.TemplateInput}): Mod {
+export function _mapToMod(modifier: Modification | undefined | null, inputs: {[key: string]: parser.TemplateInput}): Mod {
   let mod: Mod = {};
   if (modifier?.value) {
     mod = {[modifier.modelicaPath]: modifier.value}
@@ -189,10 +189,11 @@ export class Template {
   options: Options = {};
   scheduleOptions: ScheduleOptions = {};
   systemTypes: SystemTypeN[] = [];
+  modifiers: {[key: string]: Expression} = {};
 
   constructor(public element: parser.Element) {
     this._extractSystemTypes(element);
-    this._extractOptions();
+    this._extractOptions(element);
     templateStore.set(this.modelicaPath, this);
   }
 
@@ -221,8 +222,8 @@ export class Template {
     }
   }
 
-  _extractOptions() {
-    const inputs = this.element.getInputs();
+  _extractOptions(element: parser.Element) {
+    const inputs = element.getInputs();
     this.scheduleOptions = _extractScheduleOptions(this.modelicaPath);
     Object.keys(this.scheduleOptions).map(k => delete inputs[k]);
     this.options = {};
@@ -242,6 +243,7 @@ export class Template {
     return { options: this.options, scheduleOptions: this.scheduleOptions };
   }
 
+
   getSystemTypes() {
     return this.systemTypes;
   }
@@ -253,16 +255,5 @@ export class Template {
       systemTypes: this.systemTypes.map((t) => t.modelicaPath),
       name: this.description,
     };
-  }
-
-  getModifiers(): ModifiersN[] {
-    const mods = this.element.getModifications();
-
-    return mods
-      .filter((m) => m.mods.length === 0)
-      .map((m) => ({
-        modelicaPath: m.modelicaPath,
-        value: m.value,
-      }));
   }
 }

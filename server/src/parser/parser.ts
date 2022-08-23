@@ -160,12 +160,6 @@ export abstract class Element {
     this.duplicate = !isSet;
     return isSet;
   }
-
-  // 'Input' and 'InputGroup' and 'Extend' returns modifications and override
-  // this method. Other elements do not have a modification
-  getModifications(): Modification[] {
-    return [];
-  }
 }
 
 export class InputGroupShort extends Element {
@@ -253,10 +247,6 @@ export class InputGroup extends Element {
 
     return inputs;
   }
-
-  getModifications() {
-    return this.elementList.flatMap((e) => e.getModifications());
-  }
 }
 
 // a parameter with a type
@@ -316,7 +306,7 @@ export class Input extends Element {
     this.mod = declarationBlock.modification
       ? createModification({
           definition: declarationBlock,
-          typePath: this.type,
+          basePath: this.type,
           name: this.name,
         })
       : null;
@@ -395,20 +385,6 @@ export class Input extends Element {
 
     return inputs;
   }
-
-  getModifications(): Modification[] {
-    const typeInstance = typeStore.get(this.type);
-    const typeInstanceMods = typeInstance
-      ? typeInstance.getModifications()
-      : [];
-    const paramMods =
-      this.mod && !this.mod.empty ? this.mod.getModifications() : [];
-    // TODO: If there are duplicate mods (by modelica path) paramMods should
-    // overwrite typeInstance mods
-    // TODO: a param might point to a classmod, it would be better
-    // to not put that modification in the list
-    return [...paramMods, ...typeInstanceMods];
-  }
 }
 
 export class ReplaceableInput extends Input {
@@ -424,7 +400,7 @@ export class ReplaceableInput extends Input {
     const mod = createModification({
       name: this.name,
       value: this.value,
-      typePath: this.type,
+      basePath: this.type,
     });
 
     if (mod) {
@@ -491,22 +467,6 @@ export class ReplaceableInput extends Input {
     }
 
     return inputs;
-  }
-
-  getModifications(): Modification[] {
-    const constraintMods = this.constraint
-      ? this.constraint.getModifications()
-      : [];
-    const replaceableMods: Modification[] = [];
-
-    this.choices.map((c) => {
-      const typeInstance = typeStore.get(c) || null;
-      if (typeInstance) {
-        replaceableMods.push(...typeInstance.getModifications());
-      }
-    });
-
-    return [...this.mods, ...constraintMods, ...replaceableMods];
   }
 }
 
@@ -617,10 +577,6 @@ export class InputGroupExtend extends Element {
     };
 
     return typeInstance ? typeInstance.getInputs(inputs, recursive) : inputs;
-  }
-
-  getModifications() {
-    return this.mods ? this.mods.flatMap((m) => m.getModifications()) : [];
   }
 }
 
