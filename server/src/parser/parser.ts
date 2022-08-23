@@ -306,7 +306,7 @@ export class Input extends Element {
     this.mod = declarationBlock.modification
       ? createModification({
           definition: declarationBlock,
-          basePath: this.type,
+          basePath: basePath,
           name: this.name,
         })
       : null;
