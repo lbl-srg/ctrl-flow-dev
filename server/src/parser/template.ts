@@ -55,7 +55,7 @@ export interface Option {
   tab?: string;
   value?: any;
   enable?: any;
-  modifier?: Mod;
+  modifiers: {[key: string]: Expression}
   replaceable: boolean;
   elementType: string;
 }
@@ -64,33 +64,18 @@ export interface ScheduleOption extends Option {
   groups: string[];
 }
 
-export interface Mod {
-  [key: string]: Mod | Expression
+export interface Mods {
+  [key: string]: Expression
 }
 
-/**
- * Extracts the modifier from a TemplateInput and maps it to the 'Mod' format
- * 
- */
-export function mapToMod(modifier: Modification | undefined | null, inputs: {[key: string]: parser.TemplateInput}): Mod {
-  let mod: Mod = {};
-  if (modifier?.value) {
-    mod = {[modifier.modelicaPath]: modifier.value}
-  } else if (modifier) {
-    // check for nested modifiers
-    const input = inputs[modifier.modelicaPath];
-    if (input) {
-      modifier.mods.map(m => {
-        const path = `${input.modelicaPath}.${m.name}`;
-        const nestedModifier = inputs[path]?.modifier;
-        if (nestedModifier) {
-          mod[path] = mapToMod(nestedModifier, inputs);
-        }
-      });
-    }
+export function flattenModifier(mod: Modification | undefined | null, mods: {[key: string]: Expression} = {}) {
+  if (mod?.value) {
+    mods[mod.modelicaPath] = mod.value;
   }
 
-  return mod;
+  mod?.mods.map(m => flattenModifier(m, mods));
+
+  return mods;
 }
 
 function _mapInputToOption(input: parser.TemplateInput, inputs: {[key:string]: parser.TemplateInput}): Option {
@@ -101,7 +86,7 @@ function _mapInputToOption(input: parser.TemplateInput, inputs: {[key:string]: p
           .filter(([key]) => !(key in keysToRemove))
   ) as Option;
 
-  option.modifier = mapToMod(input.modifier, inputs);
+  option.modifiers = flattenModifier(input.modifier);
   return option;
 }
 
