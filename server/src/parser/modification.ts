@@ -1,5 +1,6 @@
-import { ShortClassSpecifier } from "./mj-types";
 import { typeStore } from "./parser";
+import * as mj from "./mj-types";
+
 /**
  * Modifications are places where there is an assignment, e.g.
  * 'my_param=5'. Modifications can also contain groups of modifications, e.g.
@@ -27,85 +28,6 @@ import { Expression, getExpression } from "./expression";
 
 const modStore: Map<string, Modification> = new Map();
 
-type ComponentDeclaration1 = {
-  declaration: DeclarationBlock;
-  description?: DescriptionBlock;
-};
-
-type ComponentClause1 = {
-  type_specifier: string; // Modelica Path
-  component_declaration1: ComponentDeclaration1;
-};
-
-type ShortClassDefinition = {
-  class_prefixes: string; // //(PARTIAL)? (CLASS | MODEL | (OPERATOR)? RECORD | BLOCK | (EXPANDABLE)? CONNECTOR | TYPE | PACKAGE | ((PURE | IMPURE))? (OPERATOR)? FUNCTION | OPERATOR),
-  short_class_specifier: ShortClassSpecifier; // from 'parser.ts'
-};
-
-type ElementReplaceable = {
-  component_clause1: ComponentClause1;
-  short_class_definition: ShortClassDefinition;
-};
-
-type RedeclareMod = {
-  element_redeclaration: {
-    each: boolean;
-    final: boolean;
-    short_class_definition?: ShortClassDefinition;
-    element_replaceable?: ElementReplaceable;
-    component_clause1?: ComponentClause1;
-  };
-};
-
-type ClassMod = {
-  class_modification: (WrappedMod | RedeclareMod)[];
-  name: string;
-};
-
-type Assignment = {
-  equal: boolean;
-  expression: {
-    simple_expression: string; // JSON deserializable value
-  };
-};
-
-// Replacable
-export type WrappedMod = {
-  element_modification_or_replaceable: {
-    element_modification: Mod;
-  };
-};
-
-export type Mod = {
-  name: string;
-  modification: ClassMod | WrappedMod | Assignment | RedeclareMod;
-};
-
-export type ExtendsClause = {
-  extends_clause: ClassMod;
-  name: string;
-}
-
-export type ConstraintDef = {
-  name: string;
-  class_modification: ClassMod;
-}
-
-export type DeclarationBlock = {
-  identifier: string;
-  modification?: ClassMod | WrappedMod | Assignment | RedeclareMod;
-};
-
-export type DescriptionBlock = {
-  description_string: string;
-  annotation?: any;
-};
-
-// export type Expression = {
-//   modelicaPath: string;
-//   expression: string;
-// };
-
 interface ModificationBasics {
   basePath?: string;
   name?: string;
@@ -115,7 +37,7 @@ interface ModificationBasics {
 }
 
 interface ModificationWithDefinition extends ModificationBasics {
-  definition: WrappedMod | Mod | DeclarationBlock | RedeclareMod;
+  definition: mj.WrappedMod | mj.Mod | mj.DeclarationBlock | mj.RedeclareMod;
   value?: never;
   extends_clause?: any;
   constraining_clause?: any;
@@ -167,10 +89,10 @@ export function createModification(
  */
 function unpackRedeclaration(props: ModificationProps) {
   let { definition } = props;
-  const redeclaration = (definition as RedeclareMod).element_redeclaration;
+  const redeclaration = (definition as mj.RedeclareMod).element_redeclaration;
   if ("component_clause1" in redeclaration) {
     const componentClause1 =
-      redeclaration.component_clause1 as ComponentClause1;
+      redeclaration.component_clause1 as mj.ComponentClause1;
     const type = componentClause1.type_specifier;
     // make sure redeclared type is loaded
     typeStore.get(type);
@@ -207,26 +129,26 @@ function unpackModblock(props: ModificationProps) {
     name = modBlock.identifier;
   }
 
-  let mod: WrappedMod | RedeclareMod | ClassMod | Assignment | null = null;
+  let mod: mj.WrappedMod | mj.RedeclareMod | mj.ClassMod | mj.Assignment | null = null;
   // grab and parse mod
   if ("modification" in modBlock) {
-    mod = (modBlock as Mod).modification;
+    mod = (modBlock as mj.Mod).modification;
   }
 
   if (mod) {
     if ("equal" in mod) {
-      value = getExpression((mod as Assignment).expression);
+      value = getExpression((mod as mj.Assignment).expression);
     } else if (name == "choice") {
-      const choiceMod = (mod as ClassMod).class_modification[0] as RedeclareMod;
+      const choiceMod = (mod as mj.ClassMod).class_modification[0] as mj.RedeclareMod;
       if (choiceMod.element_redeclaration) {
         const replaceable = choiceMod.element_redeclaration
-          .element_replaceable as ElementReplaceable;
+          .element_replaceable as mj.ElementReplaceable;
           // TODO: pass this path into `getExpression` and return
           // as a simple expression ('none')
         value = replaceable.component_clause1.type_specifier;
       }
     } else if ("class_modification" in mod) {
-      mods = getModificationList(mod as ClassMod, basePath);//mod.class_modification
+      mods = getModificationList(mod as mj.ClassMod, basePath);//mod.class_modification
     }
   }
 
@@ -234,7 +156,7 @@ function unpackModblock(props: ModificationProps) {
 }
 
 export function getModificationList(
-  classMod: ClassMod,
+  classMod: mj.ClassMod,
   basePath: string,
   name = "",
 ) {
@@ -245,7 +167,7 @@ export function getModificationList(
   return classMod.class_modification
     .map((m) => {
         return createModification({
-          definition: m as WrappedMod,
+          definition: m as mj.WrappedMod,
           basePath: childType,
           name,
         });

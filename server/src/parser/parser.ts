@@ -13,11 +13,7 @@ import { findPackageEntryPoints, loader, TEMPLATE_IDENTIFIER } from "./loader";
 import { Template } from "./template";
 import {
   createModification,
-  Mod,
   Modification,
-  WrappedMod,
-  // Expression,
-  DeclarationBlock,
   getModificationList,
 } from "./modification";
 
@@ -212,7 +208,7 @@ export class InputGroup extends Element {
       .filter((e: Element | undefined) => e !== undefined);
 
     this.annotation = specifier.composition.annotation?.map(
-      (m: Mod | WrappedMod) => createModification({ definition: m }),
+      (m: mj.Mod | mj.WrappedMod) => createModification({ definition: m }),
     );
     if (
       this.annotation &&
@@ -272,7 +268,7 @@ export class Input extends Element {
     const componentClause = definition.component_clause;
     const declarationBlock = componentClause.component_list.find(
       (c: any) => "declaration" in c,
-    )?.declaration as DeclarationBlock;
+    )?.declaration as mj.DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = componentClause.type_specifier;
@@ -296,7 +292,7 @@ export class Input extends Element {
       this.description = descriptionBlock?.description_string || "";
       if (descriptionBlock?.annotation) {
         this.annotation = descriptionBlock.annotation
-          .map((mod: Mod | WrappedMod) =>
+          .map((mod: mj.Mod | mj.WrappedMod) =>
             createModification({ definition: mod }),
           )
           .filter((m) => m !== undefined) as Modification[];
