@@ -455,6 +455,7 @@ export class ReplaceableInput extends Input {
       group: this.group,
       tab: this.tab,
       visible: true,
+      modifiers: this.mods,
       elementType: this.elementType
     };
 
