@@ -86,6 +86,11 @@ export type ExtendsClause = {
   name: string;
 }
 
+export type ConstraintDef = {
+  name: string;
+  class_modification: ClassMod;
+}
+
 export type DeclarationBlock = {
   identifier: string;
   modification?: ClassMod | WrappedMod | Assignment | RedeclareMod;
@@ -112,6 +117,8 @@ interface ModificationBasics {
 interface ModificationWithDefinition extends ModificationBasics {
   definition: WrappedMod | Mod | DeclarationBlock | RedeclareMod;
   value?: never;
+  extends_clause?: any;
+  constraining_clause?: any;
 }
 
 interface ModificationWithValue extends ModificationBasics {
@@ -204,9 +211,6 @@ function unpackModblock(props: ModificationProps) {
   // grab and parse mod
   if ("modification" in modBlock) {
     mod = (modBlock as Mod).modification;
-  } else if ("extends_clause" in modBlock) {
-    mod = (modBlock as ExtendsClause).extends_clause;
-    basePath = mod.name;
   }
 
   if (mod) {

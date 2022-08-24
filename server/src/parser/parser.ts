@@ -23,6 +23,7 @@ import {
 
 import { Literal, evaluateExpression } from "./expression";
 import * as mj from "./mj-types";
+import { create } from "underscore";
 
 export const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
@@ -135,7 +136,7 @@ export interface TemplateInput {
   tab?: string;
   value?: any;
   enable?: any;
-  modifier?: Modification | null;
+  modifiers?: Modification[];
   elementType: string;
 }
 
@@ -370,7 +371,7 @@ export class Input extends Element {
       visible: visible,
       enable: this.enable,
       inputs: childInputs,
-      modifier: this.mod,
+      modifiers: (this.mod) ? [this.mod as Modification] : [],
       elementType: this.elementType,
     };
 
@@ -391,6 +392,7 @@ export class ReplaceableInput extends Input {
   choices: string[] = [];
   constraint: Element | undefined;
   mods: Modification[] = [];
+  mod: Modification | undefined;
   constructor(definition: mj.ProtectedElement, basePath: string, elementType: string) {
     super(definition, basePath, elementType);
 
@@ -415,7 +417,7 @@ export class ReplaceableInput extends Input {
       this.mods = constraintDef?.class_modification
         ? [
             ...this.mods,
-            ...getModificationList(constraintDef, this.modelicaPath),
+            ...getModificationList(constraintDef, constraintDef.name),
           ]
         : [];
     }
@@ -536,7 +538,7 @@ export class Enum extends Element {
 
 // Inherited properties by type with modifications
 export class InputGroupExtend extends Element {
-  mod?: Modification | null;
+  mods: Modification[] = [];
   type: string = "";
   value: string = "";
   constructor(definition: any, basePath: string, public elementType: string) {
@@ -552,9 +554,10 @@ export class InputGroupExtend extends Element {
 
     this.value = this.type;
     if (definition.extends_clause.class_modification) {
-      this.mod = createModification({
-        definition: definition,
-      });
+      this.mods = getModificationList(
+        definition.extends_clause,
+        this.type,
+      );
     }
   }
 
@@ -573,7 +576,7 @@ export class InputGroupExtend extends Element {
       visible: false,
       inputs: this.type.startsWith("Modelica") ? [] : [this.type],
       elementType: this.elementType,
-      modifier: this.mod
+      modifiers: this.mods
     };
 
     return typeInstance ? typeInstance.getInputs(inputs, recursive) : inputs;

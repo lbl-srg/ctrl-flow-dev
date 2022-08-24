@@ -10,6 +10,8 @@
 import * as parser from "./parser";
 import { Expression, Literal } from "./expression";
 import { Modification } from "./modification";
+import { access } from "fs";
+import { options } from "marked";
 
 const templateStore = new Map<string, Template>();
 const systemTypeStore = new Map<string, SystemTypeN>();
@@ -68,12 +70,21 @@ export interface Mods {
   [key: string]: Expression
 }
 
-export function flattenModifier(mod: Modification | undefined | null, mods: {[key: string]: Expression} = {}) {
-  if (mod?.value) {
-    mods[mod.modelicaPath] = mod.value;
+export function flattenModifiers(modList: (Modification | undefined | null)[] | undefined, mods: {[key: string]: Expression} = {}) {
+  if (!modList) {
+    return mods; // PUNCH-OUT!
   }
 
-  mod?.mods.map(m => flattenModifier(m, mods));
+  modList.filter(m => m !== undefined || m !== null)
+    .map(mod => {
+    if (mod?.value) {
+      mods[mod.modelicaPath] = mod.value;
+    }
+  
+    if (mod?.mods) {
+      flattenModifiers(mod.mods, mods)
+    }
+  });
 
   return mods;
 }
@@ -85,8 +96,11 @@ function _mapInputToOption(input: parser.TemplateInput, inputs: {[key:string]: p
     Object.entries(input)
           .filter(([key]) => !(key in keysToRemove))
   ) as Option;
+  
+  if (input.modifiers) {
+    option.modifiers = flattenModifiers(input.modifiers);
+  }
 
-  option.modifiers = flattenModifier(input.modifier);
   return option;
 }
 
