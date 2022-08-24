@@ -10,7 +10,7 @@ const templatePath = "TestPackage.Template.TestTemplate";
 
 let tOptions: {[key: string]: Option} = {};
 
-interface ModContext {[key: string]: any};
+interface ModContext {[key: string]: any}; 
 const isExpression = (obj: any) => ['operands', 'operators'].reduce((acc, k) => acc && (k in obj), false);
 
 
@@ -58,44 +58,6 @@ describe("Modifications", () => {
     expect(evaluateExpression(mod[childPath])).toEqual("Interface Param");
   });
 
-  // it("Correctly assigns '__extend' modifiers", () => {
-  //   const parentPath = "TestPackage.Template.TestTemplate.__extend"
-  //   const parentValue = "Updated Value";
-
-  //   const parentOption = tOptions[parentPath];
-  //   const childPath = `${parentOption.type}.interface_param`;
-  //   const childOption = tOptions[childPath];
-  //   const childValue = "Interface Param"
-
-  //   expect(childOption.modifier).toBeTruthy();
-  //   expect(parentOption.modifier).toBeTruthy();
-    
-  //   const parentContext = mapModifierToContext(parentOption.modifier as Mod);
-  //   const childContext = mapModifierToContext(childOption.modifier as Mod);
-  //   // test that parent context contains all necessary values
-  //   expect(parentContext[childPath]).toEqual(parentValue);
-  //   expect(childContext[childPath]).toEqual(childValue);
-  // });
-
-  // it("Finds modifiers from related classes", () => {
-  //   const expectedMods = [
-  //     [
-  //       "TestPackage.Interface.PartialComponent.container",
-  //       "TestPackage.Types.Container.Hand",
-  //     ],
-  //     [
-  //       "TestPackage.Component.FirstComponent.component_param",
-  //       "First Component Param",
-  //     ],
-  //   ];
-
-  //   expectedMods.map((expectedMod) => {
-  //     const [path, value] = expectedMod;
-  //     const extendMod = modifiers.find((m) => m.modelicaPath === path);
-  //     expect(evaluateExpression(extendMod?.value)).toEqual(value);
-  //   });
-  // });
-
   // it("Creates modifiers for replaceables", () => {
   //   const expectedMods = [
   //     [
@@ -111,21 +73,17 @@ describe("Modifications", () => {
   //   });
   // });
 
+  /**
+   * Checks that constrainby modifiers have been applied
+   */
   it("Finds 'constrainby' modifiers", () => {
+    const path = 'TestPackage.Template.TestTemplate.selectable_component';
+    const modPath = 'TestPackage.Interface.PartialComponent.container';
+    const expected = 'TestPackage.Types.Container.Cone';
+    const option = tOptions[path];
+    const mods = option.modifiers;
     
-    const expectedMods = [
-      [
-        "TestPackage.Template.TestTemplate.selectable_component.container",
-        "TestPackage.Types.Container.Cone",
-      ],
-    ];
-
-    expectedMods.map((expectedMod) => {
-      const [path, value] = expectedMod;
-      // const extendMod = modifiers.find((m) => m.modelicaPath === path);
-      // expect(evaluateExpression(extendMod?.value)).toEqual(value);
-      // TODO: update expectedMod path to use real path and test that constrain
-      // mods are found with the replaceable input
-    });
+    expect(mods[modPath]).toBeTruthy();
+    expect(evaluateExpression(mods[modPath])).toEqual(expected);
   });
 });
