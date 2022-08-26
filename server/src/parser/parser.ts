@@ -7,7 +7,7 @@
  * that element is available if referenced by another piece of modelica-json.
  */
 
- // TODO: Fix any typings unless any is really necessary
+// TODO: Fix any typings unless any is really necessary
 
 import { findPackageEntryPoints, loader, TEMPLATE_IDENTIFIER } from "./loader";
 import { Template } from "./template";
@@ -52,9 +52,9 @@ class Store {
 
     // for each path
     // check if either is in the store
-    for(const p of paths) {
+    for (const p of paths) {
       if (this._store.has(p)) {
-        return this._store.get(p)
+        return this._store.get(p);
       }
     }
 
@@ -68,14 +68,14 @@ class Store {
    * For now this does two types of lookup:
    * 1. Try the path as an absolute path
    * 2. Try it as a relative path (context + path)
-   * 
-   * 
+   *
+   *
    * TODO: This needs to match the lookup behavior for modelica type references
    * where it is able to follow an order of searching based on the type. Full rules
    * are defined here: https://mbe.modelica.university/components/packages/lookup/
    *
-   */ 
-  _generatePaths(path:string, context:string): Array<string> {
+   */
+  _generatePaths(path: string, context: string): Array<string> {
     return context ? [path, `${context}.${path}`] : [path];
   }
 
@@ -239,7 +239,7 @@ export class InputGroup extends Element {
       inputs: children
         .map((c) => c.modelicaPath)
         .filter((c) => !(c in MODELICA_LITERALS)),
-      elementType: this.elementType
+      elementType: this.elementType,
     };
 
     return inputs;
@@ -256,14 +256,16 @@ export class Input extends Element {
   inner: boolean | null = null;
   outer: boolean | null = null;
   connectorSizing = false;
-  visible = false; //
   annotation: Modification[] = [];
   tab? = "";
-  // TODO: Fix any typing
   group?: any = "";
-  enable: any; // Expression = { expression: "", modelicaPath: "" };
+  enable: any;
 
-  constructor(definition: mj.ProtectedElement, basePath: string, public elementType: string) {
+  constructor(
+    definition: mj.ProtectedElement,
+    basePath: string,
+    public elementType: string,
+  ) {
     super();
     const componentClause = definition.component_clause;
     const declarationBlock = componentClause.component_list.find(
@@ -280,7 +282,6 @@ export class Input extends Element {
     if (!registered) {
       return; // PUNCH-OUT!
     }
-
 
     // description block (where the annotation is) can be in different locations
     // constrainby changes this location
@@ -324,12 +325,16 @@ export class Input extends Element {
       const group = dialog.mods.find((m) => m.name === "group")?.value;
       const tab = dialog.mods.find((m) => m.name === "tab")?.value;
       const enable = dialog.mods.find((m) => m.name === "enable")?.value;
-      const connectorSizing = dialog.mods.find((m) => m.name === "connectorSizing")?.value;
+      const connectorSizing = dialog.mods.find(
+        (m) => m.name === "connectorSizing",
+      )?.value;
 
       this.group = group ? evaluateExpression(group) : "";
       this.tab = tab ? evaluateExpression(tab) : "";
       this.enable = enable ? evaluateExpression(enable) : true;
-      this.connectorSizing = connectorSizing ? evaluateExpression(connectorSizing) : false;
+      this.connectorSizing = connectorSizing
+        ? evaluateExpression(connectorSizing)
+        : false;
     }
   }
 
@@ -337,12 +342,12 @@ export class Input extends Element {
     let isVisible = !(
       this.outer ||
       this.final ||
-      (this.connectorSizing === true) ||
-      (this.enable === false)
+      this.connectorSizing === true ||
+      this.enable === false
     );
 
     const isLiteral = MODELICA_LITERALS.includes(this.type);
-    return (isVisible && (isLiteral || inputType?.visible === true));
+    return isVisible && (isLiteral || inputType?.visible === true);
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
@@ -367,12 +372,9 @@ export class Input extends Element {
       visible: visible,
       enable: this.enable,
       inputs: childInputs,
-      modifiers: (this.mod) ? [this.mod as Modification] : [],
+      modifiers: this.mod ? [this.mod as Modification] : [],
       elementType: this.elementType,
     };
-
-    if (this.modelicaPath === '')
-    console.log()
 
     if (recursive) {
       if (typeInstance) {
@@ -389,7 +391,11 @@ export class ReplaceableInput extends Input {
   constraint: Element | undefined;
   mods: Modification[] = [];
   mod: Modification | undefined;
-  constructor(definition: mj.ProtectedElement, basePath: string, elementType: string) {
+  constructor(
+    definition: mj.ProtectedElement,
+    basePath: string,
+    elementType: string,
+  ) {
     super(definition, basePath, elementType);
 
     // the default value is original type provided
@@ -441,6 +447,7 @@ export class ReplaceableInput extends Input {
     // if an annotation has been provided, use the choices from that annotation
     // otherwise fallback to using the parameter type
     const childTypes = this.choices.length ? this.choices : [this.type];
+    const visible = childTypes.length > 1;
 
     inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
@@ -450,9 +457,9 @@ export class ReplaceableInput extends Input {
       inputs: childTypes,
       group: this.group,
       tab: this.tab,
-      visible: true,
+      visible: visible,
       modifiers: this.mods,
-      elementType: this.elementType
+      elementType: this.elementType,
     };
 
     if (recursive) {
@@ -525,7 +532,7 @@ export class Enum extends Element {
           type: this.type,
           value: e.modelicaPath,
           visible: false,
-          elementType: this.elementType
+          elementType: this.elementType,
         }),
     );
 
@@ -551,10 +558,7 @@ export class InputGroupExtend extends Element {
 
     this.value = this.type;
     if (definition.extends_clause.class_modification) {
-      this.mods = getModificationList(
-        definition.extends_clause,
-        this.type,
-      );
+      this.mods = getModificationList(definition.extends_clause, this.type);
     }
   }
 
@@ -573,7 +577,7 @@ export class InputGroupExtend extends Element {
       visible: false,
       inputs: this.type.startsWith("Modelica") ? [] : [this.type],
       elementType: this.elementType,
-      modifiers: this.mods
+      modifiers: this.mods,
     };
 
     return typeInstance ? typeInstance.getInputs(inputs, recursive) : inputs;
