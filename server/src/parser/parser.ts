@@ -189,7 +189,7 @@ export class InputGroup extends Element {
   description: string = "";
   entryPoint = false;
   mods: Modification[] | undefined;
-  extendClass: InputGroup | undefined;
+  extendElement: InputGroup | undefined;
 
   constructor(definition: any, basePath: string, public elementType: string) {
     super();
@@ -209,17 +209,18 @@ export class InputGroup extends Element {
     this.elementList = specifier.composition.element_list
       .map((e: any) => {
         const element = _constructElement(e, this.modelicaPath);
-        if (e.elementType === "extends_clause") {
+        if (element?.elementType === "extends_clause") {
           const extendParam = element as InputGroupExtend;
           this.mods = extendParam.mods;
-          this.extendClass = typeStore.get(extendParam.type) as InputGroup;
+          this.extendElement = typeStore.get(extendParam.type) as InputGroup;
         }
+        return element;
       })
       .filter((e: Element | undefined) => e !== undefined)
       .filter((e: Element) => e.elementType !== "extends_clause");
 
-    if (this.extendClass) {
-      this.elementList.push(...this.extendClass.elementList);
+    if (this.extendElement) {
+      this.elementList.push(...this.extendElement.elementList);
     }
 
     this.annotation = specifier.composition.annotation?.map(

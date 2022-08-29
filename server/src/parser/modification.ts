@@ -194,7 +194,6 @@ export class Modification {
     public value: any,
     public mods: Modification[] = [],
   ) {
-
     this.modelicaPath = [basePath, name].filter(s => s !== "").join('.');
 
     if (this.modelicaPath) {

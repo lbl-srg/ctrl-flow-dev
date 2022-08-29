@@ -196,17 +196,16 @@ describe("Expected Inputs are extracted", () => {
     const firstComponentInput =
       inputs["TestPackage.Template.TestTemplate.first"];
 
-    expect(firstComponentInput.inputs?.length).toBe(2);
+    expect(firstComponentInput.inputs?.length).toBe(3);
   });
 
   it("Extracts expected extend class inputs", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const inputGroup = file.elementList[0] as parser.InputGroup;
     const inputs = inputGroup.getInputs();
-    const extendInputs = inputs["TestPackage.Template.TestTemplate.__extend"];
-    const [childInput] = extendInputs.inputs as string[];
-    const extendTypeInputs = inputs[childInput];
-    expect(extendTypeInputs.inputs?.length).toBe(1);
+    const extendParamPath = "TestPackage.Interface.PartialComponent.container";
+    const extendInput = inputs[extendParamPath];
+    expect(extendInput).toBeTruthy();
   });
 
   it("All child inputs have valid input references", () => {

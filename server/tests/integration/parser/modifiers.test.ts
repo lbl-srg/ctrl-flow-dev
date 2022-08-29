@@ -1,18 +1,23 @@
 import { createTestModelicaJson, fullTempDirPath } from "./utils";
-import { getTemplates, Option, flattenModifiers } from "../../../src/parser/template";
+import {
+  getTemplates,
+  Option,
+  flattenModifiers,
+} from "../../../src/parser/template";
 import { findElement } from "../../../src/parser/parser";
-import { loadPackage, Template} from "../../../src/parser/";
+import { loadPackage, Template } from "../../../src/parser/";
 import { evaluateExpression } from "../../../src/parser/expression";
 import * as parser from "../../../src/parser/parser";
 
-
 const templatePath = "TestPackage.Template.TestTemplate";
 
-let tOptions: {[key: string]: Option} = {};
+let tOptions: { [key: string]: Option } = {};
 
-interface ModContext {[key: string]: any}; 
-const isExpression = (obj: any) => ['operands', 'operators'].reduce((acc, k) => acc && (k in obj), false);
-
+interface ModContext {
+  [key: string]: any;
+}
+const isExpression = (obj: any) =>
+  ["operands", "operators"].reduce((acc, k) => acc && k in obj, false);
 
 describe("Modifications", () => {
   beforeAll(() => {
@@ -39,20 +44,25 @@ describe("Modifications", () => {
   // });
 
   it("Maps Modifiers to Flattened List of Expressions and Paths", () => {
-    const path = `TestPackage.Template.TestTemplate.__extend`;
-    const element = findElement(path);
-    const inputs = element?.getInputs() as { [key: string]: parser.TemplateInput };
+    const path = `TestPackage.Template.TestTemplate`;
+    const element = findElement(path) as parser.InputGroup;
+    const inputs = element?.getInputs() as {
+      [key: string]: parser.TemplateInput;
+    };
     const input = inputs[path];
     const mod = flattenModifiers(input.modifiers);
-    const modPath = `${input.type}.interface_param`;
+    const extendElement = element.extendElement;
+    const modPath = `${extendElement?.type}.interface_param`;
     expect(evaluateExpression(mod[modPath])).toEqual("Updated Value");
   });
 
   it("Modifier value is correct for a given option", () => {
     const childPath = `TestPackage.Interface.ExtendInterface.interface_param`;
-  
+
     const element = findElement(childPath);
-    const inputs = element?.getInputs() as { [key: string]: parser.TemplateInput };
+    const inputs = element?.getInputs() as {
+      [key: string]: parser.TemplateInput;
+    };
     const input = inputs[childPath];
     const mod = flattenModifiers(input.modifiers);
     expect(evaluateExpression(mod[childPath])).toEqual("Interface Param");
@@ -77,12 +87,12 @@ describe("Modifications", () => {
    * Checks that constrainby modifiers have been applied
    */
   it("Finds 'constrainby' modifiers", () => {
-    const path = 'TestPackage.Template.TestTemplate.selectable_component';
-    const modPath = 'TestPackage.Interface.PartialComponent.container';
-    const expected = 'TestPackage.Types.Container.Cone';
+    const path = "TestPackage.Template.TestTemplate.selectable_component";
+    const modPath = "TestPackage.Interface.PartialComponent.container";
+    const expected = "TestPackage.Types.Container.Cone";
     const option = tOptions[path];
     const mods = option.modifiers;
-    
+
     expect(mods[modPath]).toBeTruthy();
     expect(evaluateExpression(mods[modPath])).toEqual(expected);
   });
