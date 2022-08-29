@@ -58,7 +58,7 @@ describe("Template wrapper class functionality", () => {
     const systemTemplateOptions = options.find(
       (o) => o.modelicaPath === systemTemplate.modelicaPath,
     );
-    expect(systemTemplateOptions?.inputs?.length).toBe(
+    expect(systemTemplateOptions?.options?.length).toBe(
       expectedTemplateValues.optionLength,
     );
   });
