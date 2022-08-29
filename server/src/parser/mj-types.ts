@@ -4,8 +4,6 @@ Manually created interfaces to match the output of the modelica-json tool
 
 */
 
-import { DeclarationBlock } from "./modification";
-
 export interface ClassModification {
   element_modification_or_replaceable: {
     each: boolean;
@@ -121,3 +119,78 @@ export interface ProtectedElement {
   component_clause: ComponentClause;
   description: Description;
 }
+
+
+export type ExtendsClause = {
+  extends_clause: ClassMod;
+  name: string;
+}
+
+export type ConstraintDef = {
+  name: string;
+  class_modification: ClassMod;
+}
+
+export type DeclarationBlock = {
+  identifier: string;
+  modification?: ClassMod | WrappedMod | Assignment | RedeclareMod;
+};
+
+export type DescriptionBlock = {
+  description_string: string;
+  annotation?: any;
+};
+
+export type ComponentDeclaration1 = {
+  declaration: DeclarationBlock;
+  description?: DescriptionBlock;
+};
+
+export type ComponentClause1 = {
+  type_specifier: string; // Modelica Path
+  component_declaration1: ComponentDeclaration1;
+};
+
+export type ShortClassDefinition = {
+  class_prefixes: string; // //(PARTIAL)? (CLASS | MODEL | (OPERATOR)? RECORD | BLOCK | (EXPANDABLE)? CONNECTOR | TYPE | PACKAGE | ((PURE | IMPURE))? (OPERATOR)? FUNCTION | OPERATOR),
+  short_class_specifier: ShortClassSpecifier; // from 'parser.ts'
+};
+
+export type ElementReplaceable = {
+  component_clause1: ComponentClause1;
+  short_class_definition: ShortClassDefinition;
+};
+
+export type RedeclareMod = {
+  element_redeclaration: {
+    each: boolean;
+    final: boolean;
+    short_class_definition?: ShortClassDefinition;
+    element_replaceable?: ElementReplaceable;
+    component_clause1?: ComponentClause1;
+  };
+};
+
+export type ClassMod = {
+  class_modification: (WrappedMod | RedeclareMod)[];
+  name: string;
+};
+
+export type Assignment = {
+  equal: boolean;
+  expression: {
+    simple_expression: string; // JSON deserializable value
+  };
+};
+
+// Replacable
+export type WrappedMod = {
+  element_modification_or_replaceable: {
+    element_modification: Mod;
+  };
+};
+
+export type Mod = {
+  name: string;
+  modification: ClassMod | WrappedMod | Assignment | RedeclareMod;
+};
