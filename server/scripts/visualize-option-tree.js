@@ -21,8 +21,9 @@ const isPrimitive = (o) => {
 
 const writeNode = (nodePath, depth = 0) => {
   const node = optionMap[nodePath];
+  let printStr = node?.visible ? `******* - ${node?.name}` : `${node?.name}`;
   // if (node?.visible && !isPrimitive(node)) {
-  console.log(DebugTree.depth(depth), `${node?.name}\t\t${node?.modelicaPath}`);
+  console.log(DebugTree.depth(depth), printStr);
   // }
 
   node?.options?.map((oPath) => {
