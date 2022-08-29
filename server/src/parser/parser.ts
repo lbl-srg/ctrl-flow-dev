@@ -20,6 +20,7 @@ import {
 import { Literal, evaluateExpression } from "./expression";
 import * as mj from "./mj-types";
 import { create } from "underscore";
+import { string } from "../../bin/modelica-buildings/Buildings/Resources/src/convertEPW/doc/jquery/jszip/dist/jszip";
 
 export const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
@@ -143,6 +144,7 @@ export abstract class Element {
   description = "";
   entryPoint = false;
   duplicate = false;
+  elementType = "";
 
   abstract getInputs(
     inputs?: { [key: string]: TemplateInput },
@@ -186,7 +188,8 @@ export class InputGroup extends Element {
   elementList: Element[] = [];
   description: string = "";
   entryPoint = false;
-  mod: Modification | undefined;
+  mods: Modification[] | undefined;
+  extendClass: InputGroup | undefined;
 
   constructor(definition: any, basePath: string, public elementType: string) {
     super();
@@ -204,8 +207,20 @@ export class InputGroup extends Element {
     this.description = specifier.description_string;
 
     this.elementList = specifier.composition.element_list
-      .map((e: any) => _constructElement(e, this.modelicaPath))
-      .filter((e: Element | undefined) => e !== undefined);
+      .map((e: any) => {
+        const element = _constructElement(e, this.modelicaPath);
+        if (e.elementType === "extends_clause") {
+          const extendParam = element as InputGroupExtend;
+          this.mods = extendParam.mods;
+          this.extendClass = typeStore.get(extendParam.type) as InputGroup;
+        }
+      })
+      .filter((e: Element | undefined) => e !== undefined)
+      .filter((e: Element) => e.elementType !== "extends_clause");
+
+    if (this.extendClass) {
+      this.elementList.push(...this.extendClass.elementList);
+    }
 
     this.annotation = specifier.composition.annotation?.map(
       (m: mj.Mod | mj.WrappedMod) => createModification({ definition: m }),
@@ -240,6 +255,7 @@ export class InputGroup extends Element {
         .map((c) => c.modelicaPath)
         .filter((c) => !(c in MODELICA_LITERALS)),
       elementType: this.elementType,
+      modifiers: this.mods,
     };
 
     return inputs;
@@ -568,17 +584,16 @@ export class InputGroupExtend extends Element {
     }
 
     const typeInstance = typeStore.get(this.type);
-
-    inputs[this.modelicaPath] = {
-      modelicaPath: this.modelicaPath,
-      type: this.type,
-      value: this.value,
-      name: typeInstance?.name || "",
-      visible: false,
-      inputs: this.type.startsWith("Modelica") ? [] : [this.type],
-      elementType: this.elementType,
-      modifiers: this.mods,
-    };
+    // inputs[this.modelicaPath] = {
+    //   modelicaPath: this.modelicaPath,
+    //   type: this.type,
+    //   value: this.value,
+    //   name: typeInstance?.name || "",
+    //   visible: false,
+    //   inputs: this.type.startsWith("Modelica") ? [] : [this.type],
+    //   elementType: this.elementType,
+    //   modifiers: this.mods,
+    // };
 
     return typeInstance ? typeInstance.getInputs(inputs, recursive) : inputs;
   }
