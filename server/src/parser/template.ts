@@ -144,39 +144,15 @@ function _extractScheduleOptionHelper(
 /**
  * Attempts to find the 'dat' element, then follows the tree
  * of options connected to that 'dat'
+ * 
+ * TODO: change this to generic dat split - when a 'dat' is found
+ * pass in the path and let it split things out
  */
-function _extractScheduleOptions(modelicaPath: string) {
-  // try and find 'dat'
-  let curPath = modelicaPath;
-  let dat: parser.Element | undefined | null = null;
+function _extractScheduleOptions(dat: parser.TemplateInput, inputs: {[key: string]: parser.TemplateInput}) {
   const scheduleOptions: ScheduleOptions = {};
-
-  while (!dat) {
-    dat = parser.findElement(`${curPath}.dat`);
-    if (dat) {
-      break;
-    } else {
-      const extendElement = parser.findElement(
-        `${curPath}.${parser.EXTEND_NAME}`,
-      );
-      if (!extendElement) {
-        break; // bottomed out, 'dat' not found - PUNCH-OUT!
-      }
-      // use extend 'type' to get to extend class options
-      curPath = extendElement.type;
-    }
-  }
-
-  if (dat) {
-    const inputs = dat.getInputs();
-    let optionRoot = _mapInputToOption(inputs[dat.modelicaPath], inputs);
-    scheduleOptions[dat.modelicaPath] = { ...optionRoot, groups: [] };
-
-    optionRoot.options?.map((c) =>
-      _extractScheduleOptionHelper(scheduleOptions, inputs, c),
-    );
-  }
-
+  dat.inputs?.map(i => {
+    _extractScheduleOptionHelper(scheduleOptions, inputs, i)
+  })
   return scheduleOptions;
 }
 
@@ -236,8 +212,17 @@ export class Template {
   }
 
   _extractOptions(element: parser.Element) {
+    let scheduleOptions: ScheduleOptions = {};
     const inputs = element.getInputs();
-    this.scheduleOptions = _extractScheduleOptions(this.modelicaPath);
+    
+    // find dat entry points
+    Object.values(inputs).filter(i => {
+      return i.elementType === 'record' && i.name === 'dat'
+    }).map(i => {
+      scheduleOptions = {...scheduleOptions, ..._extractScheduleOptions(i, inputs)};
+    });
+
+    this.scheduleOptions = scheduleOptions
     Object.keys(this.scheduleOptions).map((k) => delete inputs[k]);
     this.options = {};
     Object.entries(inputs).map(([key, input]) => {
