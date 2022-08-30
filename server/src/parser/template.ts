@@ -217,16 +217,23 @@ export class Template {
     
     // find dat entry points
     Object.values(inputs).filter(i => {
-      return i.elementType === 'record' && i.name === 'dat'
+      return i.modelicaPath.endsWith('.dat')
     }).map(i => {
       scheduleOptions = {...scheduleOptions, ..._extractScheduleOptions(i, inputs)};
     });
 
     this.scheduleOptions = scheduleOptions
-    Object.keys(this.scheduleOptions).map((k) => delete inputs[k]);
+    const scheduleKeys = Object.keys(this.scheduleOptions);
+
+    Object.keys(this.scheduleOptions).map((k) => {
+      delete inputs[k];
+    });
+
     this.options = {};
     Object.entries(inputs).map(([key, input]) => {
       this.options[key] = _mapInputToOption(input, inputs);
+      // remove any option references that have been split out as schedule option
+      this.options[key].options?.filter(o => !(scheduleKeys.includes(o)));
     });
 
     // kludge: 'Modelica.Icons.Record' is useful for schematics but
