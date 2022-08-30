@@ -159,6 +159,7 @@ export type ShortClassDefinition = {
 export type ElementReplaceable = {
   component_clause1: ComponentClause1;
   short_class_definition: ShortClassDefinition;
+  constraining_clause: ConstraintDef;
 };
 
 export type RedeclareMod = {
@@ -187,6 +188,9 @@ export type Assignment = {
 export type WrappedMod = {
   element_modification_or_replaceable: {
     element_modification: Mod;
+    final: boolean;
+    each: boolean;
+    element_replaceable: ElementReplaceable;
   };
 };
 
