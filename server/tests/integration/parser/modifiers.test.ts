@@ -53,7 +53,9 @@ describe("Modifications", () => {
     const mod = flattenModifiers(input.modifiers);
     const extendElement = element.extendElement;
     const modPath = `${extendElement?.type}.interface_param`;
-    expect(evaluateExpression(mod[modPath])).toEqual("Updated Value");
+    expect(evaluateExpression(mod[modPath].expression)).toEqual(
+      "Updated Value",
+    );
   });
 
   it("Modifier value is correct for a given option", () => {
@@ -65,7 +67,24 @@ describe("Modifications", () => {
     };
     const input = inputs[childPath];
     const mod = flattenModifiers(input.modifiers);
-    expect(evaluateExpression(mod[childPath])).toEqual("Interface Param");
+    expect(evaluateExpression(mod[childPath].expression)).toEqual(
+      "Interface Param",
+    );
+  });
+
+  it("Modifier paths are correctly expanded", () => {
+    const path = "TestPackage.Template.TestTemplate.dat";
+    const element = findElement(path);
+    const inputs = element?.getInputs() as {
+      [key: string]: parser.TemplateInput;
+    };
+    const input = inputs[path];
+    const mods = flattenModifiers(input.modifiers);
+
+    expect(
+      "TestPackage.Template.Data.TestTemplate.container_selectable_component" in
+        mods,
+    ).toBeTruthy();
   });
 
   // it("Creates modifiers for replaceables", () => {
@@ -94,6 +113,6 @@ describe("Modifications", () => {
     const mods = option.modifiers;
 
     expect(mods[modPath]).toBeTruthy();
-    expect(evaluateExpression(mods[modPath])).toEqual(expected);
+    expect(evaluateExpression(mods[modPath].expression)).toEqual(expected);
   });
 });

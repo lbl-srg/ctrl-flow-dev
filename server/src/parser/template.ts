@@ -56,7 +56,7 @@ export interface Option {
   tab?: string;
   value?: any;
   enable?: any;
-  modifiers: { [key: string]: Expression };
+  modifiers: { [key: string]: {expression: Expression, final: boolean }};
   replaceable: boolean;
   elementType: string;
 }
@@ -71,7 +71,7 @@ export interface Mods {
 
 export function flattenModifiers(
   modList: (Modification | undefined | null)[] | undefined,
-  mods: { [key: string]: Expression } = {},
+  mods: { [key: string]: {expression: Expression, final: boolean }} = {},
 ) {
   if (!modList) {
     return mods; // PUNCH-OUT!
@@ -81,7 +81,7 @@ export function flattenModifiers(
     .filter((m) => m !== undefined || m !== null)
     .map((mod) => {
       if (mod?.value) {
-        mods[mod.modelicaPath] = mod.value;
+        mods[mod.modelicaPath] = {expression: mod.value, final: mod.final};
       }
 
       if (mod?.mods) {
