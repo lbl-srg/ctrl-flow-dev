@@ -19,8 +19,6 @@ import {
 
 import { Literal, evaluateExpression } from "./expression";
 import * as mj from "./mj-types";
-import { create } from "underscore";
-import { string } from "../../bin/modelica-buildings/Buildings/Resources/src/convertEPW/doc/jquery/jszip/dist/jszip";
 
 export const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
