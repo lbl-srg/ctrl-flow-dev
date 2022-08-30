@@ -141,7 +141,7 @@ function unpackModblock(props: ModificationProps) {
     name = modBlock.identifier;
   }
 
-  const modElement = typeStore.find(`${basePath}.name`)
+  const modElement = typeStore.find(`${basePath}.${name}`)
   const modType = modElement?.type;
 
   let mod:
