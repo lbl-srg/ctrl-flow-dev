@@ -22,10 +22,9 @@ const isPrimitive = (o) => {
 
 const writeNode = (nodePath, mods = {}, depth = 0) => {
   const node = optionMap[nodePath];
-  const type = node?.type;
-  const mod = type ? mods[type] : null;
+  const mod = mods[nodePath];
   const visible =
-    mod?.final !== undefined ? node?.visible && mod.final : node?.visible;
+    mod?.final !== undefined ? node?.visible && !mod.final : node?.visible;
   // check the mod back for final
   let printStr = visible ? `** - ${node?.name}` : `${node?.name}`;
   if (!isPrimitive(node)) {
