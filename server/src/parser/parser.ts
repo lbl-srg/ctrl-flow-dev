@@ -209,7 +209,7 @@ export class InputGroup extends Element {
         const element = _constructElement(e, this.modelicaPath);
         if (element?.elementType === "extends_clause") {
           const extendParam = element as InputGroupExtend;
-          this.mods = extendParam.mods;
+          this.mods = extendParam.mods; // TODO: merge modifiers?
           this.extendElement = typeStore.get(extendParam.type) as InputGroup;
         }
         return element;
