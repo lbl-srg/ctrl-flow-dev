@@ -5,7 +5,7 @@
  * and provide accessor methods to extract what is needed in linkage schema format
  *
  * Templates hold logic to understand multiple parsed elements as a cohesive template
- * 
+ *
  */
 
 import * as parser from "./parser";
@@ -56,7 +56,7 @@ export interface Option {
   tab?: string;
   value?: any;
   enable?: any;
-  modifiers: { [key: string]: {expression: Expression, final: boolean }};
+  modifiers: { [key: string]: { expression: Expression; final: boolean } };
   replaceable: boolean;
   elementType: string;
 }
@@ -71,7 +71,7 @@ export interface Mods {
 
 export function flattenModifiers(
   modList: (Modification | undefined | null)[] | undefined,
-  mods: { [key: string]: {expression: Expression, final: boolean }} = {},
+  mods: { [key: string]: { expression: Expression; final: boolean } } = {},
 ) {
   if (!modList) {
     return mods; // PUNCH-OUT!
@@ -81,7 +81,7 @@ export function flattenModifiers(
     .filter((m) => m !== undefined || m !== null)
     .map((mod) => {
       if (mod?.value) {
-        mods[mod.modelicaPath] = {expression: mod.value, final: mod.final};
+        mods[mod.modelicaPath] = { expression: mod.value, final: mod.final };
       }
 
       if (mod?.mods) {
@@ -100,7 +100,7 @@ function _mapInputToOption(
   const options = input.inputs;
   // TODO: this filter is not working
   const option = Object.fromEntries(
-    Object.entries(input).filter(([key]) => !(key in keysToRemove)),
+    Object.entries(input).filter(([key]) => !keysToRemove.includes(key)),
   ) as Option;
 
   if (input.modifiers) {
@@ -144,15 +144,18 @@ function _extractScheduleOptionHelper(
 /**
  * Attempts to find the 'dat' element, then follows the tree
  * of options connected to that 'dat'
- * 
+ *
  * TODO: change this to generic dat split - when a 'dat' is found
  * pass in the path and let it split things out
  */
-function _extractScheduleOptions(dat: parser.TemplateInput, inputs: {[key: string]: parser.TemplateInput}) {
+function _extractScheduleOptions(
+  dat: parser.TemplateInput,
+  inputs: { [key: string]: parser.TemplateInput },
+) {
   const scheduleOptions: ScheduleOptions = {};
-  dat.inputs?.map(i => {
-    _extractScheduleOptionHelper(scheduleOptions, inputs, i)
-  })
+  dat.inputs?.map((i) => {
+    _extractScheduleOptionHelper(scheduleOptions, inputs, i);
+  });
   return scheduleOptions;
 }
 
@@ -214,18 +217,24 @@ export class Template {
   _extractOptions(element: parser.Element) {
     let scheduleOptions: ScheduleOptions = {};
     const inputs = element.getInputs();
-    
-    // find dat entry points
-    Object.values(inputs).filter(i => {
-      return i.modelicaPath.endsWith('.dat')
-    }).map(i => {
-      scheduleOptions = {...scheduleOptions, ..._extractScheduleOptions(i, inputs)};
+    const datEntryPoints = Object.values(inputs).filter((i) => {
+      return i.modelicaPath.endsWith(".dat");
     });
 
-    this.scheduleOptions = scheduleOptions
-    const scheduleKeys = Object.keys(this.scheduleOptions);
+    datEntryPoints.map((i) => {
+      scheduleOptions = {
+        ...scheduleOptions,
+        ..._extractScheduleOptions(i, inputs),
+      };
+    });
 
-    Object.keys(this.scheduleOptions).map((k) => {
+    this.scheduleOptions = scheduleOptions;
+    const scheduleKeys = [
+      ...Object.keys(this.scheduleOptions),
+      ...datEntryPoints.map((i) => i.modelicaPath),
+    ];
+
+    scheduleKeys.map((k) => {
       delete inputs[k];
     });
 
@@ -233,7 +242,7 @@ export class Template {
     Object.entries(inputs).map(([key, input]) => {
       this.options[key] = _mapInputToOption(input, inputs);
       // remove any option references that have been split out as schedule option
-      this.options[key].options?.filter(o => !(scheduleKeys.includes(o)));
+      this.options[key].options?.filter((o) => !scheduleKeys.includes(o));
     });
 
     // kludge: 'Modelica.Icons.Record' is useful for schematics but
