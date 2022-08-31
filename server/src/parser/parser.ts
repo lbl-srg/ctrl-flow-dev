@@ -19,6 +19,7 @@ import {
 
 import { Literal, evaluateExpression } from "./expression";
 import * as mj from "./mj-types";
+import { create } from "underscore";
 
 export const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
@@ -188,6 +189,7 @@ export class InputGroup extends Element {
   entryPoint = false;
   mods: Modification[] | undefined;
   extendElement: InputGroup | undefined;
+  deadEnd: boolean = false;
 
   constructor(definition: any, basePath: string, public elementType: string) {
     super();
@@ -210,6 +212,7 @@ export class InputGroup extends Element {
         if (element?.elementType === "extends_clause") {
           const extendParam = element as InputGroupExtend;
           this.mods = extendParam.mods; // TODO: merge modifiers?
+          this.deadEnd = extendParam.deadEnd;
           this.extendElement = typeStore.get(extendParam.type) as InputGroup;
         }
         return element;
@@ -560,11 +563,25 @@ export class InputGroupExtend extends Element {
   mods: Modification[] = [];
   type: string = "";
   value: string = "";
+  annotation: Modification[] = [];
+  deadEnd: boolean;
   constructor(definition: any, basePath: string, public elementType: string) {
     super();
     this.name = EXTEND_NAME; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = definition.extends_clause.name;
+    this.deadEnd = false;
+
+    const annotations = definition.extends_clause?.annotation;
+
+    if (annotations) {
+      this.annotation = definition.extends_clause?.annotation
+        .map((mod: mj.Mod | mj.WrappedMod) =>
+          createModification({ definition: mod }),
+        )
+        .filter((m: any) => m !== undefined) as Modification[];
+      this._setUIInfo();
+    }
 
     const registered = this.registerPath(this.modelicaPath, this.type);
     if (!registered) {
@@ -574,6 +591,16 @@ export class InputGroupExtend extends Element {
     this.value = this.type;
     if (definition.extends_clause.class_modification) {
       this.mods = getModificationList(definition.extends_clause, this.type);
+    }
+  }
+
+  _setUIInfo() {
+    const __Linkage = this.annotation.find((m) => m.name === "__Linkage");
+
+    if (__Linkage) {
+      const enable = __Linkage.mods.find((m) => m.name === "enable")?.value;
+
+      this.deadEnd = enable ? !evaluateExpression(enable) : false;
     }
   }
 
