@@ -64,7 +64,7 @@ describe("Template wrapper class functionality", () => {
   });
 
   it("Templates generate separate schedule options and configuration options", () => {
-    const datPath = 'TestPackage.Template.TestTemplate.dat';
+    const datPath = 'TestPackage.Template.Data.TestTemplate.record_parameter';
 
     const { scheduleOptions } = getOptions();
     const datScheduleOption = scheduleOptions.find( o => o.modelicaPath === datPath);

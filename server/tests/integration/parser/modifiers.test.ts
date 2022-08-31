@@ -85,6 +85,11 @@ describe("Modifications", () => {
       "TestPackage.Template.Data.TestTemplate.container_selectable_component" in
         mods,
     ).toBeTruthy();
+
+    // TODO: secOutRel m
+    // secOutRel is a good param to explore
+    // damOut <--
+    // damOutMin
   });
 
   // it("Creates modifiers for replaceables", () => {

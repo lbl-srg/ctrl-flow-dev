@@ -141,9 +141,6 @@ function unpackModblock(props: ModificationProps) {
     name = modBlock.identifier;
   }
 
-  const modElement = typeStore.find(`${basePath}.name`)
-  const modType = modElement?.type;
-
   let mod:
     | mj.WrappedMod
     | mj.RedeclareMod
@@ -169,8 +166,11 @@ function unpackModblock(props: ModificationProps) {
         value = replaceable.component_clause1.type_specifier;
       }
     } else if ("class_modification" in mod) {
+      // update base path to class type
+      const modElement = typeStore.find(`${basePath}.${name}`);
+      const modType = modElement?.type;
       // TODO: pass in the parent mod type as the base path
-      const newBase = (modType) ? modType : basePath;
+      const newBase = modType ? modType : basePath;
       mods = getModificationList(mod as mj.ClassMod, newBase); //mod.class_modification
     }
   }
@@ -183,15 +183,11 @@ export function getModificationList(
   basePath: string,
   name = "",
 ) {
-  const path = name ? `${basePath}.${name}` : basePath;
-  const element = typeStore.get(path);
-  const childType = element?.type || "";
-
   return classMod.class_modification
     .map((m) => {
       return createModification({
         definition: m as mj.WrappedMod,
-        basePath: childType,
+        basePath: basePath,
         name,
       });
     })
