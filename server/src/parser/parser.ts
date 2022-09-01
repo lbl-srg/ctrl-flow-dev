@@ -19,7 +19,6 @@ import {
 
 import { Literal, evaluateExpression } from "./expression";
 import * as mj from "./mj-types";
-import { create } from "underscore";
 
 export const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
@@ -220,13 +219,14 @@ export class InputGroup extends Element {
       .filter((e: Element | undefined) => e !== undefined)
       .filter((e: Element) => e.elementType !== "extends_clause");
 
-    if (this.extendElement) {
+    if (this.extendElement && !this.deadEnd) {
       this.elementList.push(...this.extendElement.elementList);
     }
 
     this.annotation = specifier.composition.annotation?.map(
       (m: mj.Mod | mj.WrappedMod) => createModification({ definition: m }),
     );
+
     if (
       this.annotation &&
       this.annotation.find((m) => m.name === TEMPLATE_IDENTIFIER)
@@ -247,6 +247,9 @@ export class InputGroup extends Element {
     const children = this.elementList.filter((el) => {
       return Object.keys(el.getInputs(inputs)).length > 0;
     });
+
+    // extend element children may or may not be included
+    this.extendElement?.getInputs(inputs);
 
     inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
@@ -316,7 +319,6 @@ export class Input extends Element {
           )
           .filter((m) => m !== undefined) as Modification[];
       }
-      this._setUIInfo();
     }
 
     this.mod = declarationBlock.modification
@@ -349,7 +351,18 @@ export class Input extends Element {
 
       this.group = group ? evaluateExpression(group) : "";
       this.tab = tab ? evaluateExpression(tab) : "";
-      this.enable = enable ? evaluateExpression(enable) : true;
+      const typeInstance = typeStore.find(this.type) as Element;
+      // TODO: elementTypes need to be split out into an enum...
+      const classTypes = ["model", "block", "record", "package"]; // more - move this constant?
+      const isClassType = classTypes.includes(typeInstance?.elementType);
+      // for class types, no dialog annotation means don't enable
+      // for all other types it is true
+      if (isClassType) {
+        this.enable = enable ? evaluateExpression(enable) : false;
+      } else {
+        this.enable = enable ? evaluateExpression(enable) : true;
+      }
+
       this.connectorSizing = connectorSizing
         ? evaluateExpression(connectorSizing)
         : false;
