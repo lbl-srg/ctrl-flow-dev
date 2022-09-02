@@ -20,7 +20,7 @@ const data = {
 };
 
 const dest = path.resolve(
-  `${__dirname}/../public/system-template-buildings-package.json`,
+  `${__dirname}/templates.json`,
 );
 
 fs.writeFileSync(dest, JSON.stringify(data, null, 2));

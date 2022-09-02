@@ -5,7 +5,7 @@
  * and provide accessor methods to extract what is needed in linkage schema format
  *
  * Templates hold logic to understand multiple parsed elements as a cohesive template
- * 
+ *
  */
 
 import * as parser from "./parser";
@@ -56,7 +56,7 @@ export interface Option {
   tab?: string;
   value?: any;
   enable?: any;
-  modifiers: { [key: string]: Expression };
+  modifiers: { [key: string]: { expression: Expression; final: boolean } };
   replaceable: boolean;
   elementType: string;
 }
@@ -71,7 +71,7 @@ export interface Mods {
 
 export function flattenModifiers(
   modList: (Modification | undefined | null)[] | undefined,
-  mods: { [key: string]: Expression } = {},
+  mods: { [key: string]: { expression: Expression; final: boolean } } = {},
 ) {
   if (!modList) {
     return mods; // PUNCH-OUT!
@@ -81,7 +81,7 @@ export function flattenModifiers(
     .filter((m) => m !== undefined || m !== null)
     .map((mod) => {
       if (mod?.value) {
-        mods[mod.modelicaPath] = mod.value;
+        mods[mod.modelicaPath] = { expression: mod.value, final: mod.final };
       }
 
       if (mod?.mods) {
@@ -98,9 +98,9 @@ function _mapInputToOption(
 ): Option {
   const keysToRemove = ["elementType", "inputs"];
   const options = input.inputs;
-  // TODO: this filter is not working
+
   const option = Object.fromEntries(
-    Object.entries(input).filter(([key]) => !(key in keysToRemove)),
+    Object.entries(input).filter(([key]) => !keysToRemove.includes(key)),
   ) as Option;
 
   if (input.modifiers) {
@@ -144,39 +144,18 @@ function _extractScheduleOptionHelper(
 /**
  * Attempts to find the 'dat' element, then follows the tree
  * of options connected to that 'dat'
+ *
+ * TODO: change this to generic dat split - when a 'dat' is found
+ * pass in the path and let it split things out
  */
-function _extractScheduleOptions(modelicaPath: string) {
-  // try and find 'dat'
-  let curPath = modelicaPath;
-  let dat: parser.Element | undefined | null = null;
+function _extractScheduleOptions(
+  dat: parser.TemplateInput,
+  inputs: { [key: string]: parser.TemplateInput },
+) {
   const scheduleOptions: ScheduleOptions = {};
-
-  while (!dat) {
-    dat = parser.findElement(`${curPath}.dat`);
-    if (dat) {
-      break;
-    } else {
-      const extendElement = parser.findElement(
-        `${curPath}.${parser.EXTEND_NAME}`,
-      );
-      if (!extendElement) {
-        break; // bottomed out, 'dat' not found - PUNCH-OUT!
-      }
-      // use extend 'type' to get to extend class options
-      curPath = extendElement.type;
-    }
-  }
-
-  if (dat) {
-    const inputs = dat.getInputs();
-    let optionRoot = _mapInputToOption(inputs[dat.modelicaPath], inputs);
-    scheduleOptions[dat.modelicaPath] = { ...optionRoot, groups: [] };
-
-    optionRoot.options?.map((c) =>
-      _extractScheduleOptionHelper(scheduleOptions, inputs, c),
-    );
-  }
-
+  dat.inputs?.map((i) => {
+    _extractScheduleOptionHelper(scheduleOptions, inputs, i);
+  });
   return scheduleOptions;
 }
 
@@ -236,12 +215,34 @@ export class Template {
   }
 
   _extractOptions(element: parser.Element) {
+    let scheduleOptions: ScheduleOptions = {};
     const inputs = element.getInputs();
-    this.scheduleOptions = _extractScheduleOptions(this.modelicaPath);
-    Object.keys(this.scheduleOptions).map((k) => delete inputs[k]);
+    const datEntryPoints = Object.values(inputs).filter((i) => {
+      return i.modelicaPath.endsWith(".dat");
+    });
+
+    datEntryPoints.map((i) => {
+      scheduleOptions = {
+        ...scheduleOptions,
+        ..._extractScheduleOptions(i, inputs),
+      };
+    });
+
+    this.scheduleOptions = scheduleOptions;
+    const scheduleKeys = [
+      ...Object.keys(this.scheduleOptions),
+      ...datEntryPoints.map((i) => i.modelicaPath),
+    ];
+
+    scheduleKeys.map((k) => {
+      delete inputs[k];
+    });
+
     this.options = {};
     Object.entries(inputs).map(([key, input]) => {
       this.options[key] = _mapInputToOption(input, inputs);
+      // remove any option references that have been split out as schedule option
+      this.options[key].options = this.options[key].options?.filter((o) => !scheduleKeys.includes(o));
     });
 
     // kludge: 'Modelica.Icons.Record' is useful for schematics but

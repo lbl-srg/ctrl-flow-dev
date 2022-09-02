@@ -16,6 +16,7 @@ dependencies/*
 
 # Document generation
 output-documents
+server/option-tree-output.html
 
 # Texmaker/Word files
 *.aux

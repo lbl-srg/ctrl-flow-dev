@@ -1,6 +1,6 @@
 import { getFile } from "../../../src/parser/parser";
 import { loadPackage } from "../../../src/parser";
-import { getTemplates } from "../../../src/parser/template";
+import { getTemplates, Template } from "../../../src/parser/template";
 
 describe("Loading from all paths", () => {
   it("A building path can load", () => {
@@ -11,7 +11,7 @@ describe("Loading from all paths", () => {
   });
 });
 
-describe("Parser extracts expected parts or modelica-buildings", () => {
+describe("Parser extracts expected templates", () => {
   beforeAll(() => {
     loadPackage("Buildings");
   });
@@ -22,5 +22,18 @@ describe("Parser extracts expected parts or modelica-buildings", () => {
     expect(templates.length).toBe(3);
     const [template1, ..._] = templates;
     const options = template1.getOptions();
+  });
+
+  it("Splits schedule options from regular options", () => {
+    const templates = getTemplates();
+    const vavMultiZone = templates.find(
+      (t) =>
+        t.modelicaPath === "Buildings.Templates.AirHandlersFans.VAVMultiZone",
+    ) as Template;
+    const { options, scheduleOptions } = vavMultiZone.getOptions();
+    const secOutRelPath = "Buildings.Templates.AirHandlers.VAVMultiZone";
+    const option = options[secOutRelPath];
+
+    // TODO: flesh out this test further
   });
 });
