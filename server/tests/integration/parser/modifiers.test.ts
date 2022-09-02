@@ -89,27 +89,7 @@ describe("Modifications", () => {
     const templateMods = flattenModifiers(templateInput.modifiers);
     const nestedParamPath = "TestPackage.Interface.NestedExtendInterface.nested_interface_param";
     expect(nestedParamPath in templateMods).toBeTruthy();
-
-    // TODO: secOutRel m
-    // secOutRel is a good param to explore
-    // damOut <--
-    // damOutMin
   });
-
-  // it("Creates modifiers for replaceables", () => {
-  //   const expectedMods = [
-  //     [
-  //       "TestPackage.Template.TestTemplate.selectable_component",
-  //       "TestPackage.Component.SecondComponent",
-  //     ],
-  //   ];
-
-  //   expectedMods.map((expectedMod) => {
-  //     const [path, value] = expectedMod;
-  //     const extendMod = modifiers.find((m) => m.modelicaPath === path);
-  //     expect(extendMod?.value).toEqual(value);
-  //   });
-  // });
 
   /**
    * Checks that constrainby modifiers have been applied
