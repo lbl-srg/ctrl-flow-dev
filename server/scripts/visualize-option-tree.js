@@ -5,7 +5,12 @@
 const DebugTree = require("debug-tree");
 const templateData = require("./templates.json");
 
-DebugTree.start("output.html");
+if (!templateData) {
+  console.log("Unable to find 'server/templates.json'");
+  process.exit(1); // PUNCH-OUT
+}
+
+DebugTree.start("option-tree-output.html");
 
 const path = "Buildings.Templates.AirHandlersFans.VAVMultiZone";
 const options = templateData["options"];

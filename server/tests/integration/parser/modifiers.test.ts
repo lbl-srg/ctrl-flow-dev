@@ -73,39 +73,23 @@ describe("Modifications", () => {
   });
 
   it("Modifier paths are correctly expanded", () => {
-    const path = "TestPackage.Template.TestTemplate.dat";
-    const element = findElement(path);
+    const element = findElement(templatePath);
     const inputs = element?.getInputs() as {
       [key: string]: parser.TemplateInput;
     };
-    const input = inputs[path];
-    const mods = flattenModifiers(input.modifiers);
+    const datInput = inputs[`${templatePath}.dat`];
+    const datMods = flattenModifiers(datInput.modifiers);
 
     expect(
       "TestPackage.Template.Data.TestTemplate.container_selectable_component" in
-        mods,
+      datMods,
     ).toBeTruthy();
 
-    // TODO: secOutRel m
-    // secOutRel is a good param to explore
-    // damOut <--
-    // damOutMin
+    const templateInput = inputs[templatePath];
+    const templateMods = flattenModifiers(templateInput.modifiers);
+    const nestedParamPath = "TestPackage.Interface.NestedExtendInterface.nested_interface_param";
+    expect(nestedParamPath in templateMods).toBeTruthy();
   });
-
-  // it("Creates modifiers for replaceables", () => {
-  //   const expectedMods = [
-  //     [
-  //       "TestPackage.Template.TestTemplate.selectable_component",
-  //       "TestPackage.Component.SecondComponent",
-  //     ],
-  //   ];
-
-  //   expectedMods.map((expectedMod) => {
-  //     const [path, value] = expectedMod;
-  //     const extendMod = modifiers.find((m) => m.modelicaPath === path);
-  //     expect(extendMod?.value).toEqual(value);
-  //   });
-  // });
 
   /**
    * Checks that constrainby modifiers have been applied

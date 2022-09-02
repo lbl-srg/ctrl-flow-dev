@@ -4,7 +4,8 @@ model TestTemplate "Test Template"
     Test that extends work as expected
   */
   extends TestPackage.Interface.ExtendInterface(
-    interface_param="Updated Value");
+    interface_param="Updated Value",
+    nested_interface_param="Template mod of the nested param");
 
   /*
     Test that a subcomponent's options are added

@@ -1,4 +1,4 @@
-import { typeStore } from "./parser";
+import { typeStore, isInputGroup, InputGroup } from "./parser";
 import * as mj from "./mj-types";
 
 /**
@@ -20,8 +20,7 @@ import * as mj from "./mj-types";
  * Parameter modifications are kept in a store using a modelica path. All other
  * modifications (annotation, graphic) are not put in the store.
  *
- * TODO: this store could potentially be used to help simplify expressions. If we
- * don't end up going this route, the store should be removed.
+ * TODO: remove the modification store it is not used
  */
 
 import { Expression, getExpression } from "./expression";
@@ -52,6 +51,33 @@ interface ModificationWithValue extends ModificationBasics {
 
 type ModificationProps = ModificationWithDefinition | ModificationWithValue;
 
+// recursively searches extended classes to find
+function _findBasePath(basePath: string, name: string) {
+  let element = typeStore.get(basePath);
+  while (element) {
+    if (!isInputGroup(element.elementType)) {
+      // not found - returning base path
+      return basePath;
+    }
+    element = element as InputGroup;
+    const childElements = (element as InputGroup).elementList;
+    const matchedElement = childElements.find((e) => e.name === name);
+    if (matchedElement) {
+      return element.modelicaPath;
+    }
+
+    const extendElement = (element as InputGroup).extendElement;
+    if (extendElement) {
+      element = extendElement;
+    } else {
+      // param not found - returning base path
+      return basePath;
+    }
+  }
+
+  return basePath;
+}
+
 /**
  * Factory method that can create a Modification from two approaches:
  *
@@ -66,10 +92,6 @@ export function createModification(
 ): Modification | undefined {
   const mods: Modification[] = [];
   const { definition, value, basePath = "", name } = props;
-  // TODO: fix type look up. Nested types are not yet being correctly
-  // assigned
-  const input = typeStore.get(basePath);
-  // const modelicaPath = basePath ? `${basePath}.${name}` : "";
 
   if (definition) {
     if ("element_redeclaration" in definition) {
@@ -140,6 +162,8 @@ function unpackModblock(props: ModificationProps) {
   } else if ("identifier" in modBlock) {
     name = modBlock.identifier;
   }
+
+  basePath = name && basePath ? _findBasePath(basePath, name) : basePath;
 
   let mod:
     | mj.WrappedMod

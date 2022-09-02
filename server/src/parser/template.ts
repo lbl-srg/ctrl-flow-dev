@@ -98,7 +98,7 @@ function _mapInputToOption(
 ): Option {
   const keysToRemove = ["elementType", "inputs"];
   const options = input.inputs;
-  // TODO: this filter is not working
+
   const option = Object.fromEntries(
     Object.entries(input).filter(([key]) => !keysToRemove.includes(key)),
   ) as Option;
@@ -242,7 +242,7 @@ export class Template {
     Object.entries(inputs).map(([key, input]) => {
       this.options[key] = _mapInputToOption(input, inputs);
       // remove any option references that have been split out as schedule option
-      this.options[key].options?.filter((o) => !scheduleKeys.includes(o));
+      this.options[key].options = this.options[key].options?.filter((o) => !scheduleKeys.includes(o));
     });
 
     // kludge: 'Modelica.Icons.Record' is useful for schematics but
