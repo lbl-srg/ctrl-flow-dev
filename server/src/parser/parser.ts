@@ -340,6 +340,7 @@ export class Input extends Element {
     if (this.mod && !this.mod.empty) {
       this.value = this.mod.value;
     }
+    this._setUIInfo();
   }
 
   /**
