@@ -10,7 +10,7 @@ if (!templateData) {
   process.exit(1); // PUNCH-OUT
 }
 
-DebugTree.start("output.html");
+DebugTree.start("option-tree-output.html");
 
 const path = "Buildings.Templates.AirHandlersFans.VAVMultiZone";
 const options = templateData["options"];
