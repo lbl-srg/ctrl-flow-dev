@@ -20,6 +20,7 @@ export interface OptionInterface {
   childOptions?: OptionInterface[];
   valueExpression?: any; //{ expression: string; modelicaPath: string };
   enable?: any; // { modelicaPath: string; expression: string };
+  modifiers: any;
 }
 
 export interface SystemTypeInterface {

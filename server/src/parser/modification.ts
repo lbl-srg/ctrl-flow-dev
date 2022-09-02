@@ -163,8 +163,6 @@ function unpackModblock(props: ModificationProps) {
     name = modBlock.identifier;
   }
 
-  // make sure things are loaded
-  // typeStore.get(basePath);
   basePath = name && basePath ? _findBasePath(basePath, name) : basePath;
 
   let mod:
