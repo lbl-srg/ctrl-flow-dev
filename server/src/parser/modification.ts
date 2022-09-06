@@ -183,8 +183,9 @@ function unpackModblock(props: ModificationProps) {
       const choiceMod = (mod as mj.ClassMod)
         .class_modification[0] as mj.RedeclareMod;
       if (choiceMod.element_redeclaration) {
-        const replaceable = choiceMod.element_redeclaration
-          .element_replaceable as mj.ElementReplaceable;
+        const replaceable = (choiceMod.element_redeclaration
+          .element_replaceable ||
+          choiceMod.element_redeclaration) as mj.ElementReplaceable;
         // TODO: pass this path into `getExpression` and return
         // as a simple expression ('none')
         value = replaceable.component_clause1.type_specifier;
