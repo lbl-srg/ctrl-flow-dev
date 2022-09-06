@@ -23,7 +23,7 @@ export const EXTEND_NAME = "__extend";
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 export const isInputGroup = (elementType: string) =>
-  ["model", "block", "record", "package"].includes(elementType);
+  ["model", "block", "package"].includes(elementType);
 
 class Store {
   _store: Map<string, any> = new Map();
@@ -386,6 +386,13 @@ export class Input extends Element {
     );
 
     const isLiteral = MODELICA_LITERALS.includes(this.type);
+    /**
+     *
+     * Replaceables -> dropdown -> each child of selected component
+     *
+     * Component -> Each child becomes it's own dropdown
+     *
+     */
     return isVisible && (isLiteral || inputType?.visible === true);
   }
 
@@ -398,8 +405,9 @@ export class Input extends Element {
     // if not in mod store, use 'this.type'
     const typeInstance = typeStore.get(this.type) || null;
     const inputTypes = typeInstance ? typeInstance.getInputs({}, false) : {};
-    const childInputs = inputTypes[this.type]?.inputs || [];
     const visible = this._setInputVisible(inputTypes[this.type]);
+    const childInputs =
+      this.enable === false ? [] : inputTypes[this.type]?.inputs || [];
 
     inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
