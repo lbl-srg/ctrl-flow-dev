@@ -250,6 +250,8 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
     close();
   }
 
+  console.log('FlattenOptions: ', flatConfigOptions);
+
   let overallIndex = 0;
   return (
     <Modal isOpen close={close} className="config-slide-out">
