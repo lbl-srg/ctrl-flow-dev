@@ -1,8 +1,21 @@
+diff --git a/Buildings/Templates/AirHandlersFans/Components/ReliefReturnSection/ReliefFan.mo b/Buildings/Templates/AirHandlersFans/Components/ReliefReturnSection/ReliefFan.mo
+index 0c6140ad22..615559cb7d 100644
+--- a/Buildings/Templates/AirHandlersFans/Components/ReliefReturnSection/ReliefFan.mo
++++ b/Buildings/Templates/AirHandlersFans/Components/ReliefReturnSection/ReliefFan.mo
+@@ -27,7 +27,7 @@ model ReliefFan "Relief fan with two-position relief damper"
+     annotation (choices(
+       choice(redeclare replaceable Buildings.Templates.Components.Fans.SingleVariable fanRet
+         "Single fan - Variable speed"),
+-      choice(redeclare replaceable Buildings.Templates.Components.ArrayVariable fanRet
++      choice(redeclare replaceable Buildings.Templates.Components.Fans.ArrayVariable fanRet
+         "Fan array - Variable speed")), Placement(
+         transformation(extent={{-100,-10},{-120,10}})));
+ equation
 diff --git a/Buildings/Templates/AirHandlersFans/VAVMultiZone.mo b/Buildings/Templates/AirHandlersFans/VAVMultiZone.mo
-index 50225a86ef..75a2977eb2 100644
+index 08def3a3d2..169219d3be 100644
 --- a/Buildings/Templates/AirHandlersFans/VAVMultiZone.mo
 +++ b/Buildings/Templates/AirHandlersFans/VAVMultiZone.mo
-@@ -406,6 +406,7 @@ equation
+@@ -401,6 +401,7 @@ equation
    connect(fanSupBlo.port_b, coiHeaPre.port_a)
      annotation (Line(points={{-30,-200},{10,-200}}, color={0,127,255}));
    annotation (
@@ -26,11 +39,11 @@ index ecce01041c..018737416f 100644
  This package contains templates for air handlers and fans.
  </p>
 diff --git a/Buildings/Templates/ZoneEquipment/VAVBoxCoolingOnly.mo b/Buildings/Templates/ZoneEquipment/VAVBoxCoolingOnly.mo
-index 6d3893617b..986c7fa3f8 100644
+index ff926702b2..b8f1c31124 100644
 --- a/Buildings/Templates/ZoneEquipment/VAVBoxCoolingOnly.mo
 +++ b/Buildings/Templates/ZoneEquipment/VAVBoxCoolingOnly.mo
-@@ -5,6 +5,7 @@ model VAVBoxCoolingOnly "VAV terminal unit cooling only"
-     redeclare final Buildings.Templates.Components.Coils.None coiHea);
+@@ -7,6 +7,7 @@ model VAVBoxCoolingOnly "VAV terminal unit cooling only"
+       ctl "Guideline 36 controller for VAV terminal unit cooling only");
  
    annotation (
 +  __LinkageTemplate=true,
@@ -38,11 +51,11 @@ index 6d3893617b..986c7fa3f8 100644
      Documentation(info="<html>
  <h4>Description</h4>
 diff --git a/Buildings/Templates/ZoneEquipment/VAVBoxReheat.mo b/Buildings/Templates/ZoneEquipment/VAVBoxReheat.mo
-index 05359d8bb0..f9e23f0735 100644
+index 0dbdfb57bb..c81be0829f 100644
 --- a/Buildings/Templates/ZoneEquipment/VAVBoxReheat.mo
 +++ b/Buildings/Templates/ZoneEquipment/VAVBoxReheat.mo
-@@ -4,6 +4,7 @@ model VAVBoxReheat "VAV terminal unit with reheat"
-     final typ=Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat);
+@@ -6,6 +6,7 @@ model VAVBoxReheat "VAV terminal unit with reheat"
+       "Guideline 36 controller for VAV terminal unit with reheat");
  
    annotation (
 +   __LinkageTemplate=true,
@@ -50,16 +63,15 @@ index 05359d8bb0..f9e23f0735 100644
      Documentation(info="<html>
  <h4>Description</h4>
 diff --git a/Buildings/Templates/ZoneEquipment/package.mo b/Buildings/Templates/ZoneEquipment/package.mo
-index ad01165130..8d4e3ffe19 100644
+index ad01165130..56d18c9136 100644
 --- a/Buildings/Templates/ZoneEquipment/package.mo
 +++ b/Buildings/Templates/ZoneEquipment/package.mo
-@@ -2,7 +2,9 @@ within Buildings.Templates;
+@@ -2,7 +2,8 @@ within Buildings.Templates;
  package ZoneEquipment "Zone equipment"
    extends Modelica.Icons.Package;
  
 -annotation (Documentation(info="<html>
-+annotation (
-+  __LinkageTemplate=true,
++annotation (__LinkageTemplate=true,
 +  Documentation(info="<html>
  <p>
  This package contains templates for zone equipment (HVAC terminal units).
