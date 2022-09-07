@@ -1,3 +1,16 @@
+diff --git a/Buildings/Templates/AirHandlersFans/Components/ReliefReturnSection/ReliefFan.mo b/Buildings/Templates/AirHandlersFans/Components/ReliefReturnSection/ReliefFan.mo
+index 0c6140ad22..615559cb7d 100644
+--- a/Buildings/Templates/AirHandlersFans/Components/ReliefReturnSection/ReliefFan.mo
++++ b/Buildings/Templates/AirHandlersFans/Components/ReliefReturnSection/ReliefFan.mo
+@@ -27,7 +27,7 @@ model ReliefFan "Relief fan with two-position relief damper"
+     annotation (choices(
+       choice(redeclare replaceable Buildings.Templates.Components.Fans.SingleVariable fanRet
+         "Single fan - Variable speed"),
+-      choice(redeclare replaceable Buildings.Templates.Components.ArrayVariable fanRet
++      choice(redeclare replaceable Buildings.Templates.Components.Fans.ArrayVariable fanRet
+         "Fan array - Variable speed")), Placement(
+         transformation(extent={{-100,-10},{-120,10}})));
+ equation
 diff --git a/Buildings/Templates/AirHandlersFans/VAVMultiZone.mo b/Buildings/Templates/AirHandlersFans/VAVMultiZone.mo
 index 08def3a3d2..169219d3be 100644
 --- a/Buildings/Templates/AirHandlersFans/VAVMultiZone.mo
