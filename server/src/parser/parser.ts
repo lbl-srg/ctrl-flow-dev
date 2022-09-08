@@ -288,7 +288,7 @@ export class Input extends Element {
   annotation: Modification[] = [];
   tab? = "";
   group?: any = "";
-  enable: any;
+  enable: Expression | boolean = false;
 
   constructor(
     definition: mj.ProtectedElement,
@@ -386,6 +386,13 @@ export class Input extends Element {
     );
 
     const isLiteral = MODELICA_LITERALS.includes(this.type);
+    /**
+    *
+    * Replaceables -> dropdown -> each child of selected component
+    *
+    * Component -> Each child becomes it's own dropdown
+    *
+    */
     return isVisible && (isLiteral || inputType?.visible === true);
   }
 
@@ -398,8 +405,10 @@ export class Input extends Element {
     // if not in mod store, use 'this.type'
     const typeInstance = typeStore.get(this.type) || null;
     const inputTypes = typeInstance ? typeInstance.getInputs({}, false) : {};
-    const childInputs = inputTypes[this.type]?.inputs || [];
     const visible = this._setInputVisible(inputTypes[this.type]);
+    const childInputs =
+      this.enable === false ? [] : inputTypes[this.type]?.inputs || [];
+
 
     inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,

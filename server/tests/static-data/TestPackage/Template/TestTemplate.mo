@@ -11,7 +11,8 @@ model TestTemplate "Test Template"
     Test that a subcomponent's options are added
   */
   TestPackage.Component.FirstComponent first(
-    component_param="First Component Template Override");
+    component_param="First Component Template Override")
+    annotation(Dialog(enable=true));
 
   /*
     Test a replacable
