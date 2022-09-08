@@ -45,7 +45,7 @@
       "tab": "",
       "visible": true,
       "modifiers": {
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea": {
+        "Buildings.Templates.Components.Coils.WaterBasedHeating.coiHea": {
           "expression": "Buildings.Templates.Components.Coils.WaterBasedHeating",
           "final": false
         },
@@ -154,7 +154,7 @@
       "tab": "",
       "visible": true,
       "modifiers": {
-        "Buildings.Templates.Components.Coils.WaterBasedHeating.val": {
+        "Buildings.Templates.Components.Valves.None.val": {
           "expression": "Buildings.Templates.Components.Valves.None",
           "final": false
         },
@@ -1420,7 +1420,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.Components.Valves.ThreeWayModulating.val": {
+        "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear.val": {
           "expression": "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear",
           "final": false
         },
@@ -1586,7 +1586,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.Components.Valves.TwoWayModulating.val": {
+        "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage.val": {
           "expression": "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage",
           "final": false
         },
@@ -1758,7 +1758,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.Components.Coils.WaterBasedHeating.hex": {
+        "Buildings.Fluid.HeatExchangers.DryCoilEffectivenessNTU.hex": {
           "expression": "Buildings.Fluid.HeatExchangers.DryCoilEffectivenessNTU",
           "final": false
         },
@@ -3913,7 +3913,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res1": {
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.res1": {
           "expression": "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
           "final": false
         },
@@ -3941,7 +3941,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res2": {
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.res2": {
           "expression": "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
           "final": false
         },
@@ -3969,7 +3969,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res3": {
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.res3": {
           "expression": "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
           "final": false
         },
@@ -7049,7 +7049,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.vol": {
+        "Buildings.Fluid.MixingVolumes.MixingVolume.vol": {
           "expression": "Buildings.Fluid.MixingVolumes.MixingVolume",
           "final": false
         },
@@ -7809,7 +7809,7 @@
       "tab": "",
       "visible": true,
       "modifiers": {
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.damVAV": {
+        "Buildings.Templates.Components.Dampers.PressureIndependent.damVAV": {
           "expression": "Buildings.Templates.Components.Dampers.PressureIndependent",
           "final": false
         },
@@ -9286,7 +9286,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.ctl": {
+        "Buildings.Templates.ZoneEquipment.Components.Controls.OpenLoop.ctl": {
           "expression": "Buildings.Templates.ZoneEquipment.Components.Controls.OpenLoop",
           "final": false
         },
@@ -9479,7 +9479,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialVAVBoxController.damVAV": {
+        "Buildings.Templates.Components.Dampers.PressureIndependent.damVAV": {
           "expression": "Buildings.Templates.Components.Dampers.PressureIndependent",
           "final": false
         }
@@ -9497,7 +9497,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialVAVBoxController.coiHea": {
+        "Buildings.Templates.Components.Coils.None.coiHea": {
           "expression": "Buildings.Templates.Components.Coils.None",
           "final": false
         }
@@ -11374,7 +11374,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel": {
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Economizer.secOutRel": {
           "expression": "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Economizer",
           "final": false
         },
@@ -11473,7 +11473,7 @@
       "tab": "",
       "visible": true,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Economizer.secOut": {
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper.secOut": {
           "expression": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper",
           "final": false
         },
@@ -14751,7 +14751,7 @@
       "tab": "",
       "visible": true,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Economizer.secRel": {
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.secRel": {
           "expression": "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan",
           "final": false
         },
@@ -14811,7 +14811,7 @@
       "tab": "",
       "visible": true,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.fanRet": {
+        "Buildings.Templates.Components.Fans.SingleVariable.fanRet": {
           "expression": "Buildings.Templates.Components.Fans.SingleVariable",
           "final": false
         },
@@ -17482,7 +17482,7 @@
       "tab": "",
       "visible": true,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel": {
+        "Buildings.Templates.Components.Fans.SingleVariable.fanRel": {
           "expression": "Buildings.Templates.Components.Fans.SingleVariable",
           "final": false
         },
@@ -17743,7 +17743,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Economizer.recHea": {
+        "Buildings.Templates.AirHandlersFans.Components.HeatRecovery.None.recHea": {
           "expression": "Buildings.Templates.AirHandlersFans.Components.HeatRecovery.None",
           "final": false
         }
@@ -18758,7 +18758,7 @@
       "tab": "",
       "visible": true,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupBlo": {
+        "Buildings.Templates.Components.Fans.None.fanSupBlo": {
           "expression": "Buildings.Templates.Components.Fans.None",
           "final": false
         },
@@ -18931,7 +18931,7 @@
       "tab": "",
       "visible": true,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupDra": {
+        "Buildings.Templates.Components.Fans.SingleVariable.fanSupDra": {
           "expression": "Buildings.Templates.Components.Fans.SingleVariable",
           "final": false
         },
@@ -18970,7 +18970,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.ctl": {
+        "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.ctl": {
           "expression": "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone",
           "final": false
         },
@@ -51594,7 +51594,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.secOutRel": {
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.secOutRel": {
           "expression": "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection",
           "final": false
         }
@@ -51612,7 +51612,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.coiCoo": {
+        "Buildings.Templates.Components.Coils.None.coiCoo": {
           "expression": "Buildings.Templates.Components.Coils.None",
           "final": false
         }
@@ -51630,7 +51630,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.coiHeaPre": {
+        "Buildings.Templates.Components.Coils.None.coiHeaPre": {
           "expression": "Buildings.Templates.Components.Coils.None",
           "final": false
         }
@@ -51648,7 +51648,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.coiHeaReh": {
+        "Buildings.Templates.Components.Coils.None.coiHeaReh": {
           "expression": "Buildings.Templates.Components.Coils.None",
           "final": false
         }
@@ -53513,7 +53513,7 @@
       "tab": "",
       "visible": true,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaPre": {
+        "Buildings.Templates.Components.Coils.None.coiHeaPre": {
           "expression": "Buildings.Templates.Components.Coils.None",
           "final": false
         },
@@ -53542,7 +53542,7 @@
       "tab": "",
       "visible": true,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo": {
+        "Buildings.Templates.Components.Coils.None.coiCoo": {
           "expression": "Buildings.Templates.Components.Coils.None",
           "final": false
         },
@@ -53735,7 +53735,7 @@
       "tab": "",
       "visible": true,
       "modifiers": {
-        "Buildings.Templates.Components.Coils.WaterBasedCooling.val": {
+        "Buildings.Templates.Components.Valves.None.val": {
           "expression": "Buildings.Templates.Components.Valves.None",
           "final": false
         },
@@ -53764,7 +53764,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.Components.Coils.WaterBasedCooling.hex": {
+        "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.hex": {
           "expression": "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU",
           "final": false
         },
@@ -57060,7 +57060,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Fluid.HeatExchangers.DXCoils.AirCooled.Data.Generic.BaseClasses.Stage.nomVal": {
+        "Buildings.Fluid.HeatExchangers.DXCoils.AirCooled.Data.Generic.BaseClasses.NominalValues.nomVal": {
           "expression": "Buildings.Fluid.HeatExchangers.DXCoils.AirCooled.Data.Generic.BaseClasses.NominalValues",
           "final": false
         }
@@ -57314,7 +57314,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Fluid.HeatExchangers.DXCoils.AirCooled.Data.Generic.BaseClasses.Stage.perCur": {
+        "Buildings.Fluid.HeatExchangers.DXCoils.AirCooled.Data.Generic.BaseClasses.PerformanceCurve.perCur": {
           "expression": "Buildings.Fluid.HeatExchangers.DXCoils.AirCooled.Data.Generic.BaseClasses.PerformanceCurve",
           "final": false
         }
@@ -57652,7 +57652,7 @@
       "tab": "",
       "visible": true,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaReh": {
+        "Buildings.Templates.Components.Coils.None.coiHeaReh": {
           "expression": "Buildings.Templates.Components.Coils.None",
           "final": false
         },
@@ -59319,7 +59319,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.ctl": {
+        "Buildings.Templates.ZoneEquipment.Components.Data.PartialController.ctl": {
           "expression": "Buildings.Templates.ZoneEquipment.Components.Data.PartialController",
           "final": false
         }
@@ -59641,7 +59641,7 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.ctl": {
+        "Buildings.Templates.AirHandlersFans.Components.Data.PartialController.ctl": {
           "expression": "Buildings.Templates.AirHandlersFans.Components.Data.PartialController",
           "final": false
         }
