@@ -23,7 +23,7 @@ export const EXTEND_NAME = "__extend";
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 export const isInputGroup = (elementType: string) =>
-  ["model", "block", "record", "package"].includes(elementType);
+  ["model", "block", "package"].includes(elementType);
 
 class Store {
   _store: Map<string, any> = new Map();
@@ -466,7 +466,7 @@ export class ReplaceableInput extends Input {
       this.mods = constraintDef?.class_modification
         ? [
             ...this.mods,
-            ...getModificationList(constraintDef, this.type),
+            ...getModificationList(constraintDef, constraintDef.name),
           ]
         : [];
     }

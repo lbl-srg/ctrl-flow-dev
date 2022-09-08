@@ -38,6 +38,8 @@ export interface ConfigSlideOutProps {
   close: () => void;
 }
 
+export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
+
 // TODO: Create Modifiers interface shape
 
 // Provides a flat array of options for display. This approach avoids processing the data structure in the return statement of components and keeps the logic related to the data separate from the logic that drives how components work.
@@ -48,8 +50,11 @@ export function flattenConfigOptions(
   modifiers: any,
   selectedOptions?: SelectedConfigOptions,
 ): FlatConfigOption[] {
+  const { templateStore } = useStores();
   let flatConfigOptions: FlatConfigOption[] = [];
   let flatConfigModifiers: any = modifiers;
+  let typeModifiers: any;
+
   optionsToFlatten.forEach((option) => {
     // Ignores paths that finish in .dat
     // TODO: Make sure we exclude only .dat at the end of the string thanks to regular expression
@@ -59,14 +64,21 @@ export function flattenConfigOptions(
 
     // Setting up newChildren if the visiblity needs to be modified
     const newChildOptions: OptionInterface[] = [];
+    // Checking if our type is a Modelica Literal instead of a modelicaPath
+    const typeIsLiteral = MODELICA_LITERALS.includes(option.type);
 
-    // Creating a flatten object of modifiers to modify children's visiblity if modifiers exist
-    if (option.modifiers && Object.keys(option.modifiers).length !== 0) {
-      flatConfigModifiers = {
-        ...flatConfigModifiers,
-        ...option.modifiers,
-      };
+    // Seeing if we have a different type than the current options modelicaPath, if so we need to grab the modifiers of the type
+    if (!typeIsLiteral && option.type !== option.modelicaPath) {
+      typeModifiers = templateStore.getOption(option.type)?.modifiers || {};
     }
+
+    // Merging all modfiers together for the current option, this will also be passed down the tree to childOptions
+    // TODO: Add selection modifiers, also evaluating expressions
+    flatConfigModifiers = {
+      ...flatConfigModifiers,
+      ...option.modifiers,
+      ...typeModifiers,
+    };
 
     // If we have an object of flattened Modifiers and we have children we need to modify those children's visiblilty
     // if there is a modifier for the child
@@ -249,8 +261,6 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
 
     close();
   }
-
-  console.log('FlattenOptions: ', flatConfigOptions);
 
   let overallIndex = 0;
   return (

@@ -109,4 +109,8 @@ export default class Template {
   getOptionsForTemplate(path: string): OptionInterface[] {
     return this.nestedOptions.filter((opt) => opt.modelicaPath === path);
   }
+
+  getOption(path: string): OptionInterface {
+    return this.options.filter((opt) => opt.modelicaPath === path)[0];
+  }
 }
