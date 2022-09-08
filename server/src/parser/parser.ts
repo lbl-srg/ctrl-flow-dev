@@ -15,7 +15,7 @@ import {
   getModificationList,
 } from "./modification";
 
-import { Literal, evaluateExpression } from "./expression";
+import { Literal, evaluateExpression, Expression } from "./expression";
 import * as mj from "./mj-types";
 
 export const EXTEND_NAME = "__extend";
@@ -449,9 +449,6 @@ export class ReplaceableInput extends Input {
     // the default value is original type provided
     this.value = this.type;
 
-    console.log("=====================================================");
-    console.log('BasePath: ', basePath);
-
     const mod = createModification({
       name: this.name,
       value: this.value,
@@ -467,11 +464,6 @@ export class ReplaceableInput extends Input {
     if (definition.constraining_clause) {
       const constraintDef = definition.constraining_clause;
       this.constraint = typeStore.get(constraintDef.name);
-      console.log('name: ', this.name);
-      console.log('type: ', this.type);
-      console.log('value: ', this.value);
-      console.log('constraintDef: ', constraintDef);
-      console.log('constraintDef name: ', constraintDef.name);
       this.mods = constraintDef?.class_modification
         ? [
             ...this.mods,
@@ -479,8 +471,6 @@ export class ReplaceableInput extends Input {
           ]
         : [];
     }
-
-    console.log("=====================================================");
 
     const choices = this.annotation.find(
       (m) => m.name === "choices",
