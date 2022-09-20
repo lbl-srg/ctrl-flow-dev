@@ -15,7 +15,7 @@ import {
   getModificationList,
 } from "./modification";
 
-import { Literal, evaluateExpression } from "./expression";
+import { Literal, evaluateExpression, Expression } from "./expression";
 import * as mj from "./mj-types";
 
 export const EXTEND_NAME = "__extend";
@@ -23,7 +23,7 @@ export const EXTEND_NAME = "__extend";
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 export const isInputGroup = (elementType: string) =>
-  ["model", "block", "record", "package"].includes(elementType);
+  ["model", "block", "package"].includes(elementType);
 
 class Store {
   _store: Map<string, any> = new Map();
@@ -288,7 +288,7 @@ export class Input extends Element {
   annotation: Modification[] = [];
   tab? = "";
   group?: any = "";
-  enable: any;
+  enable: Expression | boolean = false;
 
   constructor(
     definition: mj.ProtectedElement,
@@ -350,6 +350,12 @@ export class Input extends Element {
   _setUIInfo() {
     const dialog = this.annotation.find((m) => m.name === "Dialog");
 
+    const typeInstance = typeStore.find(this.type) as Element;
+    // TODO: elementTypes need to be split out into an enum...
+    const isInputGroupType = isInputGroup(typeInstance?.elementType);
+    // for class types, no dialog annotation means don't enable
+    // for all other types it is true
+
     if (dialog) {
       const group = dialog.mods.find((m) => m.name === "group")?.value;
       const tab = dialog.mods.find((m) => m.name === "tab")?.value;
@@ -360,11 +366,11 @@ export class Input extends Element {
 
       this.group = group ? evaluateExpression(group) : "";
       this.tab = tab ? evaluateExpression(tab) : "";
-      const typeInstance = typeStore.find(this.type) as Element;
-      // TODO: elementTypes need to be split out into an enum...
-      const isInputGroupType = isInputGroup(typeInstance?.elementType);
-      // for class types, no dialog annotation means don't enable
-      // for all other types it is true
+      // const typeInstance = typeStore.find(this.type) as Element;
+      // // TODO: elementTypes need to be split out into an enum...
+      // const isInputGroupType = isInputGroup(typeInstance?.elementType);
+      // // for class types, no dialog annotation means don't enable
+      // // for all other types it is true
       if (isInputGroupType) {
         this.enable = enable ? evaluateExpression(enable) : false;
       } else {
@@ -374,6 +380,8 @@ export class Input extends Element {
       this.connectorSizing = connectorSizing
         ? evaluateExpression(connectorSizing)
         : false;
+    } else {
+      this.enable = isInputGroupType ? this.enable : true;
     }
   }
 
@@ -386,6 +394,13 @@ export class Input extends Element {
     );
 
     const isLiteral = MODELICA_LITERALS.includes(this.type);
+    /**
+    *
+    * Replaceables -> dropdown -> each child of selected component
+    *
+    * Component -> Each child becomes it's own dropdown
+    *
+    */
     return isVisible && (isLiteral || inputType?.visible === true);
   }
 
@@ -398,8 +413,10 @@ export class Input extends Element {
     // if not in mod store, use 'this.type'
     const typeInstance = typeStore.get(this.type) || null;
     const inputTypes = typeInstance ? typeInstance.getInputs({}, false) : {};
-    const childInputs = inputTypes[this.type]?.inputs || [];
     const visible = this._setInputVisible(inputTypes[this.type]);
+    const childInputs =
+      this.enable === false ? [] : inputTypes[this.type]?.inputs || [];
+
 
     inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
