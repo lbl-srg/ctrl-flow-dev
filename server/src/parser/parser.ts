@@ -350,6 +350,12 @@ export class Input extends Element {
   _setUIInfo() {
     const dialog = this.annotation.find((m) => m.name === "Dialog");
 
+    const typeInstance = typeStore.find(this.type) as Element;
+    // TODO: elementTypes need to be split out into an enum...
+    const isInputGroupType = isInputGroup(typeInstance?.elementType);
+    // for class types, no dialog annotation means don't enable
+    // for all other types it is true
+
     if (dialog) {
       const group = dialog.mods.find((m) => m.name === "group")?.value;
       const tab = dialog.mods.find((m) => m.name === "tab")?.value;
@@ -360,11 +366,11 @@ export class Input extends Element {
 
       this.group = group ? evaluateExpression(group) : "";
       this.tab = tab ? evaluateExpression(tab) : "";
-      const typeInstance = typeStore.find(this.type) as Element;
-      // TODO: elementTypes need to be split out into an enum...
-      const isInputGroupType = isInputGroup(typeInstance?.elementType);
-      // for class types, no dialog annotation means don't enable
-      // for all other types it is true
+      // const typeInstance = typeStore.find(this.type) as Element;
+      // // TODO: elementTypes need to be split out into an enum...
+      // const isInputGroupType = isInputGroup(typeInstance?.elementType);
+      // // for class types, no dialog annotation means don't enable
+      // // for all other types it is true
       if (isInputGroupType) {
         this.enable = enable ? evaluateExpression(enable) : false;
       } else {
@@ -374,6 +380,8 @@ export class Input extends Element {
       this.connectorSizing = connectorSizing
         ? evaluateExpression(connectorSizing)
         : false;
+    } else {
+      this.enable = isInputGroupType ? this.enable : true;
     }
   }
 
