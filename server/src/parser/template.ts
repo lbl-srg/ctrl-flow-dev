@@ -166,7 +166,7 @@ export interface SystemTypeN {
 
 export interface SystemTemplateN {
   modelicaPath: string;
-  scheduleOptionPath: string;
+  scheduleOptionPaths: string[];
   systemTypes: string[];
   name: string;
 }
@@ -177,7 +177,7 @@ export interface ModifiersN {
 }
 
 export class Template {
-  scheduleOptionPath: string = "";
+  scheduleOptionPaths: string[] = [];
   options: Options = {};
   scheduleOptions: ScheduleOptions = {};
   systemTypes: SystemTypeN[] = [];
@@ -221,6 +221,8 @@ export class Template {
       return i.modelicaPath.endsWith(".dat");
     });
 
+    this.scheduleOptionPaths = [...new Set(datEntryPoints.map((i) => i.type))];
+
     datEntryPoints.map((i) => {
       scheduleOptions = {
         ...scheduleOptions,
@@ -263,7 +265,7 @@ export class Template {
   getSystemTemplate(): SystemTemplateN {
     return {
       modelicaPath: this.modelicaPath,
-      scheduleOptionPath: this.scheduleOptionPath,
+      scheduleOptionPaths: this.scheduleOptionPaths,
       systemTypes: this.systemTypes.map((t) => t.modelicaPath),
       name: this.description,
     };
