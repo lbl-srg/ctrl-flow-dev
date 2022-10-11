@@ -104,4 +104,15 @@ describe("Modifications", () => {
     expect(mods[modPath]).toBeTruthy();
     expect(evaluateExpression(mods[modPath].expression)).toEqual(expected);
   });
+
+  it("Creates redeclare modifiers", () => {
+    const path = "TestPackage.Template.TestTemplate.redeclare_param_01";
+    const modPath = "TestPackage.Component.SecondComponent.replaceable_param";
+    const option = tOptions[path];
+    const mod = option.modifiers[modPath];
+  
+    expect(mod).toBeDefined();
+    expect(mod.final).toBeTruthy();
+    expect(evaluateExpression(mod.expression)).toEqual('TestPackage.Component.SecondComponent');
+  });
 });
