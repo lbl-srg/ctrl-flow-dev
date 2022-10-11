@@ -12,16 +12,35 @@ export interface OptionInterface {
   modelicaPath: string;
   type: string;
   name: string;
-  value?: string | boolean | null | number;
+  value?: any;
   group?: string;
   tab?: string;
   visible?: boolean;
   options?: string[];
   childOptions?: OptionInterface[];
-  valueExpression?: any; //{ expression: string; modelicaPath: string };
   enable?: any; // { modelicaPath: string; expression: string };
   modifiers: any;
 }
+
+export interface ScheduleOptionInterface extends OptionInterface {
+  childOptions?: ScheduleOptionInterface[];
+  groups: string[];
+}
+
+// export interface ScheduleOptionInterface {
+//   modelicaPath: string;
+//   type: string;
+//   name: string;
+//   group?: string;
+//   tab?: string;
+//   visible?: boolean;
+//   enable?: any;
+//   options?: string[];
+//   modifiers: any;
+//   chiledOptions?: ScheduleOptionInterface[];
+//   value?: string | boolean | null | number;
+//   groups?: string[];
+// }
 
 export interface SystemTypeInterface {
   description: string;
@@ -53,12 +72,14 @@ const icons = [
 export default class Template {
   templates: TemplateInterface[];
   options: OptionInterface[];
+  scheduleOptions: ScheduleOptionInterface[];
   systemTypes: SystemTypeInterface[];
   rootStore: RootStore;
 
   constructor(rootStore: RootStore) {
     this.templates = tplData.templates;
     this.options = tplData.options;
+    this.scheduleOptions = tplData.scheduleOptions;
     this.systemTypes = tplData.systemTypes;
     this.rootStore = rootStore;
   }
@@ -107,10 +128,33 @@ export default class Template {
   }
 
   getOptionsForTemplate(path: string): OptionInterface[] {
+    console.log(this.nestedOptions.filter((opt) => opt.modelicaPath === path));
+
     return this.nestedOptions.filter((opt) => opt.modelicaPath === path);
   }
 
   getOption(path: string): OptionInterface {
-    return this.options.filter((opt) => opt.modelicaPath === path)[0];
+    return this.scheduleOptions.filter((opt) => opt.modelicaPath === path)[0];
+  }
+
+  // get nestedScheduleOptions(): ScheduleOptionInterface[] {
+  //   const allOptions = this.scheduleOptions;
+
+  //   return this.scheduleOptions.map((option) => {
+  //     if (option.options) {
+  //       option.childOptions = option.options.reduce((acc, path) => {
+  //         const match = allOptions.find((opt) => opt.modelicaPath === path);
+  //         return match ? acc.concat(match) : acc;
+  //       }, [] as ScheduleOptionInterface[]);
+  //     }
+
+  //     return option;
+  //   });
+  // }
+
+  getScheduleOptionsForTemplate(paths: string[]): ScheduleOptionInterface[] {
+    return paths?.map((path) => this.scheduleOptions.filter((opt) => {
+      return opt.modelicaPath.includes(path);
+    })).flat();
   }
 }

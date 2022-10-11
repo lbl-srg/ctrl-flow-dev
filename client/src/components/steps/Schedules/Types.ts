@@ -6,18 +6,18 @@ export interface SystemWidgetForm {
   configID: number;
 }
 
-export interface GroupedField {
+export interface GroupedFields {
   groupName: string;
   fields: string[];
 }
 
-// export interface UserSystemTableProps {
-//   userSystems: UserSystem[];
-// }
+export interface UserSystemTableProps {
+  scheduleOptions: any;
+}
 
 export interface UserSystemRowProps {
-  index: number;
-  groups: GroupedField[];
+  scheduleOptions: any;
+  groups: GroupedFields[];
 }
 
 export type AddUserSystemFormData = {

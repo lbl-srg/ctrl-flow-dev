@@ -2,7 +2,13 @@
   "templates": [
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxReheat",
-      "scheduleOptionPath": "",
+      "scheduleOptionPaths": [
+        "Buildings.Templates.Components.Data.Valve",
+        "Buildings.Templates.Components.Data.Coil",
+        "Buildings.Templates.Components.Data.Damper",
+        "Buildings.Templates.ZoneEquipment.Components.Data.PartialController",
+        "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal"
+      ],
       "systemTypes": [
         "Buildings.Templates.ZoneEquipment"
       ],
@@ -10,7 +16,13 @@
     },
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly",
-      "scheduleOptionPath": "",
+      "scheduleOptionPaths": [
+        "Buildings.Templates.Components.Data.Valve",
+        "Buildings.Templates.Components.Data.Coil",
+        "Buildings.Templates.Components.Data.Damper",
+        "Buildings.Templates.ZoneEquipment.Components.Data.PartialController",
+        "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal"
+      ],
       "systemTypes": [
         "Buildings.Templates.ZoneEquipment"
       ],
@@ -18,7 +30,15 @@
     },
     {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.VAVMultiZone",
-      "scheduleOptionPath": "",
+      "scheduleOptionPaths": [
+        "Buildings.Templates.Components.Data.Damper",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection",
+        "Buildings.Templates.Components.Data.Fan",
+        "Buildings.Templates.Components.Data.Coil",
+        "Buildings.Templates.AirHandlersFans.Components.Data.PartialController",
+        "Buildings.Templates.Components.Data.Valve",
+        "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler"
+      ],
       "systemTypes": [
         "Buildings.Templates.AirHandlersFans"
       ],
