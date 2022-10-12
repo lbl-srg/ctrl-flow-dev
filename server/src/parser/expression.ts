@@ -146,22 +146,54 @@ function buildIfExpression(expression: any): Expression {
   return if_expression;
 }
 
+function buildComplexArithmeticExpression(expression: any, operator: string): Expression | string {
+  if (typeof expression === 'object') {
+    return {
+      operator: expression.operator,
+      operands: expression.operands.map((operand: Expression | string) => {
+        return buildComplexArithmeticExpression(operand, operator);
+      })
+    }
+  }
+
+  if (typeof expression === 'string') {
+    if (expression.includes(operator) && (
+      !expression.includes('<html>') && !expression.includes('"')
+    )) {
+      return {
+        operator: operator,
+        operands: expression.split(operator)
+      };
+    }
+  }
+
+  return expression;
+}
+
 function buildSimpleExpression(expression: any): Expression {
-  let operand = expression;
+  let simple_expression = expression;
   
   if (typeof expression === 'object') console.log("Unknown Expression: ", expression);
   if (typeof expression === 'string') {
     try {
-      operand = JSON.parse(expression as string)
+      simple_expression = JSON.parse(expression as string)
     } catch {
       /** deserialization failed */
     }
   }
 
-  const simple_expression: Expression = {
-    operator: 'none',
-    operands: [operand]
-  };
+  const operators =  ['+', '-', '*', '/', '^'];
+
+  operators.forEach((operator) => {
+    simple_expression = buildComplexArithmeticExpression(simple_expression, operator);
+  });
+
+  if (typeof simple_expression !== 'object') {
+    simple_expression = {
+      operator: 'none',
+      operands: [simple_expression]
+    };
+  }
 
   return simple_expression;
 }
