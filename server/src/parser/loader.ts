@@ -28,7 +28,7 @@ export function findPackageEntryPoints(
         ...response
           .split("\n")
           .filter((p) => p != "")
-          .sort((a, b) => a.includes('package.json') ? -1 : 1)
+          .sort((a, b) => (a.includes("package.json") ? -1 : 1))
           .map((p) => path.relative(dir, p))
           .map((p) => {
             const path = _toModelicaPath(p);

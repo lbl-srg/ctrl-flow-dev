@@ -4,13 +4,15 @@ model TestTemplate "Test Template"
     Test that extends work as expected
   */
   extends TestPackage.Interface.ExtendInterface(
-    interface_param="Updated Value");
+    interface_param="Updated Value",
+    nested_interface_param="Template mod of the nested param");
 
   /*
     Test that a subcomponent's options are added
   */
   TestPackage.Component.FirstComponent first(
-    component_param="First Component Template Override");
+    component_param="First Component Template Override")
+    annotation(Dialog(enable=true));
 
   /*
     Test a replacable
@@ -53,7 +55,7 @@ model TestTemplate "Test Template"
   */
   final parameter String should_ignore="ignore me"
     "Final parameter that should be ignored"
-    annotation(Dialog(group="Configuration"));
+    annotation(Dialog(group="Configuration", enable=true));
 
   /*
     Test boolean
@@ -91,16 +93,45 @@ model TestTemplate "Test Template"
   parameter String test_string_initialized="I'm all set"
     "Test string that is initialized";
 
+  // 'enable': no annotation specified, default true
   parameter Real test_real=1.0
     "Test real number";
 
+  // disable condition: explicit disable
   parameter Integer test_int=2
-    "Test Integer";
+    "Test Integer"
+    annotation (Dialog(enable=false));
+
+  // disable condition: an outer declaration
+  outer parameter Integer outer_param
+    "Outer param";
+
+  // disable condition: 'connectorSizing=true'
+  parameter Integer connector_param
+    "Connector Param"
+    annotation (Dialog(enable=true, connectorSizing=true));
+
+  // enable condition: 'connectorSizing=false'
+  parameter Integer connector_param_false
+    "Connector Param with 'connectorSizing=false'"
+    annotation (Dialog(connectorSizing=false));
 
   parameter TestPackage.Types.IceCream typ = TestPackage.Types.IceCream.Chocolate
     "Test Enum"
     annotation (
       Evaluate=true,
       Dialog(group="Configuration"));
+
+  TestPackage.Component.FourthComponent redeclare_param_01(
+      redeclare TestPackage.Component.SecondComponent replaceable_param
+    )
+    "First Param to test component redeclares"
+    annotation(Dialog(enable=true));
+
+  TestPackage.Component.FourthComponent redeclare_param_02(
+    redeclare TestPackage.Component.ThirdComponent replaceable_param)
+    "Second Param to test component redeclares"
+    annotation(Dialog(enable=true));
+
   annotation (__LinkageTemplate=true);
 end TestTemplate;

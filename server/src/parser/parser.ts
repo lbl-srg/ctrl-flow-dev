@@ -7,27 +7,23 @@
  * that element is available if referenced by another piece of modelica-json.
  */
 
- // TODO: Fix any typings unless any is really necessary
-
 import { findPackageEntryPoints, loader, TEMPLATE_IDENTIFIER } from "./loader";
 import { Template } from "./template";
 import {
   createModification,
-  Mod,
   Modification,
-  WrappedMod,
-  // Expression,
-  DeclarationBlock,
   getModificationList,
 } from "./modification";
 
-import { Literal, evaluateExpression } from "./expression";
+import { Literal, evaluateExpression, Expression } from "./expression";
 import * as mj from "./mj-types";
 
 export const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
+export const isInputGroup = (elementType: string) =>
+  ["model", "block", "package"].includes(elementType);
 
 class Store {
   _store: Map<string, any> = new Map();
@@ -55,9 +51,9 @@ class Store {
 
     // for each path
     // check if either is in the store
-    for(const p of paths) {
+    for (const p of paths) {
       if (this._store.has(p)) {
-        return this._store.get(p)
+        return this._store.get(p);
       }
     }
 
@@ -71,14 +67,14 @@ class Store {
    * For now this does two types of lookup:
    * 1. Try the path as an absolute path
    * 2. Try it as a relative path (context + path)
-   * 
-   * 
+   *
+   *
    * TODO: This needs to match the lookup behavior for modelica type references
    * where it is able to follow an order of searching based on the type. Full rules
    * are defined here: https://mbe.modelica.university/components/packages/lookup/
    *
-   */ 
-  _generatePaths(path:string, context:string): Array<string> {
+   */
+  _generatePaths(path: string, context: string): Array<string> {
     return context ? [path, `${context}.${path}`] : [path];
   }
 
@@ -125,9 +121,7 @@ function assertType(type: string) {
   }
 }
 
-// TODO: remove this once types are shared between FE and BE
 export interface TemplateInput {
-  // id: number;
   type: string;
   name: string;
   modelicaPath: string;
@@ -137,11 +131,8 @@ export interface TemplateInput {
   tab?: string;
   value?: any;
   enable?: any;
+  modifiers?: Modification[];
   elementType: string;
-}
-
-export interface ScheduleOption extends TemplateInput {
-  groups: string[];
 }
 
 export abstract class Element {
@@ -151,22 +142,20 @@ export abstract class Element {
   description = "";
   entryPoint = false;
   duplicate = false;
+  elementType = "";
 
   abstract getInputs(
     inputs?: { [key: string]: TemplateInput },
     recursive?: boolean,
   ): { [key: string]: TemplateInput };
 
-  registerPath(path: string): boolean {
+  registerPath(path: string, type: string = ""): boolean {
     const isSet = typeStore.set(path, this);
+    if (type) {
+      typeStore.get(type);
+    }
     this.duplicate = !isSet;
     return isSet;
-  }
-
-  // 'Input' and 'InputGroup' and 'Extend' returns modifications and override
-  // this method. Other elements do not have a modification
-  getModifications(): Modification[] {
-    return [];
   }
 }
 
@@ -181,7 +170,7 @@ export class InputGroupShort extends Element {
     this.value = classValue.description?.description_string;
     this.description = classValue.name;
     this.modelicaPath = `${basePath}.${this.name}`;
-    const registered = this.registerPath(this.modelicaPath);
+    const registered = this.registerPath(this.modelicaPath, this.type);
     if (!registered) {
       return; // PUNCH-OUT!
     }
@@ -197,7 +186,9 @@ export class InputGroup extends Element {
   elementList: Element[] = [];
   description: string = "";
   entryPoint = false;
-  mod: Modification | undefined;
+  mods: Modification[] | undefined;
+  extendElement: InputGroup | undefined;
+  deadEnd: boolean = false;
 
   constructor(definition: any, basePath: string, public elementType: string) {
     super();
@@ -205,22 +196,33 @@ export class InputGroup extends Element {
     this.name = specifier.identifier;
 
     this.modelicaPath = basePath ? [basePath, this.name].join(".") : this.name;
-    const registered = this.registerPath(this.modelicaPath);
+    this.type = this.modelicaPath;
+    const registered = this.registerPath(this.modelicaPath, this.type);
 
     if (!registered) {
       return; // PUNCH-OUT!
     }
 
-    this.type = this.modelicaPath;
     this.description = specifier.description_string;
 
     this.elementList = specifier.composition.element_list
-      .map((e: any) => _constructElement(e, this.modelicaPath))
-      .filter((e: Element | undefined) => e !== undefined);
+      .map((e: any) => {
+        const element = _constructElement(e, this.modelicaPath);
+        if (element?.elementType === "extends_clause") {
+          const extendParam = element as InputGroupExtend;
+          this.mods = extendParam.mods; // TODO: merge modifiers?
+          this.deadEnd = extendParam.deadEnd;
+          this.extendElement = typeStore.get(extendParam.type) as InputGroup;
+        }
+        return element;
+      })
+      .filter((e: Element | undefined) => e !== undefined)
+      .filter((e: Element) => e.elementType !== "extends_clause");
 
     this.annotation = specifier.composition.annotation?.map(
-      (m: Mod | WrappedMod) => createModification({ definition: m }),
+      (m: mj.Mod | mj.WrappedMod) => createModification({ definition: m }),
     );
+
     if (
       this.annotation &&
       this.annotation.find((m) => m.name === TEMPLATE_IDENTIFIER)
@@ -232,15 +234,30 @@ export class InputGroup extends Element {
     }
   }
 
+  /**
+   * Returns child elements including extended class child elements as a flat list
+   */
+  getChildElements(): Element[] {
+    return this.deadEnd || this.extendElement === undefined
+      ? this.elementList
+      : [...this.elementList, ...this.extendElement?.getChildElements()];
+  }
+
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
     // A group with no elementList is ignored
-    if (this.modelicaPath in inputs || this.elementList.length === 0) {
+    if (this.modelicaPath in inputs || this.getChildElements().length === 0) {
       return inputs;
     }
 
-    const children = this.elementList.filter((el) => {
+    const elementList = this.getChildElements();
+
+    const children = elementList.filter((el) => {
       return Object.keys(el.getInputs(inputs)).length > 0;
     });
+
+    // extend element children may or may not be included as children
+    // this call just makes sure the children get added to 'inputs'
+    this.extendElement?.getInputs(inputs);
 
     inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
@@ -250,14 +267,11 @@ export class InputGroup extends Element {
       inputs: children
         .map((c) => c.modelicaPath)
         .filter((c) => !(c in MODELICA_LITERALS)),
-      elementType: this.elementType
+      elementType: this.elementType,
+      modifiers: this.mods,
     };
 
     return inputs;
-  }
-
-  getModifications() {
-    return this.elementList.flatMap((e) => e.getModifications());
   }
 }
 
@@ -271,31 +285,32 @@ export class Input extends Element {
   inner: boolean | null = null;
   outer: boolean | null = null;
   connectorSizing = false;
-  visible = false; //
   annotation: Modification[] = [];
   tab? = "";
-  // TODO: Fix any typing
   group?: any = "";
-  enable: any; // Expression = { expression: "", modelicaPath: "" };
+  enable: Expression | boolean = false;
 
-  constructor(definition: mj.ProtectedElement, basePath: string, public elementType: string) {
+  constructor(
+    definition: mj.ProtectedElement,
+    basePath: string,
+    public elementType: string,
+  ) {
     super();
     const componentClause = definition.component_clause;
     const declarationBlock = componentClause.component_list.find(
       (c: any) => "declaration" in c,
-    )?.declaration as DeclarationBlock;
+    )?.declaration as mj.DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
-    const registered = this.registerPath(this.modelicaPath);
+    this.type = componentClause.type_specifier;
+    this.final = definition.final ? definition.final : this.final;
+    this.inner = definition.inner;
+    this.outer = definition.outer;
+    const registered = this.registerPath(this.modelicaPath, this.type);
 
     if (!registered) {
       return; // PUNCH-OUT!
     }
-
-    this.final = definition.final ? definition.final : this.final;
-    this.inner = definition.inner;
-    this.outer = definition.outer;
-    this.type = componentClause.type_specifier;
 
     // description block (where the annotation is) can be in different locations
     // constrainby changes this location
@@ -307,18 +322,17 @@ export class Input extends Element {
       this.description = descriptionBlock?.description_string || "";
       if (descriptionBlock?.annotation) {
         this.annotation = descriptionBlock.annotation
-          .map((mod: Mod | WrappedMod) =>
+          .map((mod: mj.Mod | mj.WrappedMod) =>
             createModification({ definition: mod }),
           )
           .filter((m) => m !== undefined) as Modification[];
-        this._setUIInfo();
       }
     }
 
     this.mod = declarationBlock.modification
       ? createModification({
           definition: declarationBlock,
-          basePath,
+          basePath: basePath,
           name: this.name,
         })
       : null;
@@ -326,6 +340,7 @@ export class Input extends Element {
     if (this.mod && !this.mod.empty) {
       this.value = this.mod.value;
     }
+    this._setUIInfo();
   }
 
   /**
@@ -334,14 +349,39 @@ export class Input extends Element {
    */
   _setUIInfo() {
     const dialog = this.annotation.find((m) => m.name === "Dialog");
+
+    const typeInstance = typeStore.find(this.type) as Element;
+    // TODO: elementTypes need to be split out into an enum...
+    const isInputGroupType = isInputGroup(typeInstance?.elementType);
+    // for class types, no dialog annotation means don't enable
+    // for all other types it is true
+
     if (dialog) {
       const group = dialog.mods.find((m) => m.name === "group")?.value;
       const tab = dialog.mods.find((m) => m.name === "tab")?.value;
+      const enable = dialog.mods.find((m) => m.name === "enable")?.value;
+      const connectorSizing = dialog.mods.find(
+        (m) => m.name === "connectorSizing",
+      )?.value;
 
       this.group = group ? evaluateExpression(group) : "";
       this.tab = tab ? evaluateExpression(tab) : "";
-      this.enable = dialog.mods.find((m) => m.name === "enable")?.value;
-      this.connectorSizing = dialog.mods.find((m) => m.name === "connectorSizing")?.value || false;
+      // const typeInstance = typeStore.find(this.type) as Element;
+      // // TODO: elementTypes need to be split out into an enum...
+      // const isInputGroupType = isInputGroup(typeInstance?.elementType);
+      // // for class types, no dialog annotation means don't enable
+      // // for all other types it is true
+      if (isInputGroupType) {
+        this.enable = enable ? evaluateExpression(enable) : false;
+      } else {
+        this.enable = enable ? evaluateExpression(enable) : true;
+      }
+
+      this.connectorSizing = connectorSizing
+        ? evaluateExpression(connectorSizing)
+        : false;
+    } else {
+      this.enable = isInputGroupType ? this.enable : true;
     }
   }
 
@@ -349,12 +389,19 @@ export class Input extends Element {
     let isVisible = !(
       this.outer ||
       this.final ||
-      // this.enable || // TODO: evaluate the expression and use if it returns a literal
-      this.connectorSizing
+      this.connectorSizing === true ||
+      this.enable === false
     );
 
-    const isLiteral = (this.type in MODELICA_LITERALS);
-    return (isVisible && (isLiteral || inputType?.visible === true));
+    const isLiteral = MODELICA_LITERALS.includes(this.type);
+    /**
+    *
+    * Replaceables -> dropdown -> each child of selected component
+    *
+    * Component -> Each child becomes it's own dropdown
+    *
+    */
+    return isVisible && (isLiteral || inputType?.visible === true);
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
@@ -362,12 +409,14 @@ export class Input extends Element {
       return inputs;
     }
 
+    // if a replaceable and in modification store - use that type
+    // if not in mod store, use 'this.type'
     const typeInstance = typeStore.get(this.type) || null;
     const inputTypes = typeInstance ? typeInstance.getInputs({}, false) : {};
-    const childInputs = inputTypes[this.type]?.inputs || [];
     const visible = this._setInputVisible(inputTypes[this.type]);
+    const childInputs =
+      this.enable === false ? [] : inputTypes[this.type]?.inputs || [];
 
-    // if path is present, just return
 
     inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
@@ -379,7 +428,8 @@ export class Input extends Element {
       visible: visible,
       enable: this.enable,
       inputs: childInputs,
-      elementType: this.elementType
+      modifiers: this.mod ? [this.mod as Modification] : [],
+      elementType: this.elementType,
     };
 
     if (recursive) {
@@ -390,27 +440,18 @@ export class Input extends Element {
 
     return inputs;
   }
-
-  getModifications(): Modification[] {
-    const typeInstance = typeStore.get(this.type);
-    const typeInstanceMods = typeInstance
-      ? typeInstance.getModifications()
-      : [];
-    const paramMods =
-      this.mod && !this.mod.empty ? this.mod.getModifications() : [];
-    // TODO: If there are duplicate mods (by modelica path) paramMods should
-    // overwrite typeInstance mods
-    // TODO: a param might point to a classmod, it would be better
-    // to not put that modification in the list
-    return [...paramMods, ...typeInstanceMods];
-  }
 }
 
 export class ReplaceableInput extends Input {
   choices: string[] = [];
   constraint: Element | undefined;
   mods: Modification[] = [];
-  constructor(definition: mj.ProtectedElement, basePath: string, elementType: string) {
+  mod: Modification | undefined;
+  constructor(
+    definition: mj.ProtectedElement,
+    basePath: string,
+    elementType: string,
+  ) {
     super(definition, basePath, elementType);
 
     // the default value is original type provided
@@ -419,7 +460,7 @@ export class ReplaceableInput extends Input {
     const mod = createModification({
       name: this.name,
       value: this.value,
-      basePath: basePath,
+      basePath: this.type,
     });
 
     if (mod) {
@@ -434,7 +475,7 @@ export class ReplaceableInput extends Input {
       this.mods = constraintDef?.class_modification
         ? [
             ...this.mods,
-            ...getModificationList(constraintDef, this.modelicaPath),
+            ...getModificationList(constraintDef, constraintDef.name),
           ]
         : [];
     }
@@ -462,6 +503,7 @@ export class ReplaceableInput extends Input {
     // if an annotation has been provided, use the choices from that annotation
     // otherwise fallback to using the parameter type
     const childTypes = this.choices.length ? this.choices : [this.type];
+    const visible = childTypes.length > 1;
 
     inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
@@ -471,12 +513,14 @@ export class ReplaceableInput extends Input {
       inputs: childTypes,
       group: this.group,
       tab: this.tab,
-      visible: true,
-      elementType: this.elementType
+      visible: visible,
+      modifiers: this.mods,
+      elementType: this.elementType,
     };
 
     if (recursive) {
       childTypes.map((c) => {
+        // TODO: applying mods from the parameter to child types?
         const typeInstance = typeStore.get(c) || null;
         if (typeInstance) {
           inputs = typeInstance.getInputs(inputs);
@@ -485,22 +529,6 @@ export class ReplaceableInput extends Input {
     }
 
     return inputs;
-  }
-
-  getModifications(): Modification[] {
-    const constraintMods = this.constraint
-      ? this.constraint.getModifications()
-      : [];
-    const replaceableMods: Modification[] = [];
-
-    this.choices.map((c) => {
-      const typeInstance = typeStore.get(c) || null;
-      if (typeInstance) {
-        replaceableMods.push(...typeInstance.getModifications());
-      }
-    });
-
-    return [...this.mods, ...constraintMods, ...replaceableMods];
   }
 }
 
@@ -519,7 +547,7 @@ export class Enum extends Element {
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = this.modelicaPath;
     this.description = specifier.value.description.description_string;
-    const registered = this.registerPath(this.modelicaPath);
+    const registered = this.registerPath(this.modelicaPath, this.type);
     if (!registered) {
       return; // PUNCH-OUT!
     }
@@ -560,7 +588,7 @@ export class Enum extends Element {
           type: this.type,
           value: e.modelicaPath,
           visible: false,
-          elementType: this.elementType
+          elementType: this.elementType,
         }),
     );
 
@@ -573,22 +601,44 @@ export class InputGroupExtend extends Element {
   mods: Modification[] = [];
   type: string = "";
   value: string = "";
+  annotation: Modification[] = [];
+  deadEnd: boolean;
   constructor(definition: any, basePath: string, public elementType: string) {
     super();
     this.name = EXTEND_NAME; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${this.name}`;
-    const registered = this.registerPath(this.modelicaPath);
+    this.type = definition.extends_clause.name;
+    this.deadEnd = false;
+
+    const annotations = definition.extends_clause?.annotation;
+
+    if (annotations) {
+      this.annotation = definition.extends_clause?.annotation
+        .map((mod: mj.Mod | mj.WrappedMod) =>
+          createModification({ definition: mod }),
+        )
+        .filter((m: any) => m !== undefined) as Modification[];
+      this._setUIInfo();
+    }
+
+    const registered = this.registerPath(this.modelicaPath, this.type);
     if (!registered) {
       return; // PUNCH-OUT!
     }
-    this.type = definition.extends_clause.name;
 
     this.value = this.type;
     if (definition.extends_clause.class_modification) {
-      this.mods = getModificationList(
-        definition.extends_clause,
-        this.modelicaPath,
-      );
+      this.mods = getModificationList(definition.extends_clause, this.type);
+    }
+  }
+
+  _setUIInfo() {
+    const __Linkage = this.annotation.find((m) => m.name === "__Linkage");
+
+    if (__Linkage) {
+      const enable = __Linkage.mods.find((m) => m.name === "enable")?.value;
+
+      this.deadEnd = enable ? !evaluateExpression(enable) : false;
     }
   }
 
@@ -598,22 +648,18 @@ export class InputGroupExtend extends Element {
     }
 
     const typeInstance = typeStore.get(this.type);
-
-    inputs[this.modelicaPath] = {
-      modelicaPath: this.modelicaPath,
-      type: this.type,
-      value: this.value,
-      name: typeInstance?.name || "",
-      visible: false,
-      inputs: this.type.startsWith("Modelica") ? [] : [this.type],
-      elementType: this.elementType
-    };
+    // inputs[this.modelicaPath] = {
+    //   modelicaPath: this.modelicaPath,
+    //   type: this.type,
+    //   value: this.value,
+    //   name: typeInstance?.name || "",
+    //   visible: false,
+    //   inputs: this.type.startsWith("Modelica") ? [] : [this.type],
+    //   elementType: this.elementType,
+    //   modifiers: this.mods,
+    // };
 
     return typeInstance ? typeInstance.getInputs(inputs, recursive) : inputs;
-  }
-
-  getModifications() {
-    return this.mods ? this.mods.flatMap((m) => m.getModifications()) : [];
   }
 }
 

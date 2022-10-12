@@ -20,6 +20,7 @@ export interface FlatConfigOption {
   parentName: string;
   modelicaPath: string;
   name: string;
+  modifiers: any;
   choices?: OptionInterface[];
 }
 
@@ -37,19 +38,60 @@ export interface ConfigSlideOutProps {
   close: () => void;
 }
 
+export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
+
+// TODO: Create Modifiers interface shape
+
 // Provides a flat array of options for display. This approach avoids processing the data structure in the return statement of components and keeps the logic related to the data separate from the logic that drives how components work.
 export function flattenConfigOptions(
   optionsToFlatten: OptionInterface[],
   parentModelicaPath: string,
   parentName: string,
+  modifiers: any,
   selectedOptions?: SelectedConfigOptions,
 ): FlatConfigOption[] {
+  const { templateStore } = useStores();
   let flatConfigOptions: FlatConfigOption[] = [];
+  let flatConfigModifiers: any = modifiers;
+  let typeModifiers: any;
+
   optionsToFlatten.forEach((option) => {
     // Ignores paths that finish in .dat
     // TODO: Make sure we exclude only .dat at the end of the string thanks to regular expression
     if (option.modelicaPath.includes(`.dat`)) {
       return;
+    }
+
+    // Setting up newChildren if the visiblity needs to be modified
+    const newChildOptions: OptionInterface[] = [];
+    // Checking if our type is a Modelica Literal instead of a modelicaPath
+    const typeIsLiteral = MODELICA_LITERALS.includes(option.type);
+
+    // Seeing if we have a different type than the current options modelicaPath, if so we need to grab the modifiers of the type
+    if (!typeIsLiteral && option.type !== option.modelicaPath) {
+      typeModifiers = templateStore.getOption(option.type)?.modifiers || {};
+    }
+
+    // Merging all modfiers together for the current option, this will also be passed down the tree to childOptions
+    // TODO: Add selection modifiers, also evaluating expressions
+    flatConfigModifiers = {
+      ...flatConfigModifiers,
+      ...option.modifiers,
+      ...typeModifiers,
+    };
+
+    // If we have an object of flattened Modifiers and we have children we need to modify those children's visiblilty
+    // if there is a modifier for the child
+    if (Object.keys(flatConfigModifiers).length !== 0 && option.childOptions?.length) {
+      option.childOptions.forEach((child: any) => {
+        const newChild: OptionInterface = {...child};
+        const childModifier: any = flatConfigModifiers[child.modelicaPath];
+
+        if (childModifier && childModifier?.final !== undefined) {
+          newChild.visible = child?.visible && !childModifier.final;
+        }
+        newChildOptions.push(newChild);
+      });
     }
 
     if (option.visible && option.childOptions?.length) {
@@ -61,7 +103,8 @@ export function flattenConfigOptions(
           parentName,
           modelicaPath: option.modelicaPath,
           name: option.name,
-          choices: option.childOptions,
+          modifiers: flatConfigModifiers,
+          choices: newChildOptions.length ? newChildOptions : option.childOptions,
         },
       ];
 
@@ -79,9 +122,10 @@ export function flattenConfigOptions(
       flatConfigOptions = [
         ...flatConfigOptions,
         ...flattenConfigOptions(
-          option.childOptions,
+          newChildOptions.length ? newChildOptions : option.childOptions,
           option.modelicaPath,
           option.name,
+          flatConfigModifiers,
           selectedOptions,
         ),
       ];
@@ -142,13 +186,15 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
     }
 
     // If no saved selection found, returns first choice of the option if any
-    return option.choices?.[0];
+    // return option.choices?.[0];
+    // TODO: Display default option of blank
+    return undefined;
   }
 
   // Looks up the store to make sure that the UI takes into consideration the choices selected by the user previously or first choices if nothing was selected
   function getInitialSelection() {
     let initialSelection = {};
-    const flatConfigOptions = flattenConfigOptions(options, "root", "");
+    const flatConfigOptions = flattenConfigOptions(options, "root", "", {});
     flatConfigOptions.forEach((option) => {
       const savedOptionSelection = getSavedConfigOption(option);
       if (savedOptionSelection) {
@@ -156,6 +202,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
           [savedOptionSelection],
           option.modelicaPath,
           option.name,
+          option.modifiers
         );
         if (flatChildOptions.length > 0) {
           initialSelection = {
@@ -177,6 +224,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
     options,
     "root",
     "",
+    {},
     selectedOptions,
   );
 
@@ -192,6 +240,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
       [option],
       parentModelicaPath,
       parentName,
+      {}
     );
 
     setSelectedOptions({

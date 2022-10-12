@@ -43,7 +43,7 @@ describe("Template wrapper class functionality", () => {
   it("Templates output expected linkage schema for SystemTemplates", () => {
     const expectedTemplateValues = {
       modelicaPath: "TestPackage.Template.TestTemplate",
-      optionLength: 14,
+      optionLength: 19,
       systemTypeLength: 1,
     };
 
@@ -58,13 +58,13 @@ describe("Template wrapper class functionality", () => {
     const systemTemplateOptions = options.find(
       (o) => o.modelicaPath === systemTemplate.modelicaPath,
     );
-    expect(systemTemplateOptions?.inputs?.length).toBe(
+    expect(systemTemplateOptions?.options?.length).toBe(
       expectedTemplateValues.optionLength,
     );
   });
 
   it("Templates generate separate schedule options and configuration options", () => {
-    const datPath = 'TestPackage.Template.TestTemplate.dat';
+    const datPath = 'TestPackage.Template.Data.TestTemplate.record_parameter';
 
     const { scheduleOptions } = getOptions();
     const datScheduleOption = scheduleOptions.find( o => o.modelicaPath === datPath);
