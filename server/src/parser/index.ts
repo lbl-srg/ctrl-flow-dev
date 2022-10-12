@@ -31,3 +31,7 @@ export function getSystemTypes(): templates.SystemTypeN[] {
 export function getOptions() {
   return templates.getOptions();
 }
+
+export function getAllTemplates(): templates.Template[] {
+  return templates.getTemplates();
+}
