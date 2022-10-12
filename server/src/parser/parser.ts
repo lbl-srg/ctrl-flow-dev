@@ -341,6 +341,9 @@ export class Input extends Element {
       this.value = this.mod.value;
     }
     this._setUIInfo();
+    if (this.modelicaPath === 'TestPackage.Template.TestTemplate.redeclare_param_01') {
+      console.log('a');
+    }
   }
 
   /**
