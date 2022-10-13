@@ -109,9 +109,13 @@ export function createModification(
  *
  * 1. The JSON structure needs to be unpacked to get to the mod definition
  * 2. The modification type needs to updated to the redeclared type
+ *
+ * TODO: take the type declaration and make a Modifier directly - pass
+ * definition on to 'createModification' to build child modifications
+ *
  */
 function unpackRedeclaration(props: ModificationProps) {
-  let { definition } = props;
+  let { basePath, definition } = props;
   const redeclaration = (definition as mj.RedeclareMod).element_redeclaration;
   const final = "final" in redeclaration ? redeclaration.final : false;
   if ("component_clause1" in redeclaration) {
@@ -122,7 +126,9 @@ function unpackRedeclaration(props: ModificationProps) {
     typeStore.get(type);
     const redeclareDefinition =
       componentClause1.component_declaration1.declaration;
-    const modProps = { ...props, type, definition: redeclareDefinition, final };
+    const name = redeclareDefinition.identifier;
+    // const modProps = { ...props, type, name, definition: redeclareDefinition, final };
+    const modProps = { basePath, name, value: type, final };
     const redeclareMod = createModification(modProps);
     return redeclareMod;
   } else if ("short_class_definition" in redeclaration) {
@@ -136,11 +142,17 @@ function unpackRedeclaration(props: ModificationProps) {
  */
 function unpackModblock(props: ModificationProps) {
   let mods: Modification[] = [];
-  let value: Expression | string = "";
-  let { definition, basePath = "", name } = props as ModificationWithDefinition;
+  let value: Expression | string = ""; // value can be 'type'
+  let {
+    definition,
+    basePath = "",
+    name,
+    final,
+    type,
+  } = props as ModificationWithDefinition;
 
   let modBlock = definition;
-  let final = false; // TODO: may need to be a nullable bool
+  // let final = false; // TODO: may need to be a nullable bool
 
   if ("element_modification_or_replaceable" in definition) {
     modBlock =
@@ -183,9 +195,9 @@ function unpackModblock(props: ModificationProps) {
       const choiceMod = (mod as mj.ClassMod)
         .class_modification[0] as mj.RedeclareMod;
       if (choiceMod.element_redeclaration) {
-        const replaceable = (
-          choiceMod.element_redeclaration.element_replaceable || choiceMod.element_redeclaration
-        ) as mj.ElementReplaceable;
+        const replaceable = (choiceMod.element_redeclaration
+          .element_replaceable ||
+          choiceMod.element_redeclaration) as mj.ElementReplaceable;
         // TODO: pass this path into `getExpression` and return
         // as a simple expression ('none')
         value = replaceable.component_clause1.type_specifier;
