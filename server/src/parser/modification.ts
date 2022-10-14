@@ -110,9 +110,6 @@ export function createModification(
  * 1. The JSON structure needs to be unpacked to get to the mod definition
  * 2. The modification type needs to updated to the redeclared type
  *
- * TODO: take the type declaration and make a Modifier directly - pass
- * definition on to 'createModification' to build child modifications
- *
  */
 function unpackRedeclaration(props: ModificationProps) {
   let { basePath, definition } = props;
@@ -127,12 +124,23 @@ function unpackRedeclaration(props: ModificationProps) {
     const redeclareDefinition =
       componentClause1.component_declaration1.declaration;
     const name = redeclareDefinition.identifier;
-    const childModProps = { ...props, type, definition: redeclareDefinition, final };
+    const childModProps = {
+      ...props,
+      type,
+      definition: redeclareDefinition,
+      final,
+    };
     // create child modifications
     const redeclareMod = createModification(childModProps);
     const childMods = redeclareMod ? [redeclareMod] : [];
     // create the redeclare modification
-    return new Modification(basePath, name, getExpression(type), childMods, final)
+    return new Modification(
+      basePath,
+      name,
+      getExpression(type),
+      childMods,
+      final,
+    );
   } else if ("short_class_definition" in redeclaration) {
   } else if ("element_replaceable" in redeclaration) {
   }
@@ -149,7 +157,7 @@ function unpackModblock(props: ModificationProps) {
     definition,
     basePath = "",
     name,
-    final
+    final,
   } = props as ModificationWithDefinition;
 
   let modBlock = definition;
