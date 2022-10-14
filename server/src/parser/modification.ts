@@ -127,10 +127,12 @@ function unpackRedeclaration(props: ModificationProps) {
     const redeclareDefinition =
       componentClause1.component_declaration1.declaration;
     const name = redeclareDefinition.identifier;
-    // const modProps = { ...props, type, name, definition: redeclareDefinition, final };
-    const modProps = { basePath, name, value: type, final };
-    const redeclareMod = createModification(modProps);
-    return redeclareMod;
+    const childModProps = { ...props, type, definition: redeclareDefinition, final };
+    // create child modifications
+    const redeclareMod = createModification(childModProps);
+    const childMods = redeclareMod ? [redeclareMod] : [];
+    // create the redeclare modification
+    return new Modification(basePath, name, getExpression(type), childMods, final)
   } else if ("short_class_definition" in redeclaration) {
   } else if ("element_replaceable" in redeclaration) {
   }
@@ -147,8 +149,7 @@ function unpackModblock(props: ModificationProps) {
     definition,
     basePath = "",
     name,
-    final,
-    type,
+    final
   } = props as ModificationWithDefinition;
 
   let modBlock = definition;
