@@ -341,9 +341,6 @@ export class Input extends Element {
       this.value = this.mod.value;
     }
     this._setUIInfo();
-    if (this.modelicaPath === 'TestPackage.Template.TestTemplate.redeclare_param_01') {
-      console.log('a');
-    }
   }
 
   /**
@@ -398,12 +395,12 @@ export class Input extends Element {
 
     const isLiteral = MODELICA_LITERALS.includes(this.type);
     /**
-    *
-    * Replaceables -> dropdown -> each child of selected component
-    *
-    * Component -> Each child becomes it's own dropdown
-    *
-    */
+     *
+     * Replaceables -> dropdown -> each child of selected component
+     *
+     * Component -> Each child becomes it's own dropdown
+     *
+     */
     return isVisible && (isLiteral || inputType?.visible === true);
   }
 
@@ -419,7 +416,6 @@ export class Input extends Element {
     const visible = this._setInputVisible(inputTypes[this.type]);
     const childInputs =
       this.enable === false ? [] : inputTypes[this.type]?.inputs || [];
-
 
     inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
