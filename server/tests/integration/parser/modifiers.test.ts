@@ -107,7 +107,7 @@ describe("Modifications", () => {
 
   it("Creates redeclare modifiers", () => {
     const path = "TestPackage.Template.TestTemplate.redeclare_param_01";
-    const modPath = "TestPackage.Component.SecondComponent.replaceable_param";
+    const modPath = "TestPackage.Component.FourthComponent.replaceable_param";
     const option = tOptions[path];
     const mod = option.modifiers[modPath];
   
