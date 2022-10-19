@@ -26,8 +26,8 @@ export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 export const isInputGroup = (elementType: string) =>
   ["model", "block", "package"].includes(elementType);
 
-export const isParameter = (elementType: string) =>
-  ["replaceable", "component_clause", "import_clause"].includes(elementType);
+export const isDefinition = (elementType: string) =>
+  !(["replaceable", "component_clause", "import_clause"].includes(elementType));
 
 class Store {
   _store: Map<string, any> = new Map();

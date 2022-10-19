@@ -88,7 +88,7 @@ describe("Template wrapper class functionality", () => {
     expect(templateJSON.systemTypes).toEqual(expectedOrder);
   });
 
-  it("Assigns 'parameter' attribute as expected", () => {
+  it("Assigns 'definition' attribute as expected", () => {
     const { options } = getOptions();
 
     const replaceable = options.find(o => o.modelicaPath === 'TestPackage.Template.TestTemplate.selectable_component');
@@ -96,11 +96,9 @@ describe("Template wrapper class functionality", () => {
     const typeDefinition = options.find(o => o.modelicaPath === 'TestPackage.Component.SecondComponent');
     const enumValue = options.find(o => o.modelicaPath === 'TestPackage.Types.Container.Bowl');
 
-    expect(replaceable?.parameter).toBeTruthy();
-    expect(literal?.parameter).toBeTruthy();
-    expect(typeDefinition?.parameter).toBeDefined();
-    expect(typeDefinition?.parameter).toBeFalsy();
-    expect(enumValue?.parameter).toBeDefined();
-    expect(enumValue?.parameter).toBeFalsy();
+    expect(replaceable?.definition).toBeFalsy();
+    expect(literal?.definition).toBeFalsy();
+    expect(typeDefinition?.definition).toBeTruthy();
+    expect(enumValue?.definition).toBeTruthy();
   });
 });
