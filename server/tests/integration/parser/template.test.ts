@@ -93,10 +93,14 @@ describe("Template wrapper class functionality", () => {
 
     const replaceable = options.find(o => o.modelicaPath === 'TestPackage.Template.TestTemplate.selectable_component');
     const literal = options.find(o => o.modelicaPath === 'TestPackage.Template.TestTemplate.nullable_bool');
-    const typeDefinition = options.find(o => o.modelicaPath === 'TestPackage.Template.TestTemplate') ;
+    const typeDefinition = options.find(o => o.modelicaPath === 'TestPackage.Component.SecondComponent');
+    const enumValue = options.find(o => o.modelicaPath === 'TestPackage.Types.Container.Bowl');
 
     expect(replaceable?.parameter).toBeTruthy();
     expect(literal?.parameter).toBeTruthy();
+    expect(typeDefinition?.parameter).toBeDefined();
     expect(typeDefinition?.parameter).toBeFalsy();
+    expect(enumValue?.parameter).toBeDefined();
+    expect(enumValue?.parameter).toBeFalsy();
   });
 });
