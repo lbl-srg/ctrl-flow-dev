@@ -22,8 +22,12 @@ export const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
+// TODO: convert 'elementType' to an enum
 export const isInputGroup = (elementType: string) =>
   ["model", "block", "package"].includes(elementType);
+
+export const isDefinition = (elementType: string) =>
+  !(["replaceable", "component_clause", "import_clause"].includes(elementType));
 
 class Store {
   _store: Map<string, any> = new Map();

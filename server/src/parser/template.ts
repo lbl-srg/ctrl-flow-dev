@@ -59,6 +59,7 @@ export interface Option {
   modifiers: { [key: string]: { expression: Expression; final: boolean } };
   replaceable: boolean;
   elementType: string;
+  definition: boolean;
 }
 
 export interface ScheduleOption extends Option {
@@ -108,6 +109,7 @@ function _mapInputToOption(
   }
 
   option.options = options;
+  option.definition = parser.isDefinition(input.elementType);
 
   return option;
 }

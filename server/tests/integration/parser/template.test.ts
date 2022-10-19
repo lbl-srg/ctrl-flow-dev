@@ -87,4 +87,18 @@ describe("Template wrapper class functionality", () => {
 
     expect(templateJSON.systemTypes).toEqual(expectedOrder);
   });
+
+  it("Assigns 'definition' attribute as expected", () => {
+    const { options } = getOptions();
+
+    const replaceable = options.find(o => o.modelicaPath === 'TestPackage.Template.TestTemplate.selectable_component');
+    const literal = options.find(o => o.modelicaPath === 'TestPackage.Template.TestTemplate.nullable_bool');
+    const typeDefinition = options.find(o => o.modelicaPath === 'TestPackage.Component.SecondComponent');
+    const enumValue = options.find(o => o.modelicaPath === 'TestPackage.Types.Container.Bowl');
+
+    expect(replaceable?.definition).toBeFalsy();
+    expect(literal?.definition).toBeFalsy();
+    expect(typeDefinition?.definition).toBeTruthy();
+    expect(enumValue?.definition).toBeTruthy();
+  });
 });
