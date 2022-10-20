@@ -27,7 +27,7 @@ export const isInputGroup = (elementType: string) =>
   ["model", "block", "package"].includes(elementType);
 
 export const isDefinition = (elementType: string) =>
-  !(["replaceable", "component_clause", "import_clause"].includes(elementType));
+  !["replaceable", "component_clause", "import_clause"].includes(elementType);
 
 class Store {
   _store: Map<string, any> = new Map();
@@ -77,6 +77,7 @@ class Store {
    * where it is able to follow an order of searching based on the type. Full rules
    * are defined here: https://mbe.modelica.university/components/packages/lookup/
    *
+   * This may need to be removed
    */
   _generatePaths(path: string, context: string): Array<string> {
     return context ? [path, `${context}.${path}`] : [path];
@@ -119,6 +120,24 @@ export const findElement = (modelicaPath: string) => {
   return typeStore.find(modelicaPath);
 };
 
+export const expandPath = (basePath: string, path: string) => {
+  let prefix = '';
+  let basePathList = basePath.split('.');
+  let element: Element | undefined;
+
+  for(let pathSegment of basePathList) {
+    const fullPath = prefix ? [prefix, path].join('.') : path;
+    element = findElement(fullPath);
+    if (element) {
+      break;
+    }
+
+    prefix = prefix ? [prefix, pathSegment].join('.') : pathSegment;
+  }
+
+  return element?.modelicaPath;
+}
+
 function assertType(type: string) {
   if (!MODELICA_LITERALS.includes(type) && !typeStore.has(type)) {
     throw new Error(`${type} not defined`);
@@ -154,7 +173,11 @@ export abstract class Element {
   ): { [key: string]: TemplateInput };
 
   registerPath(path: string, type: string = ""): boolean {
+    if (path.endsWith("short_path_component")) {
+      console.log("asdf");
+    }
     const isSet = typeStore.set(path, this);
+
     if (type) {
       typeStore.get(type);
     }
@@ -306,7 +329,13 @@ export class Input extends Element {
     )?.declaration as mj.DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
-    this.type = componentClause.type_specifier;
+    const path = expandPath(basePath, componentClause.type_specifier);
+    this.type = (path) ? path : componentClause.type_specifier;
+
+    // resolve path
+
+
+
     this.final = definition.final ? definition.final : this.final;
     this.inner = definition.inner;
     this.outer = definition.outer;

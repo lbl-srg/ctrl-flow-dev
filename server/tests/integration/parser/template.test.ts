@@ -123,7 +123,7 @@ describe("Path Expansion", () => {
     loadPackage(`${fullTempDirPath}/TestPackage`);
   });
 
-  it("Parameter paths are expanded", () => {
+  it("Parameter type paths are expanded", () => {
     const { options } = getOptions();
 
     const expectedType = "TestPackage.Component.FourthComponent";
