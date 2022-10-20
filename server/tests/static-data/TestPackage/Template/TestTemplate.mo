@@ -122,6 +122,7 @@ model TestTemplate "Test Template"
       Evaluate=true,
       Dialog(group="Configuration"));
 
+  // redclare modifier params
   TestPackage.Component.FourthComponent redeclare_param_01(
       redeclare final TestPackage.Component.SecondComponent replaceable_param
     )
@@ -132,6 +133,15 @@ model TestTemplate "Test Template"
     redeclare TestPackage.Component.ThirdComponent replaceable_param)
     "Second Param to test component redeclares"
     annotation(Dialog(enable=true));
+
+  // path testing
+  Component.FourthComponent short_path_component(
+    redeclare ThirdComponent replaceable_param
+  );
+
+  LocalVars test_record(
+    local_var="Modified Value"
+  );
 
   annotation (__LinkageTemplate=true);
 end TestTemplate;

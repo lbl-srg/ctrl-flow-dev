@@ -6,6 +6,7 @@ import {
   getOptions,
 } from "../../../src/parser/";
 
+import { evaluateExpression } from "../../../src/parser/expression";
 import { getTemplates } from "../../../src/parser/template";
 
 const templatePath = "TestPackage.Template.TestTemplate";
@@ -43,7 +44,7 @@ describe("Template wrapper class functionality", () => {
   it("Templates output expected linkage schema for SystemTemplates", () => {
     const expectedTemplateValues = {
       modelicaPath: "TestPackage.Template.TestTemplate",
-      optionLength: 19,
+      optionLength: 21,
       systemTypeLength: 1,
     };
 
@@ -64,10 +65,12 @@ describe("Template wrapper class functionality", () => {
   });
 
   it("Templates generate separate schedule options and configuration options", () => {
-    const datPath = 'TestPackage.Template.Data.TestTemplate.record_parameter';
+    const datPath = "TestPackage.Template.Data.TestTemplate.record_parameter";
 
     const { scheduleOptions } = getOptions();
-    const datScheduleOption = scheduleOptions.find( o => o.modelicaPath === datPath);
+    const datScheduleOption = scheduleOptions.find(
+      (o) => o.modelicaPath === datPath,
+    );
     expect(datScheduleOption).toBeTruthy();
   });
 
@@ -91,14 +94,63 @@ describe("Template wrapper class functionality", () => {
   it("Assigns 'definition' attribute as expected", () => {
     const { options } = getOptions();
 
-    const replaceable = options.find(o => o.modelicaPath === 'TestPackage.Template.TestTemplate.selectable_component');
-    const literal = options.find(o => o.modelicaPath === 'TestPackage.Template.TestTemplate.nullable_bool');
-    const typeDefinition = options.find(o => o.modelicaPath === 'TestPackage.Component.SecondComponent');
-    const enumValue = options.find(o => o.modelicaPath === 'TestPackage.Types.Container.Bowl');
+    const replaceable = options.find(
+      (o) =>
+        o.modelicaPath ===
+        "TestPackage.Template.TestTemplate.selectable_component",
+    );
+    const literal = options.find(
+      (o) =>
+        o.modelicaPath === "TestPackage.Template.TestTemplate.nullable_bool",
+    );
+    const typeDefinition = options.find(
+      (o) => o.modelicaPath === "TestPackage.Component.SecondComponent",
+    );
+    const enumValue = options.find(
+      (o) => o.modelicaPath === "TestPackage.Types.Container.Bowl",
+    );
 
     expect(replaceable?.definition).toBeFalsy();
     expect(literal?.definition).toBeFalsy();
     expect(typeDefinition?.definition).toBeTruthy();
     expect(enumValue?.definition).toBeTruthy();
+  });
+});
+
+describe("Path Expansion", () => {
+  beforeAll(() => {
+    createTestModelicaJson();
+    loadPackage(`${fullTempDirPath}/TestPackage`);
+  });
+
+  it("Parameter paths are expanded", () => {
+    const { options } = getOptions();
+
+    const expectedType = "TestPackage.Component.FourthComponent";
+    const shortPathComponent = options.find(
+      (o) =>
+        o.modelicaPath ===
+        "TestPackage.Template.TestTemplate.short_path_component",
+    );
+    expect(shortPathComponent?.type).toEqual(expectedType);
+  });
+
+  it("Redeclare value paths are expanded", () => {
+    const { options } = getOptions();
+
+    const expectedValue = "TestPackage.Component.ThirdComponent";
+    const shortPathComponent = options.find(
+      (o) =>
+        o.modelicaPath ===
+        "TestPackage.Template.TestTemplate.short_path_component",
+    );
+    const mod =
+      shortPathComponent?.modifiers[
+        "TestPackage.Component.FourthComponent.replaceable_param"
+      ];
+    expect(mod).toBeDefined();
+    if (mod) {
+      expect(evaluateExpression(mod.expression)).toBe(expectedValue);
+    }
   });
 });
