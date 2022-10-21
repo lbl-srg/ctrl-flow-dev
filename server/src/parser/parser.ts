@@ -122,26 +122,26 @@ export const findElement = (modelicaPath: string) => {
 
 /**
  * Takes a type and returns the 'absolute path' to the type
- * 
- * @Returns string 
+ *
+ * @Returns string
  */
 export const expandType = (type: string, basePath: string | undefined) => {
-  let prefix = '';
-  let basePathList = basePath ? basePath.split('.') : [];
+  let prefix = "";
+  let basePathList = basePath ? basePath.split(".") : [];
   let element: Element | undefined;
 
-  for(let pathSegment of basePathList) {
-    const fullPath = prefix ? [prefix, type].join('.') : type;
+  for (let pathSegment of basePathList) {
+    const fullPath = prefix ? [prefix, type].join(".") : type;
     element = findElement(fullPath);
     if (element) {
       break;
     }
 
-    prefix = prefix ? [prefix, pathSegment].join('.') : pathSegment;
+    prefix = prefix ? [prefix, pathSegment].join(".") : pathSegment;
   }
 
-  return (element?.modelicaPath) ? element?.modelicaPath : type;
-}
+  return element?.modelicaPath ? element?.modelicaPath : type;
+};
 
 function assertType(type: string) {
   if (!MODELICA_LITERALS.includes(type) && !typeStore.has(type)) {
@@ -178,9 +178,6 @@ export abstract class Element {
   ): { [key: string]: TemplateInput };
 
   registerPath(path: string, type: string = ""): boolean {
-    if (path.endsWith("short_path_component")) {
-      console.log("asdf");
-    }
     const isSet = typeStore.set(path, this);
 
     if (type) {
