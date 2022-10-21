@@ -6,7 +6,6 @@ import {
   getOptions,
 } from "../../../src/parser/";
 
-import { evaluateExpression } from "../../../src/parser/expression";
 import { getTemplates } from "../../../src/parser/template";
 
 const templatePath = "TestPackage.Template.TestTemplate";
@@ -114,43 +113,5 @@ describe("Template wrapper class functionality", () => {
     expect(literal?.definition).toBeFalsy();
     expect(typeDefinition?.definition).toBeTruthy();
     expect(enumValue?.definition).toBeTruthy();
-  });
-});
-
-describe("Path Expansion", () => {
-  beforeAll(() => {
-    createTestModelicaJson();
-    loadPackage(`${fullTempDirPath}/TestPackage`);
-  });
-
-  it("Parameter type paths are expanded", () => {
-    const { options } = getOptions();
-
-    const expectedType = "TestPackage.Component.FourthComponent";
-    const shortPathComponent = options.find(
-      (o) =>
-        o.modelicaPath ===
-        "TestPackage.Template.TestTemplate.short_path_component",
-    );
-    expect(shortPathComponent?.type).toEqual(expectedType);
-  });
-
-  it("Redeclare value paths are expanded", () => {
-    const { options } = getOptions();
-
-    const expectedValue = "TestPackage.Component.ThirdComponent";
-    const shortPathComponent = options.find(
-      (o) =>
-        o.modelicaPath ===
-        "TestPackage.Template.TestTemplate.short_path_component",
-    );
-    const mod =
-      shortPathComponent?.modifiers[
-        "TestPackage.Component.FourthComponent.replaceable_param"
-      ];
-    expect(mod).toBeDefined();
-    if (mod) {
-      expect(evaluateExpression(mod.expression)).toBe(expectedValue);
-    }
   });
 });
