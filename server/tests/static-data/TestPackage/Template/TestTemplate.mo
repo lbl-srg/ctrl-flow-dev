@@ -123,7 +123,7 @@ model TestTemplate "Test Template"
       Dialog(group="Configuration"));
 
   TestPackage.Component.FourthComponent redeclare_param_01(
-      redeclare TestPackage.Component.SecondComponent replaceable_param
+      redeclare final TestPackage.Component.SecondComponent replaceable_param
     )
     "First Param to test component redeclares"
     annotation(Dialog(enable=true));
