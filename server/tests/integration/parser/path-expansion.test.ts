@@ -53,19 +53,19 @@ describe("Path Expansion", () => {
   });
 
   it("Redeclare value paths are expanded", () => {
-    // const { options } = getOptions();
-    // const expectedValue = "TestPackage.Component.ThirdComponent";
-    // const shortPathComponent = options.find(
-    //   (o) =>
-    //     o.modelicaPath ==="TestPackage.Template.TestTemplate.short_path_component",
-    // );
-    // const mod =
-    //   shortPathComponent?.modifiers[
-    //     "TestPackage.Component.FourthComponent.replaceable_param"
-    //   ];
-    // expect(mod).toBeDefined();
-    // if (mod) {
-    //   expect(evaluateExpression(mod.expression)).toBe(expectedValue);
-    // }
+    const { options } = getOptions();
+    const expectedValue = "TestPackage.Component.ThirdComponent";
+    const shortPathComponent = options.find(
+      (o) =>
+        o.modelicaPath ==="TestPackage.Template.TestTemplate.short_path_component",
+    );
+    const mod =
+      shortPathComponent?.modifiers[
+        "TestPackage.Component.FourthComponent.replaceable_param"
+      ];
+    expect(mod).toBeDefined();
+    if (mod) {
+      expect(evaluateExpression(mod.expression)).toBe(expectedValue);
+    }
   });
 });
