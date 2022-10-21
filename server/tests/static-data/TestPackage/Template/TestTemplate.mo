@@ -147,7 +147,7 @@ model TestTemplate "Test Template"
     TestPackage.Component.SecondComponent
     selectable_component_with_relative_paths constrainedby
     Interface.PartialComponent(
-      final container=TestPackage.Types.Container.Cone,
+      final container=Types.Container.Cone,
       final icecream=if
         first.icecream <> TestPackage.Types.IceCream.Chocolate then
         first.icecream elseif third.icecream <> TestPackage.Types.IceCream.Chocolate

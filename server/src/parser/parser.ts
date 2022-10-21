@@ -120,13 +120,18 @@ export const findElement = (modelicaPath: string) => {
   return typeStore.find(modelicaPath);
 };
 
-export const expandPath = (basePath: string, path: string) => {
+/**
+ * Takes a type and returns the 'absolute path' to the type
+ * 
+ * @Returns string 
+ */
+export const expandType = (type: string, basePath: string | undefined) => {
   let prefix = '';
-  let basePathList = basePath.split('.');
+  let basePathList = basePath ? basePath.split('.') : [];
   let element: Element | undefined;
 
   for(let pathSegment of basePathList) {
-    const fullPath = prefix ? [prefix, path].join('.') : path;
+    const fullPath = prefix ? [prefix, type].join('.') : type;
     element = findElement(fullPath);
     if (element) {
       break;
@@ -135,7 +140,7 @@ export const expandPath = (basePath: string, path: string) => {
     prefix = prefix ? [prefix, pathSegment].join('.') : pathSegment;
   }
 
-  return element?.modelicaPath;
+  return (element?.modelicaPath) ? element?.modelicaPath : type;
 }
 
 function assertType(type: string) {
@@ -329,12 +334,7 @@ export class Input extends Element {
     )?.declaration as mj.DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
-    const path = expandPath(basePath, componentClause.type_specifier);
-    this.type = (path) ? path : componentClause.type_specifier;
-
-    // resolve path
-
-
+    this.type = expandType(componentClause.type_specifier, basePath);
 
     this.final = definition.final ? definition.final : this.final;
     this.inner = definition.inner;
@@ -356,7 +356,7 @@ export class Input extends Element {
       if (descriptionBlock?.annotation) {
         this.annotation = descriptionBlock.annotation
           .map((mod: mj.Mod | mj.WrappedMod) =>
-            createModification({ definition: mod }),
+            createModification({ definition: mod, basePath }),
           )
           .filter((m) => m !== undefined) as Modification[];
       }

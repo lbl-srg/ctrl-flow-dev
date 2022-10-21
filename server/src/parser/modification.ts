@@ -1,4 +1,4 @@
-import { typeStore, isInputGroup, InputGroup } from "./parser";
+import { typeStore, isInputGroup, InputGroup, expandType } from "./parser";
 import * as mj from "./mj-types";
 
 /**
@@ -118,7 +118,7 @@ function unpackRedeclaration(props: ModificationProps) {
   if ("component_clause1" in redeclaration) {
     const componentClause1 =
       redeclaration.component_clause1 as mj.ComponentClause1;
-    const type = componentClause1.type_specifier;
+    const type = expandType(componentClause1.type_specifier, basePath);
     // make sure redeclared type is loaded
     typeStore.get(type);
     const redeclareDefinition =
@@ -209,7 +209,7 @@ function unpackModblock(props: ModificationProps) {
           choiceMod.element_redeclaration) as mj.ElementReplaceable;
         // TODO: pass this path into `getExpression` and return
         // as a simple expression ('none')
-        value = replaceable.component_clause1.type_specifier;
+        value = expandType(replaceable.component_clause1.type_specifier, basePath);
       }
     } else if ("class_modification" in mod) {
       // update base path to class type
