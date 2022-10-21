@@ -21,22 +21,6 @@ const OptionSelect = ({
   configId,
   updateSelectedConfigOption,
 }: OptionSelectProps) => {
-  const { configStore } = useStores();
-
-  function getSavedSelectedOption() {
-    // Get the selected option saved by the user if any
-    const savedSelectedOptionValue: string | undefined =
-      configStore.findOptionValue(configId, option.modelicaPath);
-
-    // Find the child option that matches the saved option value
-    if (savedSelectedOptionValue) {
-      return option.choices?.find(
-        (choice) => choice.modelicaPath === savedSelectedOptionValue,
-      )?.modelicaPath;
-    }
-
-    return option.choices?.[0].modelicaPath;
-  }
 
   function selectOption(event: ChangeEvent<HTMLSelectElement>) {
     const selectedOption = option.choices?.find(
@@ -59,7 +43,7 @@ const OptionSelect = ({
       </label>
       <select
         name={option.modelicaPath}
-        defaultValue={getSavedSelectedOption()}
+        defaultValue={option.value || option.choices?.[0].modelicaPath}
         onChange={selectOption}
       >
         {option.choices?.map((choice) => (
