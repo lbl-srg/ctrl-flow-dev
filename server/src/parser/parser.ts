@@ -503,11 +503,14 @@ export class ReplaceableInput extends Input {
     // interface. Check if one is present to extract modifiers
     if (definition.constraining_clause) {
       const constraintDef = definition.constraining_clause;
-      this.constraint = typeStore.get(constraintDef.name);
+      // constraint name is a type that needs to be expanded for
+      // a valid base path
+      const expandedBasePath = expandType(constraintDef.name, basePath);
+      this.constraint = typeStore.get(expandedBasePath);
       this.mods = constraintDef?.class_modification
         ? [
             ...this.mods,
-            ...getModificationList(constraintDef, constraintDef.name),
+            ...getModificationList(constraintDef, expandedBasePath),
           ]
         : [];
     }
