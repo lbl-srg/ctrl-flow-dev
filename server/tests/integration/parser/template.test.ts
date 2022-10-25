@@ -43,7 +43,7 @@ describe("Template wrapper class functionality", () => {
   it("Templates output expected linkage schema for SystemTemplates", () => {
     const expectedTemplateValues = {
       modelicaPath: "TestPackage.Template.TestTemplate",
-      optionLength: 19,
+      optionLength: 22,
       systemTypeLength: 1,
     };
 
@@ -64,10 +64,12 @@ describe("Template wrapper class functionality", () => {
   });
 
   it("Templates generate separate schedule options and configuration options", () => {
-    const datPath = 'TestPackage.Template.Data.TestTemplate.record_parameter';
+    const datPath = "TestPackage.Template.Data.TestTemplate.record_parameter";
 
     const { scheduleOptions } = getOptions();
-    const datScheduleOption = scheduleOptions.find( o => o.modelicaPath === datPath);
+    const datScheduleOption = scheduleOptions.find(
+      (o) => o.modelicaPath === datPath,
+    );
     expect(datScheduleOption).toBeTruthy();
   });
 
@@ -91,10 +93,21 @@ describe("Template wrapper class functionality", () => {
   it("Assigns 'definition' attribute as expected", () => {
     const { options } = getOptions();
 
-    const replaceable = options.find(o => o.modelicaPath === 'TestPackage.Template.TestTemplate.selectable_component');
-    const literal = options.find(o => o.modelicaPath === 'TestPackage.Template.TestTemplate.nullable_bool');
-    const typeDefinition = options.find(o => o.modelicaPath === 'TestPackage.Component.SecondComponent');
-    const enumValue = options.find(o => o.modelicaPath === 'TestPackage.Types.Container.Bowl');
+    const replaceable = options.find(
+      (o) =>
+        o.modelicaPath ===
+        "TestPackage.Template.TestTemplate.selectable_component",
+    );
+    const literal = options.find(
+      (o) =>
+        o.modelicaPath === "TestPackage.Template.TestTemplate.nullable_bool",
+    );
+    const typeDefinition = options.find(
+      (o) => o.modelicaPath === "TestPackage.Component.SecondComponent",
+    );
+    const enumValue = options.find(
+      (o) => o.modelicaPath === "TestPackage.Types.Container.Bowl",
+    );
 
     expect(replaceable?.definition).toBeFalsy();
     expect(literal?.definition).toBeFalsy();
