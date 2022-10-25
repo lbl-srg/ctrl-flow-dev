@@ -488,7 +488,7 @@ export class ReplaceableInput extends Input {
 
     const mod = createModification({
       name: this.name,
-      value: getExpression(this.value),
+      value: getExpression(this.value, basePath),
       basePath: basePath,
     });
 

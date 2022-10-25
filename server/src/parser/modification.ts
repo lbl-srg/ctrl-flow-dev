@@ -137,7 +137,7 @@ function unpackRedeclaration(props: ModificationProps) {
     return new Modification(
       basePath,
       name,
-      getExpression(type),
+      getExpression(type, basePath),
       childMods,
       final,
     );
@@ -199,7 +199,7 @@ function unpackModblock(props: ModificationProps) {
 
   if (mod) {
     if ("equal" in mod) {
-      value = getExpression((mod as mj.Assignment).expression);
+      value = getExpression((mod as mj.Assignment).expression, basePath);
     } else if (name == "choice") {
       const choiceMod = (mod as mj.ClassMod)
         .class_modification[0] as mj.RedeclareMod;
