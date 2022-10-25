@@ -87,7 +87,7 @@ export function flattenConfigOptions(
         },
       ];
 
-      console.log('visible childOptions (flatConfigOptions): ', flatConfigOptions);
+      // console.log('visible childOptions (flatConfigOptions): ', flatConfigOptions);
       // console.log('selectedOptions: ', selectedOptions);
     } else if (option.childOptions?.length) {
       // Gets one level deeper into the data structure
@@ -101,7 +101,7 @@ export function flattenConfigOptions(
           selectedOptions,
         ),
       ];
-      console.log('flatConfigOptions notVisable has children: ', flatConfigOptions);
+      // console.log('flatConfigOptions notVisable has children: ', flatConfigOptions);
     }
   });
 
@@ -145,12 +145,16 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
   const options: OptionInterface[] = templateStore.getOptionsForTemplate(
     template?.modelicaPath,
   );
-  
+
   const [selectedOptions, setSelectedOptions] = useState(
     configStore.getConfigSelections(configId),
   );
 
+  // const [configName, setConfigName] = useState()
+
   // console.log('selections: ', selectedOptions);
+
+  //TODO: move state to config page, we need to save generated flatConfigOptions and pass it to the slideOut so we can save default config values
 
   const flatConfigOptions = flattenConfigOptions(
     options,
@@ -159,6 +163,9 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
     {},
     selectedOptions,
   );
+
+  console.log('selectedOptions: ', selectedOptions);
+  console.log('flatConfigOptions: ', flatConfigOptions);
 
   // TODO: Finish implementing grouping of options
   // const groupedConfigOptions = groupConfigOptions(flatConfigOptions);
@@ -173,21 +180,14 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
       [parentModelicaPath]: option.modelicaPath,
     };
 
-    setSelectedOptions(
-      Object.keys(newSelectedOptions).map((name) => {
-        return {
-          name: name,
-          value: newSelectedOptions[name]
-        }
-      })
-    );
+    setSelectedOptions(newSelectedOptions);
   }
 
   function saveConfigOptions(event: FormEvent) {
     event.preventDefault();
     event.stopPropagation();
 
-    const data = getFormData(event.target as HTMLFormElement);
+    const data = selectedOptions;
     configStore.setSelections(
       config.id,
       Object.entries(data).map(([name, value]) => ({ name, value })),
