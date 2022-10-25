@@ -144,7 +144,7 @@ model TestTemplate "Test Template"
   );
 
   inner replaceable
-    TestPackage.Component.SecondComponent
+    Component.SecondComponent
     selectable_component_with_relative_paths constrainedby
     Interface.PartialComponent(
       final container=Types.Container.Cone,
