@@ -2,6 +2,11 @@ import { createTestModelicaJson, fullTempDirPath } from "./utils";
 import { loadPackage, getOptions } from "../../../src/parser/";
 import { evaluateExpression } from "../../../src/parser/expression";
 
+/**
+ * This set of tests is attempting to cover all places a 'type' is assigned, checking
+ * that the type is properly expanded to a full path and not kept as a relative path.
+ */
+
 describe("Path Expansion", () => {
   beforeAll(() => {
     createTestModelicaJson();
@@ -52,7 +57,7 @@ describe("Path Expansion", () => {
     }
   });
 
-  it("Redeclare value paths are expanded", () => {
+  it("Redeclare modifier paths are expanded", () => {
     const { options } = getOptions();
     const expectedValue = "TestPackage.Component.ThirdComponent";
     const shortPathComponent = options.find(
@@ -62,6 +67,23 @@ describe("Path Expansion", () => {
     const mod =
       shortPathComponent?.modifiers[
         "TestPackage.Component.FourthComponent.replaceable_param"
+      ];
+    expect(mod).toBeDefined();
+    if (mod) {
+      expect(evaluateExpression(mod.expression)).toBe(expectedValue);
+    }
+  });
+
+  it("Default redeclare type modifier is assigned as expected", () => {
+    const { options } = getOptions();
+    const expectedValue = "TestPackage.Component.SecondComponent";
+    const shortPathComponent = options.find(
+      (o) =>
+        o.modelicaPath ==="TestPackage.Template.TestTemplate.selectable_component_with_relative_paths",
+    );
+    const mod =
+      shortPathComponent?.modifiers[
+        "TestPackage.Template.TestTemplate.selectable_component_with_relative_paths"
       ];
     expect(mod).toBeDefined();
     if (mod) {

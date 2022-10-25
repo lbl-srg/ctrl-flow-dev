@@ -15,7 +15,7 @@ import {
   getModificationList,
 } from "./modification";
 
-import { Literal, evaluateExpression, Expression } from "./expression";
+import { Literal, evaluateExpression, Expression, getExpression } from "./expression";
 import * as mj from "./mj-types";
 
 export const EXTEND_NAME = "__extend";
@@ -488,8 +488,8 @@ export class ReplaceableInput extends Input {
 
     const mod = createModification({
       name: this.name,
-      value: this.value,
-      basePath: this.type,
+      value: getExpression(this.value),
+      basePath: basePath,
     });
 
     if (mod) {
