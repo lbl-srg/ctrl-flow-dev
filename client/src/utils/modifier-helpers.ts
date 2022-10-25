@@ -10,19 +10,29 @@ export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 // might need to figure out how initial selections will be affected, might need to do that here instead
 // any modification with expression needs to be evaluated
 
+export const storeHooks = () => {
+  const { templateStore } = useStores();
+
+  const getTemplateOption = (modelicaPath: string): any => {
+    return templateStore.getOption(modelicaPath);
+  };
+
+  return {getTemplateOption}
+} 
+
 export function getModifierContext(
   option: OptionInterface,
   modifiers: any,
   selections: any
 ): any {
-  const { templateStore } = useStores();
+  const { getTemplateOption } = storeHooks();
   // Checking if our type is a Modelica Literal instead of a modelicaPath
   const typeIsLiteral = MODELICA_LITERALS.includes(option.type);
   let typeModifiers: any = {};
 
   // Seeing if we have a different type than the current options modelicaPath, if so we need to grab the modifiers of the type
   if (!typeIsLiteral && option.type !== option.modelicaPath) {
-    typeModifiers = templateStore.getOption(option.type)?.modifiers || {};
+    typeModifiers = getTemplateOption(option?.type)?.modifiers || {};
   }
 
   // Merging all modfiers together for the current option, this will also be passed down the tree to childOptions
@@ -62,6 +72,7 @@ export function applyChoiceModifiers(
   return newOptions.length ? newOptions : option.childOptions || [];
 }
 
+// grab default value, either by evaluating or selecting the first choice
 export function applyValueModifiers(
   option: OptionInterface,
   modifiers: any,
