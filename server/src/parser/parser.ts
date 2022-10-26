@@ -15,7 +15,7 @@ import {
   getModificationList,
 } from "./modification";
 
-import { Literal, evaluateExpression, Expression } from "./expression";
+import { Literal, evaluateExpression, Expression, getExpression } from "./expression";
 import * as mj from "./mj-types";
 
 export const EXTEND_NAME = "__extend";
@@ -27,7 +27,7 @@ export const isInputGroup = (elementType: string) =>
   ["model", "block", "package"].includes(elementType);
 
 export const isDefinition = (elementType: string) =>
-  !(["replaceable", "component_clause", "import_clause"].includes(elementType));
+  !["replaceable", "component_clause", "import_clause"].includes(elementType);
 
 class Store {
   _store: Map<string, any> = new Map();
@@ -77,6 +77,7 @@ class Store {
    * where it is able to follow an order of searching based on the type. Full rules
    * are defined here: https://mbe.modelica.university/components/packages/lookup/
    *
+   * This may need to be removed
    */
   _generatePaths(path: string, context: string): Array<string> {
     return context ? [path, `${context}.${path}`] : [path];
@@ -119,6 +120,29 @@ export const findElement = (modelicaPath: string) => {
   return typeStore.find(modelicaPath);
 };
 
+/**
+ * Takes a type and returns the 'absolute path' to the type
+ *
+ * @Returns string
+ */
+export const expandType = (type: string, basePath: string | undefined) => {
+  let prefix = "";
+  let basePathList = basePath ? basePath.split(".") : [];
+  let element: Element | undefined;
+
+  for (let pathSegment of basePathList) {
+    const fullPath = prefix ? [prefix, type].join(".") : type;
+    element = findElement(fullPath);
+    if (element) {
+      break;
+    }
+
+    prefix = prefix ? [prefix, pathSegment].join(".") : pathSegment;
+  }
+
+  return element?.modelicaPath ? element?.modelicaPath : type;
+};
+
 function assertType(type: string) {
   if (!MODELICA_LITERALS.includes(type) && !typeStore.has(type)) {
     throw new Error(`${type} not defined`);
@@ -155,6 +179,7 @@ export abstract class Element {
 
   registerPath(path: string, type: string = ""): boolean {
     const isSet = typeStore.set(path, this);
+
     if (type) {
       typeStore.get(type);
     }
@@ -306,7 +331,8 @@ export class Input extends Element {
     )?.declaration as mj.DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
-    this.type = componentClause.type_specifier;
+    this.type = expandType(componentClause.type_specifier, basePath);
+
     this.final = definition.final ? definition.final : this.final;
     this.inner = definition.inner;
     this.outer = definition.outer;
@@ -327,7 +353,7 @@ export class Input extends Element {
       if (descriptionBlock?.annotation) {
         this.annotation = descriptionBlock.annotation
           .map((mod: mj.Mod | mj.WrappedMod) =>
-            createModification({ definition: mod }),
+            createModification({ definition: mod, basePath }),
           )
           .filter((m) => m !== undefined) as Modification[];
       }
@@ -462,8 +488,8 @@ export class ReplaceableInput extends Input {
 
     const mod = createModification({
       name: this.name,
-      value: this.value,
-      basePath: this.type,
+      value: getExpression(this.value),
+      basePath: basePath,
     });
 
     if (mod) {
@@ -474,11 +500,14 @@ export class ReplaceableInput extends Input {
     // interface. Check if one is present to extract modifiers
     if (definition.constraining_clause) {
       const constraintDef = definition.constraining_clause;
-      this.constraint = typeStore.get(constraintDef.name);
+      // constraint name is a type that needs to be expanded for
+      // a valid base path
+      const expandedBasePath = expandType(constraintDef.name, basePath);
+      this.constraint = typeStore.get(expandedBasePath);
       this.mods = constraintDef?.class_modification
         ? [
             ...this.mods,
-            ...getModificationList(constraintDef, constraintDef.name),
+            ...getModificationList(constraintDef, expandedBasePath),
           ]
         : [];
     }

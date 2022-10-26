@@ -122,6 +122,7 @@ model TestTemplate "Test Template"
       Evaluate=true,
       Dialog(group="Configuration"));
 
+  // redclare modifier params
   TestPackage.Component.FourthComponent redeclare_param_01(
       redeclare final TestPackage.Component.SecondComponent replaceable_param
     )
@@ -132,6 +133,35 @@ model TestTemplate "Test Template"
     redeclare TestPackage.Component.ThirdComponent replaceable_param)
     "Second Param to test component redeclares"
     annotation(Dialog(enable=true));
+
+  // path testing
+  Component.FourthComponent short_path_component(
+    redeclare ThirdComponent replaceable_param
+  );
+
+  LocalVars test_record(
+    local_var="Modified Value"
+  );
+
+  inner replaceable
+    Component.SecondComponent
+    selectable_component_with_relative_paths constrainedby
+    Interface.PartialComponent(
+      final container=Types.Container.Cone,
+      final icecream=if
+        first.icecream <> TestPackage.Types.IceCream.Chocolate then
+        first.icecream elseif third.icecream <> TestPackage.Types.IceCream.Chocolate
+        then third.icecream else TestPackage.Types.IceCream.Chocolate)
+    "Replaceable Component"
+    annotation (
+      choices(
+        choice(
+          redeclare replaceable Component.SecondComponent selectable_component_with_relative_paths
+          "Second Test Component"),
+        choice(
+          redeclare replaceable Component.ThirdComponent selectable_component_with_relative_paths
+          "Third Test Component")),
+      Dialog(group="Selectable Component"));
 
   annotation (__LinkageTemplate=true);
 end TestTemplate;
