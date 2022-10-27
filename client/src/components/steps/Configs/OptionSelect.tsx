@@ -43,7 +43,7 @@ const OptionSelect = ({
       </label>
       <select
         name={option.modelicaPath}
-        defaultValue={option.value || option.choices?.[0].modelicaPath}
+        defaultValue={option.value}
         onChange={selectOption}
       >
         {option.choices?.map((choice) => (

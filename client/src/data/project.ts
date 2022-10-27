@@ -9,7 +9,10 @@ export interface ProjectDetailInterface {
   type: string;
   size: number;
   units: string;
-  code: string;
+  energy: string;
+  ventilation: string;
+  ashraeZone: string;
+  californiaZone: string;
   notes: string;
 }
 
@@ -26,7 +29,10 @@ const DEFAULT_PROJECT = {
     type: "Multi-Story Office",
     size: 0,
     units: "IP",
-    code: "ashrae 90.1 20201",
+    energy: "Not specified",
+    ventilation: "Not specified",
+    ashraeZone: "Not specified",
+    californiaZone: "Not specified",
     notes: "",
   },
 };
