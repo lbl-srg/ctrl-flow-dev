@@ -29,8 +29,7 @@ function resolveValue(path: string, selections: any): any {
 }
 
 function resolveExpression(expression: any, selections: any): any {
-  const resolved_expression: any = expression;
-  let unresolvable = false;
+  let resolved_expression: any = expression;
 
   expression.operands.every((operand: any, index: number) => {
     if (typeof operand !== 'string') return true;
@@ -38,7 +37,7 @@ function resolveExpression(expression: any, selections: any): any {
     const resolvedValue = resolveValue(operand, selections);
 
     if (resolvedValue === 'no_value') {
-      unresolvable = true;
+      resolved_expression = false;
       return false;
     }
 
@@ -46,13 +45,13 @@ function resolveExpression(expression: any, selections: any): any {
     return true;
   });
 
-  return unresolvable || resolved_expression;
+  return resolved_expression;
 }
 
 function expressionEvaluator(expression: any, selections: any): any {
   const resolved_expression = resolveExpression(expression, selections);
   
-  if (resolved_expression === true) return expression;
+  if (resolved_expression === false) return expression;
 
   let parsed_expression: any;
 
