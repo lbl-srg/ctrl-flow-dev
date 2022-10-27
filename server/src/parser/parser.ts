@@ -15,7 +15,12 @@ import {
   getModificationList,
 } from "./modification";
 
-import { Literal, evaluateExpression, Expression, getExpression } from "./expression";
+import {
+  Literal,
+  evaluateExpression,
+  Expression,
+  getExpression,
+} from "./expression";
 import * as mj from "./mj-types";
 
 export const EXTEND_NAME = "__extend";
@@ -29,6 +34,8 @@ export const isInputGroup = (elementType: string) =>
 export const isDefinition = (elementType: string) =>
   !["replaceable", "component_clause", "import_clause"].includes(elementType);
 
+export const isLiteral = (path: string) => MODELICA_LITERALS.includes(path);
+
 class Store {
   _store: Map<string, any> = new Map();
 
@@ -40,65 +47,129 @@ class Store {
     return false;
   }
 
-  /**
-   * Attempts to 'get the specified modelica path and if not found attempts
-   * to load additional json files to parse and populate the type store.
-   *
-   * @exception if a provided path is not found in the expected file/model!
-   */
-  get(path: string, context = "", load = true): Element | undefined {
-    if (MODELICA_LITERALS.includes(path)) {
-      return; // PUNCH-OUT! literals don't have a type definition
-    }
+  _get(path: string): Element | undefined {
+    if (this._store.has(path)) {
+      return this._store.get(path);
+    } else {
+      // walk inheritance chain to attempt to find correct element
+      const pathList = path.split(".");
+      const name = pathList.pop();
+      const basePath = pathList.join(".");
 
-    const paths = this._generatePaths(path, context);
+      // avoid infinite recursion
+      if (basePath !== path) {
+        let element = typeStore.get(basePath, "", false); // base paths SHOULD be loaded
+        while (element && isInputGroup(element.elementType)) {
+          element = element as InputGroup;
+          const childElements = (element as InputGroup).elementList;
+          const matchedElement = childElements?.find((e) => e.name === name);
+          if (matchedElement) {
+            return matchedElement;
+          }
 
-    // for each path
-    // check if either is in the store
-    for (const p of paths) {
-      if (this._store.has(p)) {
-        return this._store.get(p);
+          element = (element as InputGroup).extendElement;
+        }
       }
-    }
-
-    if (load) {
-      return this._load(paths);
     }
   }
 
   /**
-   * Generates all the potential paths that a given path might reference
-   * For now this does two types of lookup:
-   * 1. Try the path as an absolute path
-   * 2. Try it as a relative path (context + path)
+   * Given a path and base, attempts to retrieve from the store map.
    *
+   * If load is true, if a type is not found in the store attempt to load
+   * the corresponding file into the store, then return the loaded results
    *
+   * TODO: throw an exception when not found
+   */
+  get(path: string, basePath: string = "", load: boolean = true) {
+    if (isLiteral(path)) {
+      return;
+    }
+
+    const paths = this._generatePaths(path, basePath);
+
+    for (const p of paths) {
+      const e = this._get(p);
+      if (e) {
+        return e;
+      }
+    }
+
+    // Attempt to load
+    if (load) {
+      const { path } = this._load(paths);
+      if (!path) {
+        return; // PUNCH-OUT! File not found. TODO: error here?
+      }
+      return this._get(path);
+    }
+  }
+
+  /**
    * TODO: This needs to match the lookup behavior for modelica type references
    * where it is able to follow an order of searching based on the type. Full rules
    * are defined here: https://mbe.modelica.university/components/packages/lookup/
    *
-   * This may need to be removed
+   * TODO: convert this so it returns an iterator
    */
-  _generatePaths(path: string, context: string): Array<string> {
-    return context ? [path, `${context}.${path}`] : [path];
+  _generatePaths(path: string, basePath: string): Array<string> {
+    // first remove overlapping path segments and get name and basePath
+    if (path === undefined) {
+      console.log('a');
+    }
+    const splitBasePath = basePath ? basePath.split(".") : [];
+
+    const pathList: string[] = [];
+    while (splitBasePath.length > 0) {
+      pathList.push(`${splitBasePath.join('.')}.${path}`);
+      splitBasePath.pop();
+    }
+
+    pathList.push(path);
+
+    return pathList;
   }
 
-  _load(paths: Array<string>) {
-    // debug var for logging variables that are not found
-    let typeFound = false;
+  // helper method to find the element with the most complete matching path
+  _findPathMatch(file: File, path: string): Element | undefined {
+    let topCount = 0;
+    let element: Element | undefined;
+    // type not found, check file elements for the file that matches the most
+    // segments of the provided path and return that? Or deal with this internally?
+    file.elementList.map((e) => {
+      // find the element that matches as much as the path as possible
+      let pathCount = 0;
+      const pList = e.modelicaPath.split(".");
+      e.modelicaPath.split(".").forEach((segment, i) => {
+        if (segment !== undefined && pList[i] === undefined) {
+          pathCount = pList[i] === segment ? pathCount + 1 : pathCount;
+        }
+      });
+      if (pathCount > topCount) {
+        topCount = pathCount;
+        element = e;
+      }
+    });
+
+    return element;
+  }
+
+  /**
+   * Interacts with loader
+   *
+   * Feeds list of paths and returns the found file and the path that found it
+   */
+  _load(paths: Array<string>): Partial<{ file: File; path: string }>  {
     // not found, attempt to load from json
     for (const p of paths) {
       const file = getFile(p);
-      if (file) {
-        assertType(p);
-        typeFound = true;
-        return this._store.get(p);
+      
+      if (file && this.has(p)) {
+        return { file, path: p };
       }
     }
-
-    if (!typeFound) {
-      // console.log(path, context)
-    }
+  
+    return {};
   }
 
   /**
@@ -118,29 +189,6 @@ export const typeStore = new Store();
 // expects an absolute path
 export const findElement = (modelicaPath: string) => {
   return typeStore.find(modelicaPath);
-};
-
-/**
- * Takes a type and returns the 'absolute path' to the type
- *
- * @Returns string
- */
-export const expandType = (type: string, basePath: string | undefined) => {
-  let prefix = "";
-  let basePathList = basePath ? basePath.split(".") : [];
-  let element: Element | undefined;
-
-  for (let pathSegment of basePathList) {
-    const fullPath = prefix ? [prefix, type].join(".") : type;
-    element = findElement(fullPath);
-    if (element) {
-      break;
-    }
-
-    prefix = prefix ? [prefix, pathSegment].join(".") : pathSegment;
-  }
-
-  return element?.modelicaPath ? element?.modelicaPath : type;
 };
 
 function assertType(type: string) {
@@ -235,18 +283,19 @@ export class InputGroup extends Element {
     this.description = specifier.description_string;
 
     this.elementList = specifier.composition.element_list
-      .map((e: any) => {
+      ?.map((e: any) => {
         const element = _constructElement(e, this.modelicaPath);
         if (element?.elementType === "extends_clause") {
           const extendParam = element as InputGroupExtend;
           this.mods = extendParam.mods; // TODO: merge modifiers?
           this.deadEnd = extendParam.deadEnd;
+          // make sure
           this.extendElement = typeStore.get(extendParam.type) as InputGroup;
         }
         return element;
       })
-      .filter((e: Element | undefined) => e !== undefined)
-      .filter((e: Element) => e.elementType !== "extends_clause");
+      ?.filter((e: Element | undefined) => e !== undefined)
+      ?.filter((e: Element) => e.elementType !== "extends_clause") || [];
 
     this.annotation = specifier.composition.annotation?.map(
       (m: mj.Mod | mj.WrappedMod) => createModification({ definition: m }),
@@ -331,8 +380,8 @@ export class Input extends Element {
     )?.declaration as mj.DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
-    this.type = expandType(componentClause.type_specifier, basePath);
-
+    const typeElement = typeStore.get(componentClause.type_specifier, basePath);
+    this.type = typeElement?.modelicaPath || componentClause.type_specifier; // might be a literal
     this.final = definition.final ? definition.final : this.final;
     this.inner = definition.inner;
     this.outer = definition.outer;
@@ -502,12 +551,14 @@ export class ReplaceableInput extends Input {
       const constraintDef = definition.constraining_clause;
       // constraint name is a type that needs to be expanded for
       // a valid base path
-      const expandedBasePath = expandType(constraintDef.name, basePath);
-      this.constraint = typeStore.get(expandedBasePath);
+      if (constraintDef.name === 'TestPackage.Interface.PartialComponent') {
+        console.log('a');
+      }
+      this.constraint = typeStore.get(constraintDef.name, basePath) as Element;
       this.mods = constraintDef?.class_modification
         ? [
             ...this.mods,
-            ...getModificationList(constraintDef, expandedBasePath),
+            ...getModificationList(constraintDef, this.constraint.modelicaPath),
           ]
         : [];
     }

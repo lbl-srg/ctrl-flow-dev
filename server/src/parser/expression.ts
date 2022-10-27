@@ -8,7 +8,7 @@
 //   | { type: 'number', value: number } // are all the numbers integers? floats? do we need to distinguish?
 
 // TODO: take in to account absolute paths (convert relative to absolute)
-import { expandType } from "./parser";
+import { typeStore, Element } from "./parser";
 
 export type Literal = boolean | string | number;
 
@@ -23,15 +23,22 @@ function buildArithmeticExpression(
   operator: any,
   basePath: string,
 ): Expression {
+  if (
+    expression[1].name ===
+    "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
+  ) {
+    console.log("a");
+  }
   // TODO: attempt to expand operands as types
   const arithmetic_expression: Expression = {
     operator: operator === "<>" ? "!=" : operator,
     operands: [expression[0].name, expression[1].name],
   };
 
-  arithmetic_expression.operands = arithmetic_expression.operands.map(o => {
+  arithmetic_expression.operands = arithmetic_expression.operands.map((o) => {
     if (typeof o === "string") {
-      return expandType(o, basePath) || o;
+      const element = typeStore.get(o, basePath) as Element;
+      return (element) ? element.modelicaPath : o;
     }
     return o;
   });
@@ -199,8 +206,12 @@ function buildSimpleExpression(expression: any, basePath: string): Expression {
     } catch {
       /** deserialization failed */
     }
-    // TODO: attempt to expand operand as a type
-    operand = expandType(operand, basePath) || operand;
+    if (typeof operand === "string") {
+      // Attempt to expand operand as a type
+      // might need additional work here... maybe too permissive
+      const element = typeStore.get(operand, basePath) as Element;
+      operand = (element) ? element.modelicaPath : operand;
+    }
   }
 
   const simple_expression: Expression = {
