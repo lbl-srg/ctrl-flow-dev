@@ -1,6 +1,6 @@
 import { OptionInterface } from "../data/template";
-import { useStores } from "../data";
-
+import { storeHooks } from "./store-helpers";
+import { evaluateExpression, isExpression } from "./expression-helpers";
 
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 
@@ -9,16 +9,6 @@ export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 // creates object of modifications (old mods, new mods, type mods, selections???)
 // might need to figure out how initial selections will be affected, might need to do that here instead
 // any modification with expression needs to be evaluated
-
-export const storeHooks = () => {
-  const { templateStore } = useStores();
-
-  const getTemplateOption = (modelicaPath: string): any => {
-    return templateStore.getOption(modelicaPath);
-  };
-
-  return {getTemplateOption}
-} 
 
 export function getModifierContext(
   option: OptionInterface,
@@ -51,6 +41,7 @@ export function getModifierContext(
 export function applyChoiceModifiers(
   option: OptionInterface,
   modifiers: any,
+  selections: any,
 ): OptionInterface[] {
   // Setting up newChildren if the visiblity needs to be modified
   const newOptions: OptionInterface[] = [];
@@ -62,9 +53,27 @@ export function applyChoiceModifiers(
       const newChild: OptionInterface = {...child};
       const childModifier: any = modifiers[child.modelicaPath];
 
+      if (isExpression(newChild?.enable)) {
+        newChild.enable = evaluateExpression(newChild.enable, selections);
+        if (isExpression(newChild.enable)) {
+          newChild.enable = false;
+        }
+      }
+
       if (childModifier && childModifier?.final !== undefined) {
         newChild.visible = child?.visible && !childModifier.final;
       }
+
+      // TODO: Remove this, it is a temporay hack
+      const hideArray = ['ASHRAE', 'Title 24'];
+      hideArray.forEach((condition) => {
+        if (newChild.name.includes(condition)) {
+          newChild.visible = false;
+        }
+      });
+
+      newChild.visible = newChild.visible && newChild.enable;
+
       newOptions.push(newChild);
     });
   }
@@ -72,10 +81,25 @@ export function applyChoiceModifiers(
   return newOptions.length ? newOptions : option.childOptions || [];
 }
 
+// TODO: Apply expressions and store as selections for non-visiable items. Do we set items that are not enabled?
+
 // grab default value, either by evaluating or selecting the first choice
 export function applyValueModifiers(
   option: OptionInterface,
   modifiers: any,
-): OptionInterface[] {
-  return modifiers[option.modelicaPath] || option?.value;
+  firstValue: any,
+  selections: any,
+): string {
+  const { isDefinition } = storeHooks();
+  const selection = selections[option.modelicaPath];
+  const modifier = modifiers[option.modelicaPath];
+  let evaluatedValue: any;
+
+  if (selection && isDefinition(selection)) return selection;
+
+  if (isExpression(modifier?.expression)) {
+    evaluatedValue = evaluateExpression(modifier.expression, selections);
+  }
+
+  return evaluatedValue && !isExpression(evaluatedValue) ? evaluatedValue : firstValue;
 }

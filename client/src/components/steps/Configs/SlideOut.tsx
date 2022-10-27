@@ -71,8 +71,13 @@ export function flattenConfigOptions(
     // }
 
     const newModifiers: any = getModifierContext(option, modifiers, selectedOptions);
+    const choices = applyChoiceModifiers(option, newModifiers, selectedOptions);
 
     if (option.visible && option.childOptions?.length) {
+      // console.log('choice: ', choices[0].modelicaPath);
+      const value = applyValueModifiers(option, newModifiers, choices?.[0]?.modelicaPath, selectedOptions);
+
+      // console.log('value: ', value);
       // Adds this option to the object for display
       flatConfigOptions = [
         ...flatConfigOptions,
@@ -82,8 +87,8 @@ export function flattenConfigOptions(
           modelicaPath: option.modelicaPath,
           name: option.name,
           modifiers: newModifiers,
-          choices: applyChoiceModifiers(option, newModifiers),
-          value: applyValueModifiers(option, newModifiers)
+          choices: choices,
+          value: value,
         },
       ];
 
@@ -94,7 +99,7 @@ export function flattenConfigOptions(
       flatConfigOptions = [
         ...flatConfigOptions,
         ...flattenConfigOptions(
-          applyChoiceModifiers(option, newModifiers),
+          choices,
           option.modelicaPath,
           option.name,
           newModifiers,
@@ -164,8 +169,8 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
     selectedOptions,
   );
 
-  console.log('selectedOptions: ', selectedOptions);
-  console.log('flatConfigOptions: ', flatConfigOptions);
+  // console.log('selectedOptions: ', selectedOptions);
+  // console.log('flatConfigOptions: ', flatConfigOptions);
 
   // TODO: Finish implementing grouping of options
   // const groupedConfigOptions = groupConfigOptions(flatConfigOptions);

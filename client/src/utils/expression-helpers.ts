@@ -1,3 +1,5 @@
+import { storeHooks } from "./store-helpers";
+
 export type Literal = boolean | string | number;
 
 export type Expression = {
@@ -5,71 +7,82 @@ export type Expression = {
   operands: Array<Literal | Expression>;
 }
 
-// TODO: reslove path function
-// path priority selection, mods, options
+function resolveValue(path: string, selections: any): any {
+  const { getTemplateOption } = storeHooks();
+  const option = getTemplateOption(path);
+  const isDefinition = option?.definition;
+  const selectionValue = selections[path];
+  const optionValue = option?.modifiers?.[path]?.expression;
 
-// function resolveModelicaPath(path: string): any {
-//   // look up path to see if it is a definition
-//   // if definition return path
+  if (!option || isDefinition) return path;
 
-//   // check selections for path and value
-//   // check options for path and get value (possibly from modification expression)
+  if (selectionValue) return selectionValue;
 
-//   // return value
-//   return path;
-// }
+  if (optionValue) {
+    if (isExpression(optionValue)) {
+      return evaluateExpression(optionValue, selections);
+    }
+    return resolveValue(optionValue, selections);
+  }
 
-// TODO: MAYBE? Move to Common Directory as a helper (potentially need 2 helpers 1 front-end and 1 back-end)
-// pass mods as well
+  return 'no_value';
+}
 
-function expressionEvaluator(expression: any): any {
+function resolveExpression(expression: any, selections: any): any {
+  const resolved_expression: any = expression;
+  let unresolvable = false;
+
+  expression.operands.every((operand: any, index: number) => {
+    if (typeof operand !== 'string') return true;
+
+    const resolvedValue = resolveValue(operand, selections);
+
+    if (resolvedValue === 'no_value') {
+      unresolvable = true;
+      return false;
+    }
+
+    resolved_expression.operands[index] = resolvedValue;
+    return true;
+  });
+
+  return unresolvable || resolved_expression;
+}
+
+function expressionEvaluator(expression: any, selections: any): any {
+  const resolved_expression = resolveExpression(expression, selections);
+  
+  if (resolved_expression === true) return expression;
+
   let parsed_expression: any;
 
   switch (expression.operator) {
     case 'none':
-      // TODO: Include FE function that resolves paths if path is in operand.
-      // If path doesn't resolve to a value return expression
-      parsed_expression = expression.operands[0];
+      parsed_expression = resolved_expression.operands[0];
       break;
     case '<':
-      // TODO: Include FE function that resolves paths if path is in operand.
-      // If path doesn't resolve to a value return expression
-      parsed_expression = expression.operands[0] < expression.operands[1];
+      parsed_expression = resolved_expression.operands[0] < resolved_expression.operands[1];
       break;
     case '<=':
-      // TODO: Include FE function that resolves paths if path is in operand.
-      // If path doesn't resolve to a value return expression
-      parsed_expression = expression.operands[0] <= expression.operands[1];
+      parsed_expression = resolved_expression.operands[0] <= resolved_expression.operands[1];
       break;
     case '>':
-      // TODO: Include FE function that resolves paths if path is in operand.
-      // If path doesn't resolve to a value return expression
-      parsed_expression = expression.operands[0] > expression.operands[1];
+      parsed_expression = resolved_expression.operands[0] > resolved_expression.operands[1];
       break;
     case '>=':
-      // TODO: Include FE function that resolves paths if path is in operand.
-      // If path doesn't resolve to a value return expression
-      parsed_expression = expression.operands[0] >= expression.operands[1];
+      parsed_expression = resolved_expression.operands[0] >= resolved_expression.operands[1];
       break;
     case '==':
-      // TODO: Include FE function that resolves paths if path is in operand.
-      // If path doesn't resolve to a value return expression
-      parsed_expression = expression.operands[0] == expression.operands[1];
+      parsed_expression = resolved_expression.operands[0] == resolved_expression.operands[1];
       break;
     case '!=':
-      // TODO: Include FE function that resolves paths if path is in operand.
-      // If path doesn't resolve to a value return expression
-      parsed_expression = expression.operands[0] != expression.operands[1];
+      parsed_expression = resolved_expression.operands[0] != resolved_expression.operands[1];
       break;
     case '||':
-      // TODO: Include FE function that resolves paths if path is in operand.
-      // If path doesn't resolve to a value return expression
-      parsed_expression = expression.operands[0] || expression.operands[0];
+      parsed_expression = resolved_expression.operands[0] || resolved_expression.operands[0];
       break;
     case '&&':
-      // TODO: Include FE function that resolves paths if path is in operand.
-      // If path doesn't resolve to a value return expression
-      parsed_expression = expression.operands[0] && expression.operands[0];
+      parsed_expression = resolved_expression.operands[0] && resolved_expression.operands[0];
       break;
     // case 'if_array':
     case 'if_elseif':
@@ -83,40 +96,40 @@ function expressionEvaluator(expression: any): any {
       break;
     case 'if':
     case 'else_if':
-      // TODO: Include FE function that resolves paths if path is in operand.
-      // If path doesn't resolve to a value return expression
-      parsed_expression = expression.operands[0] ? [true, expression.operands[1]] : [false];
+      parsed_expression = resolved_expression.operands[0] ? [true, resolved_expression.operands[1]] : [false];
       break;
     case 'else':
-      // TODO: Include FE function that resolves paths if path is in operand.
-      // If path doesn't resolve to a value return expression
-      parsed_expression = [true, expression.operands[0]];
+      parsed_expression = [true, resolved_expression.operands[0]];
       break;   
     // case 'for':
     // case 'loop_condition':
     // case 'function_call':
       // Determine how to do function call names (create list of potential functions that need to checked?)
     default:
-      parsed_expression = expression;
+      parsed_expression = resolved_expression;
       break;
   }
 
   return parsed_expression;
 }
 
-export function evaluateExpression(expression: any): any {
+export function isExpression(item: any): boolean {
+  return !!item?.operator;
+}
+
+export function evaluateExpression(expression: any, selections: any): any {
   //TODO: (FE) If operand is a path to a value look up path, if the value isn't known return the expression
   
-  let evaluated_expression: any = expression;
+  const evaluated_expression: any = expression;
 
   // if both operands are not expressions evaluate the current expression
   // if any of the operands are expressions call evaluateExpression for that expression
 
   expression.operands.forEach((operand: any, index: number) => {
-    if (operand?.operator) {
-      evaluated_expression.operands[index] = evaluateExpression(operand);
+    if (isExpression(operand)) {
+      evaluated_expression.operands[index] = evaluateExpression(operand, selections);
     }
   });
 
-  return expressionEvaluator(evaluated_expression);
+  return expressionEvaluator(evaluated_expression, selections);
 }
