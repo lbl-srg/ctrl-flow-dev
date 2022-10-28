@@ -402,7 +402,7 @@ export class Input extends Element {
       if (descriptionBlock?.annotation) {
         this.annotation = descriptionBlock.annotation
           .map((mod: mj.Mod | mj.WrappedMod) =>
-            createModification({ definition: mod, basePath }),
+            createModification({ definition: mod, basePath, baseType: this.type }),
           )
           .filter((m) => m !== undefined) as Modification[];
       }
@@ -412,6 +412,7 @@ export class Input extends Element {
       ? createModification({
           definition: declarationBlock,
           basePath: basePath,
+          baseType: this.type,
           name: this.name,
         })
       : null;
@@ -539,6 +540,7 @@ export class ReplaceableInput extends Input {
       name: this.name,
       value: getExpression(this.value, basePath),
       basePath: basePath,
+      baseType: this.type
     });
 
     if (mod) {
@@ -558,7 +560,7 @@ export class ReplaceableInput extends Input {
       this.mods = constraintDef?.class_modification
         ? [
             ...this.mods,
-            ...getModificationList(constraintDef, this.constraint.modelicaPath),
+            ...getModificationList(constraintDef, basePath, this.constraint.modelicaPath),
           ]
         : [];
     }
@@ -690,7 +692,8 @@ export class InputGroupExtend extends Element {
     super();
     this.name = EXTEND_NAME; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${this.name}`;
-    this.type = definition.extends_clause.name;
+    const typeElement = typeStore.get(definition.extends_clause.name, basePath);
+    this.type = typeElement?.modelicaPath || definition.extends_clause.name;
     this.deadEnd = false;
 
     const annotations = definition.extends_clause?.annotation;
@@ -698,7 +701,7 @@ export class InputGroupExtend extends Element {
     if (annotations) {
       this.annotation = definition.extends_clause?.annotation
         .map((mod: mj.Mod | mj.WrappedMod) =>
-          createModification({ definition: mod }),
+          createModification({ definition: mod, basePath: basePath, baseType: this.type }),
         )
         .filter((m: any) => m !== undefined) as Modification[];
       this._setUIInfo();
@@ -711,7 +714,7 @@ export class InputGroupExtend extends Element {
 
     this.value = this.type;
     if (definition.extends_clause.class_modification) {
-      this.mods = getModificationList(definition.extends_clause, this.type);
+      this.mods = getModificationList(definition.extends_clause, basePath, this.type);
     }
   }
 

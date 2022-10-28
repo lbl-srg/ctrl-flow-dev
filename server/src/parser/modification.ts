@@ -29,6 +29,7 @@ const modStore: Map<string, Modification> = new Map();
 
 interface ModificationBasics {
   basePath?: string;
+  baseType?: string;
   name?: string;
   value?: any;
   definition?: any;
@@ -85,7 +86,7 @@ export function createModification(
  *
  */
 function unpackRedeclaration(props: ModificationProps) {
-  let { basePath, definition } = props;
+  let { basePath, definition, baseType } = props;
   const redeclaration = (definition as mj.RedeclareMod).element_redeclaration;
   const final = "final" in redeclaration ? redeclaration.final : false;
   if ("component_clause1" in redeclaration) {
@@ -93,12 +94,13 @@ function unpackRedeclaration(props: ModificationProps) {
       redeclaration.component_clause1 as mj.ComponentClause1;
 
     // TODO: remove this caste once 'typeStore.get' throws
-    const element = typeStore.get(
-      componentClause1.type_specifier,
+    let element = typeStore.get(
+      componentClause1.type_specifier, // always relative to basePath
       basePath,
-    ) as Element;
+    ) || typeStore.get(componentClause1.type_specifier, basePath) as Element;
     if(element === undefined) {
-      console.log('a');
+      console.log(`${basePath}\t${componentClause1.type_specifier}`);
+      return;
     }
     const redeclareDefinition =
       componentClause1.component_declaration1.declaration;
@@ -107,6 +109,7 @@ function unpackRedeclaration(props: ModificationProps) {
       ...props,
       element: element.type,
       definition: redeclareDefinition,
+      baseType: element.type,
       final,
     };
     // create child modifications
@@ -135,6 +138,7 @@ function unpackModblock(props: ModificationProps) {
   let {
     definition,
     basePath = "",
+    baseType,
     name,
     final,
   } = props as ModificationWithDefinition;
@@ -163,7 +167,7 @@ function unpackModblock(props: ModificationProps) {
     name = modBlock.identifier;
   }
 
-  const element = name && basePath ? typeStore.get(name, basePath) : null;
+  const element = name && baseType ? typeStore.get(name, baseType) : null;
   basePath = element ? element.modelicaPath : basePath;
 
   // pop off last element for base path
@@ -184,7 +188,7 @@ function unpackModblock(props: ModificationProps) {
 
   if (mod) {
     if ("equal" in mod) {
-      value = getExpression((mod as mj.Assignment).expression, basePath);
+      value = getExpression((mod as mj.Assignment).expression, basePath, baseType);
     } else if (name == "choice") {
       const choiceMod = (mod as mj.ClassMod)
         .class_modification[0] as mj.RedeclareMod;
@@ -192,9 +196,6 @@ function unpackModblock(props: ModificationProps) {
         const replaceable = (choiceMod.element_redeclaration
           .element_replaceable ||
           choiceMod.element_redeclaration) as mj.ElementReplaceable;
-        if (replaceable.component_clause1.type_specifier === 'TestPackage.Component.ThirdComponent') {
-          console.log('a');
-        }
         const replaceableType = typeStore.get(
           replaceable.component_clause1.type_specifier,
           basePath,
@@ -208,14 +209,14 @@ function unpackModblock(props: ModificationProps) {
         value = replaceableType?.modelicaPath || "";
       }
     } else if ("class_modification" in mod) {
-      let newBase = basePath;
+      let typePath = basePath;
       // update base path to class type
       if (name) {
         const modElement  = typeStore.get(name, basePath);
         const modType = modElement?.type;
-        newBase = modType ? modType : basePath;
+        typePath = modType ? modType : basePath;
       }
-      mods = getModificationList(mod as mj.ClassMod, newBase); //mod.class_modification
+      mods = getModificationList(mod as mj.ClassMod, basePath, typePath); //mod.class_modification
     }
   }
 
@@ -225,6 +226,7 @@ function unpackModblock(props: ModificationProps) {
 export function getModificationList(
   classMod: mj.ClassMod,
   basePath: string,
+  baseType = "",
   name = "",
 ) {
   return classMod.class_modification
@@ -232,6 +234,7 @@ export function getModificationList(
       return createModification({
         definition: m as mj.WrappedMod,
         basePath: basePath,
+        baseType: baseType,
         name,
       });
     })
