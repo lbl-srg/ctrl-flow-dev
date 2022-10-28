@@ -23,7 +23,7 @@ import * as mj from "./mj-types";
  * TODO: remove the modification store it is not used
  */
 
-import { Expression, getExpression } from "./expression";
+import { evaluateExpression, Expression, getExpression } from "./expression";
 
 const modStore: Map<string, Modification> = new Map();
 
@@ -94,10 +94,19 @@ function unpackRedeclaration(props: ModificationProps) {
       redeclaration.component_clause1 as mj.ComponentClause1;
 
     // TODO: remove this caste once 'typeStore.get' throws
-    let element = typeStore.get(
+    let element: Element | undefined;
+    let scope = baseType;
+
+    element = typeStore.get(
       componentClause1.type_specifier, // always relative to basePath
-      basePath,
-    ) || typeStore.get(componentClause1.type_specifier, basePath) as Element;
+      baseType,
+    )
+    
+    if(!element) {
+      element = typeStore.get(componentClause1.type_specifier, basePath)
+      scope = basePath;
+    }
+  
     if(element === undefined) {
       console.log(`${basePath}\t${componentClause1.type_specifier}`);
       return;
@@ -117,9 +126,9 @@ function unpackRedeclaration(props: ModificationProps) {
     const childMods = redeclareMod ? [redeclareMod] : [];
     // create the redeclare modification
     return new Modification(
-      basePath,
+      scope,
       name,
-      getExpression(element.type, basePath),
+      getExpression(element.type, basePath, baseType),
       childMods,
       final,
     );
@@ -167,13 +176,27 @@ function unpackModblock(props: ModificationProps) {
     name = modBlock.identifier;
   }
 
-  const element = name && baseType ? typeStore.get(name, baseType) : null;
-  basePath = element ? element.modelicaPath : basePath;
+  let element: Element | undefined;
+  let scope = baseType;
 
-  // pop off last element for base path
-  const basePathList = basePath.split(".");
-  basePathList.pop();
-  basePath = basePathList.join(".");
+  // attempt to load from baseType first, then basePath
+  if (name && basePath && baseType) {
+    element = typeStore.get(name, baseType);
+    if (!element) {
+      element = typeStore.get(name, basePath);
+      scope = basePath;
+    } else {
+      scope = element.baseType;
+      baseType = element.baseType;
+    }
+  } else if (name && basePath) {
+    element = typeStore.get(name, basePath);
+    scope = basePath;
+  } else if (name && baseType) {
+    element = typeStore.get(name, baseType);
+    baseType = element?.baseType;
+    scope = baseType;
+  }
 
   let mod:
     | mj.WrappedMod
@@ -200,19 +223,14 @@ function unpackModblock(props: ModificationProps) {
           replaceable.component_clause1.type_specifier,
           basePath,
         );
-        // TODO: pass this path into `getExpression` and return
-        // as a simple expression ('none')
-        if (replaceableType === undefined) {
-          console.log('a');
-        }
 
         value = replaceableType?.modelicaPath || "";
       }
     } else if ("class_modification" in mod) {
       let typePath = basePath;
-      // update base path to class type
+      // update base type
       if (name) {
-        const modElement  = typeStore.get(name, basePath);
+        const modElement  = typeStore.get(name, basePath); // 
         const modType = modElement?.type;
         typePath = modType ? modType : basePath;
       }
@@ -220,7 +238,7 @@ function unpackModblock(props: ModificationProps) {
     }
   }
 
-  return new Modification(basePath, name, value, mods, final);
+  return new Modification(scope, name, value, mods, final);
 }
 
 export function getModificationList(

@@ -8,7 +8,7 @@
 //   | { type: 'number', value: number } // are all the numbers integers? floats? do we need to distinguish?
 
 // TODO: take in to account absolute paths (convert relative to absolute)
-import { typeStore, Element } from "./parser";
+import { typeStore } from "./parser";
 
 export type Literal = boolean | string | number;
 
@@ -36,9 +36,11 @@ function buildArithmeticExpression(
     operands: [expression[0].name, expression[1].name],
   };
 
-  arithmetic_expression.operands = arithmetic_expression.operands.map((o) => {
+  arithmetic_expression.operands = arithmetic_expression.operands.map((o, i) => {
     if (typeof o === "string") {
-      const element = typeStore.get(o, basePath) || typeStore.get(o, baseType);
+      // left hand side of expression is most likely a variable reference - favor basePath first
+      const element = (i === 0) ? typeStore.get(o, basePath) || typeStore.get(o, baseType)
+        : typeStore.get(o, baseType) || typeStore.get(o, basePath);
       return (element) ? element.modelicaPath : o;
     }
     return o;
@@ -213,8 +215,7 @@ function buildSimpleExpression(expression: any, basePath: string, baseType: stri
     }
     if (typeof operand === "string") {
       // Attempt to expand operand as a type
-      // might need additional work here... maybe too permissive
-      const element = typeStore.get(operand, basePath) || typeStore.get(operand, baseType);
+      const element = typeStore.get(operand, basePath) || typeStore.get(operand, baseType); // TODO: may only need to check basePath
       operand = (element) ? element.modelicaPath : operand;
     }
   }

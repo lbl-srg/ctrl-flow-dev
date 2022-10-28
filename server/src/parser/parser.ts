@@ -82,7 +82,7 @@ class Store {
    * TODO: throw an exception when not found
    */
   get(path: string, basePath: string = "", load: boolean = true) {
-    if (isLiteral(path)) {
+    if (isLiteral(path) || path === "") {
       return;
     }
 
@@ -113,10 +113,6 @@ class Store {
    * TODO: convert this so it returns an iterator
    */
   _generatePaths(path: string, basePath: string): Array<string> {
-    // first remove overlapping path segments and get name and basePath
-    if (path === undefined) {
-      console.log('a');
-    }
     const splitBasePath = basePath ? basePath.split(".") : [];
 
     const pathList: string[] = [];
@@ -233,6 +229,12 @@ export abstract class Element {
     }
     this.duplicate = !isSet;
     return isSet;
+  }
+
+  get baseType(): string {
+    const pathList = this.modelicaPath.split('.');
+    pathList.pop();
+    return pathList.join('.');
   }
 }
 
@@ -551,11 +553,6 @@ export class ReplaceableInput extends Input {
     // interface. Check if one is present to extract modifiers
     if (definition.constraining_clause) {
       const constraintDef = definition.constraining_clause;
-      // constraint name is a type that needs to be expanded for
-      // a valid base path
-      if (constraintDef.name === 'TestPackage.Interface.PartialComponent') {
-        console.log('a');
-      }
       this.constraint = typeStore.get(constraintDef.name, basePath) as Element;
       this.mods = constraintDef?.class_modification
         ? [
