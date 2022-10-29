@@ -90,4 +90,23 @@ describe("Path Expansion", () => {
       expect(evaluateExpression(mod.expression)).toBe(expectedValue);
     }
   });
+
+  it("Expands dot notation access into instance into the correct path", () => {
+    const {options} = getOptions();
+    const nestedOption = options.find(
+      (o) =>
+        o.modelicaPath ==="TestPackage.Template.TestTemplate.expression_bool",
+    );
+
+    const mod =
+      nestedOption?.modifiers[
+        "TestPackage.Template.TestTemplate.expression_bool"
+      ];
+
+    const expectedModValue = `TestPackage.Template.Data.TestTemplate.nested_bool`;
+    expect(mod?.expression).toBeDefined();
+    if (mod?.expression) {
+      expect(evaluateExpression(mod?.expression)).toBe(expectedModValue);
+    }
+  })
 });
