@@ -33,7 +33,6 @@ describe("Parser extracts expected templates", () => {
     const { options, scheduleOptions } = vavMultiZone.getOptions();
     const secOutRelPath = "Buildings.Templates.AirHandlers.VAVMultiZone";
     const option = options[secOutRelPath];
-
     // TODO: flesh out this test further
   });
 });

@@ -1,5 +1,5 @@
 import * as parser from "../../../src/parser/parser";
-import { initializeTestModelicaJson } from "./utils";
+import { initializeTestModelicaJson, resetStore } from "./utils";
 import * as publicParser from "../../../src/parser";
 
 const testTemplatePath = "TestPackage.Template.TestTemplate";
@@ -9,6 +9,10 @@ describe("Parser file loading", () => {
   beforeAll(() => {
     initializeTestModelicaJson();
   });
+
+  afterEach(() => {
+    resetStore();
+  })
 
   it("Extracts a 'file' object with '.' syntax", () => {
     const file = parser.getFile(testTemplatePath) as parser.File;

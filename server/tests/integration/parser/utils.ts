@@ -21,6 +21,10 @@ export function initializeTestModelicaJson() {
   parser.setPathPrefix(fullTempDirPath);
 }
 
+export function resetStore() {
+  parser.typeStore._store.clear();
+}
+
 type SimpleOption = {
   name: string;
   path: string;

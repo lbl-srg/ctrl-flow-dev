@@ -32,19 +32,16 @@ function getTypeHelper(path: string, base: string) {
   if (!element) {
     const pathList = path.split(".");
     let curBase = base;
-  
+
     while (!element || pathList.length > 1) {
       const baseInstance = pathList.shift() as string;
       const baseElement = typeStore.get(baseInstance, curBase);
-  
+
       if (!baseElement) {
         break; // nothing more we can do
       }
-  
+
       const remainingPath = pathList.join(".");
-      if (path.endsWith("coiHea.typ")) {
-        console.log(`${baseElement.type}...${remainingPath}`);
-      }
 
       element = typeStore.get(remainingPath, baseElement.type);
       if (element) {

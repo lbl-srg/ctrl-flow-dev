@@ -117,37 +117,17 @@ class Store {
 
     const pathList: string[] = [];
     while (splitBasePath.length > 0) {
-      pathList.push(`${splitBasePath.join('.')}.${path}`);
+      pathList.push(`${splitBasePath.join(".")}.${path}`);
       splitBasePath.pop();
     }
 
     pathList.push(path);
 
+    if (path.endsWith("coiHea")) {
+      console.log(pathList);
+    }
+
     return pathList;
-  }
-
-  // helper method to find the element with the most complete matching path
-  _findPathMatch(file: File, path: string): Element | undefined {
-    let topCount = 0;
-    let element: Element | undefined;
-    // type not found, check file elements for the file that matches the most
-    // segments of the provided path and return that? Or deal with this internally?
-    file.elementList.map((e) => {
-      // find the element that matches as much as the path as possible
-      let pathCount = 0;
-      const pList = e.modelicaPath.split(".");
-      e.modelicaPath.split(".").forEach((segment, i) => {
-        if (segment !== undefined && pList[i] === undefined) {
-          pathCount = pList[i] === segment ? pathCount + 1 : pathCount;
-        }
-      });
-      if (pathCount > topCount) {
-        topCount = pathCount;
-        element = e;
-      }
-    });
-
-    return element;
   }
 
   /**
@@ -155,16 +135,16 @@ class Store {
    *
    * Feeds list of paths and returns the found file and the path that found it
    */
-  _load(paths: Array<string>): Partial<{ file: File; path: string }>  {
+  _load(paths: Array<string>): Partial<{ file: File; path: string }> {
     // not found, attempt to load from json
     for (const p of paths) {
       const file = getFile(p);
-      
+
       if (file && this.has(p)) {
         return { file, path: p };
       }
     }
-  
+
     return {};
   }
 
@@ -232,9 +212,9 @@ export abstract class Element {
   }
 
   get baseType(): string {
-    const pathList = this.modelicaPath.split('.');
+    const pathList = this.modelicaPath.split(".");
     pathList.pop();
-    return pathList.join('.');
+    return pathList.join(".");
   }
 }
 
@@ -284,20 +264,21 @@ export class InputGroup extends Element {
 
     this.description = specifier.description_string;
 
-    this.elementList = specifier.composition.element_list
-      ?.map((e: any) => {
-        const element = _constructElement(e, this.modelicaPath);
-        if (element?.elementType === "extends_clause") {
-          const extendParam = element as InputGroupExtend;
-          this.mods = extendParam.mods; // TODO: merge modifiers?
-          this.deadEnd = extendParam.deadEnd;
-          // make sure
-          this.extendElement = typeStore.get(extendParam.type) as InputGroup;
-        }
-        return element;
-      })
-      ?.filter((e: Element | undefined) => e !== undefined)
-      ?.filter((e: Element) => e.elementType !== "extends_clause") || [];
+    this.elementList =
+      specifier.composition.element_list
+        ?.map((e: any) => {
+          const element = _constructElement(e, this.modelicaPath);
+          if (element?.elementType === "extends_clause") {
+            const extendParam = element as InputGroupExtend;
+            this.mods = extendParam.mods; // TODO: merge modifiers?
+            this.deadEnd = extendParam.deadEnd;
+            // make sure
+            this.extendElement = typeStore.get(extendParam.type) as InputGroup;
+          }
+          return element;
+        })
+        ?.filter((e: Element | undefined) => e !== undefined)
+        ?.filter((e: Element) => e.elementType !== "extends_clause") || [];
 
     this.annotation = specifier.composition.annotation?.map(
       (m: mj.Mod | mj.WrappedMod) => createModification({ definition: m }),
@@ -404,7 +385,11 @@ export class Input extends Element {
       if (descriptionBlock?.annotation) {
         this.annotation = descriptionBlock.annotation
           .map((mod: mj.Mod | mj.WrappedMod) =>
-            createModification({ definition: mod, basePath, baseType: this.type }),
+            createModification({
+              definition: mod,
+              basePath,
+              baseType: this.type,
+            }),
           )
           .filter((m) => m !== undefined) as Modification[];
       }
@@ -542,7 +527,7 @@ export class ReplaceableInput extends Input {
       name: this.name,
       value: getExpression(this.value, basePath),
       basePath: basePath,
-      baseType: this.type
+      baseType: this.type,
     });
 
     if (mod) {
@@ -557,7 +542,11 @@ export class ReplaceableInput extends Input {
       this.mods = constraintDef?.class_modification
         ? [
             ...this.mods,
-            ...getModificationList(constraintDef, basePath, this.constraint.modelicaPath),
+            ...getModificationList(
+              constraintDef,
+              basePath,
+              this.constraint.modelicaPath,
+            ),
           ]
         : [];
     }
@@ -698,7 +687,11 @@ export class InputGroupExtend extends Element {
     if (annotations) {
       this.annotation = definition.extends_clause?.annotation
         .map((mod: mj.Mod | mj.WrappedMod) =>
-          createModification({ definition: mod, basePath: basePath, baseType: this.type }),
+          createModification({
+            definition: mod,
+            basePath: basePath,
+            baseType: this.type,
+          }),
         )
         .filter((m: any) => m !== undefined) as Modification[];
       this._setUIInfo();
@@ -711,7 +704,11 @@ export class InputGroupExtend extends Element {
 
     this.value = this.type;
     if (definition.extends_clause.class_modification) {
-      this.mods = getModificationList(definition.extends_clause, basePath, this.type);
+      this.mods = getModificationList(
+        definition.extends_clause,
+        basePath,
+        this.type,
+      );
     }
   }
 

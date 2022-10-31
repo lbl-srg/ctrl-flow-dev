@@ -46,7 +46,17 @@ export function findPackageEntryPoints(
 }
 
 /**
- * Searched the provided directory for a given
+ * Searched the provided directory for a given file
+ *
+ * TODO: a reference may come in that ends with a parameter that lives a file (like 'VAVBox.coiHea')
+ * this function needs to check for:
+ *
+ * 1. A direct reference
+ * 2. The containing class definition
+ * 3. A package definition
+ *
+ * Step '2' needs some more thought. The precedence for checking needs to also be separated
+ *
  * @param prefix directory to search
  * @param filePath path to try and find
  *
@@ -59,12 +69,13 @@ function _findPath(prefix: string, reference: string): string | null {
 
   while (!fs.existsSync(jsonFile) && filePath.name) {
     // check if definition already exists
-    // TODO - construct this path correctly...
-    const curPath = path.relative(filePath.dir, filePath.name);
+    const curPath = path.join(filePath.dir, filePath.name);
     const modelicaPath = _toModelicaPath(curPath);
+
     if (typeStore.has(modelicaPath)) {
       break;
     }
+
     // package definitions break the typical modelica path to file mapping that
     // is used. A typical modelica path to file path look like:
     //  'Template.AirHandlerFans.VAVMultizone' -> 'Template/AirhandlerFans/VAVMultizone
@@ -80,6 +91,15 @@ function _findPath(prefix: string, reference: string): string | null {
     if (fs.existsSync(jsonFile)) {
       break;
     }
+
+    // Attempt 'dir' path - may be a class containing 'path' as a
+    // param name
+    jsonFile = path.resolve(prefix, filePath.dir, ".json");
+    if (fs.existsSync(jsonFile)) {
+      console.log(jsonFile);
+      break;
+    }
+
     filePath = path.parse(filePath.dir);
     jsonFile = path.resolve(prefix, filePath.dir, `${filePath.name}.json`);
   }
