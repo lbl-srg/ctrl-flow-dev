@@ -3,6 +3,10 @@ import { useStores } from "../data";
 export const storeHooks = () => {
   const { templateStore } = useStores();
 
+  const getAllOptions = (): any => {
+    return templateStore.getAllOptions();
+  }
+
   const getTemplateOption = (modelicaPath: string): any => {
     return templateStore.getOption(modelicaPath);
   };
@@ -11,5 +15,5 @@ export const storeHooks = () => {
     return templateStore.getOption(modelicaPath)?.definition || false;
   }
 
-  return {getTemplateOption, isDefinition};
+  return {getAllOptions, getTemplateOption, isDefinition};
 }

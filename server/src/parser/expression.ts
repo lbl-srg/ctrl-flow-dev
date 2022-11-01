@@ -24,12 +24,6 @@ function buildArithmeticExpression(
   basePath: string,
   baseType: string
 ): Expression {
-  if (
-    expression[1].name ===
-    "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
-  ) {
-    console.log("a");
-  }
   // TODO: attempt to expand operands as types
   const arithmetic_expression: Expression = {
     operator: operator === "<>" ? "!=" : operator,

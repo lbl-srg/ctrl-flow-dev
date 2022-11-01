@@ -110,6 +110,10 @@ export default class Template {
     return this.nestedOptions.filter((opt) => opt.modelicaPath === path);
   }
 
+  getAllOptions(): OptionInterface[] {
+    return this.options;
+  }
+
   getOption(path: string): OptionInterface {
     return this.options.filter((opt) => opt.modelicaPath === path)[0];
   }

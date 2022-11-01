@@ -7,34 +7,34 @@ export type Expression = {
   operands: Array<Literal | Expression>;
 }
 
-function resolveValue(path: string, selections: any): any {
-  const { getTemplateOption } = storeHooks();
-  const option = getTemplateOption(path);
-  const isDefinition = option?.definition;
-  const selectionValue = selections[path];
+function resolveValue(path: string, selections: any, allOptions: any): any {
+  const option = allOptions.find((option: any) => option.modelicaPath === path);
   const optionValue = option?.modifiers?.[path]?.expression;
+  const optionIsDefinition = option?.definition;
+  const selectionValue = selections[path];
+  const selectionIsDefinition = allOptions.find((option: any) => option.modelicaPath === selectionValue);
 
-  if (!option || isDefinition) return path;
+  if (!option || optionIsDefinition) return path;
 
-  if (selectionValue) return selectionValue;
+  if (selectionValue && selectionIsDefinition) return selectionValue;
 
   if (optionValue) {
     if (isExpression(optionValue)) {
-      return evaluateExpression(optionValue, selections);
+      return evaluateExpression(optionValue, selections, allOptions);
     }
-    return resolveValue(optionValue, selections);
+    return resolveValue(optionValue, selections, allOptions);
   }
 
   return 'no_value';
 }
 
-function resolveExpression(expression: any, selections: any): any {
+function resolveExpression(expression: any, selections: any, allOptions: any): any {
   let resolved_expression: any = expression;
 
   expression.operands.every((operand: any, index: number) => {
     if (typeof operand !== 'string') return true;
 
-    const resolvedValue = resolveValue(operand, selections);
+    const resolvedValue = resolveValue(operand, selections, allOptions);
 
     if (resolvedValue === 'no_value') {
       resolved_expression = false;
@@ -48,8 +48,8 @@ function resolveExpression(expression: any, selections: any): any {
   return resolved_expression;
 }
 
-function expressionEvaluator(expression: any, selections: any): any {
-  const resolved_expression = resolveExpression(expression, selections);
+function expressionEvaluator(expression: any, selections: any, allOptions: any): any {
+  const resolved_expression = resolveExpression(expression, selections, allOptions);
   
   if (resolved_expression === false) return expression;
 
@@ -116,9 +116,9 @@ export function isExpression(item: any): boolean {
   return !!item?.operator;
 }
 
-export function evaluateExpression(expression: any, selections: any): any {
+export function evaluateExpression(expression: any, selections: any, allOptions: any): any {
   //TODO: (FE) If operand is a path to a value look up path, if the value isn't known return the expression
-  
+
   const evaluated_expression: any = expression;
 
   // if both operands are not expressions evaluate the current expression
@@ -126,9 +126,9 @@ export function evaluateExpression(expression: any, selections: any): any {
 
   expression.operands.forEach((operand: any, index: number) => {
     if (isExpression(operand)) {
-      evaluated_expression.operands[index] = evaluateExpression(operand, selections);
+      evaluated_expression.operands[index] = evaluateExpression(operand, selections, allOptions);
     }
   });
 
-  return expressionEvaluator(evaluated_expression, selections);
+  return expressionEvaluator(evaluated_expression, selections, allOptions);
 }
