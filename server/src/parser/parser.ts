@@ -470,7 +470,7 @@ export class Input extends Element {
         ? evaluateExpression(connectorSizing)
         : false;
     } else {
-      this.enable = isInputGroupType ? this.enable : true;
+      this.enable = isInputGroupType && !isReplaceable ? this.enable : true;
     }
   }
 
