@@ -143,14 +143,6 @@ describe("Expected Inputs are extracted", () => {
     expect(input?.group).toEqual(expectedGroup);
     expect(input?.tab).toEqual(expectedTab);
     expect(input?.enable).not.toBeFalsy();
-
-    // also test a "constrainedby" component as this impacts where the annotation
-    // is placed
-    const selectablePath =
-      "TestPackage.Template.TestTemplate.selectable_component";
-    const selectableGroup = "Selectable Component";
-    const selectable = inputs[selectablePath];
-    expect(selectable?.group).toEqual(selectableGroup);
   });
 
   it("Set 'visible' parameter correctly", () => {
@@ -231,5 +223,13 @@ describe("Expected Inputs are extracted", () => {
       }
     });
     // console.log(inputCount);
+  });
+
+  it("Replaceable 'enable' field is set as expected", () => {
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.elementList[0] as parser.InputGroup;
+    const replaceableInput = template.getInputs()['TestPackage.Template.TestTemplate.selectable_component'];
+
+    expect(replaceableInput.enable).toBeTruthy();
   });
 });

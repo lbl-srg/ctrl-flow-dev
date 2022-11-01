@@ -440,6 +440,8 @@ export class Input extends Element {
     const typeInstance = typeStore.find(this.type) as Element;
     // TODO: elementTypes need to be split out into an enum...
     const isInputGroupType = isInputGroup(typeInstance?.elementType);
+    const isReplaceable =
+      this.annotation.find((m) => m.name === "choices") !== undefined;
     // for class types, no dialog annotation means don't enable
     // for all other types it is true
 
@@ -456,9 +458,9 @@ export class Input extends Element {
       // const typeInstance = typeStore.find(this.type) as Element;
       // // TODO: elementTypes need to be split out into an enum...
       // const isInputGroupType = isInputGroup(typeInstance?.elementType);
-      // // for class types, no dialog annotation means don't enable
+      // // for class types, no dialog annotation means don't enable UNLESS it is a replaceable
       // // for all other types it is true
-      if (isInputGroupType) {
+      if (isInputGroupType && !isReplaceable) {
         this.enable = enable ? evaluateExpression(enable) : false;
       } else {
         this.enable = enable ? evaluateExpression(enable) : true;
@@ -468,7 +470,7 @@ export class Input extends Element {
         ? evaluateExpression(connectorSizing)
         : false;
     } else {
-      this.enable = isInputGroupType ? this.enable : true;
+      this.enable = isInputGroupType && !isReplaceable ? this.enable : true;
     }
   }
 
