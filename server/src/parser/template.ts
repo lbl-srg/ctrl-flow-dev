@@ -95,7 +95,7 @@ export function flattenModifiers(
 }
 
 function _getScopeList(option: Option) {
-  const scopeList: string[] = [];
+  const scopeList: string[] = [option.type];
 
   option.options?.map(o => {
     // remove the last '.' path
