@@ -114,4 +114,26 @@ describe("Template wrapper class functionality", () => {
     expect(typeDefinition?.definition).toBeTruthy();
     expect(enumValue?.definition).toBeTruthy();
   });
+
+  it("Assigns scopeList with child and parent options", () => {
+    // Important that scope list is in order!
+    const expectedScopeList = [
+      "TestPackage.Template.TestTemplate",
+      "TestPackage.Interface.ExtendInterface",
+      "TestPackage.Interface.NestedExtendInterface",
+    ];
+
+    const { options } = getOptions();
+
+    const testTemplate = options.find(
+      (o) => o.modelicaPath === "TestPackage.Template.TestTemplate",
+    );
+
+    expect(testTemplate?.scopeList).toBeTruthy();
+
+    testTemplate?.scopeList?.map((s) => {
+      const expectedScope = expectedScopeList.shift();
+      expect(s).toEqual(expectedScope);
+    });
+  });
 });

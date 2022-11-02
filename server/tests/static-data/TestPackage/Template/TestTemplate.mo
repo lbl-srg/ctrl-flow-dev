@@ -34,8 +34,8 @@ model TestTemplate "Test Template"
           "Second Test Component"),
         choice(
           redeclare replaceable TestPackage.Component.ThirdComponent selectable_component
-          "Third Test Component")),
-      Dialog(group="Selectable Component"));
+          "Third Test Component"))
+      );
 
   /*
   Test that a subcomponent has access to an outer declaration

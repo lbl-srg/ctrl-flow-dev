@@ -56,6 +56,7 @@ export interface Option {
   tab?: string;
   value?: any;
   enable?: any;
+  scopeList?: string[];
   modifiers: { [key: string]: { expression: Expression; final: boolean } };
   replaceable: boolean;
   elementType: string;
@@ -93,6 +94,21 @@ export function flattenModifiers(
   return mods;
 }
 
+function _getScopeList(option: Option) {
+  const scopeList: string[] = [];
+
+  option.options?.map(o => {
+    // remove the last '.' path
+    const basePath = o.split('.').slice(0, -1).join('.');
+
+    if (!scopeList.includes(basePath)) {
+      scopeList.push(basePath);
+    }
+  })
+
+  return scopeList;
+} 
+
 function _mapInputToOption(
   input: parser.TemplateInput,
   inputs: { [key: string]: parser.TemplateInput },
@@ -110,6 +126,10 @@ function _mapInputToOption(
 
   option.options = options;
   option.definition = parser.isDefinition(input.elementType);
+
+  if (option.definition) {
+    option.scopeList = _getScopeList(option);
+  }
 
   return option;
 }
