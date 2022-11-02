@@ -8,8 +8,8 @@ import {
 
 import { getTemplates } from "../../../src/parser/template";
 
-const templatePath = "TestPackage.Template.TestTemplate";
-const nestedTemplatePath =
+const TEMPLATE_PATH = "TestPackage.Template.TestTemplate";
+const NESTED_TEMPLATE_PATH =
   "TestPackage.NestedTemplate.Subcategory.SecondTemplate";
 
 describe("Template wrapper class functionality", () => {
@@ -29,10 +29,10 @@ describe("Template wrapper class functionality", () => {
   it("Templates have expected SystemTypes", () => {
     const templates = getTemplates();
     const template = templates.find(
-      (t) => t.modelicaPath === templatePath,
+      (t) => t.modelicaPath === TEMPLATE_PATH,
     ) as Template;
     const nestedTemplate = templates.find(
-      (t) => t.modelicaPath === nestedTemplatePath,
+      (t) => t.modelicaPath === NESTED_TEMPLATE_PATH,
     ) as Template;
     const templateSystemTypes = template.getSystemTypes();
     expect(templateSystemTypes.length).toBe(1);
@@ -49,7 +49,7 @@ describe("Template wrapper class functionality", () => {
 
     const templates = getTemplates();
     const template = templates.find(
-      (t) => t.modelicaPath === templatePath,
+      (t) => t.modelicaPath === TEMPLATE_PATH,
     ) as Template;
 
     const systemTemplate = template.getSystemTemplate();
@@ -66,15 +66,23 @@ describe("Template wrapper class functionality", () => {
   it("Templates generate separate schedule options and configuration options", () => {
     const datPath = "TestPackage.Template.Data.TestTemplate.record_parameter";
     const datParamPath = "TestPackage.Template.TestTemplate.dat";
+    const templates = getTemplates();
+
     const { options, scheduleOptions } = getOptions();
     const datScheduleOption = scheduleOptions.find(
       (o) => o.modelicaPath === datPath,
     );
     expect(datScheduleOption).toBeTruthy();
-  
+
+    const template = templates.find(
+      (t) => t.modelicaPath === TEMPLATE_PATH,
+    ) as Template;
+
+    const templateJson = template.getSystemTemplate();
+    const datRoots = templateJson.scheduleOptionPaths.map(p => scheduleOptions.find(o => o.modelicaPath === p)).filter(o => o !== undefined);
     // check that the 'dat' parameter is still available as a reference
-    const template = options.find( (o) => o.modelicaPath === "TestPackage.Template.TestTemplate");
-    expect(template?.options?.includes(datParamPath));
+    // const template = options.find( (o) => o.modelicaPath === "TestPackage.Template.TestTemplate");
+    expect(datRoots.length).toBeGreaterThan(0);
   });
 
   it("Keeps system types in correct order", () => {
@@ -82,7 +90,7 @@ describe("Template wrapper class functionality", () => {
     const templates = getTemplates();
 
     const nestedTemplate = templates.find(
-      (t) => t.modelicaPath === nestedTemplatePath,
+      (t) => t.modelicaPath === NESTED_TEMPLATE_PATH,
     ) as Template;
 
     const templateJSON = nestedTemplate.getSystemTemplate();
