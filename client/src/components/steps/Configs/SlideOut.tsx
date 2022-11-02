@@ -29,6 +29,8 @@ export interface FlatConfigOption {
   value: any;
   enable: any;
   visible: any;
+  scopeList: string[];
+  scope: string;
 }
 
 export interface FlatConfigOptionChoice {
@@ -57,10 +59,16 @@ export function flattenConfigOptions(
   modifiers: any,
   // selectedValues: SelectedConfigValues,
   // selectedOptions: any = {},
+  scopeList: string[],
+  scope: string,
+  setScope: boolean,
   allOptions: any,
 ): FlatConfigOption[] {
   let flatModifiers: any = { ...modifiers };
   let flatConfigOptions: FlatConfigOption[] = [];
+  let newScopeList = [...scopeList];
+  let newScope = scope;
+  let changeScope = setScope;
 
   optionsToFlatten.forEach((option) => {
     // Ignores paths that finish in .dat
@@ -68,6 +76,18 @@ export function flattenConfigOptions(
     if (option.modelicaPath.includes(`.dat`)) {
       return;
     }
+
+    if (changeScope) {
+      newScope = option.modelicaPath;
+      changeScope = false;
+    }
+
+    if (option.definition) {
+      changeScope = true;
+    }
+      
+
+    newScopeList = option.scopeList || newScopeList;
 
     // might need to set this up where it gets all modifiers of all options instead of only keeping modifiers up to the specific option
     flatModifiers = getModifierContext(option, flatModifiers, allOptions);
@@ -84,6 +104,8 @@ export function flattenConfigOptions(
         value: null,
         enable: option.enable,
         visible: option.visible,
+        scopeList: newScopeList,
+        scope: newScope,
       },
     ];
 
@@ -95,6 +117,9 @@ export function flattenConfigOptions(
           option.modelicaPath,
           option.name,
           flatModifiers,
+          newScopeList,
+          newScope,
+          changeScope,
           allOptions,
         ),
       ];
@@ -199,6 +224,8 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
     template?.modelicaPath,
   );
 
+  console.log('options: ', options);
+
   const allOptions = templateStore.getAllOptions();
 
   const flatConfigOptions = flattenConfigOptions(
@@ -206,6 +233,9 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
     "root",
     "",
     {},
+    [],
+    "",
+    true,
     allOptions,
   );
 
@@ -270,7 +300,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
   }
 
   function applyModifiers() {
-    // setValues();
+    setValues();
     return applyVisabilityModifiers();
   }
 
@@ -286,13 +316,18 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
     flatConfigOptions.forEach((configOption) => {
       const modifier: any = configOption.modifiers[configOption.modelicaPath];
 
-      // if (isExpression(configOption.enable)) {
-      //   configOption.enable = evaluateExpression(configOption.enable, selectedValues, allOptions);
+      if (isExpression(configOption.enable)) {
+        configOption.enable = evaluateExpression(
+          configOption.enable,
+          selectedValues,
+          configOption.scopeList,
+          allOptions
+        );
 
-      //   if (isExpression(configOption.enable)) {
-      //     configOption.enable = false;
-      //   }
-      // }
+        // if (isExpression(configOption.enable)) {
+        //   configOption.enable = false;
+        // }
+      }
 
       if (modifier?.final !== undefined) {
         configOption.visible = configOption?.visible && !modifier.final;
@@ -318,13 +353,20 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
 
   function updateSelectedConfigOption(
     parentModelicaPath: string,
-    parentName: string,
-    option: OptionInterface,
+    // parentName: string,
+    // option: OptionInterface,
+    choice: string | null,
   ) {
+    // setSelectedValues((prevState: any) => {
+    //   return {
+    //     ...prevState,
+    //     [parentModelicaPath]: option.modelicaPath,
+    //   }
+    // });
     setSelectedValues((prevState: any) => {
       return {
         ...prevState,
-        [parentModelicaPath]: option.modelicaPath,
+        [parentModelicaPath]: choice,
       }
     });
   }

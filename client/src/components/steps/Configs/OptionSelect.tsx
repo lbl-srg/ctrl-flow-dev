@@ -10,8 +10,9 @@ export interface OptionSelectProps {
   configId: string;
   updateSelectedConfigOption: (
     modelicaPath: string,
-    name: string,
-    selectedOption: OptionInterface,
+    // name: string,
+    // selectedOption: OptionInterface,
+    choice: string | null,
   ) => void;
 }
 
@@ -23,17 +24,22 @@ const OptionSelect = ({
 }: OptionSelectProps) => {
 
   function selectOption(event: ChangeEvent<HTMLSelectElement>) {
-    const selectedOption = option.choices?.find(
-      (choice) => choice.modelicaPath === event.target.value,
+    // const selectedOption = option.choices?.find(
+    //   (choice) => choice.modelicaPath === event.target.value,
+    // );
+
+    updateSelectedConfigOption(
+      option.modelicaPath,
+      event.target.value || null,
     );
 
-    if (selectedOption) {
-      updateSelectedConfigOption(
-        option.modelicaPath,
-        option.name,
-        selectedOption,
-      );
-    }
+    // if (selectedOption) {
+    //   updateSelectedConfigOption(
+    //     option.modelicaPath,
+    //     option.name,
+    //     selectedOption,
+    //   );
+    // }
   }
 
   return (
@@ -43,9 +49,10 @@ const OptionSelect = ({
       </label>
       <select
         name={option.modelicaPath}
-        defaultValue={option.value}
+        defaultValue={option.value || ''}
         onChange={selectOption}
       >
+        <option value=''></option>
         {option.choices?.map((choice) => (
           <option key={choice.modelicaPath} value={choice.modelicaPath}>
             {choice.name}

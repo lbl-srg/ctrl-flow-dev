@@ -101,7 +101,7 @@ export function applyValueModifiers(
   if (selection && isDefinition) return selection;
 
   if (isExpression(modifier?.expression)) {
-    evaluatedValue = evaluateExpression(modifier.expression, selections, allOptions);
+    evaluatedValue = evaluateExpression(modifier.expression, selections, option.scopeList, allOptions);
   }
 
   // return evaluatedValue && !isExpression(evaluatedValue) ? evaluatedValue : firstValue;
