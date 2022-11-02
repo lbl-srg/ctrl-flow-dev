@@ -65,12 +65,16 @@ describe("Template wrapper class functionality", () => {
 
   it("Templates generate separate schedule options and configuration options", () => {
     const datPath = "TestPackage.Template.Data.TestTemplate.record_parameter";
-
-    const { scheduleOptions } = getOptions();
+    const datParamPath = "TestPackage.Template.TestTemplate.dat";
+    const { options, scheduleOptions } = getOptions();
     const datScheduleOption = scheduleOptions.find(
       (o) => o.modelicaPath === datPath,
     );
     expect(datScheduleOption).toBeTruthy();
+  
+    // check that the 'dat' parameter is still available as a reference
+    const template = options.find( (o) => o.modelicaPath === "TestPackage.Template.TestTemplate");
+    expect(template?.options?.includes(datParamPath));
   });
 
   it("Keeps system types in correct order", () => {
