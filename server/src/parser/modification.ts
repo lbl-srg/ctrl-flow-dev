@@ -100,14 +100,14 @@ function unpackRedeclaration(props: ModificationProps) {
     element = typeStore.get(
       componentClause1.type_specifier, // always relative to basePath
       baseType,
-    )
-    
-    if(!element) {
-      element = typeStore.get(componentClause1.type_specifier, basePath)
+    );
+
+    if (!element) {
+      element = typeStore.get(componentClause1.type_specifier, basePath);
       scope = basePath;
     }
-  
-    if(element === undefined) {
+
+    if (element === undefined) {
       console.log(`${basePath}\t${componentClause1.type_specifier}`);
       return;
     }
@@ -211,7 +211,11 @@ function unpackModblock(props: ModificationProps) {
 
   if (mod) {
     if ("equal" in mod) {
-      value = getExpression((mod as mj.Assignment).expression, basePath, baseType);
+      value = getExpression(
+        (mod as mj.Assignment).expression,
+        basePath,
+        baseType,
+      );
     } else if (name == "choice") {
       const choiceMod = (mod as mj.ClassMod)
         .class_modification[0] as mj.RedeclareMod;
@@ -227,12 +231,12 @@ function unpackModblock(props: ModificationProps) {
         value = replaceableType?.modelicaPath || "";
       }
     } else if ("class_modification" in mod) {
-      let typePath = basePath;
+      let typePath = baseType;
       // update base type
       if (name) {
-        const modElement  = typeStore.get(name, basePath); // 
+        const modElement = typeStore.get(name, baseType); //
         const modType = modElement?.type;
-        typePath = modType ? modType : basePath;
+        typePath = modType ? modType : baseType;
       }
       mods = getModificationList(mod as mj.ClassMod, basePath, typePath); //mod.class_modification
     }
@@ -277,7 +281,6 @@ export class Modification {
     public final = false,
   ) {
     this.modelicaPath = [basePath, name].filter((s) => s !== "").join(".");
-
     if (this.modelicaPath) {
       // only register the mod if it has a path
       modStore.set(this.modelicaPath, this);
