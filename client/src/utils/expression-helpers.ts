@@ -14,19 +14,8 @@ function resolveWithScope(path: string, selections: any, scopeList: string[], al
   const item = splitPath.pop();
   let value = null;
 
-  if (path === "fanSupDra.typ") {
-    console.log('start of resolveWithScope');
-    console.log("splitPath: ", splitPath);
-    console.log('item: ', item);
-  }
-
   scopeList.every((scope) => {
     let newPath = scope;
-
-    if (path === "fanSupDra.typ") {
-      console.log('scope array');
-      console.log('scope: ', newPath);
-    }
 
     splitPath.every((accessor) => {
       newPath = `${newPath}.${accessor}`;
@@ -35,35 +24,14 @@ function resolveWithScope(path: string, selections: any, scopeList: string[], al
       const modifiers = option?.modifiers;
       const typeIsLiteral = MODELICA_LITERALS.includes(type);
 
-      if (path === "fanSupDra.typ") {
-        console.log('newPath: ', newPath);
-        console.log('option: ', option);
-        console.log('type: ', type);
-        console.log('modifiers: ', modifiers);
-        console.log('typeIsLiteral: ', typeIsLiteral);
-      }
-
       if (type && !typeIsLiteral) {
         const typePath = `${type}.${item}`;
         const modifierValue = modifiers?.[typePath]?.expression;
         const typeOption = allOptions.find((option: any) => option.modelicaPath === typePath);
         const typeValue = typeOption?.modifiers?.[typePath]?.expression;
 
-        if (path === "fanSupDra.typ") {
-          console.log('typePath: ', typePath);
-          console.log('modifierValue: ', modifierValue);
-          console.log('typeOption: ', typeOption);
-          console.log('typeValue: ', typeValue);
-        }
-
         if (modifierValue) {
-          if (path === "fanSupDra.typ") {
-            console.log('inside modifierValue if');
-          }
           if (isExpression(modifierValue)) {
-            if (path === "fanSupDra.typ") {
-              console.log('isExpression');
-            }
             value = evaluateExpression(modifierValue, selections, typeOption?.scopeList, allOptions);
             return false;
           }
@@ -72,13 +40,7 @@ function resolveWithScope(path: string, selections: any, scopeList: string[], al
         }
 
         if (typeValue) {
-          if (path === "fanSupDra.typ") {
-            console.log('inside typeValue if');
-          }
           if (isExpression(typeValue)) {
-            if (path === "fanSupDra.typ") {
-              console.log('isExpression');
-            }
             value = evaluateExpression(typeValue, selections, typeOption?.scopeList, allOptions);
             return false;
           }
@@ -90,11 +52,6 @@ function resolveWithScope(path: string, selections: any, scopeList: string[], al
     });
     return true;
   });
-
-  if (path === "fanSupDra.typ") {
-    console.log('value: ', value);
-    console.log('end of resolveWithScope');
-  }
 
   return value;
 }

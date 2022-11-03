@@ -2,7 +2,13 @@
   "templates": [
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxReheat",
-      "scheduleOptionPath": "",
+      "scheduleOptionPaths": [
+        "Buildings.Templates.Components.Interfaces.PartialValve.dat",
+        "Buildings.Templates.Components.Interfaces.PartialCoil.dat",
+        "Buildings.Templates.Components.Interfaces.PartialDamper.dat",
+        "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialController.dat",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.dat"
+      ],
       "systemTypes": [
         "Buildings.Templates.ZoneEquipment"
       ],
@@ -10,7 +16,13 @@
     },
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly",
-      "scheduleOptionPath": "",
+      "scheduleOptionPaths": [
+        "Buildings.Templates.Components.Interfaces.PartialValve.dat",
+        "Buildings.Templates.Components.Interfaces.PartialCoil.dat",
+        "Buildings.Templates.Components.Interfaces.PartialDamper.dat",
+        "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialController.dat",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.dat"
+      ],
       "systemTypes": [
         "Buildings.Templates.ZoneEquipment"
       ],
@@ -18,7 +30,17 @@
     },
     {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.VAVMultiZone",
-      "scheduleOptionPath": "",
+      "scheduleOptionPaths": [
+        "Buildings.Templates.Components.Interfaces.PartialDamper.dat",
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.Interfaces.PartialOutdoorSection.dat",
+        "Buildings.Templates.Components.Interfaces.PartialFan.dat",
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.Interfaces.PartialReliefReturnSection.dat",
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.dat",
+        "Buildings.Templates.Components.Interfaces.PartialCoil.dat",
+        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialController.dat",
+        "Buildings.Templates.Components.Interfaces.PartialValve.dat",
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.dat"
+      ],
       "systemTypes": [
         "Buildings.Templates.AirHandlersFans"
       ],
@@ -3481,11 +3503,11 @@
           },
           "final": false
         },
-        "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.m_flow_nominal": {
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_nominal": {
           "expression": {
             "operator": "none",
             "operands": [
-              "m_flow_nominal"
+              "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_nominal"
             ]
           },
           "final": false
@@ -3547,25 +3569,25 @@
           },
           "final": false
         },
-        "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear.R": {
+        "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage.R": {
           "expression": {
             "operator": "none",
             "operands": [
-              "R"
+              "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage.R"
             ]
           },
           "final": false
         },
-        "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear.delta0": {
+        "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage.delta0": {
           "expression": {
             "operator": "none",
             "operands": [
-              "delta0"
+              "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage.delta0"
             ]
           },
           "final": false
         },
-        "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear.l": {
+        "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve.l": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -7629,16 +7651,16 @@
           },
           "final": false
         },
-        "Buildings.Fluid.FixedResistances.Junction.from_dp": {
+        "Buildings.Fluid.BaseClasses.PartialResistance.from_dp": {
           "expression": {
             "operator": "none",
             "operands": [
-              "from_dp"
+              "Buildings.Fluid.BaseClasses.PartialResistance.from_dp"
             ]
           },
           "final": false
         },
-        "Buildings.Fluid.FixedResistances.Junction.m_flow_nominal": {
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_nominal": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -7647,7 +7669,7 @@
           },
           "final": true
         },
-        "Buildings.Fluid.FixedResistances.Junction.dp_nominal": {
+        "Buildings.Fluid.BaseClasses.PartialResistance.dp_nominal": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -7656,29 +7678,29 @@
           },
           "final": true
         },
-        "Buildings.Fluid.FixedResistances.Junction.linearized": {
+        "Buildings.Fluid.BaseClasses.PartialResistance.linearized": {
           "expression": {
             "operator": "none",
             "operands": [
-              "linearized"
+              "Buildings.Fluid.BaseClasses.PartialResistance.linearized"
             ]
           },
           "final": false
         },
-        "Buildings.Fluid.FixedResistances.Junction.homotopyInitialization": {
+        "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization": {
           "expression": {
             "operator": "none",
             "operands": [
-              "homotopyInitialization"
+              "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization"
             ]
           },
           "final": false
         },
-        "Buildings.Fluid.FixedResistances.Junction.deltaM": {
+        "Buildings.Fluid.FixedResistances.PressureDrop.deltaM": {
           "expression": {
             "operator": "none",
             "operands": [
-              "deltaM"
+              "Buildings.Fluid.FixedResistances.PressureDrop.deltaM"
             ]
           },
           "final": false
@@ -9036,7 +9058,7 @@
           },
           "final": true
         },
-        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.prescribedHeatFlowRate": {
+        "Buildings.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume.prescribedHeatFlowRate": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -10866,7 +10888,7 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialController.typ",
       "type": "Buildings.Templates.ZoneEquipment.Types.Controller",
       "name": "Type of controller",
-      "group": "Configuration",
+      "group": "Buildings.Templates.ZoneEquipment.Types.Configuration",
       "tab": "",
       "visible": true,
       "enable": true,
@@ -12163,7 +12185,7 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.typ",
       "type": "Buildings.Templates.ZoneEquipment.Types.Configuration",
       "name": "Type of system",
-      "group": "Configuration",
+      "group": "Buildings.Templates.ZoneEquipment.Types.Configuration",
       "tab": "",
       "visible": true,
       "enable": true,
@@ -12542,7 +12564,7 @@
           },
           "final": false
         },
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.typCoiHea": {
+        "Buildings.Templates.ZoneEquipment.Data.VAVBox.typCoiHea": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -12551,7 +12573,7 @@
           },
           "final": false
         },
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.typValCoiHea": {
+        "Buildings.Templates.ZoneEquipment.Data.VAVBox.typValCoiHea": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -12560,7 +12582,7 @@
           },
           "final": false
         },
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.typDamVAV": {
+        "Buildings.Templates.ZoneEquipment.Data.VAVBox.typDamVAV": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -12569,7 +12591,7 @@
           },
           "final": false
         },
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.have_CO2Sen": {
+        "Buildings.Templates.ZoneEquipment.Data.VAVBox.have_CO2Sen": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -12975,7 +12997,7 @@
           },
           "final": true
         },
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.mOutMin_flow_nominal": {
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.mOutMin_flow_nominal": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -12984,7 +13006,7 @@
           },
           "final": true
         },
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.damOut": {
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damOut": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -12993,7 +13015,7 @@
           },
           "final": true
         },
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.damOutMin": {
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damOutMin": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -13002,7 +13024,7 @@
           },
           "final": true
         },
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.damRel": {
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damRel": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -13011,7 +13033,7 @@
           },
           "final": true
         },
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.damRet": {
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damRet": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -13020,7 +13042,7 @@
           },
           "final": true
         },
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanRel": {
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.fanRel": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -13029,7 +13051,7 @@
           },
           "final": true
         },
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanRet": {
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.fanRet": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -16472,7 +16494,7 @@
           },
           "final": true
         },
-        "Buildings.Fluid.Movers.SpeedControlled_y.pressure": {
+        "Buildings.Fluid.Movers.Data.Generic.pressure": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -16481,7 +16503,7 @@
           },
           "final": true
         },
-        "Buildings.Fluid.Movers.SpeedControlled_y.use_powerCharacteristic": {
+        "Buildings.Fluid.Movers.Data.Generic.use_powerCharacteristic": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -17419,7 +17441,7 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.Interfaces.PartialReliefReturnSection.typ",
       "type": "Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection",
       "name": "Relief/return air section type",
-      "group": "Configuration",
+      "group": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "tab": "",
       "visible": true,
       "enable": true,
@@ -18816,7 +18838,7 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.typ",
       "type": "Buildings.Templates.AirHandlersFans.Types.OutdoorReliefReturnSection",
       "name": "Outdoor/relief/return air section type",
-      "group": "Configuration",
+      "group": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "tab": "",
       "visible": true,
       "enable": true,
@@ -18897,7 +18919,7 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.typSecRel",
       "type": "Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection",
       "name": "Relief/return air section type",
-      "group": "Configuration",
+      "group": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "tab": "",
       "visible": true,
       "enable": true,
@@ -19065,7 +19087,7 @@
         ]
       },
       "name": "Return fan control type",
-      "group": "Configuration",
+      "group": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "tab": "",
       "visible": true,
       "enable": {
@@ -20131,7 +20153,7 @@
       "type": "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone",
       "value": "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone",
       "name": "AHU controller",
-      "group": "Controls",
+      "group": "Buildings.Templates.AirHandlersFans.Components.Controls",
       "tab": "",
       "visible": false,
       "modifiers": {
@@ -54670,7 +54692,7 @@
       "visible": false,
       "enable": false,
       "modifiers": {
-        "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneGroupSystem.nGro": {
+        "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.nGro": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -55100,7 +55122,7 @@
         ]
       },
       "name": "Return fan control type",
-      "group": "Configuration",
+      "group": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "tab": "",
       "visible": true,
       "enable": {
@@ -55674,7 +55696,7 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialController.typ",
       "type": "Buildings.Templates.AirHandlersFans.Types.Controller",
       "name": "Type of controller",
-      "group": "Configuration",
+      "group": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "tab": "",
       "visible": true,
       "enable": true,
@@ -55837,7 +55859,7 @@
           },
           "final": false
         },
-        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typSecRel": {
+        "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.typSecRel": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -55846,29 +55868,29 @@
           },
           "final": false
         },
-        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.stdEne": {
+        "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.stdEne": {
           "expression": {
             "operator": "none",
             "operands": [
-              "stdEne"
+              "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.stdEne"
             ]
           },
           "final": false
         },
-        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.stdVen": {
+        "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.stdVen": {
           "expression": {
             "operator": "none",
             "operands": [
-              "stdVen"
+              "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.stdVen"
             ]
           },
           "final": false
         },
-        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.have_CO2Sen": {
+        "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.have_CO2Sen": {
           "expression": {
             "operator": "none",
             "operands": [
-              "have_CO2Sen"
+              "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.have_CO2Sen"
             ]
           },
           "final": false
@@ -62798,7 +62820,7 @@
       "name": "Variable speed DX cooling coil",
       "visible": false,
       "modifiers": {
-        "Buildings.Fluid.HeatExchangers.DXCoils.AirCooled.VariableSpeed.variableSpeedCoil": {
+        "Buildings.Fluid.HeatExchangers.DXCoils.BaseClasses.DXCooling.variableSpeedCoil": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -62807,7 +62829,16 @@
           },
           "final": true
         },
-        "Buildings.Fluid.HeatExchangers.DXCoils.AirCooled.VariableSpeed.cooCap": {
+        "Buildings.Fluid.HeatExchangers.DXCoils.BaseClasses.WetCoil.cooCap": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Fluid.HeatExchangers.DXCoils.BaseClasses.CoolingCapacityAirCooled"
+            ]
+          },
+          "final": false
+        },
+        "Buildings.Fluid.HeatExchangers.DXCoils.BaseClasses.DryCoil.cooCap": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -63092,7 +63123,7 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.typ",
       "type": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "name": "Type of system",
-      "group": "Configuration",
+      "group": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "tab": "",
       "visible": true,
       "enable": true,
@@ -64030,7 +64061,7 @@
           },
           "final": false
         },
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.typCoiHeaPre": {
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.typCoiHeaPre": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -64039,7 +64070,7 @@
           },
           "final": false
         },
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.typCoiCoo": {
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.typCoiCoo": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -64048,7 +64079,7 @@
           },
           "final": false
         },
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.typCoiHeaReh": {
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.typCoiHeaReh": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -64057,7 +64088,7 @@
           },
           "final": false
         },
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.typValCoiHeaPre": {
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.typValCoiHeaPre": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -64066,7 +64097,7 @@
           },
           "final": false
         },
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.typValCoiCoo": {
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.typValCoiCoo": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -64075,7 +64106,7 @@
           },
           "final": false
         },
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.typValCoiHeaReh": {
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.typValCoiHeaReh": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -64138,7 +64169,7 @@
           },
           "final": false
         },
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.typSecOut": {
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.typSecOut": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -64147,7 +64178,7 @@
           },
           "final": false
         },
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.buiPreCon": {
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.buiPreCon": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -64419,6 +64450,174 @@
     }
   ],
   "scheduleOptions": [
+    {
+      "modelicaPath": "Buildings.Templates.Components.Interfaces.PartialValve.dat",
+      "type": "Buildings.Templates.Components.Data.Valve",
+      "value": "",
+      "name": "Design and operating parameters",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Valve.typ": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.Components.Interfaces.PartialValve.typ"
+            ]
+          },
+          "final": true
+        }
+      },
+      "options": [
+        "Buildings.Templates.Components.Data.Valve.typ",
+        "Buildings.Templates.Components.Data.Valve.m_flow_nominal",
+        "Buildings.Templates.Components.Data.Valve.dpValve_nominal",
+        "Buildings.Templates.Components.Data.Valve.dpFixed_nominal",
+        "Buildings.Templates.Components.Data.Valve.dpFixedByp_nominal"
+      ],
+      "definition": false,
+      "groups": []
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Interfaces.PartialCoil.dat",
+      "type": "Buildings.Templates.Components.Data.Coil",
+      "value": "",
+      "name": "Design and operating parameters",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Coil.have_sou": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.Components.Interfaces.PartialCoil.have_sou"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Coil.typ": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.Components.Interfaces.PartialCoil.typ"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Coil.typVal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.Components.Interfaces.PartialCoil.typVal"
+            ]
+          },
+          "final": true
+        }
+      },
+      "options": [
+        "Buildings.Templates.Components.Data.Coil.typ",
+        "Buildings.Templates.Components.Data.Coil.typVal",
+        "Buildings.Templates.Components.Data.Coil.have_sou",
+        "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
+        "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpWat_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpValve_nominal",
+        "Buildings.Templates.Components.Data.Coil.cap_nominal",
+        "Buildings.Templates.Components.Data.Coil.Q_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.TWatEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.TAirEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.wAirEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.datCoi"
+      ],
+      "definition": false,
+      "groups": []
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Interfaces.PartialDamper.dat",
+      "type": "Buildings.Templates.Components.Data.Damper",
+      "value": "",
+      "name": "Design and operating parameters",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Damper.typ": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.Components.Interfaces.PartialDamper.typ"
+            ]
+          },
+          "final": true
+        }
+      },
+      "options": [
+        "Buildings.Templates.Components.Data.Damper.typ",
+        "Buildings.Templates.Components.Data.Damper.m_flow_nominal",
+        "Buildings.Templates.Components.Data.Damper.dp_nominal",
+        "Buildings.Templates.Components.Data.Damper.dpFixed_nominal"
+      ],
+      "definition": false,
+      "groups": []
+    },
+    {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialController.dat",
+      "type": "Buildings.Templates.ZoneEquipment.Components.Data.PartialController",
+      "value": "Buildings.Templates.ZoneEquipment.Components.Data.PartialController",
+      "name": "Design and operating parameters",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "modifiers": {
+        "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialController.dat": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.ZoneEquipment.Components.Data.PartialController"
+            ]
+          },
+          "final": false
+        }
+      },
+      "enable": true,
+      "options": [
+        "Buildings.Templates.ZoneEquipment.Components.Data.PartialController"
+      ],
+      "definition": false,
+      "groups": []
+    },
+    {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.dat",
+      "type": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal",
+      "value": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal",
+      "name": "Design and operating parameters",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "modifiers": {
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.dat": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal"
+            ]
+          },
+          "final": false
+        }
+      },
+      "enable": true,
+      "options": [
+        "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal"
+      ],
+      "definition": false,
+      "groups": []
+    },
     {
       "modelicaPath": "Buildings.Templates.Components.Data.Valve.typ",
       "type": "Buildings.Templates.Components.Types.Valve",
@@ -65796,7 +65995,7 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Data.PartialController.typ",
       "type": "Buildings.Templates.ZoneEquipment.Types.Controller",
       "name": "Type of controller",
-      "group": "Configuration",
+      "group": "Buildings.Templates.ZoneEquipment.Types.Configuration",
       "tab": "",
       "visible": false,
       "enable": false,
@@ -65849,7 +66048,7 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.typ",
       "type": "Buildings.Templates.ZoneEquipment.Types.Configuration",
       "name": "Type of system",
-      "group": "Configuration",
+      "group": "Buildings.Templates.ZoneEquipment.Types.Configuration",
       "tab": "",
       "visible": false,
       "enable": false,
@@ -65894,7 +66093,7 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.typCtl",
       "type": "Buildings.Templates.ZoneEquipment.Types.Controller",
       "name": "Type of controller",
-      "group": "Configuration",
+      "group": "Buildings.Templates.ZoneEquipment.Types.Configuration",
       "tab": "",
       "visible": false,
       "enable": false,
@@ -66053,7 +66252,7 @@
       "type": "Buildings.Templates.ZoneEquipment.Components.Data.PartialController",
       "value": "Buildings.Templates.ZoneEquipment.Components.Data.PartialController",
       "name": "Controller",
-      "group": "Controls",
+      "group": "Buildings.Templates.ZoneEquipment.Components.Controls",
       "tab": "",
       "visible": false,
       "modifiers": {
@@ -66101,10 +66300,250 @@
       "groups": []
     },
     {
+      "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.Interfaces.PartialOutdoorSection.dat",
+      "type": "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection",
+      "name": "Design and operating parameters",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "options": [
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typSecRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamOut",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamOutMin",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamRet",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typFanRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typFanRet",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.mOutMin_flow_nominal",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damOut",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damOutMin",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damRet",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.fanRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.fanRet"
+      ],
+      "definition": false,
+      "groups": []
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Interfaces.PartialFan.dat",
+      "type": "Buildings.Templates.Components.Data.Fan",
+      "value": "",
+      "name": "Design and operating parameters",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Fan.typ": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.Components.Interfaces.PartialFan.typ"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Fan.nFan": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.Components.Data.Fan.nFan"
+            ]
+          },
+          "final": true
+        }
+      },
+      "options": [
+        "Buildings.Templates.Components.Data.Fan.typ",
+        "Buildings.Templates.Components.Data.Fan.nFan",
+        "Buildings.Templates.Components.Data.Fan.m_flow_nominal",
+        "Buildings.Templates.Components.Data.Fan.dp_nominal",
+        "Buildings.Templates.Components.Data.Fan.per"
+      ],
+      "definition": false,
+      "groups": []
+    },
+    {
+      "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.Interfaces.PartialReliefReturnSection.dat",
+      "type": "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection",
+      "name": "Design and operating parameters",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "options": [
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typSecRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamOut",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamOutMin",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamRet",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typFanRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typFanRet",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.mOutMin_flow_nominal",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damOut",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damOutMin",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damRet",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.fanRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.fanRet"
+      ],
+      "definition": false,
+      "groups": []
+    },
+    {
+      "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.dat",
+      "type": "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection",
+      "value": "",
+      "name": "Design and operating parameters",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typSecRel": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.typSecRel"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamOut": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.typDamOut"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamOutMin": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.typDamOutMin"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamRet": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.typDamRet"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamRel": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.typDamRel"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typFanRel": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.typFanRel"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typFanRet": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.typFanRet"
+            ]
+          },
+          "final": true
+        }
+      },
+      "options": [
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typSecRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamOut",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamOutMin",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamRet",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typFanRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typFanRet",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.mOutMin_flow_nominal",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damOut",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damOutMin",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damRet",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.fanRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.fanRet"
+      ],
+      "definition": false,
+      "groups": []
+    },
+    {
+      "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialController.dat",
+      "type": "Buildings.Templates.AirHandlersFans.Components.Data.PartialController",
+      "value": "Buildings.Templates.AirHandlersFans.Components.Data.PartialController",
+      "name": "Design and operating parameters",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "modifiers": {
+        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialController.dat": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.AirHandlersFans.Components.Data.PartialController"
+            ]
+          },
+          "final": false
+        }
+      },
+      "enable": true,
+      "options": [
+        "Buildings.Templates.AirHandlersFans.Components.Data.PartialController"
+      ],
+      "definition": false,
+      "groups": []
+    },
+    {
+      "modelicaPath": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.dat",
+      "type": "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler",
+      "value": "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler",
+      "name": "Design and operating parameters",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "modifiers": {
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.dat": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler"
+            ]
+          },
+          "final": false
+        }
+      },
+      "enable": true,
+      "options": [
+        "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler"
+      ],
+      "definition": false,
+      "groups": []
+    },
+    {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typSecRel",
       "type": "Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection",
       "name": "Relief/return air section type",
-      "group": "Configuration",
+      "group": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "tab": "",
       "visible": false,
       "enable": false,
@@ -67303,7 +67742,7 @@
       "type": "Buildings.Templates.Components.Data.Fan",
       "value": "",
       "name": "Relief fan",
-      "group": "Fans",
+      "group": "Buildings.Templates.Components.Fans",
       "tab": "",
       "visible": false,
       "enable": {
@@ -67339,7 +67778,7 @@
       "type": "Buildings.Templates.Components.Data.Fan",
       "value": "",
       "name": "Return fan",
-      "group": "Fans",
+      "group": "Buildings.Templates.Components.Fans",
       "tab": "",
       "visible": false,
       "enable": {
@@ -67374,7 +67813,7 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Data.PartialController.typ",
       "type": "Buildings.Templates.AirHandlersFans.Types.Controller",
       "name": "Type of controller",
-      "group": "Configuration",
+      "group": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "tab": "",
       "visible": false,
       "enable": false,
@@ -67463,7 +67902,7 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.typ",
       "type": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "name": "Type of system",
-      "group": "Configuration",
+      "group": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "tab": "",
       "visible": false,
       "enable": false,
@@ -67553,7 +67992,7 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.typCtl",
       "type": "Buildings.Templates.AirHandlersFans.Types.Controller",
       "name": "Type of controller",
-      "group": "Configuration",
+      "group": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "tab": "",
       "visible": false,
       "enable": false,
@@ -67688,7 +68127,7 @@
       "type": "Buildings.Templates.AirHandlersFans.Components.Data.PartialController",
       "value": "Buildings.Templates.AirHandlersFans.Components.Data.PartialController",
       "name": "Controller",
-      "group": "Controls",
+      "group": "Buildings.Templates.AirHandlersFans.Components.Controls",
       "tab": "",
       "visible": false,
       "modifiers": {
