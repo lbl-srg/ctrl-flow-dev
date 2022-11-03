@@ -85,6 +85,23 @@ describe("Template wrapper class functionality", () => {
     expect(datRoots.length).toBeGreaterThan(0);
   });
 
+  it("Schedule option paths are unique from options", () => {
+    const templates = getTemplates();
+    const template = templates.find(
+      (t) => t.modelicaPath === TEMPLATE_PATH,
+    ) as Template;
+
+    const { options, scheduleOptions } = template.getOptions();
+
+    Object.keys(options).map(o => {
+      expect(scheduleOptions[o]).toBeUndefined();
+    });
+
+    Object.keys(scheduleOptions).map(o => {
+      expect(options[o]).toBeUndefined();
+    })
+  });
+
   it("Keeps system types in correct order", () => {
     // The system types should match the directory order
     const templates = getTemplates();
