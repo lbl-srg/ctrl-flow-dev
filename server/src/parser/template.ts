@@ -56,7 +56,7 @@ export interface Option {
   tab?: string;
   value?: any;
   enable?: any;
-  scopeList?: string[];
+  treeList?: string[];
   modifiers: { [key: string]: { expression: Expression; final: boolean } };
   replaceable: boolean;
   elementType: string;
@@ -94,19 +94,19 @@ export function flattenModifiers(
   return mods;
 }
 
-function _getScopeList(option: Option) {
-  const scopeList: string[] = [option.type];
+function _getTreeList(option: Option) {
+  const treeList: string[] = [option.type];
 
   option.options?.map(o => {
     // remove the last '.' path
     const basePath = o.split('.').slice(0, -1).join('.');
 
-    if (!scopeList.includes(basePath)) {
-      scopeList.push(basePath);
+    if (!treeList.includes(basePath)) {
+      treeList.push(basePath);
     }
   })
 
-  return scopeList;
+  return treeList;
 } 
 
 function _mapInputToOption(
@@ -127,7 +127,7 @@ function _mapInputToOption(
   option.definition = parser.isDefinition(input.elementType);
 
   if (option.definition) {
-    option.scopeList = _getScopeList(option);
+    option.treeList = _getTreeList(option);
   }
 
   return option;

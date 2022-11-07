@@ -29,7 +29,7 @@ export interface FlatConfigOption {
   value: any;
   enable: any;
   visible: any;
-  scopeList: string[];
+  treeList: string[];
   scope: string;
 }
 
@@ -59,14 +59,14 @@ export function flattenConfigOptions(
   modifiers: any,
   // selectedValues: SelectedConfigValues,
   // selectedOptions: any = {},
-  scopeList: string[],
+  treeList: string[],
   scope: string,
   setScope: boolean,
   allOptions: any,
 ): FlatConfigOption[] {
   let flatModifiers: any = { ...modifiers };
   let flatConfigOptions: FlatConfigOption[] = [];
-  let newScopeList = [...scopeList];
+  let newTreeList = [...treeList];
   let newScope = scope;
   let changeScope = setScope;
 
@@ -77,6 +77,19 @@ export function flattenConfigOptions(
       return;
     }
 
+    // TODO: Amit's Tasks
+    // add scope to each option in FlatConfigOptions
+    // start building modifier list
+    // {
+    //   modifiers: {
+    //     scopeName: {
+    //       expression: {},
+    //       final: true
+    //     }
+    //   }
+    // }
+    // resolving modifers, needs Daren's backend changes
+
     if (changeScope) {
       newScope = option.modelicaPath;
       changeScope = false;
@@ -86,7 +99,7 @@ export function flattenConfigOptions(
       changeScope = true;
     }
       
-    newScopeList = option.scopeList || newScopeList;
+    newTreeList = option.treeList || newTreeList;
 
     // might need to set this up where it gets all modifiers of all options instead of only keeping modifiers up to the specific option
     flatModifiers = getModifierContext(option, flatModifiers, allOptions);
@@ -100,10 +113,10 @@ export function flattenConfigOptions(
         name: option.name,
         modifiers: flatModifiers,
         choices: option.childOptions || [],
-        value: null,
+        value: option?.value,
         enable: option.enable,
         visible: option.visible,
-        scopeList: newScopeList,
+        treeList: newTreeList,
         scope: newScope,
       },
     ];
@@ -116,7 +129,7 @@ export function flattenConfigOptions(
           option.modelicaPath,
           option.name,
           flatModifiers,
-          newScopeList,
+          newTreeList,
           newScope,
           changeScope,
           allOptions,
@@ -224,13 +237,14 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
     const displayedOptions: FlatConfigOption[] = [];
 
     flatConfigOptions.forEach((configOption) => {
-      const modifier: any = configOption.modifiers[configOption.modelicaPath];
+      // apply modifiers final when backend changes have been made
+      // const modifier: any = configOption.modifiers[configOption.modelicaPath];
 
       if (isExpression(configOption.enable)) {
         configOption.enable = evaluateExpression(
           configOption.enable,
           selectedValues,
-          configOption.scopeList,
+          configOption.treeList,
           allOptions
         );
 
@@ -240,9 +254,10 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
         // }
       }
 
-      if (modifier?.final !== undefined) {
-        configOption.visible = configOption?.visible && !modifier.final;
-      }
+      // apply modifiers final when backend changes have been made
+      // if (modifier?.final !== undefined) {
+      //   configOption.visible = configOption?.visible && !modifier.final;
+      // }
 
       // TODO: Remove this, it is a temporay hack
       const hideArray = ['ASHRAE', 'Title 24'];

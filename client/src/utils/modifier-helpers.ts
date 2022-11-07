@@ -87,22 +87,24 @@ export function getModifierContext(
 // grab default value, either by evaluating or selecting the first choice
 export function applyValueModifiers(
   option: FlatConfigOption,
-  // modifiers: any,
-  // firstValue: any,
   selections: any,
   allOptions: any,
 ): string {
   const selection = selections[option.modelicaPath];
-  // const modifier = modifiers[option.modelicaPath];
-  const modifier = option.modifiers[option.modelicaPath];
-  const isDefinition = allOptions.find((option: any) => option.modelicaPath === selection)?.definition || false;
-  let evaluatedValue: any;
+  const defaultValue = isExpression(option?.value) ? evaluateExpression(option?.value, selections, option.treeList, allOptions) : option?.value;
+  // apply modifiers differently after backend changes
+  // const modifier = option.modifiers[option.modelicaPath];
+  const selectionIsDefinition = allOptions.find((option: any) => option.modelicaPath === selection)?.definition || false;
+  // let evaluatedValue: any;
 
-  if (selection && isDefinition) return selection;
+  if (selection && selectionIsDefinition) return selection;
 
-  if (isExpression(modifier?.expression)) {
-    evaluatedValue = evaluateExpression(modifier.expression, selections, option.scopeList, allOptions);
-  }
+  const evaluatedValue = defaultValue;
+
+  // apply modifiers differently after backend changes
+  // if (isExpression(modifier?.expression)) {
+  //   evaluatedValue = evaluateExpression(modifier.expression, selections, option.treeList, allOptions);
+  // }
 
   // return evaluatedValue && !isExpression(evaluatedValue) ? evaluatedValue : firstValue;
   return evaluatedValue && !isExpression(evaluatedValue) ? evaluatedValue : null;

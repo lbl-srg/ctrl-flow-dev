@@ -9,12 +9,12 @@ export type Expression = {
 
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 
-function resolveWithScope(path: string, selections: any, scopeList: string[], allOptions: any): any {
+function resolveWithScope(path: string, selections: any, treeList: string[], allOptions: any): any {
   const splitPath = path.split(".");
   const item = splitPath.pop();
   let value = null;
 
-  scopeList.every((scope) => {
+  treeList.every((scope) => {
     let newPath = scope;
 
     splitPath.every((accessor) => {
@@ -32,19 +32,19 @@ function resolveWithScope(path: string, selections: any, scopeList: string[], al
 
         if (modifierValue) {
           if (isExpression(modifierValue)) {
-            value = evaluateExpression(modifierValue, selections, typeOption?.scopeList, allOptions);
+            value = evaluateExpression(modifierValue, selections, typeOption?.treeList, allOptions);
             return false;
           }
-          value = resolveValue(modifierValue, selections, typeOption?.scopeList, allOptions);
+          value = resolveValue(modifierValue, selections, typeOption?.treeList, allOptions);
           return false;
         }
 
         if (typeValue) {
           if (isExpression(typeValue)) {
-            value = evaluateExpression(typeValue, selections, typeOption?.scopeList, allOptions);
+            value = evaluateExpression(typeValue, selections, typeOption?.treeList, allOptions);
             return false;
           }
-          value = resolveValue(typeValue, selections, typeOption?.scopeList, allOptions);
+          value = resolveValue(typeValue, selections, typeOption?.treeList, allOptions);
           return false;
         }
       }
@@ -56,7 +56,7 @@ function resolveWithScope(path: string, selections: any, scopeList: string[], al
   return value;
 }
 
-function resolveValue(path: string, selections: any, scopeList: string[], allOptions: any): any {
+function resolveValue(path: string, selections: any, treeList: string[], allOptions: any): any {
   const option = allOptions.find((option: any) => option.modelicaPath === path);
   const optionValue = option?.modifiers?.[path]?.expression;
   const optionIsDefinition = option?.definition;
@@ -69,27 +69,27 @@ function resolveValue(path: string, selections: any, scopeList: string[], allOpt
 
   if (optionValue) {
     if (isExpression(optionValue)) {
-      return evaluateExpression(optionValue, selections, scopeList, allOptions);
+      return evaluateExpression(optionValue, selections, treeList, allOptions);
     }
-    return resolveValue(optionValue, selections, scopeList, allOptions);
+    return resolveValue(optionValue, selections, treeList, allOptions);
   }
 
-  // find option based on scopeList
+  // find option based on treeList
 
-  const scopeValue = resolveWithScope(path, selections, scopeList, allOptions);
+  // const scopeValue = resolveWithScope(path, selections, treeList, allOptions);
 
-  if (scopeValue) return scopeValue;
+  // if (scopeValue) return scopeValue;
 
   return 'no_value';
 }
 
-function resolveExpression(expression: any, selections: any, scopeList: string[], allOptions: any): any {
+function resolveExpression(expression: any, selections: any, treeList: string[], allOptions: any): any {
   let resolved_expression: any = expression;
 
   expression.operands.every((operand: any, index: number) => {
     if (typeof operand !== 'string') return true;
 
-    const resolvedValue = resolveValue(operand, selections, scopeList, allOptions);
+    const resolvedValue = resolveValue(operand, selections, treeList, allOptions);
 
     if (resolvedValue === 'no_value') {
       resolved_expression = false;
@@ -103,8 +103,8 @@ function resolveExpression(expression: any, selections: any, scopeList: string[]
   return resolved_expression;
 }
 
-function expressionEvaluator(expression: any, selections: any, scopeList: string[], allOptions: any): any {
-  const resolved_expression = resolveExpression(expression, selections, scopeList, allOptions);
+function expressionEvaluator(expression: any, selections: any, treeList: string[], allOptions: any): any {
+  const resolved_expression = resolveExpression(expression, selections, treeList, allOptions);
   
   if (resolved_expression === false) return expression;
 
@@ -171,7 +171,7 @@ export function isExpression(item: any): boolean {
   return !!item?.operator;
 }
 
-export function evaluateExpression(expression: any, selections: any, scopeList: string[], allOptions: any): any {
+export function evaluateExpression(expression: any, selections: any, treeList: string[], allOptions: any): any {
   //TODO: (FE) If operand is a path to a value look up path, if the value isn't known return the expression
 
   const evaluated_expression: any = expression;
@@ -181,9 +181,9 @@ export function evaluateExpression(expression: any, selections: any, scopeList: 
 
   expression.operands.forEach((operand: any, index: number) => {
     if (isExpression(operand)) {
-      evaluated_expression.operands[index] = evaluateExpression(operand, selections, scopeList, allOptions);
+      evaluated_expression.operands[index] = evaluateExpression(operand, selections, treeList, allOptions);
     }
   });
 
-  return expressionEvaluator(evaluated_expression, selections, scopeList, allOptions);
+  return expressionEvaluator(evaluated_expression, selections, treeList, allOptions);
 }
