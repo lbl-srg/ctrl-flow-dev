@@ -407,7 +407,6 @@ export class Input extends Element {
           .map((mod: mj.Mod | mj.WrappedMod) =>
             createModification({
               definition: mod,
-              basePath,
               baseType: this.type,
             }),
           )
@@ -418,7 +417,6 @@ export class Input extends Element {
     this.mod = declarationBlock.modification
       ? createModification({
           definition: declarationBlock,
-          basePath: basePath,
           baseType: this.type,
           name: this.name,
         })
@@ -548,8 +546,8 @@ export class ReplaceableInput extends Input {
     const mod = createModification({
       name: this.name,
       value: getExpression(this.value, basePath),
-      basePath: basePath,
       baseType: this.type,
+      final: this.final
     });
 
     if (mod) {
@@ -712,7 +710,6 @@ export class InputGroupExtend extends Element {
         .map((mod: mj.Mod | mj.WrappedMod) =>
           createModification({
             definition: mod,
-            basePath: basePath,
             baseType: this.type,
           }),
         )

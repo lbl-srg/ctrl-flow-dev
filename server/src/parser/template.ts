@@ -83,7 +83,7 @@ export function flattenModifiers(
     .filter((m) => m !== undefined || m !== null)
     .map((mod) => {
       if (mod?.value) {
-        mods[mod.modelicaPath] = { expression: mod.value, final: mod.final };
+        mods[mod.path] = { expression: mod.value, final: mod.final };
       }
 
       if (mod?.mods) {
