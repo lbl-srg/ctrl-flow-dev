@@ -158,9 +158,9 @@ describe("Template wrapper class functionality", () => {
       (o) => o.modelicaPath === "TestPackage.Template.TestTemplate",
     );
 
-    expect(testTemplate?.scopeList).toBeTruthy();
+    expect(testTemplate?.treeList).toBeTruthy();
 
-    testTemplate?.scopeList?.map((s) => {
+    testTemplate?.treeList?.map((s) => {
       const expectedScope = expectedScopeList.shift();
       expect(s).toEqual(expectedScope);
     });

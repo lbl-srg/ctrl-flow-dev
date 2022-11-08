@@ -52,7 +52,7 @@ describe("Modifications", () => {
     const input = inputs[path];
     const mod = flattenModifiers(input.modifiers);
     const extendElement = element.extendElement;
-    const modPath = `${extendElement?.type}.interface_param`;
+    const modPath = `interface_param`;
     expect(evaluateExpression(mod[modPath].expression)).toEqual(
       "Updated Value",
     );
@@ -67,7 +67,7 @@ describe("Modifications", () => {
     };
     const input = inputs[childPath];
     const mod = flattenModifiers(input.modifiers);
-    expect(evaluateExpression(mod[childPath].expression)).toEqual(
+    expect(evaluateExpression(mod['interface_param'].expression)).toEqual(
       "Interface Param",
     );
   });
@@ -81,13 +81,13 @@ describe("Modifications", () => {
     const datMods = flattenModifiers(datInput.modifiers);
 
     expect(
-      "TestPackage.Template.Data.TestTemplate.container_selectable_component" in
+      "container_selectable_component" in
       datMods,
     ).toBeTruthy();
 
     const templateInput = inputs[templatePath];
     const templateMods = flattenModifiers(templateInput.modifiers);
-    const nestedParamPath = "TestPackage.Interface.NestedExtendInterface.nested_interface_param";
+    const nestedParamPath = "nested_interface_param";
     expect(nestedParamPath in templateMods).toBeTruthy();
   });
 
@@ -96,7 +96,7 @@ describe("Modifications", () => {
    */
   it("Finds 'constrainby' modifiers", () => {
     const path = "TestPackage.Template.TestTemplate.selectable_component";
-    const modPath = "TestPackage.Interface.PartialComponent.container";
+    const modPath = "container";
     const expected = "TestPackage.Types.Container.Cone";
     const option = tOptions[path];
     const mods = option.modifiers;
@@ -107,7 +107,7 @@ describe("Modifications", () => {
 
   it("Creates redeclare modifiers", () => {
     const path = "TestPackage.Template.TestTemplate.redeclare_param_01";
-    const modPath = "TestPackage.Component.FourthComponent.replaceable_param";
+    const modPath = "replaceable_param";
     const option = tOptions[path];
     const mod = option.modifiers[modPath];
   
