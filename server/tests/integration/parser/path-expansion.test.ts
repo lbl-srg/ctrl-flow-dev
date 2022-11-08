@@ -42,7 +42,6 @@ describe("Path Expansion", () => {
 
   it("Constrain modifier types are expanded", () => {
     const { options } = getOptions();
-    const expectedRootPackage = "TestPackage";
     const modPath = "TestPackage.Interface.PartialComponent.container";
     const shortModOption = options.find(
       (o) =>

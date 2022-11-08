@@ -12,7 +12,7 @@ import { Template } from "./template";
 import {
   createModification,
   Modification,
-  getModificationList,
+  createModificationList,
 } from "./modification";
 
 import {
@@ -36,8 +36,19 @@ export const isDefinition = (elementType: string) =>
 
 export const isLiteral = (path: string) => MODELICA_LITERALS.includes(path);
 
+// a 'context manager' - sets the typeStore scope for lookups
+export function* withScope(scope: string) {
+  typeStore._setScope(scope);
+  try {
+    yield;
+  } finally {
+    typeStore._resetScope();
+  }
+}
+
 class Store {
   _store: Map<string, any> = new Map();
+  _scope = "";
 
   set(path: string, element: Element): boolean {
     if (!this.has(path)) {
@@ -45,6 +56,18 @@ class Store {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Sets default scope. This helps with type lookup and should match
+   * the 'within'
+   */
+  _setScope(path: string) {
+    this._scope = path;
+  }
+
+  _resetScope() {
+    this._setScope('');
   }
 
   _get(path: string): Element | undefined {
@@ -56,8 +79,7 @@ class Store {
       const name = pathList.pop();
       const basePath = pathList.join(".");
 
-      // avoid infinite recursion
-      if (basePath !== path) {
+      if (basePath !== path) { // avoid infinite recursion
         let element = typeStore.get(basePath, "", false); // base paths SHOULD be loaded
         while (element && isInputGroup(element.elementType)) {
           element = element as InputGroup;
@@ -81,12 +103,13 @@ class Store {
    *
    * TODO: throw an exception when not found
    */
-  get(path: string, basePath: string = "", load: boolean = true) {
+  get(path: string, basePath: string | null = null, load: boolean = true) {
     if (isLiteral(path) || path === "") {
       return;
     }
 
-    const paths = this._generatePaths(path, basePath);
+    const paths = (basePath !== null) ? this._generatePaths(path, basePath) : this._generatePaths(path, this._scope);
+    // const paths = this._generatePaths(path, basePath)
 
     for (const p of paths) {
       const e = this._get(p);
@@ -547,7 +570,7 @@ export class ReplaceableInput extends Input {
       name: this.name,
       value: getExpression(this.value, basePath),
       baseType: this.type,
-      final: this.final
+      final: this.final,
     });
 
     if (mod) {
@@ -562,7 +585,7 @@ export class ReplaceableInput extends Input {
       this.mods = constraintDef?.class_modification
         ? [
             ...this.mods,
-            ...getModificationList(
+            ...createModificationList(
               constraintDef,
               basePath,
               this.constraint.modelicaPath,
@@ -612,7 +635,6 @@ export class ReplaceableInput extends Input {
 
     if (recursive) {
       childTypes.map((c) => {
-        // TODO: applying mods from the parameter to child types?
         const typeInstance = typeStore.get(c) || null;
         if (typeInstance) {
           inputs = typeInstance.getInputs(inputs);
@@ -724,7 +746,7 @@ export class InputGroupExtend extends Element {
 
     this.value = this.type;
     if (definition.extends_clause.class_modification) {
-      this.mods = getModificationList(
+      this.mods = createModificationList(
         definition.extends_clause,
         basePath,
         this.type,
@@ -748,16 +770,6 @@ export class InputGroupExtend extends Element {
     }
 
     const typeInstance = typeStore.get(this.type);
-    // inputs[this.modelicaPath] = {
-    //   modelicaPath: this.modelicaPath,
-    //   type: this.type,
-    //   value: this.value,
-    //   name: typeInstance?.name || "",
-    //   visible: false,
-    //   inputs: this.type.startsWith("Modelica") ? [] : [this.type],
-    //   elementType: this.elementType,
-    //   modifiers: this.mods,
-    // };
 
     return typeInstance ? typeInstance.getInputs(inputs, recursive) : inputs;
   }

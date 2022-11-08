@@ -1,4 +1,4 @@
-import { typeStore, isInputGroup, InputGroup, Element } from "./parser";
+import { typeStore, isInputGroup, InputGroup, Element, withScope } from "./parser";
 import * as mj from "./mj-types";
 
 /**
@@ -16,18 +16,12 @@ import * as mj from "./mj-types";
  * Modifications are used in all places where there are assignments, so this includes
  * annotations that contain purely UI related data, or with the 'graphic' tag that
  * contains SVG data.
- *
- * Parameter modifications are kept in a store using a modelica path. All other
- * modifications (annotation, graphic) are not put in the store.
- *
- * TODO: remove the modification store it is not used
  */
 
-import { evaluateExpression, Expression, getExpression } from "./expression";
-
-const modStore: Map<string, Modification> = new Map();
+import { Expression, getExpression } from "./expression";
 
 interface ModificationBasics {
+  instancePath?: string;
   basePath?: string;
   baseType?: string;
   name?: string;
@@ -52,6 +46,40 @@ interface ModificationWithValue extends ModificationBasics {
 
 type ModificationProps = ModificationWithDefinition | ModificationWithValue;
 
+export function createModificationList(
+  classMod: mj.ClassMod,
+  basePath: string,
+  baseType = "",
+  name = "",
+) {
+  return classMod.class_modification
+    .map((m) => {
+      return createModification({
+        definition: m as mj.WrappedMod,
+        basePath: basePath,
+        baseType: baseType,
+        name,
+      });
+    })
+    .filter((m) => m !== undefined) as Modification[];
+}
+
+// wrapper function to extract scope
+export function createModification(
+  props: ModificationProps,
+): Modification | undefined {
+  const { basePath } = props;
+
+  if (basePath) {
+    for (const _ of withScope(basePath)) {
+      return _createModification(props);
+    }
+  } else {
+    return _createModification(props);
+  }
+
+}
+
 /**
  * Factory method that can create a Modification from two approaches:
  *
@@ -61,7 +89,7 @@ type ModificationProps = ModificationWithDefinition | ModificationWithValue;
  * @param props: ModificationProps
  * @returns Modification
  */
-export function createModification(
+export function _createModification(
   props: ModificationProps,
 ): Modification | undefined {
   const mods: Modification[] = [];
@@ -97,14 +125,13 @@ function unpackRedeclaration(props: ModificationProps) {
     let element: Element | undefined;
 
     element = typeStore.get(
-      componentClause1.type_specifier, // always relative to basePath
+      componentClause1.type_specifier,
       baseType,
     );
 
-    // if (!element) {
-    //   element = typeStore.get(componentClause1.type_specifier, basePath);
-    //   scope = basePath;
-    // }
+    if (!element) {
+      element = typeStore.get(componentClause1.type_specifier);
+    }
 
     if (element === undefined) {
       console.log(`${baseType}\t${componentClause1.type_specifier}`);
@@ -121,13 +148,13 @@ function unpackRedeclaration(props: ModificationProps) {
       final,
     };
     // create child modifications
-    const redeclareMod = createModification(childModProps);
+    const redeclareMod = _createModification(childModProps);
     const childMods = redeclareMod ? [redeclareMod] : [];
     // create the redeclare modification
     return new Modification(
       basePath,
       name, // TODO: pass full instance path (or name)
-      getExpression(element.type, basePath, baseType),
+      getExpression(element.type, baseType),
       childMods,
       final,
     );
@@ -205,7 +232,6 @@ function unpackModblock(props: ModificationProps) {
     if ("equal" in mod) {
       value = getExpression(
         (mod as mj.Assignment).expression,
-        basePath,
         baseType,
       );
     } else if (name == "choice") {
@@ -217,7 +243,6 @@ function unpackModblock(props: ModificationProps) {
           choiceMod.element_redeclaration) as mj.ElementReplaceable;
         const replaceableType = typeStore.get(
           replaceable.component_clause1.type_specifier,
-          basePath,
         );
  
         value = replaceableType?.modelicaPath || "";
@@ -227,6 +252,9 @@ function unpackModblock(props: ModificationProps) {
       let newBasePath = basePath;
       // update base type
       if (name) {
+        if (name === 'choices') {
+          console.log('a');
+        }
         const modElement = typeStore.get(name, baseType); //
         const modType = modElement?.type;
         typePath = modType ? modType : baseType;
@@ -242,15 +270,13 @@ function unpackModblock(props: ModificationProps) {
 
 export function getModificationList(
   classMod: mj.ClassMod,
-  basePath: string,
   baseType = "",
   name = "",
 ) {
   return classMod.class_modification
     .map((m) => {
-      return createModification({
+      return _createModification({
         definition: m as mj.WrappedMod,
-        basePath: basePath,
         baseType: baseType,
         name,
       });

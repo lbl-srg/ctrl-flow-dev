@@ -21,7 +21,6 @@ export type Expression = {
 function buildArithmeticExpression(
   expression: any,
   operator: any,
-  basePath: string,
   baseType: string
 ): Expression {
   // TODO: attempt to expand operands as types
@@ -33,8 +32,8 @@ function buildArithmeticExpression(
   arithmetic_expression.operands = arithmetic_expression.operands.map((o, i) => {
     if (typeof o === "string") {
       // left hand side of expression is most likely a variable reference - favor basePath first
-      const element = (i === 0) ? typeStore.get(o, basePath) || typeStore.get(o, baseType)
-        : typeStore.get(o, baseType) || typeStore.get(o, basePath);
+      const element = (i === 0) ? typeStore.get(o) || typeStore.get(o, baseType)
+        : typeStore.get(o, baseType) || typeStore.get(o);
       return (element) ? element.modelicaPath : o;
     }
     return o;
@@ -43,7 +42,7 @@ function buildArithmeticExpression(
   return arithmetic_expression;
 }
 
-function buildLogicalExpression(expression: any, basePath: string, baseType: string): Expression {
+function buildLogicalExpression(expression: any, baseType: string): Expression {
   const logical_expression: Expression = {
     operator: "bad_logical_expression",
     operands: ["unknown_logical_expression"],
@@ -53,24 +52,23 @@ function buildLogicalExpression(expression: any, basePath: string, baseType: str
     return buildArithmeticExpression(
       expression.arithmetic_expressions,
       expression.relation_operator,
-      basePath,
       baseType
     );
   }
 
   if (expression.logical_or?.length === 1) {
-    return buildLogicalExpression(expression.logical_or[0], basePath, baseType);
+    return buildLogicalExpression(expression.logical_or[0], baseType);
   }
 
   if (expression.logical_and?.length === 1) {
-    return buildLogicalExpression(expression.logical_and[0], basePath, baseType);
+    return buildLogicalExpression(expression.logical_and[0], baseType);
   }
 
   if (expression.logical_or?.length > 1) {
     return {
       operator: "||",
       operands: expression.logical_or.map((element: any) =>
-        buildLogicalExpression(element, basePath, baseType),
+        buildLogicalExpression(element, baseType),
       ),
     };
   }
@@ -79,7 +77,7 @@ function buildLogicalExpression(expression: any, basePath: string, baseType: str
     return {
       operator: "&&",
       operands: expression.logical_and.map((element: any) =>
-        buildLogicalExpression(element, basePath, baseType),
+        buildLogicalExpression(element, baseType),
       ),
     };
   }
@@ -96,7 +94,7 @@ function buildLoopConditionExpression(expression: any): Expression {
   return loop_condition_expression;
 }
 
-function buildForLoopExpression(expression: any, basePath: string, baseType: string): Expression {
+function buildForLoopExpression(expression: any, baseType: string): Expression {
   const for_loop_expression: Expression = {
     operator: "for",
     operands: expression.for_loop?.map((loop_condition_expression: any) => {
@@ -105,7 +103,7 @@ function buildForLoopExpression(expression: any, basePath: string, baseType: str
   };
 
   for_loop_expression.operands.push(
-    getExpression(expression.expression, basePath, baseType),
+    getExpression(expression.expression, baseType),
   );
 
   return for_loop_expression;
@@ -113,13 +111,12 @@ function buildForLoopExpression(expression: any, basePath: string, baseType: str
 
 function buildFunctionExpression(
   expression: any,
-  basePath: string,
   baseType: string
 ): Expression {
   const function_expression: Expression = {
     operator: expression.name,
     operands: expression.arguments?.map((argument_expression: any) => {
-      return getExpression(expression.name, basePath, baseType);
+      return getExpression(expression.name, baseType);
     }),
   };
 
@@ -128,22 +125,21 @@ function buildFunctionExpression(
 
 function buildFunctionCallExpression(
   expression: any,
-  basePath: string,
   baseType: string
 ): Expression {
   const function_call_expression: Expression = {
     operator: "function_call",
-    operands: [buildFunctionExpression(expression, basePath, baseType)],
+    operands: [buildFunctionExpression(expression, baseType)],
   };
 
   return function_call_expression;
 }
 
-function buildIfArrayExpression(expression: any, basePath: string, baseType: string): Expression {
+function buildIfArrayExpression(expression: any, baseType: string): Expression {
   const if_array_expression: Expression = {
     operator: "if_array",
     operands: expression?.map((expression: any) =>
-      buildIfExpression(expression, basePath, baseType),
+      buildIfExpression(expression, baseType),
     ),
   };
 
@@ -153,35 +149,34 @@ function buildIfArrayExpression(expression: any, basePath: string, baseType: str
 function buildConditionExpression(
   expression: any,
   index: number,
-  basePath: string,
   baseType: string
 ): Expression {
   const condition_expression: Expression = {
     operator: index === 0 ? "if" : "else_if",
     operands: [
-      getExpression(expression.condition, basePath),
-      getExpression(expression.then, basePath),
+      getExpression(expression.condition, baseType),
+      getExpression(expression.then, baseType),
     ],
   };
 
   return condition_expression;
 }
 
-function buildElseExpression(expression: any, basePath: string): Expression {
+function buildElseExpression(expression: any, baseType: string): Expression {
   const else_expression: Expression = {
     operator: "else",
-    operands: [getExpression(expression, basePath)],
+    operands: [getExpression(expression, baseType)],
   };
 
   return else_expression;
 }
 
-function buildIfExpression(expression: any, basePath: string, baseType: string): Expression {
+function buildIfExpression(expression: any, baseType: string): Expression {
   const if_expression: Expression = {
     operator: "if_elseif",
     operands: expression.if_elseif?.map(
       (condition_expression: any, index: number) => {
-        return buildConditionExpression(condition_expression, index, basePath, baseType);
+        return buildConditionExpression(condition_expression, index, baseType);
       },
     ),
   };
@@ -189,14 +184,14 @@ function buildIfExpression(expression: any, basePath: string, baseType: string):
   if_expression.operands.push(
     buildElseExpression(
       expression.else_expression || expression.else,
-      basePath,
+      baseType,
     ),
   );
 
   return if_expression;
 }
 
-function buildSimpleExpression(expression: any, basePath: string, baseType: string): Expression {
+function buildSimpleExpression(expression: any, baseType: string): Expression {
   let operand = expression;
 
   if (typeof expression === "object")
@@ -209,7 +204,7 @@ function buildSimpleExpression(expression: any, basePath: string, baseType: stri
     }
     if (typeof operand === "string") {
       // Attempt to expand operand as a type
-      const element = typeStore.get(operand, basePath) || typeStore.get(operand, baseType); // TODO: may only need to check basePath
+      const element = typeStore.get(operand) || typeStore.get(operand, baseType); // TODO: may only need to check basePath
       operand = (element) ? element.modelicaPath : operand;
     }
   }
@@ -228,7 +223,7 @@ export function evaluateExpression(expression: Expression): any {
   return expression.operator === "none" ? expression.operands[0] : expression;
 }
 
-export function getExpression(value: any, basePath = "", baseType = ""): Expression {
+export function getExpression(value: any, baseType = ""): Expression {
   const simple_expression = value?.simple_expression;
   const logical_expression =
     simple_expression?.logical_expression || value?.logical_expression;
@@ -239,18 +234,18 @@ export function getExpression(value: any, basePath = "", baseType = ""): Express
     simple_expression?.if_expression || value?.if_expression;
 
   if (logical_expression)
-    return buildLogicalExpression(logical_expression, basePath, baseType);
+    return buildLogicalExpression(logical_expression, baseType);
 
   if (for_loop_expression)
-    return buildForLoopExpression(for_loop_expression, basePath, baseType);
+    return buildForLoopExpression(for_loop_expression, baseType);
 
   if (function_call_expression)
-    return buildFunctionCallExpression(function_call_expression, basePath, baseType);
+    return buildFunctionCallExpression(function_call_expression, baseType);
 
   if (if_expression && Array.isArray(if_expression))
-    return buildIfArrayExpression(if_expression, basePath, baseType);
+    return buildIfArrayExpression(if_expression, baseType);
 
-  if (if_expression) return buildIfExpression(if_expression, basePath, baseType);
+  if (if_expression) return buildIfExpression(if_expression, baseType);
 
-  return buildSimpleExpression(simple_expression || value, basePath, baseType);
+  return buildSimpleExpression(simple_expression || value, baseType);
 }
