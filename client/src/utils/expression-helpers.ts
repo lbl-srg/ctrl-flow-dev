@@ -7,89 +7,55 @@ export type Expression = {
   operands: Array<Literal | Expression>;
 }
 
-export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
+function resolveValue(path: string, scope: string, selectionPath: string, selections: any, modifiers: any, treeList: string[], allOptions: any): any {
+  // path should be an instancePath or a modelicaPath
+  // need to know modelicaPath to append to the path? Do I create the path from treeList?
+  const scopePath = `${scope}.${path}`;
 
-function resolveWithScope(path: string, selections: any, treeList: string[], allOptions: any): any {
-  const splitPath = path.split(".");
-  const item = splitPath.pop();
-  let value = null;
-
-  treeList.every((scope) => {
-    let newPath = scope;
-
-    splitPath.every((accessor) => {
-      newPath = `${newPath}.${accessor}`;
-      const option = allOptions.find((option: any) => option.modelicaPath === newPath);
-      const type = option?.type;
-      const modifiers = option?.modifiers;
-      const typeIsLiteral = MODELICA_LITERALS.includes(type);
-
-      if (type && !typeIsLiteral) {
-        const typePath = `${type}.${item}`;
-        const modifierValue = modifiers?.[typePath]?.expression;
-        const typeOption = allOptions.find((option: any) => option.modelicaPath === typePath);
-        const typeValue = typeOption?.modifiers?.[typePath]?.expression;
-
-        if (modifierValue) {
-          if (isExpression(modifierValue)) {
-            value = evaluateExpression(modifierValue, selections, typeOption?.treeList, allOptions);
-            return false;
-          }
-          value = resolveValue(modifierValue, selections, typeOption?.treeList, allOptions);
-          return false;
-        }
-
-        if (typeValue) {
-          if (isExpression(typeValue)) {
-            value = evaluateExpression(typeValue, selections, typeOption?.treeList, allOptions);
-            return false;
-          }
-          value = resolveValue(typeValue, selections, typeOption?.treeList, allOptions);
-          return false;
-        }
-      }
-      return true;
-    });
-    return true;
-  });
-
-  return value;
-}
-
-function resolveValue(path: string, selections: any, treeList: string[], allOptions: any): any {
-  const option = allOptions.find((option: any) => option.modelicaPath === path);
-  const optionValue = option?.modifiers?.[path]?.expression;
-  const optionIsDefinition = option?.definition;
-  const selectionValue = selections[path];
+  const selectionValue = selections[selectionPath];
   const selectionIsDefinition = allOptions.find((option: any) => option.modelicaPath === selectionValue);
+  const scopeModifier = modifiers[scopePath];
+  const originalOption = allOptions.find((option: any) => option.modelicaPath === path);
+  const optionIsDefinition = originalOption?.definition;
 
+  const newScope = scopePath.split('.').slice(0, -1).join('.');
+
+  let evaluatedValue: any = undefined;
+
+  // if the originalOption is a definition it is the value we want (we are not an option that has choices?)
   if (optionIsDefinition) return path;
 
+  // if we have a selection and the value is a definition we want to use that value
   if (selectionValue && selectionIsDefinition) return selectionValue;
 
-  if (optionValue) {
-    if (isExpression(optionValue)) {
-      return evaluateExpression(optionValue, selections, treeList, allOptions);
-    }
-    return resolveValue(optionValue, selections, treeList, allOptions);
+  // evaluate scope modifier
+  if (scopeModifier) {
+    evaluatedValue = isExpression(scopeModifier?.expression) ?
+      evaluateExpression(scopeModifier.expression, newScope, selectionPath, selections, modifiers, treeList, allOptions) :
+      scopeModifier.expression;
   }
 
-  // find option based on treeList
+  // if modifier didn't fully resolve try default value of original option
+  if (!evaluatedValue || isExpression(evaluatedValue)) {
+    evaluatedValue = isExpression(originalOption?.value) ?
+      evaluateExpression(originalOption?.value, newScope, selectionPath, selections, modifiers, treeList, allOptions) :
+      originalOption?.value;
+  }
 
-  // const scopeValue = resolveWithScope(path, selections, treeList, allOptions);
-
-  // if (scopeValue) return scopeValue;
+  if (evaluatedValue && !isExpression(evaluatedValue)) {
+    return resolveValue(evaluatedValue, newScope, selectionPath, selections, modifiers, treeList, allOptions);
+  }
 
   return 'no_value';
 }
 
-function resolveExpression(expression: any, selections: any, treeList: string[], allOptions: any): any {
+function resolveExpression(expression: any, scope: string, selectionPath: string, selections: any, modifiers: any, treeList: string[], allOptions: any): any {
   let resolved_expression: any = expression;
 
   expression.operands.every((operand: any, index: number) => {
     if (typeof operand !== 'string') return true;
 
-    const resolvedValue = resolveValue(operand, selections, treeList, allOptions);
+    const resolvedValue = resolveValue(operand, scope, selectionPath, selections, modifiers, treeList, allOptions);
 
     if (resolvedValue === 'no_value') {
       resolved_expression = false;
@@ -103,8 +69,8 @@ function resolveExpression(expression: any, selections: any, treeList: string[],
   return resolved_expression;
 }
 
-function expressionEvaluator(expression: any, selections: any, treeList: string[], allOptions: any): any {
-  const resolved_expression = resolveExpression(expression, selections, treeList, allOptions);
+function expressionEvaluator(expression: any, scope: string, selectionPath: string, selections: any, modifiers: any, treeList: string[], allOptions: any): any {
+  const resolved_expression = resolveExpression(expression, scope, selectionPath, selections, modifiers, treeList, allOptions);
   
   if (resolved_expression === false) return expression;
 
@@ -171,19 +137,14 @@ export function isExpression(item: any): boolean {
   return !!item?.operator;
 }
 
-export function evaluateExpression(expression: any, selections: any, treeList: string[], allOptions: any): any {
-  //TODO: (FE) If operand is a path to a value look up path, if the value isn't known return the expression
-
+export function evaluateExpression(expression: any, scope: string, selectionPath: string, selections: any, modifiers: any, treeList: string[], allOptions: any): any {
   const evaluated_expression: any = expression;
-
-  // if both operands are not expressions evaluate the current expression
-  // if any of the operands are expressions call evaluateExpression for that expression
 
   expression.operands.forEach((operand: any, index: number) => {
     if (isExpression(operand)) {
-      evaluated_expression.operands[index] = evaluateExpression(operand, selections, treeList, allOptions);
+      evaluated_expression.operands[index] = evaluateExpression(operand, scope, selectionPath, selections, modifiers, treeList, allOptions);
     }
   });
 
-  return expressionEvaluator(evaluated_expression, selections, treeList, allOptions);
+  return expressionEvaluator(evaluated_expression, scope, selectionPath, selections, modifiers, treeList, allOptions);
 }

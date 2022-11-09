@@ -12,6 +12,7 @@ export interface OptionSelectProps {
     modelicaPath: string,
     // name: string,
     // selectedOption: OptionInterface,
+    scope: string,
     choice: string | null,
   ) => void;
 }
@@ -30,6 +31,7 @@ const OptionSelect = ({
 
     updateSelectedConfigOption(
       option.modelicaPath,
+      option.scope,
       event.target.value || null,
     );
 

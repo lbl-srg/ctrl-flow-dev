@@ -35,6 +35,28 @@ export function getModifierContext(
   };
 }
 
+export function buildModifiers(
+  modifiers: any,
+  scope: string,
+  flatModifiers: any,
+): any {
+  let newModifiers = {};
+
+  Object.keys(modifiers)?.forEach((modifier) => {
+    const instance = modifier.split(".").pop() || "";
+    const instancePath: string = scope ? `${scope}.${instance}` : instance;
+    newModifiers = {
+      ...newModifiers,
+      [instancePath]: modifiers[modifier],
+    };
+  });
+
+  return {
+    ...flatModifiers,
+    ...newModifiers,
+  };
+}
+
 // applies the modifiers from getModifierContext
 // visible, enable, final, modifier value
 
@@ -86,26 +108,39 @@ export function getModifierContext(
 
 // grab default value, either by evaluating or selecting the first choice
 export function applyValueModifiers(
-  option: FlatConfigOption,
+  configOption: FlatConfigOption,
+  instancePath: string,
+  selectionPath: string,
   selections: any,
+  modifiers: any,
   allOptions: any,
-): string {
-  const selection = selections[option.modelicaPath];
-  const defaultValue = isExpression(option?.value) ? evaluateExpression(option?.value, selections, option.treeList, allOptions) : option?.value;
-  // apply modifiers differently after backend changes
-  // const modifier = option.modifiers[option.modelicaPath];
+): any {
+  const selection = selections[selectionPath];
   const selectionIsDefinition = allOptions.find((option: any) => option.modelicaPath === selection)?.definition || false;
-  // let evaluatedValue: any;
+  const scopeModifier = modifiers[instancePath]; 
+  const originalOption = allOptions.find((option: any) => option.modelicaPath === configOption.modelicaPath);
 
+  const scope = instancePath.split('.').slice(0, -1).join('.');
+  let evaluatedValue: any = undefined;
+
+  // handle selection, if a selection exists that needs to be value
+  if (selection !== null && selection !== undefined && typeof selection !== 'string') return selection;
   if (selection && selectionIsDefinition) return selection;
 
-  const evaluatedValue = defaultValue;
+  // apply modifiers if able
+  if (scopeModifier) {
+    evaluatedValue = isExpression(scopeModifier?.expression) ?
+      evaluateExpression(scopeModifier.expression, scope, selectionPath, selections, modifiers, configOption.treeList, allOptions) :
+      scopeModifier.expression;
+  }
+  
+  // if modifier didn't fully resolve try default value of original option
+  if (!evaluatedValue || isExpression(evaluatedValue)) {
+    evaluatedValue = isExpression(originalOption?.value) ?
+      evaluateExpression(originalOption?.value, scope, selectionPath, selections, modifiers, configOption.treeList, allOptions) :
+      originalOption?.value;
+  }
 
-  // apply modifiers differently after backend changes
-  // if (isExpression(modifier?.expression)) {
-  //   evaluatedValue = evaluateExpression(modifier.expression, selections, option.treeList, allOptions);
-  // }
-
-  // return evaluatedValue && !isExpression(evaluatedValue) ? evaluatedValue : firstValue;
+  // return evaluatedValue if it has fully resolved otherwise return null
   return evaluatedValue && !isExpression(evaluatedValue) ? evaluatedValue : null;
 }
