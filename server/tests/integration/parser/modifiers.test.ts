@@ -115,4 +115,12 @@ describe("Modifications", () => {
     expect(mod.final).toBeTruthy();
     expect(evaluateExpression(mod.expression)).toEqual('TestPackage.Component.SecondComponent');
   });
+
+  it("Doesn't have a modifier that matches the option path (the 'default mod')", () => {
+    const path = "TestPackage.Template.TestTemplate.typ";
+    const option = tOptions[path];
+    const mod = option.modifiers[path];
+  
+    expect(mod).toBeUndefined();
+  });
 });

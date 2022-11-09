@@ -71,6 +71,9 @@ export interface Mods {
   [key: string]: Expression;
 }
 
+/**
+ * Maps the nested modifier structure into a flat dictionary
+ */
 export function flattenModifiers(
   modList: (Modification | undefined | null)[] | undefined,
   mods: { [key: string]: { expression: Expression; final: boolean } } = {},
@@ -97,21 +100,22 @@ export function flattenModifiers(
 function _getTreeList(option: Option) {
   const treeList: string[] = [option.type];
 
-  option.options?.map(o => {
+  option.options?.map((o) => {
     // remove the last '.' path
-    const basePath = o.split('.').slice(0, -1).join('.');
+    const basePath = o.split(".").slice(0, -1).join(".");
 
     if (!treeList.includes(basePath)) {
       treeList.push(basePath);
     }
-  })
+  });
 
   return treeList;
-} 
+}
 
-function _mapInputToOption(
-  input: parser.TemplateInput,
-): Option {
+/**
+ * Maps an input to the expected 'option' shape for the front end
+ */
+function _mapInputToOption(input: parser.TemplateInput): Option {
   const keysToRemove = ["elementType", "inputs"];
   const options = input.inputs;
 
@@ -120,11 +124,14 @@ function _mapInputToOption(
   ) as Option;
 
   if (input.modifiers) {
-    option.modifiers = flattenModifiers(input.modifiers);
+    const flattenedMods = flattenModifiers(input.modifiers);
+    delete flattenedMods[input.modelicaPath]; // don't include 'default path'
+    option.modifiers = flattenedMods;
   }
 
   option.options = options;
   option.definition = parser.isDefinition(input.elementType);
+  //
 
   if (option.definition) {
     option.treeList = _getTreeList(option);
@@ -241,11 +248,14 @@ export class Template {
       return i.modelicaPath.endsWith(".dat");
     });
     let scheduleOptions: ScheduleOptions = {};
-    datEntryPoints.map( dat => {
-      scheduleOptions[dat.modelicaPath] = {..._mapInputToOption(dat), ...{groups: []}}
+    datEntryPoints.map((dat) => {
+      scheduleOptions[dat.modelicaPath] = {
+        ..._mapInputToOption(dat),
+        ...{ groups: [] },
+      };
     });
 
-    this.scheduleOptionPaths = datEntryPoints.map(i => i.modelicaPath);
+    this.scheduleOptionPaths = datEntryPoints.map((i) => i.modelicaPath);
 
     datEntryPoints.map((i) => {
       scheduleOptions = {
@@ -268,7 +278,9 @@ export class Template {
     Object.entries(inputs).map(([key, input]) => {
       this.options[key] = _mapInputToOption(input);
       // remove any option references that have been split out as schedule option
-      this.options[key].options = this.options[key].options?.filter((o) => !scheduleKeys.includes(o));
+      this.options[key].options = this.options[key].options?.filter(
+        (o) => !scheduleKeys.includes(o),
+      );
     });
 
     // kludge: 'Modelica.Icons.Record' is useful for schematics but
