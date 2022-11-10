@@ -74,8 +74,7 @@ export function flattenConfigOptions(
   let flatConfigModifiers: any = { ...modifiers };
   let newTreeList = [...treeList];
   let currentScope = scope;
-  let getModifiers: boolean = collectModifers;
-  let selectionValue: any = choice;
+  let selectionValue: any = '';
 
   optionsToFlatten.forEach((option) => {
     // Ignores paths that finish in .dat
@@ -84,9 +83,7 @@ export function flattenConfigOptions(
       return;
     }
 
-    if (selectionValue === option.modelicaPath && !getModifiers) {
-      getModifiers = true;
-    }
+    let getModifiers: boolean = collectModifers || choice === option.modelicaPath;
 
     newTreeList = option.treeList || newTreeList;
 
@@ -125,11 +122,12 @@ export function flattenConfigOptions(
       const selection = selectedValues[valuePath];
       const defaultValue = applyValueModifiers(configOption, currentScope, valuePath, selectedValues, flatConfigModifiers, allOptions);
       const selectionIsDefinition = allOptions.find((option: any) => option.modelicaPath === selection)?.definition || false;
+      const defaultValueIsDefinition = allOptions.find((option: any) => option.modelicaPath === defaultValue)?.definition || false;
 
       if (selection && selectionIsDefinition) {
         getModifiers = false;
         selectionValue = selection;
-      } else if (defaultValue) {
+      } else if (defaultValue && defaultValueIsDefinition) {
         getModifiers = false;
         selectionValue = defaultValue;
       }
