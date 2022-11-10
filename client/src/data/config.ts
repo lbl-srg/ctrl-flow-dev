@@ -54,7 +54,7 @@ export default class Config {
       Object.entries(attrs).forEach(([key, value]) => (config[key] = value));
   }
 
-  getById(id: string): ConfigInterface | undefined {
+  getById(id: string | null): ConfigInterface | undefined {
     return this.configs.find((config) => config.id === id);
   }
 
@@ -92,7 +92,10 @@ export default class Config {
 
   getConfigSelections(configId: string): any {
     const config = this.getById(configId);
-    const selections = config?.selections?.reduce((obj, selection) => ({...obj, [selection.name]: selection.value}), {});
+    const selections = config?.selections?.reduce(
+      (obj, selection) => ({ ...obj, [selection.name]: selection.value }),
+      {},
+    );
     return toJS(selections || {});
   }
 
@@ -103,8 +106,8 @@ export default class Config {
   }
 
   getConfigsForSystemTemplate(
-    systemPath: string,
-    templatePath: string,
+    systemPath: string | null,
+    templatePath: string | null,
   ): ConfigInterface[] {
     return this.configs.filter(
       (config) =>
