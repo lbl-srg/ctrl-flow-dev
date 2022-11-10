@@ -27,10 +27,10 @@ configurePersistable(
 
 class RootStore {
   storageKey = `lbl-storage-v${npmPkg.version}`;
-  uiStore: any;
-  templateStore: any;
-  projectStore: any;
-  configStore: any;
+  uiStore: UiStore;
+  templateStore: TemplateStore;
+  projectStore: ProjectStore;
+  configStore: ConfigStore;
 
   constructor() {
     this.uiStore = new UiStore(this);

@@ -65,7 +65,7 @@ export default class Template {
     this.rootStore = rootStore;
   }
 
-  getTemplateByPath(path: string): TemplateInterface | undefined {
+  getTemplateByPath(path: string | null): TemplateInterface | undefined {
     return this.templates.find((tpl) => tpl.modelicaPath === path);
   }
 
@@ -112,11 +112,15 @@ export default class Template {
     return this.nestedOptions.filter((opt) => opt.modelicaPath === path);
   }
 
-  getAllOptions(): OptionInterface[] {
+  getAllTemplates() {
+    return this.templates;
+  }
+
+  getAllOptions() {
     return this.options;
   }
 
-  getOption(path: string): OptionInterface {
+  getOption(path: string) {
     return this.options.filter((opt) => opt.modelicaPath === path)[0];
   }
 }

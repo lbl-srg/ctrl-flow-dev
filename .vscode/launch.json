@@ -6,7 +6,23 @@
   "configurations": [
     {
       "type": "node",
-      "name": "vscode-jest-tests.v2",
+      "name": "Client Tests",
+      "request": "launch",
+      "program": "${workspaceFolder}/client/node_modules/.bin/jest",
+      "args": [
+        "--runInBand",
+        "--watchAll=false",
+        "-c=client/jest.config.ts",
+        "--setupFilesAfterEnv",
+        "${workspaceFolder}/client/tests/setupTests.js"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "name": "Long Server Tests (Outside Docker)",
       "request": "launch",
       "program": "${workspaceFolder}/server/node_modules/.bin/jest",
       "args": [
