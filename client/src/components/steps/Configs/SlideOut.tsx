@@ -8,8 +8,7 @@ import Modal from "../../modal/Modal";
 import OptionSelect from "./OptionSelect";
 
 import { evaluateExpression, isExpression } from "../../../utils/expression-helpers";
-// import { getModifierContext, applyChoiceModifiers, applyValueModifiers } from "../../../utils/modifier-helpers";
-import { getModifierContext, applyValueModifiers, buildModifiers } from "../../../utils/modifier-helpers";
+import { applyValueModifiers, buildModifiers } from "../../../utils/modifier-helpers";
 
 import "../../../styles/components/config-slide-out.scss";
 
@@ -62,17 +61,21 @@ export function flattenConfigOptions(
   parentModelicaPath: string,
   parentName: string,
   modifiers: any,
-  // selectedValues: SelectedConfigValues,
+  selectedValues: SelectedConfigValues,
   // selectedOptions: any = {},
   treeList: string[],
   scope: string,
   changeScope: boolean,
+  collectModifers: boolean,
+  choice: any,
   allOptions: any,
 ): FlatConfig {
   let flatConfigOptions: FlatConfigOption[] = [];
   let flatConfigModifiers: any = { ...modifiers };
   let newTreeList = [...treeList];
   let currentScope = scope;
+  let getModifiers: boolean = collectModifers;
+  let selectionValue: any = choice;
 
   optionsToFlatten.forEach((option) => {
     // Ignores paths that finish in .dat
@@ -81,35 +84,60 @@ export function flattenConfigOptions(
       return;
     }
 
+    if (selectionValue === option.modelicaPath && !getModifiers) {
+      getModifiers = true;
+    }
+
     newTreeList = option.treeList || newTreeList;
 
     // TODO: Amit's Tasks
     // resolving modifers, needs Daren's backend changes
 
+    const instance = option.modelicaPath.split('.').pop() || "";
+
     if (changeScope) {
-      const instance = option.modelicaPath.split('.').pop() || "";
       currentScope = scope ? `${scope}.${instance}` : instance;
     }
 
-    if (option.modifiers) {
+    if (option.modifiers && getModifiers) {
       flatConfigModifiers = buildModifiers(option.modifiers, currentScope, flatConfigModifiers);
+    }
+
+    //split selectionsPath (modelicaPath and scopePath), check if the option is the modelicaPath with scopePath
+    // if yes get value, set flag to stop gathering modifiers, when value is found in option list start collecting modifiers
+    // if option isn't in selection try default value instead (this might not be 100% as we don't have all the modifers yet)
+    const configOption = {
+      parentModelicaPath,
+      parentName,
+      modelicaPath: option.modelicaPath,
+      name: option.name,
+      modifiers: option.modifiers,
+      choices: option.childOptions || [],
+      value: option?.value,
+      enable: option.enable,
+      visible: option.visible,
+      treeList: newTreeList,
+      scope: currentScope,
+    };
+
+    if (getModifiers) {
+      const valuePath = `${option.modelicaPath}-${currentScope}.${instance}`;
+      const selection = selectedValues[valuePath];
+      const defaultValue = applyValueModifiers(configOption, currentScope, valuePath, selectedValues, flatConfigModifiers, allOptions);
+      const selectionIsDefinition = allOptions.find((option: any) => option.modelicaPath === selection)?.definition || false;
+
+      if (selection && selectionIsDefinition) {
+        getModifiers = false;
+        selectionValue = selection;
+      } else if (defaultValue) {
+        getModifiers = false;
+        selectionValue = defaultValue;
+      }
     }
 
     flatConfigOptions = [
       ...flatConfigOptions,
-      {
-        parentModelicaPath,
-        parentName,
-        modelicaPath: option.modelicaPath,
-        name: option.name,
-        modifiers: option.modifiers,
-        choices: option.childOptions || [],
-        value: option?.value,
-        enable: option.enable,
-        visible: option.visible,
-        treeList: newTreeList,
-        scope: currentScope,
-      },
+      configOption,
     ];
 
     if (option.childOptions?.length) {
@@ -121,9 +149,12 @@ export function flattenConfigOptions(
         option.modelicaPath,
         option.name,
         flatConfigModifiers,
+        selectedValues,
         newTreeList,
         currentScope,
         option.definition,
+        getModifiers,
+        selectionValue,
         allOptions,
       );
 
@@ -184,28 +215,27 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
 
   const allOptions = templateStore.getAllOptions();
 
-  const { flatConfigOptions, flatConfigModifiers } = flattenConfigOptions(
-    options,
-    "root",
-    "",
-    {},
-    [],
-    "",
-    false,
-    allOptions,
-  );
-
-  console.log('flatConfigModifiers: ', flatConfigModifiers);
-  console.log('flatConfigOptions: ', flatConfigOptions);
-
   const [selectedValues, setSelectedValues] = useState<SelectedConfigValues>(() => {
     return configStore.getConfigSelections(configId);
   });
 
   console.log('selectedValues: ', selectedValues);
 
-  // adjust modifiers based on userSelections
-  // updateModifiers();
+  const { flatConfigOptions, flatConfigModifiers } = flattenConfigOptions(
+    options,
+    "root",
+    "",
+    {},
+    selectedValues,
+    [],
+    "",
+    false,
+    true,
+    '',
+    allOptions,
+  );
+
+  console.log('flatConfigModifiers: ', flatConfigModifiers);
 
   const evaluatedValues = getEvaluatedValues();
 
@@ -216,37 +246,25 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
   // TODO: Grab config name field
   // const [configName, setConfigName] = useState()
 
-  //TODO: move state to config page, we need to save generated flatConfigOptions and pass it to the slideOut so we can save default config values
-
-  // Do we need to keep track of default selections to re-evaluate expressions and how many times do we do that?
-  // Keep track of default values and evaluations as a cache, when a selection is made we need to reset the cache and then set value with selections taking priority
-  // We also probably need to re-evaluate expressions before we save maybe?
-
-  // function updateModifiers() {
-  //   const selectedOptions = Object.keys(selectedValues);
-
-  //   selectedOptions.forEach((selectionPath) => {
-  //     const [modelicaPath, instancePath] = selectionPath.split('-');
-  //     const instance = instancePath.split('.').pop();
-
-  //     allOptions.find((option: any) => option.modelicaPath === selection)
-
-  //     flatConfigModifiers[instancePath] = 
-  //   })
-  // }
+  //TODO: MAYBE? move state to config page, we need to save generated flatConfigOptions and pass it to the slideOut so we can save default config values
 
   function getEvaluatedValues(): SelectedConfigValues {
     let evaluatedValues = {};
 
     // if we store all default selections as initial selections, we need to re-evaluate expressions in order to see if any of those expressions changed
     flatConfigOptions.forEach((configOption) => {
-      const instance = configOption.modelicaPath.split('.').pop() || "";
-      const instancePath = configOption.scope ? `${configOption.scope}.${instance}` : `${instance}`;
-      const selectionPath = `${configOption.modelicaPath}-${instancePath}`;
+      const selectionPath = `${configOption.modelicaPath}-${configOption.scope}`;
 
       evaluatedValues = {
         ...evaluatedValues,
-        [selectionPath]: applyValueModifiers(configOption, configOption.scope, selectionPath, selectedValues, flatConfigModifiers, allOptions),
+        [selectionPath]: applyValueModifiers(
+          configOption,
+          configOption.scope,
+          selectionPath,
+          selectedValues,
+          flatConfigModifiers,
+          allOptions
+        ),
       };
     });
 
@@ -260,10 +278,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
 
   function setValues() {
     flatConfigOptions.forEach((configOption) => {
-      const instance = configOption.modelicaPath.split('.').pop() || "";
-      const selectionPath = configOption.scope ?
-        `${configOption.modelicaPath}-${configOption.scope}.${instance}` :
-        `${configOption.modelicaPath}-${instance}`;
+      const selectionPath = `${configOption.modelicaPath}-${configOption.scope}`;
       // configOption.value = applyValueModifiers(configOption, selectedValues, allOptions);
       configOption.value = selectedValues[selectionPath] || evaluatedValues[selectionPath];
     });
@@ -274,25 +289,8 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
 
     flatConfigOptions.forEach((configOption) => {
       // apply modifiers final when backend changes have been made
-      const instance = configOption.modelicaPath.split('.').pop() || "";
-      const instancePath = configOption.scope ? `${configOption.scope}.${instance}` : instance;
-      const selectionPath = `${configOption.modelicaPath}-${instancePath}`;
-      // const modifier: any = flatConfigModifiers[instancePath];
+      const selectionPath = `${configOption.modelicaPath}-${configOption.scope}`;
       const modifier: any = flatConfigModifiers[configOption.scope];
-
-
-
-      // option: Buildings.Templates.Components.Interfaces.PartialFan.typ
-      // scope of option: fanSupBlo.typ
-
-      // instancePath: scope + instance = fanSupBlo.typ.typ
-      // if (instance === 'typ') {
-      //   console.log('scope: ', configOption.scope);
-      // }
-
-      // if (instancePath === 'fanSupBlo.typ') {
-      //   console.log('modifier: ', modifier);
-      // }
 
       if (isExpression(configOption.enable)) {
         configOption.enable = evaluateExpression(
@@ -301,7 +299,6 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
           selectionPath,
           selectedValues,
           flatConfigModifiers,
-          configOption.treeList,
           allOptions
         );
 
@@ -313,7 +310,6 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
 
       // apply modifiers final when backend changes have been made
       if (modifier?.final !== undefined) {
-        console.log('final modifier');
         configOption.visible = configOption?.visible && !modifier.final;
       }
 
@@ -342,10 +338,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
     choice: string | null,
   ) {
     setSelectedValues((prevState: any) => {
-      const instance = parentModelicaPath.split('.').pop() || "";
-      const selectionPath = scope ?
-        `${parentModelicaPath}-${scope}.${instance}` :
-        `${parentModelicaPath}-${instance}`;
+      const selectionPath = `${parentModelicaPath}-${scope}`;
 
       return {
         ...prevState,

@@ -7,7 +7,14 @@ export type Expression = {
   operands: Array<Literal | Expression>;
 }
 
-function resolveValue(path: string, scope: string, selectionPath: string, selections: any, modifiers: any, treeList: string[], allOptions: any): any {
+function resolveValue(
+  path: string,
+  scope: string,
+  selectionPath: string,
+  selections: any,
+  modifiers: any,
+  allOptions: any
+): any {
   // path should be an instancePath or a modelicaPath
   // need to know modelicaPath to append to the path? Do I create the path from treeList?
   const scopePath = `${scope}.${path}`;
@@ -31,31 +38,64 @@ function resolveValue(path: string, scope: string, selectionPath: string, select
   // evaluate scope modifier
   if (scopeModifier) {
     evaluatedValue = isExpression(scopeModifier?.expression) ?
-      evaluateExpression(scopeModifier.expression, newScope, selectionPath, selections, modifiers, treeList, allOptions) :
-      scopeModifier.expression;
+      evaluateExpression(
+        scopeModifier.expression,
+        newScope,
+        selectionPath,
+        selections,
+        modifiers,
+        allOptions
+      ) : scopeModifier.expression;
   }
 
   // if modifier didn't fully resolve try default value of original option
   if (!evaluatedValue || isExpression(evaluatedValue)) {
     evaluatedValue = isExpression(originalOption?.value) ?
-      evaluateExpression(originalOption?.value, newScope, selectionPath, selections, modifiers, treeList, allOptions) :
-      originalOption?.value;
+      evaluateExpression(
+        originalOption?.value,
+        newScope,
+        selectionPath,
+        selections,
+        modifiers,
+        allOptions
+      ) : originalOption?.value;
   }
 
   if (evaluatedValue && !isExpression(evaluatedValue)) {
-    return resolveValue(evaluatedValue, newScope, selectionPath, selections, modifiers, treeList, allOptions);
+    return resolveValue(
+      evaluatedValue,
+      newScope,
+      selectionPath,
+      selections,
+      modifiers,
+      allOptions
+    );
   }
 
   return 'no_value';
 }
 
-function resolveExpression(expression: any, scope: string, selectionPath: string, selections: any, modifiers: any, treeList: string[], allOptions: any): any {
+function resolveExpression(
+  expression: any,
+  scope: string,
+  selectionPath: string,
+  selections: any,
+  modifiers: any,
+  allOptions: any
+): any {
   let resolved_expression: any = expression;
 
   expression.operands.every((operand: any, index: number) => {
     if (typeof operand !== 'string') return true;
 
-    const resolvedValue = resolveValue(operand, scope, selectionPath, selections, modifiers, treeList, allOptions);
+    const resolvedValue = resolveValue(
+      operand,
+      scope,
+      selectionPath,
+      selections,
+      modifiers,
+      allOptions
+    );
 
     if (resolvedValue === 'no_value') {
       resolved_expression = false;
@@ -69,8 +109,22 @@ function resolveExpression(expression: any, scope: string, selectionPath: string
   return resolved_expression;
 }
 
-function expressionEvaluator(expression: any, scope: string, selectionPath: string, selections: any, modifiers: any, treeList: string[], allOptions: any): any {
-  const resolved_expression = resolveExpression(expression, scope, selectionPath, selections, modifiers, treeList, allOptions);
+function expressionEvaluator(
+  expression: any,
+  scope: string,
+  selectionPath: string,
+  selections: any,
+  modifiers: any,
+  allOptions: any
+): any {
+  const resolved_expression = resolveExpression(
+    expression,
+    scope,
+    selectionPath,
+    selections,
+    modifiers,
+    allOptions
+  );
   
   if (resolved_expression === false) return expression;
 
@@ -137,14 +191,35 @@ export function isExpression(item: any): boolean {
   return !!item?.operator;
 }
 
-export function evaluateExpression(expression: any, scope: string, selectionPath: string, selections: any, modifiers: any, treeList: string[], allOptions: any): any {
+export function evaluateExpression(
+  expression: any,
+  scope: string,
+  selectionPath: string,
+  selections: any,
+  modifiers: any,
+  allOptions: any
+): any {
   const evaluated_expression: any = expression;
 
   expression.operands.forEach((operand: any, index: number) => {
     if (isExpression(operand)) {
-      evaluated_expression.operands[index] = evaluateExpression(operand, scope, selectionPath, selections, modifiers, treeList, allOptions);
+      evaluated_expression.operands[index] = evaluateExpression(
+        operand,
+        scope,
+        selectionPath,
+        selections,
+        modifiers,
+        allOptions
+      );
     }
   });
 
-  return expressionEvaluator(evaluated_expression, scope, selectionPath, selections, modifiers, treeList, allOptions);
+  return expressionEvaluator(
+    evaluated_expression,
+    scope,
+    selectionPath,
+    selections,
+    modifiers,
+    allOptions
+  );
 }

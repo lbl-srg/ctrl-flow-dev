@@ -25,23 +25,11 @@ const OptionSelect = ({
 }: OptionSelectProps) => {
 
   function selectOption(event: ChangeEvent<HTMLSelectElement>) {
-    // const selectedOption = option.choices?.find(
-    //   (choice) => choice.modelicaPath === event.target.value,
-    // );
-
     updateSelectedConfigOption(
       option.modelicaPath,
       option.scope,
       event.target.value || null,
     );
-
-    // if (selectedOption) {
-    //   updateSelectedConfigOption(
-    //     option.modelicaPath,
-    //     option.name,
-    //     selectedOption,
-    //   );
-    // }
   }
 
   return (
