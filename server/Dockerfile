@@ -44,3 +44,12 @@ RUN node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json 
 # FROM alpine-node-modelica as ubuntu-pandoc-node-modelica
 # COPY --from=alpine-node-modelica /dependencies /dependencies
 WORKDIR /app
+
+# Copy the rest of the server app
+RUN npm i
+COPY . .
+RUN npm run build
+
+# For when image is run
+# CMD ["npm run start"]
+# EXPOSE 80
