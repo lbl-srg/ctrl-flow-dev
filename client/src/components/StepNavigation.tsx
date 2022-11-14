@@ -9,7 +9,7 @@ const steps = [
   { label: "Landing", path: "/" },
   { label: "Systems", path: "/systems" },
   { label: "Configs", path: "/configs" },
-  { label: "Schedules", path: "/schedules" },
+  // { label: "Schedules", path: "/schedules" },
   { label: "Results", path: "/results" },
 ];
 

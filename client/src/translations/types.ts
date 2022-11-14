@@ -31,7 +31,10 @@ export default interface Translations {
     nextStep: string;
     allDownloads: string;
     lastSaved: string;
-    energyCode: string;
+    energyStandard: string;
+    ventilationStandard: string;
+    ashraeZone: string;
+    californiaZone: string;
     projectName: string;
     allProjects: string;
     downloadSelected: string;

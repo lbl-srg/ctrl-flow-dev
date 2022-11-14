@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs";
 import { execSync } from "child_process";
 
+import { typeStore } from "./parser";
 import config from "../../src/config";
 
 export const TEMPLATE_IDENTIFIER = "__LinkageTemplate";
@@ -9,9 +10,9 @@ export const MODELICAPATH = [
   `${config.MODELICA_DEPENDENCIES}/template-json/json/`,
 ];
 
-function _toModelicaPath(path: string) {
-  path = path.endsWith(".json") ? path.slice(0, -5) : path;
-  return path.replace(/\//g, ".");
+function _toModelicaPath(filePath: string) {
+  filePath = filePath.endsWith(".json") ? filePath.slice(0, -5) : filePath;
+  return filePath.replace(/\//g, ".");
 }
 
 export function findPackageEntryPoints(
@@ -57,6 +58,13 @@ function _findPath(prefix: string, reference: string): string | null {
   let jsonFile = path.resolve(prefix, filePath.dir, `${filePath.name}.json`);
 
   while (!fs.existsSync(jsonFile) && filePath.name) {
+    // check if definition already exists
+    // TODO - construct this path correctly...
+    const curPath = path.relative(filePath.dir, filePath.name);
+    const modelicaPath = _toModelicaPath(curPath);
+    if (typeStore.has(modelicaPath)) {
+      break;
+    }
     // package definitions break the typical modelica path to file mapping that
     // is used. A typical modelica path to file path look like:
     //  'Template.AirHandlerFans.VAVMultizone' -> 'Template/AirhandlerFans/VAVMultizone

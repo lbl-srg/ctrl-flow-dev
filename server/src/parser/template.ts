@@ -56,6 +56,7 @@ export interface Option {
   tab?: string;
   value?: any;
   enable?: any;
+  treeList?: string[];
   modifiers: { [key: string]: { expression: Expression; final: boolean } };
   replaceable: boolean;
   elementType: string;
@@ -70,6 +71,9 @@ export interface Mods {
   [key: string]: Expression;
 }
 
+/**
+ * Maps the nested modifier structure into a flat dictionary
+ */
 export function flattenModifiers(
   modList: (Modification | undefined | null)[] | undefined,
   mods: { [key: string]: { expression: Expression; final: boolean } } = {},
@@ -93,10 +97,25 @@ export function flattenModifiers(
   return mods;
 }
 
-function _mapInputToOption(
-  input: parser.TemplateInput,
-  inputs: { [key: string]: parser.TemplateInput },
-): Option {
+function _getTreeList(option: Option) {
+  const treeList: string[] = [option.type];
+
+  option.options?.map((o) => {
+    // remove the last '.' path
+    const basePath = o.split(".").slice(0, -1).join(".");
+
+    if (!treeList.includes(basePath)) {
+      treeList.push(basePath);
+    }
+  });
+
+  return treeList;
+}
+
+/**
+ * Maps an input to the expected 'option' shape for the front end
+ */
+function _mapInputToOption(input: parser.TemplateInput): Option {
   const keysToRemove = ["elementType", "inputs"];
   const options = input.inputs;
 
@@ -105,11 +124,18 @@ function _mapInputToOption(
   ) as Option;
 
   if (input.modifiers) {
-    option.modifiers = flattenModifiers(input.modifiers);
+    const flattenedMods = flattenModifiers(input.modifiers);
+    delete flattenedMods[input.modelicaPath]; // don't include 'default path'
+    option.modifiers = flattenedMods;
   }
 
   option.options = options;
   option.definition = parser.isDefinition(input.elementType);
+  //
+
+  if (option.definition) {
+    option.treeList = _getTreeList(option);
+  }
 
   return option;
 }
@@ -138,7 +164,7 @@ function _extractScheduleOptionHelper(
   }
 
   scheduleOptions[input.modelicaPath] = {
-    ..._mapInputToOption(input, inputs),
+    ..._mapInputToOption(input),
     groups,
   };
 }
@@ -168,7 +194,7 @@ export interface SystemTypeN {
 
 export interface SystemTemplateN {
   modelicaPath: string;
-  scheduleOptionPath: string;
+  scheduleOptionPaths: string[];
   systemTypes: string[];
   name: string;
 }
@@ -179,7 +205,7 @@ export interface ModifiersN {
 }
 
 export class Template {
-  scheduleOptionPath: string = "";
+  scheduleOptionPaths: string[] = [];
   options: Options = {};
   scheduleOptions: ScheduleOptions = {};
   systemTypes: SystemTypeN[] = [];
@@ -217,11 +243,19 @@ export class Template {
   }
 
   _extractOptions(element: parser.Element) {
-    let scheduleOptions: ScheduleOptions = {};
     const inputs = element.getInputs();
     const datEntryPoints = Object.values(inputs).filter((i) => {
       return i.modelicaPath.endsWith(".dat");
     });
+    let scheduleOptions: ScheduleOptions = {};
+    datEntryPoints.map((dat) => {
+      scheduleOptions[dat.modelicaPath] = {
+        ..._mapInputToOption(dat),
+        ...{ groups: [] },
+      };
+    });
+
+    this.scheduleOptionPaths = datEntryPoints.map((i) => i.modelicaPath);
 
     datEntryPoints.map((i) => {
       scheduleOptions = {
@@ -242,9 +276,11 @@ export class Template {
 
     this.options = {};
     Object.entries(inputs).map(([key, input]) => {
-      this.options[key] = _mapInputToOption(input, inputs);
+      this.options[key] = _mapInputToOption(input);
       // remove any option references that have been split out as schedule option
-      this.options[key].options = this.options[key].options?.filter((o) => !scheduleKeys.includes(o));
+      this.options[key].options = this.options[key].options?.filter(
+        (o) => !scheduleKeys.includes(o),
+      );
     });
 
     // kludge: 'Modelica.Icons.Record' is useful for schematics but
@@ -265,7 +301,7 @@ export class Template {
   getSystemTemplate(): SystemTemplateN {
     return {
       modelicaPath: this.modelicaPath,
-      scheduleOptionPath: this.scheduleOptionPath,
+      scheduleOptionPaths: this.scheduleOptionPaths,
       systemTypes: this.systemTypes.map((t) => t.modelicaPath),
       name: this.description,
     };
