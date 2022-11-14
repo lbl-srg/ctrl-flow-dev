@@ -1,111 +1,143 @@
 import { OptionInterface } from "../data/template";
 import { FlatConfigOption } from "../components/steps/Configs/SlideOut";
-import { evaluateExpression, isExpression } from "./expression-helpers";
+import { Expression, evaluateExpression, isExpression, resolveValue } from "./expression-helpers";
 
-export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
+export type Modifiers = {
+  [key: string]: Expression
+};
 
-// TODO: Create Modifiers interface shape
+function addToModObject(
+  newModifiers: Modifiers,
+  baseInstancePath: string,
+  modifiers: Modifiers,
+  options: OptionInterface[],
+  recursive = true,
+) {
+  Object.entries(newModifiers).forEach(([k, expression]) => {
+    const instanceName = k.split(".").pop();
+    const modKey = [baseInstancePath, instanceName]
+      .filter((segment) => segment !== "")
+      .join(".");
+
+    // Do not add a key that is already present. The assumption is that
+    // the first time an instance path is present is the most up-to-date
+    if (!(modKey in modifiers)) {
+      modifiers[modKey] = expression;
+    }
+
+    if (recursive) {
+      // grab modifiers from original definition
+      const modOption = options.find(
+        (o) => o.modelicaPath === k,
+      ) as OptionInterface;
+      if (modOption?.modifiers) {
+        addToModObject(newModifiers, baseInstancePath, modifiers, options, false);
+      }
+    }
+  });
+};
+
+// recursive helper method
+export function updateModifiers(
+  option: OptionInterface,
+  baseInstancePath: string,
+  modifiers: Modifiers,
+  options: OptionInterface[],
+) {
+  if (option === undefined) {
+    return; // TODO: not sure this should be allowed - failing with 'Medium'
+  }
+  const optionModifiers = option.modifiers as Modifiers;
+  const childOptions = option.options;
+
+  // grab the current options modifiers
+  if (optionModifiers) {
+    addToModObject(optionModifiers, baseInstancePath, modifiers, options);
+  }
+
+  // if this is a definition - visit all child options and grab modifiers
+  if (childOptions) {
+    const name = option.modelicaPath.split(".").pop();
+    const newBase = option.definition
+      ? baseInstancePath
+      : [baseInstancePath, name].filter((p) => p !== "").join(".");
+
+    if (option.definition) {
+      childOptions.map((path) => {
+        const childOption = options.find(
+          (o) => o.modelicaPath === path,
+        ) as OptionInterface;
+
+        updateModifiers(childOption, newBase, modifiers, options);
+      });
+    } else {
+      // this is a parameter (either replaceable or enum) - grab the type and its modifiers
+      // only use the 'type', not child options to fetch modifiers (default options)
+      const typeOption = options.find((o) => o.modelicaPath === option.type);
+      if (typeOption && typeOption.options) {
+        // add modifiers from type option
+        if (typeOption.modifiers) {
+          addToModObject(typeOption.modifiers, newBase, modifiers, options);
+        }
+        typeOption.options.map((path) => {
+          const childOption = options.find(
+            (o) => o.modelicaPath === path,
+          ) as OptionInterface;
+
+          updateModifiers(childOption, newBase, modifiers, options);
+        });
+      }
+    }
+  }
+};
 
 export function buildModifiers(
-  modifiers: any,
-  scope: string,
-  flatModifiers: any,
-): any {
-  let newModifiers = {};
+  startOption: OptionInterface,
+  options: OptionInterface[],
+): Modifiers {
+  const modifiers: Modifiers = {};
 
-  Object.keys(modifiers)?.forEach((modifier) => {
-    const instance = modifier.split(".").pop() || "";
-    const instancePath: string = scope ? `${scope}.${instance}` : instance;
-    newModifiers = {
-      ...newModifiers,
-      [instancePath]: modifiers[modifier],
-    };
-  });
+  updateModifiers(startOption, "", modifiers, options);
 
-  return {
-    ...flatModifiers,
-    ...newModifiers,
-  };
-}
+  return modifiers;
+};
 
 export function applyValueModifiers(
   configOption: FlatConfigOption,
-  scopePath: string,
+  scope: string,
   selectionPath: string,
   selections: any,
   modifiers: any,
   allOptions: any,
 ): any {
-  const selection = selections[selectionPath];
-  const selectionIsDefinition = allOptions.find((option: any) => option.modelicaPath === selection)?.definition || false;
-  const scopeModifier = modifiers[scopePath]; 
-  const originalOption = allOptions.find((option: any) => option.modelicaPath === configOption.modelicaPath);
-
-  const scope = scopePath.split('.').slice(0, -1).join('.');
   let evaluatedValue: any = undefined;
 
-  // handle selection, if a selection exists that needs to be value
-  if (selection !== null && selection !== undefined && typeof selection !== 'string') return selection;
-  if (selection && selectionIsDefinition) return selection;
+  if (!isExpression(configOption?.value)) {
+    evaluatedValue = resolveValue(
+      configOption?.value,
+      scope,
+      selectionPath,
+      selections,
+      modifiers,
+      allOptions
+    );
 
-  // apply modifiers if able
-  if (scopeModifier) {
-    evaluatedValue = isExpression(scopeModifier?.expression) ?
-      evaluateExpression(
-        scopeModifier.expression,
-        scope,
-        selectionPath,
-        selections,
-        modifiers,
-        allOptions
-      ) : scopeModifier.expression;
+    // return evaluatedValue if it has fully resolved otherwise return null
+    return evaluatedValue !== 'no_value' ? evaluatedValue : null;
   }
-  
-  // if modifier didn't fully resolve try default value of original option
-  if (!evaluatedValue || isExpression(evaluatedValue)) {
-    evaluatedValue = isExpression(originalOption?.value) ?
-      evaluateExpression(
-        originalOption?.value,
-        scope,
-        selectionPath,
-        selections,
-        modifiers,
-        allOptions
-      ) : originalOption?.value;
-  }
+
+  evaluatedValue = evaluateExpression(
+    configOption?.value,
+    scope,
+    selectionPath,
+    selections,
+    modifiers,
+    allOptions
+  );
 
   // return evaluatedValue if it has fully resolved otherwise return null
-  return evaluatedValue && !isExpression(evaluatedValue) ? evaluatedValue : null;
+  return !isExpression(evaluatedValue) ? evaluatedValue : null;
 }
-
-// creates object of modifications (old mods, new mods, type mods, selections???)
-// might need to figure out how initial selections will be affected, might need to do that here instead
-// any modification with expression needs to be evaluated
-
-// export function getModifierContext(
-//   currentOption: OptionInterface,
-//   modifiers: any,
-//   // selectedModifiers: any,
-//   allOptions: any
-// ): any {
-//   // Checking if our type is a Modelica Literal instead of a modelicaPath
-//   const typeIsLiteral = MODELICA_LITERALS.includes(currentOption.type);
-//   let typeModifiers: any = {};
-
-//   // Seeing if we have a different type than the current options modelicaPath, if so we need to grab the modifiers of the type
-//   if (!typeIsLiteral && currentOption.type !== currentOption.modelicaPath) {
-//     typeModifiers = allOptions.find((option: any) => option.modelicaPath === currentOption?.type)?.modifiers || {};
-//   }
-
-//   // Merging all modfiers together for the current option, this will also be passed down the tree to childOptions
-//   // TODO: Add selection modifiers, also evaluating expressions
-//   return {
-//     ...modifiers,
-//     ...currentOption.modifiers,
-//     ...typeModifiers,
-//     // ...selectedModifiers,
-//   };
-// }
 
 // applies the modifiers from getModifierContext
 // visible, enable, final, modifier value
