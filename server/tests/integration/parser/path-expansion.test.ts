@@ -62,7 +62,8 @@ describe("Path Expansion", () => {
     const expectedValue = "TestPackage.Component.ThirdComponent";
     const shortPathComponent = options.find(
       (o) =>
-        o.modelicaPath ==="TestPackage.Template.TestTemplate.short_path_component",
+        o.modelicaPath ===
+        "TestPackage.Template.TestTemplate.short_path_component",
     );
     const mod =
       shortPathComponent?.modifiers[
@@ -74,20 +75,15 @@ describe("Path Expansion", () => {
     }
   });
 
-  it("Default redeclare type modifier is assigned as expected", () => {
+  it("Default redeclare type value is assigned as expected", () => {
     const { options } = getOptions();
     const expectedValue = "TestPackage.Component.SecondComponent";
     const shortPathComponent = options.find(
       (o) =>
-        o.modelicaPath ==="TestPackage.Template.TestTemplate.selectable_component_with_relative_paths",
+        o.modelicaPath ===
+        "TestPackage.Template.TestTemplate.selectable_component_with_relative_paths",
     );
-    const mod =
-      shortPathComponent?.modifiers[
-        "TestPackage.Template.TestTemplate.selectable_component_with_relative_paths"
-      ];
-    expect(mod).toBeDefined();
-    if (mod) {
-      expect(evaluateExpression(mod.expression)).toBe(expectedValue);
-    }
+
+    expect(evaluateExpression(shortPathComponent?.value)).toBe(expectedValue);
   });
 });
