@@ -284,6 +284,11 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
     setSelectedValues((prevState: any) => {
       const selectionPath = `${parentModelicaPath}-${scope}`;
 
+      if (!choice) {
+        delete prevState[selectionPath];
+        return prevState;
+      }
+
       return {
         ...prevState,
         [selectionPath]: choice,

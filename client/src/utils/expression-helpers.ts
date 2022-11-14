@@ -16,13 +16,9 @@ export function resolveValue(
   allOptions: any
 ): any {
   const selectionValue = selections[selectionPath];
-  const selectionIsDefinition = allOptions.find((option: any) => option.modelicaPath === selectionValue);
 
   // if we have a selection we just need to return the selection (I don't think we need to test the selection)
-  if (
-    selectionValue !== undefined &&
-    selectionIsDefinition
-  ) return selectionValue;
+  if (selectionValue !== undefined) return selectionValue;
 
   // if value is a boolean or number we are just a value and need to return
   if (
