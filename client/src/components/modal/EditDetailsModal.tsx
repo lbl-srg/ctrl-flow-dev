@@ -39,6 +39,8 @@ const EditDetailsModal = observer(
       if (afterSubmit) afterSubmit();
     }
 
+    //TODO: Energy/Ventilation Standards and Climate Zones need to be pulled in options
+
     return (
       <Modal close={close} isOpen={isOpen}>
         <h1>{modalTitle}</h1>
