@@ -7,6 +7,6 @@ const config: Config.InitialOptions = {
   },
   roots: ["<rootDir>/tests"],
   testEnvironment: "node",
-  setupFilesAfterEnv: ["<rootDir>/src/setupTests.js"],
+  setupFilesAfterEnv: ["<rootDir>/tests/setupTests.js"],
 };
 export default config;
