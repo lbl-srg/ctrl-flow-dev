@@ -38,7 +38,7 @@ const OptionSelect = ({
         {index}. {option.name}
       </label>
       <select
-        name={option.modelicaPath}
+        name={`${option.modelicaPath}-${option.scope}`}
         defaultValue={option.value || ''}
         onChange={selectOption}
       >

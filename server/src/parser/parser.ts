@@ -344,6 +344,7 @@ export class InputGroup extends Element {
       modelicaPath: this.modelicaPath,
       type: this.type,
       name: this.description,
+      value: this.modelicaPath,
       visible: false,
       inputs: children
         .map((c) => c.modelicaPath)
@@ -668,6 +669,7 @@ export class Enum extends Element {
       modelicaPath: this.modelicaPath,
       name: this.description,
       type: this.type,
+      value: this.modelicaPath,
       visible: true,
       inputs: this.enumList.map((e) => e.modelicaPath),
       elementType: this.elementType,

@@ -7,49 +7,48 @@ export type Expression = {
   operands: Array<Literal | Expression>;
 }
 
-function resolveValue(
-  path: string,
+export function resolveValue(
+  value: boolean | number | string,
   scope: string,
   selectionPath: string,
   selections: any,
   modifiers: any,
   allOptions: any
 ): any {
-  // path should be an instancePath or a modelicaPath
-  // need to know modelicaPath to append to the path? Do I create the path from treeList?
-  const scopePath = `${scope}.${path}`;
-
   const selectionValue = selections[selectionPath];
-  const selectionIsDefinition = allOptions.find((option: any) => option.modelicaPath === selectionValue);
+
+  // if we have a selection we just need to return the selection (I don't think we need to test the selection)
+  if (selectionValue !== undefined) return selectionValue;
+
+  // if value is a boolean or number we are just a value and need to return
+  if (
+    typeof value === 'boolean' ||
+    typeof value === 'number'
+  ) return value;
+
+  // need to check if there is a modifier
+  const scopePath = `${scope}.${value}`;
   const scopeModifier = modifiers[scopePath];
-  const originalOption = allOptions.find((option: any) => option.modelicaPath === path);
-  const optionIsDefinition = originalOption?.definition;
-
   const newScope = scopePath.split('.').slice(0, -1).join('.');
-
   let evaluatedValue: any = undefined;
 
-  // if the originalOption is a definition it is the value we want (we are not an option that has choices?)
-  if (optionIsDefinition) return path;
-
-  // if we have a selection and the value is a definition we want to use that value
-  if (selectionValue && selectionIsDefinition) return selectionValue;
-
-  // evaluate scope modifier
   if (scopeModifier) {
-    evaluatedValue = isExpression(scopeModifier?.expression) ?
-      evaluateExpression(
-        scopeModifier.expression,
-        newScope,
-        selectionPath,
-        selections,
-        modifiers,
-        allOptions
-      ) : scopeModifier.expression;
+    evaluatedValue = evaluateExpression(
+      scopeModifier.expression,
+      newScope,
+      selectionPath,
+      selections,
+      modifiers,
+      allOptions
+    );
+
+    if (!isExpression(evaluatedValue)) return evaluatedValue;
   }
 
-  // if modifier didn't fully resolve try default value of original option
-  if (!evaluatedValue || isExpression(evaluatedValue)) {
+  // if we couldn't resolve a modifier we need to check for a default value  
+  const originalOption = allOptions.find((option: any) => option.modelicaPath === value);
+
+  if (originalOption) {
     evaluatedValue = isExpression(originalOption?.value) ?
       evaluateExpression(
         originalOption?.value,
@@ -61,17 +60,12 @@ function resolveValue(
       ) : originalOption?.value;
   }
 
-  if (evaluatedValue && !isExpression(evaluatedValue)) {
-    return resolveValue(
-      evaluatedValue,
-      newScope,
-      selectionPath,
-      selections,
-      modifiers,
-      allOptions
-    );
-  }
+  if (
+    evaluatedValue &&
+    !isExpression(evaluatedValue)
+  ) return evaluatedValue;
 
+  // if the value can't be resolved we need to return this flag so we can return the whole expression that the value came from
   return 'no_value';
 }
 
@@ -86,8 +80,6 @@ function resolveExpression(
   let resolved_expression: any = expression;
 
   expression.operands.every((operand: any, index: number) => {
-    if (typeof operand !== 'string') return true;
-
     const resolvedValue = resolveValue(
       operand,
       scope,

@@ -1,5 +1,6 @@
 import tplData from "./templates.json";
 import RootStore from ".";
+import { buildModifiers, Modifiers } from "../utils/modifier-helpers";
 
 export interface TemplateInterface {
   modelicaPath: string;
@@ -116,7 +117,14 @@ export default class Template {
     return this.templates;
   }
 
-  getAllOptions() {
+  getModifiersForTemplate(path: string): Modifiers {
+    const templateOption = this.options.find(
+      (opt) => opt.modelicaPath === path,
+    ) as OptionInterface;
+    return buildModifiers(templateOption, this.options);
+  }
+
+  getAllOptions(): OptionInterface[] {
     return this.options;
   }
 
