@@ -175,11 +175,11 @@ describe("Template wrapper class functionality", () => {
       (t) => t.modelicaPath === TEMPLATE_PATH,
     ) as Template;
 
-    const { pathMods } = template.getSystemTemplate();
+    const { pathModifiers } = template.getSystemTemplate();
 
-    expect(pathMods).toBeDefined();
-    expect("third.selectable_component" in pathMods).toBeTruthy();
-    expect(pathMods["third.selectable_component"]).toEqual(
+    expect(pathModifiers).toBeDefined();
+    expect("third.selectable_component" in pathModifiers).toBeTruthy();
+    expect(pathModifiers["third.selectable_component"]).toEqual(
       "selectable_component",
     );
 
@@ -188,7 +188,7 @@ describe("Template wrapper class functionality", () => {
     // get 'flattened' from inhereted classes, so the outer definition will likely
     // be in the inherited class and then implemented in the child class. Each would
     // have the same 'scope'
-    expect("nested_outer_param" in pathMods).toBeTruthy();
-    expect(pathMods["nested_outer_param"]).toEqual("nested_outer_param");
+    expect("nested_outer_param" in pathModifiers).toBeTruthy();
+    expect(pathModifiers["nested_outer_param"]).toEqual("nested_outer_param");
   });
 });

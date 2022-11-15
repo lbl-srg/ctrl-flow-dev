@@ -194,7 +194,7 @@ export interface SystemTypeN {
 
 export interface SystemTemplateN {
   modelicaPath: string;
-  pathMods: { [key: string]: string };
+  pathModifiers: { [key: string]: string };
   scheduleOptionPaths: string[];
   systemTypes: string[];
   name: string;
@@ -360,7 +360,7 @@ export class Template {
       modelicaPath: this.modelicaPath,
       scheduleOptionPaths: this.scheduleOptionPaths,
       systemTypes: this.systemTypes.map((t) => t.modelicaPath),
-      pathMods: this.pathMods,
+      pathModifiers: this.pathMods,
       name: this.description,
     };
   }
