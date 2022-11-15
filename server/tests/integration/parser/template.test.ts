@@ -165,4 +165,17 @@ describe("Template wrapper class functionality", () => {
       expect(t).toEqual(expectedScope);
     });
   });
+
+
+  it("Genereates path modifiers", () => {
+    const templates = getTemplates();
+    const template = templates.find(
+      (t) => t.modelicaPath === TEMPLATE_PATH,
+    ) as Template;
+
+    const pathMods = template.pathMods;
+
+    expect(pathMods).toBeDefined();
+  });
 });
+

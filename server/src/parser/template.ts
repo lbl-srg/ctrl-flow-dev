@@ -194,6 +194,7 @@ export interface SystemTypeN {
 
 export interface SystemTemplateN {
   modelicaPath: string;
+  pathMods: {[key: string]: string};
   scheduleOptionPaths: string[];
   systemTypes: string[];
   name: string;
@@ -209,11 +210,13 @@ export class Template {
   options: Options = {};
   scheduleOptions: ScheduleOptions = {};
   systemTypes: SystemTypeN[] = [];
-  modifiers: { [key: string]: Expression } = {};
+  mods: { [key: string]: Expression } = {};
+  pathMods: {[key: string]: string} = {};
 
   constructor(public element: parser.Element) {
     this._extractSystemTypes(element);
     this._extractOptions(element);
+    this._extractPathMods(element);
     templateStore.set(this.modelicaPath, this);
   }
 
@@ -290,6 +293,40 @@ export class Template {
     delete this.options[modelicaIconsPath];
   }
 
+  _extractPathModHelper(element: parser.Element, inner: {[key: string]: string}, pathMods: {[key: string]: string}) {
+    if (parser.isDefinition(element.elementType)) {
+      if (parser.isInputGroup(element.elementType)) {
+        const inputGroup = element as parser.InputGroup;
+        inputGroup.elementList.map(el => this._extractPathModHelper(el, inner, pathMods));
+      }
+    } else {
+      const param = element as parser.Input;
+      if (param.inner && !(param.name in inner)) {
+        inner[param.name] = element.modelicaPath;
+        // check if there is an 'outer' that needs to be set
+        if (param.name in pathMods && pathMods[param.name]!== undefined) {
+          pathMods[param.name] = inner[param.name];
+        }
+      }
+  
+      if (param.outer) {
+        pathMods[param.name] = inner[param.name];
+      }
+  
+      // traverse type as well
+      const paramType = parser.typeStore.get(param.type) as parser.Element;
+      this._extractPathModHelper(paramType, inner, pathMods);
+    }
+  }
+
+  _extractPathMods(element: parser.Element) {
+    const innerNodes: {[key: string]: string} = {};
+    const pathMods: {[key: string]: string} = {};
+
+    this._extractPathModHelper(element, innerNodes, pathMods);
+    this.pathMods = pathMods;
+  }
+
   getOptions() {
     return { options: this.options, scheduleOptions: this.scheduleOptions };
   }
@@ -303,6 +340,7 @@ export class Template {
       modelicaPath: this.modelicaPath,
       scheduleOptionPaths: this.scheduleOptionPaths,
       systemTypes: this.systemTypes.map((t) => t.modelicaPath),
+      pathMods: this.pathMods,
       name: this.description,
     };
   }
