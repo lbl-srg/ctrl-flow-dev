@@ -27,7 +27,7 @@ describe("Basic parser functionality", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
     const expectedPath = `${template.modelicaPath}.${paramName}`;
-    const element = template.elementList.find(
+    const element = template.elementList?.find(
       (e) => e.modelicaPath === expectedPath,
     );
     expect(element).toBeTruthy();
@@ -40,7 +40,7 @@ describe("Basic parser functionality", () => {
     const template = file.elementList[0] as parser.InputGroup;
     const expectedPath = `${template.modelicaPath}.${paramName}`;
 
-    const dat = template.elementList.find(
+    const dat = template.elementList?.find(
       (e) => e.modelicaPath === expectedPath,
     ) as parser.Input;
 
@@ -52,11 +52,11 @@ describe("Basic parser functionality", () => {
   it("Extracts model elements", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
-    expect(template.elementList.length).not.toBe(0);
-    template.elementList.map((e: parser.Element) =>
+    expect(template.elementList?.length).not.toBe(0);
+    template.elementList?.map((e: parser.Element) =>
       expect(e.modelicaPath).not.toBeFalsy(),
     );
-    template.elementList.map((e: parser.Element) =>
+    template.elementList?.map((e: parser.Element) =>
       expect(e.name).not.toBeFalsy(),
     );
   });
@@ -121,7 +121,7 @@ describe("Expected Inputs are extracted", () => {
   it("Extracts 'choices'", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
-    const component = template.elementList.find(
+    const component = template.elementList?.find(
       (e) => e.name === "selectable_component",
     ) as parser.Element;
     const inputs = component.getInputs({}, false);
@@ -160,7 +160,7 @@ describe("Expected Inputs are extracted", () => {
     const template = file.elementList[0] as parser.InputGroup;
     const expectedValues = ["Chocolate", "Vanilla", "Strawberry"];
     const parentPath = "TestPackage.Template.TestTemplate.typ";
-    const element = template.elementList.find(
+    const element = template.elementList?.find(
       (e) => e.modelicaPath === parentPath,
     ) as parser.Element;
     const inputs = element.getInputs();
@@ -228,7 +228,10 @@ describe("Expected Inputs are extracted", () => {
   it("Replaceable 'enable' field is set as expected", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
-    const replaceableInput = template.getInputs()['TestPackage.Template.TestTemplate.selectable_component'];
+    const replaceableInput =
+      template.getInputs()[
+        "TestPackage.Template.TestTemplate.selectable_component"
+      ];
 
     expect(replaceableInput.enable).toBeTruthy();
   });
