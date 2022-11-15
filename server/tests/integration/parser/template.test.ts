@@ -59,7 +59,7 @@ describe("Template wrapper class functionality", () => {
       (o) => o.modelicaPath === systemTemplate.modelicaPath,
     );
     // this number changes a lot so using greaterThan
-    expect(systemTemplateOptions?.options?.length).toBeGreaterThan(
+    expect(systemTemplateOptions?.options?.length).toBeGreaterThanOrEqual(
       expectedTemplateValues.optionLength,
     );
   });
