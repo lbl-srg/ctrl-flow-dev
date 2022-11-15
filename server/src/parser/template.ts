@@ -302,12 +302,13 @@ export class Template {
     if (parser.isDefinition(element.elementType)) {
       if (parser.isInputGroup(element.elementType)) {
         const inputGroup = element as parser.InputGroup;
+        const childElements = inputGroup.getChildElements();
         // breadth first - check all class params first, then dive into types
-        inputGroup.elementList.map((el) => {
+        childElements.map((el) => {
           this._extractPathModHelper(el, instancePrefix, inner, pathMods);
         });
 
-        inputGroup.elementList.map((el) => {
+        childElements.map((el) => {
           const typeElement = parser.typeStore.get(el.type, "", false);
           // primitive types return undefined
           if (typeElement) {
