@@ -1,19 +1,27 @@
 import { useStores } from "../../../data";
 import { observer } from "mobx-react";
-import { OptionInterface } from "../../../data/template";
+import {
+  OptionInterface,
+  SystemTypeInterface,
+  TemplateInterface,
+} from "../../../data/template";
 
 const System = observer(({ systemPath }: { systemPath: string }) => {
   const { uiStore, configStore, templateStore } = useStores();
 
-  const { description } = templateStore.getSystemTypeByPath(systemPath);
-  const templates = templateStore.getTemplatesForSystem(systemPath);
+  const { description } = templateStore.getSystemTypeByPath(
+    systemPath,
+  ) as SystemTypeInterface;
+  const templates = templateStore.getTemplatesForSystem(
+    systemPath,
+  ) as TemplateInterface[];
   const iconClass = templateStore.getIconForSystem(systemPath);
 
-  function onSelect(option: OptionInterface, checked: boolean) {
+  function onSelect(template: TemplateInterface, checked: boolean) {
     uiStore.setOpenSystemPath(systemPath);
     uiStore.setActiveSystemPath(systemPath);
 
-    const templatePath = option.modelicaPath;
+    const templatePath = template.modelicaPath;
 
     if (checked) configStore.add({ systemPath, templatePath });
     else configStore.removeAllForSystemTemplate(systemPath, templatePath);
@@ -27,8 +35,8 @@ const System = observer(({ systemPath }: { systemPath: string }) => {
       </h2>
 
       <ul className="check-list">
-        {templates.map((option: OptionInterface) => {
-          const { name, modelicaPath } = option;
+        {templates.map((template: TemplateInterface) => {
+          const { name, modelicaPath } = template;
 
           const checked = configStore.hasSystemTemplateConfigs(
             systemPath,
@@ -46,7 +54,7 @@ const System = observer(({ systemPath }: { systemPath: string }) => {
                 <input
                   type="checkbox"
                   checked={checked}
-                  onChange={(e) => onSelect(option, e.target.checked)}
+                  onChange={(e) => onSelect(template, e.target.checked)}
                 />
                 {name}
                 <i className="icon-info-circled" />

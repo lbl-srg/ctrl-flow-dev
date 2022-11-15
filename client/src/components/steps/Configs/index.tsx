@@ -10,7 +10,7 @@ import { SystemTypeInterface } from "../../../data/template";
 
 const Configs = () => {
   const { templateStore } = useStores();
-  const systemTypes: [SystemTypeInterface] = templateStore.systemTypes;
+  const systemTypes: SystemTypeInterface[] = templateStore.systemTypes;
 
   return (
     <Fragment>

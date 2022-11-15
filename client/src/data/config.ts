@@ -9,15 +9,17 @@ export interface SelectionInterface {
 }
 
 export interface ConfigInterface {
-  [key: string]: string | number | undefined | boolean | SelectionInterface[];
-  id?: string;
+  id: string;
   name?: string;
   isLocked?: boolean;
   selections?: SelectionInterface[];
   quantity?: number;
   systemPath: string;
   templatePath: string;
+  [key: string]: string | number | undefined | boolean | SelectionInterface[];
 }
+
+export type ConfigProps = Omit<ConfigInterface, "id">;
 
 export default class Config {
   configs: ConfigInterface[] = [];
@@ -34,7 +36,7 @@ export default class Config {
     });
   }
 
-  add(config: ConfigInterface) {
+  add(config: ConfigProps) {
     const merged = {
       id: uuid(),
       name: "Default",
@@ -45,16 +47,16 @@ export default class Config {
       ...config,
     };
 
-    this.configs.push(merged);
+    this.configs.push(merged as ConfigInterface);
   }
 
-  update(id: string, attrs: ConfigInterface) {
+  update(id: string, attrs: Partial<ConfigInterface>) {
     const config = this.getById(id);
     if (config)
       Object.entries(attrs).forEach(([key, value]) => (config[key] = value));
   }
 
-  getById(id: string | null): ConfigInterface | undefined {
+  getById(id: string | null | undefined): ConfigInterface | undefined {
     return this.configs.find((config) => config.id === id);
   }
 

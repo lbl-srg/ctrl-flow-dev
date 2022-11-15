@@ -5,14 +5,15 @@ import { observer } from "mobx-react";
 import SlideOutOpenButton from "./SlideOutOpenButton";
 import SlideOut from "./SlideOut";
 import { useStores } from "../../../data";
+import { ConfigInterface } from "../../../data/config";
 
 export interface ConfigProps {
-  configId: string | undefined;
+  configId: string;
 }
 
 const Config = observer(({ configId }: ConfigProps) => {
   const { configStore, uiStore } = useStores();
-  const config = configStore.getById(configId);
+  const config = configStore.getById(configId) as ConfigInterface;
 
   function removeConfiguration(event: MouseEvent) {
     event.preventDefault();
@@ -53,7 +54,7 @@ const Config = observer(({ configId }: ConfigProps) => {
               }
             />
             <SlideOutOpenButton
-              disabled={config.isLocked}
+              disabled={config.isLocked === true}
               onClick={openModal}
             />
           </div>

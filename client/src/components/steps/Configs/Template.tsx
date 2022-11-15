@@ -4,6 +4,7 @@ import Config from "./Config";
 import { useStores } from "../../../data";
 
 import { ConfigInterface } from "../../../data/config";
+import { TemplateInterface } from "../../../data/template";
 
 export interface TemplateProps {
   systemPath: string;
@@ -13,13 +14,15 @@ export interface TemplateProps {
 const Template = ({ systemPath, templatePath }: TemplateProps) => {
   const { templateStore, configStore, uiStore } = useStores();
 
-  const configs: [ConfigInterface] = configStore.getConfigsForSystemTemplate(
+  const configs: ConfigInterface[] = configStore.getConfigsForSystemTemplate(
     systemPath,
     templatePath,
-  );
+  ) as ConfigInterface[];
 
   const { template } = {
-    template: templateStore.getTemplateByPath(templatePath),
+    template: templateStore.getTemplateByPath(
+      templatePath,
+    ) as TemplateInterface,
   };
 
   function add(event: MouseEvent<HTMLAnchorElement>) {

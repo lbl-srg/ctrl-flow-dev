@@ -2,23 +2,24 @@ import { FormEvent, Fragment, useState } from "react";
 
 import itl from "../../../translations";
 import { useStores } from "../../../data";
-import { OptionInterface } from "../../../data/template";
+import { OptionInterface, TemplateInterface } from "../../../data/template";
 import { getFormData } from "../../../utils/dom-utils";
 import Modal from "../../modal/Modal";
 import OptionSelect from "./OptionSelect";
 
 import {
   evaluateExpression,
-  isExpression
+  isExpression,
 } from "../../../utils/expression-helpers";
 import {
   applyValueModifiers,
   buildModifiers,
   Modifiers,
-  updateModifiers
+  updateModifiers,
 } from "../../../utils/modifier-helpers";
 
 import "../../../styles/components/config-slide-out.scss";
+import { ConfigInterface } from "../../../data/config";
 
 export interface FlatConfigOptionGroup {
   parentModelicaPath: string;
@@ -80,7 +81,7 @@ export function flattenConfigOptions(
 
     newTreeList = option.treeList || newTreeList;
 
-    const instance = option.modelicaPath.split('.').pop() || "";
+    const instance = option.modelicaPath.split(".").pop() || "";
 
     if (changeScope) {
       currentScope = scope ? `${scope}.${instance}` : instance;
@@ -153,8 +154,10 @@ export function flattenConfigOptions(
 
 const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
   const { configStore, templateStore } = useStores();
-  const config = configStore.getById(configId);
-  const template = templateStore.getTemplateByPath(config.templatePath);
+  const config = configStore.getById(configId) as ConfigInterface;
+  const template = templateStore.getTemplateByPath(
+    config.templatePath,
+  ) as TemplateInterface;
   const allOptions: OptionInterface[] = templateStore.getAllOptions();
   const options: OptionInterface[] = templateStore.getOptionsForTemplate(
     template?.modelicaPath,
@@ -162,9 +165,11 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
   const templateModifiers: Modifiers = templateStore.getModifiersForTemplate(
     template?.modelicaPath,
   );
-  const [selectedValues, setSelectedValues] = useState<SelectedConfigValues>(() => {
-    return configStore.getConfigSelections(configId);
-  });
+  const [selectedValues, setSelectedValues] = useState<SelectedConfigValues>(
+    () => {
+      return configStore.getConfigSelections(configId);
+    },
+  );
   const flatConfigOptions = flattenConfigOptions(
     options,
     "root",
@@ -176,11 +181,11 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
   const evaluatedValues: SelectedConfigValues = getEvaluatedValues();
   const displayedConfigOptions = applyModifiers();
 
-  console.log('options: ', options);
-  console.log('templateModifiers: ', templateModifiers);
-  console.log('selectedValues: ', selectedValues);
-  console.log('evaluatedValues: ', evaluatedValues);
-  console.log('displayedConfigOptions: ', displayedConfigOptions);
+  console.log("options: ", options);
+  console.log("templateModifiers: ", templateModifiers);
+  console.log("selectedValues: ", selectedValues);
+  console.log("evaluatedValues: ", evaluatedValues);
+  console.log("displayedConfigOptions: ", displayedConfigOptions);
 
   // TODO: Grab config name field
   // const [configName, setConfigName] = useState()
@@ -202,7 +207,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
           selectionPath,
           selectedValues,
           templateModifiers,
-          allOptions
+          allOptions,
         ),
       };
     });
@@ -211,7 +216,10 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
   }
 
   function applyModifiers() {
-    const mergedValues: SelectedConfigValues = { ...evaluatedValues, ...selectedValues };
+    const mergedValues: SelectedConfigValues = {
+      ...evaluatedValues,
+      ...selectedValues,
+    };
     getUpdatedModifiers(mergedValues);
     setValues(mergedValues);
     return applyVisabilityModifiers();
@@ -222,7 +230,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
 
     mergedOptionKeys.forEach((key) => {
       if (mergedValues[key] !== null) {
-        const [modelicaPath, instancePath] = key.split('-');
+        const [modelicaPath, instancePath] = key.split("-");
         const option = allOptions.find(
           (o) => o.modelicaPath === modelicaPath,
         ) as OptionInterface;
@@ -254,7 +262,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
           selectionPath,
           selectedValues,
           templateModifiers,
-          allOptions
+          allOptions,
         );
 
         if (isExpression(configOption.enable)) {
@@ -292,7 +300,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
       return {
         ...prevState,
         [selectionPath]: choice,
-      }
+      };
     });
   }
 

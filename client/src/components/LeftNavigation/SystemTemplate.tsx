@@ -3,6 +3,7 @@ import { useStores } from "../../data";
 import { observer } from "mobx-react";
 import { SyntheticEvent } from "react";
 import { ConfigInterface } from "../../data/config";
+import { TemplateInterface } from "../../data/template";
 
 const SystemTemplate = observer(
   ({
@@ -14,12 +15,14 @@ const SystemTemplate = observer(
   }) => {
     const { uiStore, templateStore, configStore } = useStores();
 
-    const template = templateStore.getTemplateByPath(templatePath);
+    const template = templateStore.getTemplateByPath(
+      templatePath,
+    ) as TemplateInterface;
     const configs = configStore.getConfigsForSystemTemplate(
       systemPath,
       templatePath,
     );
-    const active = uiStore.activeTemplate === templatePath;
+    const active = uiStore.activeTemplate?.modelicaPath === templatePath;
     const rootClass = active ? "active" : "";
 
     function selectTemplate(ev: SyntheticEvent) {
@@ -30,7 +33,7 @@ const SystemTemplate = observer(
       scrollToSelector(`#template-${templatePath}`);
     }
 
-    function chooseConfig(configId: string | undefined, ev: SyntheticEvent) {
+    function chooseConfig(configId: string, ev: SyntheticEvent) {
       ev.preventDefault();
       uiStore.setActiveSystemPath(systemPath);
       uiStore.setActiveTemplatePath(template.modelicaPath);
