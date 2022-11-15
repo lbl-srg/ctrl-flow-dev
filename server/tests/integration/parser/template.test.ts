@@ -176,6 +176,8 @@ describe("Template wrapper class functionality", () => {
     const pathMods = template.pathMods;
 
     expect(pathMods).toBeDefined();
+    expect('third.selectable_component' in pathMods).toBeTruthy();
+    expect(pathMods['third.selectable_component']).toEqual('selectable_component');
   });
 });
 

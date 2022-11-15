@@ -293,11 +293,21 @@ export class Template {
     delete this.options[modelicaIconsPath];
   }
 
-  _extractPathModHelper(element: parser.Element, inner: {[key: string]: string}, pathMods: {[key: string]: string}) {
+  _extractPathModHelper(element: parser.Element, instancePrefix: string, inner: {[key: string]: string}, pathMods: {[key: string]: string}) {
     if (parser.isDefinition(element.elementType)) {
       if (parser.isInputGroup(element.elementType)) {
         const inputGroup = element as parser.InputGroup;
-        inputGroup.elementList.map(el => this._extractPathModHelper(el, inner, pathMods));
+        // breadth first - do params, then dive into types
+        inputGroup.elementList.map(el => {
+          this._extractPathModHelper(el, instancePrefix, inner, pathMods);
+        });
+        inputGroup.elementList.map(el => {
+          const typeElement = parser.typeStore.get(el.type, '', false);
+          if (typeElement) {
+            let newPrefix = [instancePrefix, el.name].filter(p => p !== '').join('.');
+            this._extractPathModHelper(typeElement, newPrefix, inner, pathMods);
+          }
+        });
       }
     } else {
       const param = element as parser.Input;
@@ -312,10 +322,6 @@ export class Template {
       if (param.outer) {
         pathMods[param.name] = inner[param.name];
       }
-  
-      // traverse type as well
-      const paramType = parser.typeStore.get(param.type) as parser.Element;
-      this._extractPathModHelper(paramType, inner, pathMods);
     }
   }
 
@@ -323,7 +329,7 @@ export class Template {
     const innerNodes: {[key: string]: string} = {};
     const pathMods: {[key: string]: string} = {};
 
-    this._extractPathModHelper(element, innerNodes, pathMods);
+    this._extractPathModHelper(element, '', innerNodes, pathMods);
     this.pathMods = pathMods;
   }
 
