@@ -194,6 +194,7 @@ export interface SystemTypeN {
 
 export interface SystemTemplateN {
   modelicaPath: string;
+  pathModifiers: { [key: string]: string };
   scheduleOptionPaths: string[];
   systemTypes: string[];
   name: string;
@@ -209,11 +210,13 @@ export class Template {
   options: Options = {};
   scheduleOptions: ScheduleOptions = {};
   systemTypes: SystemTypeN[] = [];
-  modifiers: { [key: string]: Expression } = {};
+  mods: { [key: string]: Expression } = {};
+  pathMods: { [key: string]: string } = {};
 
   constructor(public element: parser.Element) {
     this._extractSystemTypes(element);
     this._extractOptions(element);
+    this._extractPathMods(element);
     templateStore.set(this.modelicaPath, this);
   }
 
@@ -290,6 +293,60 @@ export class Template {
     delete this.options[modelicaIconsPath];
   }
 
+  _extractPathModHelper(
+    element: parser.Element,
+    instancePrefix: string,
+    inner: { [key: string]: string },
+    pathMods: { [key: string]: string },
+  ) {
+    if (parser.isDefinition(element.elementType)) {
+      if (parser.isInputGroup(element.elementType)) {
+        const inputGroup = element as parser.InputGroup;
+        const childElements = inputGroup.getChildElements();
+        // breadth first - check all class params first, then dive into types
+        childElements.map((el) => {
+          this._extractPathModHelper(el, instancePrefix, inner, pathMods);
+        });
+
+        childElements.map((el) => {
+          const typeElement = parser.typeStore.get(el.type, "", false);
+          // primitive types return undefined
+          if (typeElement) {
+            let newPrefix = [instancePrefix, el.name]
+              .filter((p) => p !== "")
+              .join(".");
+            this._extractPathModHelper(typeElement, newPrefix, inner, pathMods);
+          }
+        });
+      }
+    } else {
+      // TODO: I could be fouling up inner/outer resolution by checking ALL subcomponents
+      // against eachother
+      const param = element as parser.Input;
+      const path = [instancePrefix, param.name]
+        .filter((p) => p !== "")
+        .join(".");
+      if (param.inner && !(path in inner)) {
+        inner[param.name] = path; // inner declarations resolve just by param name NOT the full instance path
+        if (path in pathMods && pathMods[path] !== undefined) {
+          pathMods[path] = inner[path];
+        }
+      }
+
+      if (param.outer) {
+        pathMods[path] = inner[param.name]; // OK if undefined
+      }
+    }
+  }
+
+  _extractPathMods(element: parser.Element) {
+    const innerNodes: { [key: string]: string } = {};
+    const pathMods: { [key: string]: string } = {};
+
+    this._extractPathModHelper(element, "", innerNodes, pathMods);
+    this.pathMods = pathMods;
+  }
+
   getOptions() {
     return { options: this.options, scheduleOptions: this.scheduleOptions };
   }
@@ -303,6 +360,7 @@ export class Template {
       modelicaPath: this.modelicaPath,
       scheduleOptionPaths: this.scheduleOptionPaths,
       systemTypes: this.systemTypes.map((t) => t.modelicaPath),
+      pathModifiers: this.pathMods,
       name: this.description,
     };
   }
