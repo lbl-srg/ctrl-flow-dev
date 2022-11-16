@@ -59,6 +59,7 @@
     "parseTestModelica": "sh bin/parse-test-package.sh",
     "parseTestJSON": "npx ts-node scripts/parse-test-package.ts",
     "parseTemplateJSON": "npx ts-node scripts/parse-template-package.ts",
+    "setupTmpDir": "mkdir -p .tmp && cp -r /dependencies/template-json .tmp",
     "generateOptionTree": "node scripts/visualize-option-tree.js"
   }
 }

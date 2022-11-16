@@ -14,8 +14,11 @@ model TestTemplate "Test Template"
     component_param="First Component Template Override")
     annotation(Dialog(enable=true));
 
+  // Test inner implementation of outer
+  inner String nested_outer_param = "inner reassignment";
+
   /*
-    Test a replacable
+    Test a replacable with inner implementation of outer
   */
   inner replaceable
     TestPackage.Component.SecondComponent
@@ -34,8 +37,8 @@ model TestTemplate "Test Template"
           "Second Test Component"),
         choice(
           redeclare replaceable TestPackage.Component.ThirdComponent selectable_component
-          "Third Test Component")),
-      Dialog(group="Selectable Component"));
+          "Third Test Component"))
+      );
 
   /*
   Test that a subcomponent has access to an outer declaration
@@ -69,16 +72,6 @@ model TestTemplate "Test Template"
   */
   parameter Boolean expression_bool=dat.nested_bool;
 
-  // TODO: add complex value expression like below
-
-  // final parameter Boolean have_senPreBui=
-  //     secOutRel.typSecRel==Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReliefDamper or
-  //     secOutRel.typSecRel==Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReliefFan or
-  //     secOutRel.typSecRel==Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReturnFan and
-  //     secOutRel.typCtlFanRet==Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.BuildingPressure
-  //     "Set to true if building static pressure sensor is used"
-  //     annotation (Evaluate=true, Dialog(group="Configuration"));
-
   final parameter Boolean complex_expression_bool=
     first.container==TestPackage.Types.Container.Hand or
     first.container==TestPackage.Types.Container.Bowl or
@@ -93,6 +86,7 @@ model TestTemplate "Test Template"
   parameter String test_string_initialized="I'm all set"
     "Test string that is initialized";
 
+  // START DISABLE CONDITIONS
   // 'enable': no annotation specified, default true
   parameter Real test_real=1.0
     "Test real number";
@@ -115,6 +109,7 @@ model TestTemplate "Test Template"
   parameter Integer connector_param_false
     "Connector Param with 'connectorSizing=false'"
     annotation (Dialog(connectorSizing=false));
+  // END DISABLE CONDITIONS
 
   parameter TestPackage.Types.IceCream typ = TestPackage.Types.IceCream.Chocolate
     "Test Enum"

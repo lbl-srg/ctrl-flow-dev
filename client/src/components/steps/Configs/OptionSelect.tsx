@@ -10,8 +10,10 @@ export interface OptionSelectProps {
   configId: string;
   updateSelectedConfigOption: (
     modelicaPath: string,
-    name: string,
-    selectedOption: OptionInterface,
+    // name: string,
+    // selectedOption: OptionInterface,
+    scope: string,
+    choice: string | null,
   ) => void;
 }
 
@@ -21,35 +23,13 @@ const OptionSelect = ({
   configId,
   updateSelectedConfigOption,
 }: OptionSelectProps) => {
-  const { configStore } = useStores();
-
-  function getSavedSelectedOption() {
-    // Get the selected option saved by the user if any
-    const savedSelectedOptionValue: string | undefined =
-      configStore.findOptionValue(configId, option.modelicaPath);
-
-    // Find the child option that matches the saved option value
-    if (savedSelectedOptionValue) {
-      return option.choices?.find(
-        (choice) => choice.modelicaPath === savedSelectedOptionValue,
-      )?.modelicaPath;
-    }
-
-    return option.choices?.[0].modelicaPath;
-  }
 
   function selectOption(event: ChangeEvent<HTMLSelectElement>) {
-    const selectedOption = option.choices?.find(
-      (choice) => choice.modelicaPath === event.target.value,
+    updateSelectedConfigOption(
+      option.modelicaPath,
+      option.scope,
+      event.target.value || null,
     );
-
-    if (selectedOption) {
-      updateSelectedConfigOption(
-        option.modelicaPath,
-        option.name,
-        selectedOption,
-      );
-    }
   }
 
   return (
@@ -58,10 +38,11 @@ const OptionSelect = ({
         {index}. {option.name}
       </label>
       <select
-        name={option.modelicaPath}
-        defaultValue={getSavedSelectedOption()}
+        name={`${option.modelicaPath}-${option.scope}`}
+        defaultValue={option.value || ''}
         onChange={selectOption}
       >
+        <option value=''></option>
         {option.choices?.map((choice) => (
           <option key={choice.modelicaPath} value={choice.modelicaPath}>
             {choice.name}

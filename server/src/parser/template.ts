@@ -56,6 +56,7 @@ export interface Option {
   tab?: string;
   value?: any;
   enable?: any;
+  treeList?: string[];
   modifiers: { [key: string]: { expression: Expression; final: boolean } };
   replaceable: boolean;
   elementType: string;
@@ -70,6 +71,9 @@ export interface Mods {
   [key: string]: Expression;
 }
 
+/**
+ * Maps the nested modifier structure into a flat dictionary
+ */
 export function flattenModifiers(
   modList: (Modification | undefined | null)[] | undefined,
   mods: { [key: string]: { expression: Expression; final: boolean } } = {},
@@ -93,10 +97,25 @@ export function flattenModifiers(
   return mods;
 }
 
-function _mapInputToOption(
-  input: parser.TemplateInput,
-  inputs: { [key: string]: parser.TemplateInput },
-): Option {
+function _getTreeList(option: Option) {
+  const treeList: string[] = [option.type];
+
+  option.options?.map((o) => {
+    // remove the last '.' path
+    const basePath = o.split(".").slice(0, -1).join(".");
+
+    if (!treeList.includes(basePath)) {
+      treeList.push(basePath);
+    }
+  });
+
+  return treeList;
+}
+
+/**
+ * Maps an input to the expected 'option' shape for the front end
+ */
+function _mapInputToOption(input: parser.TemplateInput): Option {
   const keysToRemove = ["elementType", "inputs"];
   const options = input.inputs;
 
@@ -105,11 +124,18 @@ function _mapInputToOption(
   ) as Option;
 
   if (input.modifiers) {
-    option.modifiers = flattenModifiers(input.modifiers);
+    const flattenedMods = flattenModifiers(input.modifiers);
+    delete flattenedMods[input.modelicaPath]; // don't include 'default path'
+    option.modifiers = flattenedMods;
   }
 
   option.options = options;
   option.definition = parser.isDefinition(input.elementType);
+  //
+
+  if (option.definition) {
+    option.treeList = _getTreeList(option);
+  }
 
   return option;
 }
@@ -138,7 +164,7 @@ function _extractScheduleOptionHelper(
   }
 
   scheduleOptions[input.modelicaPath] = {
-    ..._mapInputToOption(input, inputs),
+    ..._mapInputToOption(input),
     groups,
   };
 }
@@ -168,7 +194,8 @@ export interface SystemTypeN {
 
 export interface SystemTemplateN {
   modelicaPath: string;
-  scheduleOptionPath: string;
+  pathModifiers: { [key: string]: string };
+  scheduleOptionPaths: string[];
   systemTypes: string[];
   name: string;
 }
@@ -179,15 +206,17 @@ export interface ModifiersN {
 }
 
 export class Template {
-  scheduleOptionPath: string = "";
+  scheduleOptionPaths: string[] = [];
   options: Options = {};
   scheduleOptions: ScheduleOptions = {};
   systemTypes: SystemTypeN[] = [];
-  modifiers: { [key: string]: Expression } = {};
+  mods: { [key: string]: Expression } = {};
+  pathMods: { [key: string]: string } = {};
 
   constructor(public element: parser.Element) {
     this._extractSystemTypes(element);
     this._extractOptions(element);
+    this._extractPathMods(element);
     templateStore.set(this.modelicaPath, this);
   }
 
@@ -217,11 +246,19 @@ export class Template {
   }
 
   _extractOptions(element: parser.Element) {
-    let scheduleOptions: ScheduleOptions = {};
     const inputs = element.getInputs();
     const datEntryPoints = Object.values(inputs).filter((i) => {
       return i.modelicaPath.endsWith(".dat");
     });
+    let scheduleOptions: ScheduleOptions = {};
+    datEntryPoints.map((dat) => {
+      scheduleOptions[dat.modelicaPath] = {
+        ..._mapInputToOption(dat),
+        ...{ groups: [] },
+      };
+    });
+
+    this.scheduleOptionPaths = datEntryPoints.map((i) => i.modelicaPath);
 
     datEntryPoints.map((i) => {
       scheduleOptions = {
@@ -242,9 +279,11 @@ export class Template {
 
     this.options = {};
     Object.entries(inputs).map(([key, input]) => {
-      this.options[key] = _mapInputToOption(input, inputs);
+      this.options[key] = _mapInputToOption(input);
       // remove any option references that have been split out as schedule option
-      this.options[key].options = this.options[key].options?.filter((o) => !scheduleKeys.includes(o));
+      this.options[key].options = this.options[key].options?.filter(
+        (o) => !scheduleKeys.includes(o),
+      );
     });
 
     // kludge: 'Modelica.Icons.Record' is useful for schematics but
@@ -252,6 +291,60 @@ export class Template {
     const modelicaIconsPath = "Modelica.Icons.Record";
     delete this.scheduleOptions[modelicaIconsPath];
     delete this.options[modelicaIconsPath];
+  }
+
+  _extractPathModHelper(
+    element: parser.Element,
+    instancePrefix: string,
+    inner: { [key: string]: string },
+    pathMods: { [key: string]: string },
+  ) {
+    if (parser.isDefinition(element.elementType)) {
+      if (parser.isInputGroup(element.elementType)) {
+        const inputGroup = element as parser.InputGroup;
+        const childElements = inputGroup.getChildElements();
+        // breadth first - check all class params first, then dive into types
+        childElements.map((el) => {
+          this._extractPathModHelper(el, instancePrefix, inner, pathMods);
+        });
+
+        childElements.map((el) => {
+          const typeElement = parser.typeStore.get(el.type, "", false);
+          // primitive types return undefined
+          if (typeElement) {
+            let newPrefix = [instancePrefix, el.name]
+              .filter((p) => p !== "")
+              .join(".");
+            this._extractPathModHelper(typeElement, newPrefix, inner, pathMods);
+          }
+        });
+      }
+    } else {
+      // TODO: I could be fouling up inner/outer resolution by checking ALL subcomponents
+      // against eachother
+      const param = element as parser.Input;
+      const path = [instancePrefix, param.name]
+        .filter((p) => p !== "")
+        .join(".");
+      if (param.inner && !(path in inner)) {
+        inner[param.name] = path; // inner declarations resolve just by param name NOT the full instance path
+        if (path in pathMods && pathMods[path] !== undefined) {
+          pathMods[path] = inner[path];
+        }
+      }
+
+      if (param.outer) {
+        pathMods[path] = inner[param.name]; // OK if undefined
+      }
+    }
+  }
+
+  _extractPathMods(element: parser.Element) {
+    const innerNodes: { [key: string]: string } = {};
+    const pathMods: { [key: string]: string } = {};
+
+    this._extractPathModHelper(element, "", innerNodes, pathMods);
+    this.pathMods = pathMods;
   }
 
   getOptions() {
@@ -265,8 +358,9 @@ export class Template {
   getSystemTemplate(): SystemTemplateN {
     return {
       modelicaPath: this.modelicaPath,
-      scheduleOptionPath: this.scheduleOptionPath,
+      scheduleOptionPaths: this.scheduleOptionPaths,
       systemTypes: this.systemTypes.map((t) => t.modelicaPath),
+      pathModifiers: this.pathMods,
       name: this.description,
     };
   }

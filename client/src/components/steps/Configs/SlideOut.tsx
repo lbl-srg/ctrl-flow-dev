@@ -1,4 +1,4 @@
-import { FormEvent, Fragment, useState } from "react";
+import { FormEvent, Fragment, useEffect, useState } from "react";
 
 import itl from "../../../translations";
 import { useStores } from "../../../data";
@@ -6,6 +6,18 @@ import { OptionInterface } from "../../../data/template";
 import { getFormData } from "../../../utils/dom-utils";
 import Modal from "../../modal/Modal";
 import OptionSelect from "./OptionSelect";
+
+import {
+  Expression,
+  evaluateExpression,
+  isExpression
+} from "../../../utils/expression-helpers";
+import {
+  applyValueModifiers,
+  applyVisibilityModifiers,
+  buildModifiers,
+  Modifiers,
+} from "../../../utils/modifier-helpers";
 
 import "../../../styles/components/config-slide-out.scss";
 
@@ -17,11 +29,11 @@ export interface FlatConfigOptionGroup {
 
 export interface FlatConfigOption {
   parentModelicaPath: string;
-  parentName: string;
   modelicaPath: string;
   name: string;
-  modifiers: any;
   choices?: OptionInterface[];
+  value: any;
+  scope: string;
 }
 
 export interface FlatConfigOptionChoice {
@@ -29,223 +41,293 @@ export interface FlatConfigOptionChoice {
   name: string;
 }
 
-export interface SelectedConfigOptions {
-  [key: string]: FlatConfigOption[];
+export interface ConfigValues {
+  [key: string]: string;
 }
 
 export interface ConfigSlideOutProps {
-  configId: string;
+  config: any;
+  template: any;
+  templateOptions: OptionInterface[];
+  templateModifiers: Modifiers;
+  selections: ConfigValues;
+  allOptions: OptionInterface[];
   close: () => void;
 }
 
-export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
-
-// TODO: Create Modifiers interface shape
-
-// Provides a flat array of options for display. This approach avoids processing the data structure in the return statement of components and keeps the logic related to the data separate from the logic that drives how components work.
-export function flattenConfigOptions(
-  optionsToFlatten: OptionInterface[],
-  parentModelicaPath: string,
-  parentName: string,
-  modifiers: any,
-  selectedOptions?: SelectedConfigOptions,
-): FlatConfigOption[] {
-  const { templateStore } = useStores();
-  let flatConfigOptions: FlatConfigOption[] = [];
-  let flatConfigModifiers: any = modifiers;
-  let typeModifiers: any;
-
-  optionsToFlatten.forEach((option) => {
-    // Ignores paths that finish in .dat
-    // TODO: Make sure we exclude only .dat at the end of the string thanks to regular expression
-    if (option.modelicaPath.includes(`.dat`)) {
-      return;
-    }
-
-    // Setting up newChildren if the visiblity needs to be modified
-    const newChildOptions: OptionInterface[] = [];
-    // Checking if our type is a Modelica Literal instead of a modelicaPath
-    const typeIsLiteral = MODELICA_LITERALS.includes(option.type);
-
-    // Seeing if we have a different type than the current options modelicaPath, if so we need to grab the modifiers of the type
-    if (!typeIsLiteral && option.type !== option.modelicaPath) {
-      typeModifiers = templateStore.getOption(option.type)?.modifiers || {};
-    }
-
-    // Merging all modfiers together for the current option, this will also be passed down the tree to childOptions
-    // TODO: Add selection modifiers, also evaluating expressions
-    flatConfigModifiers = {
-      ...flatConfigModifiers,
-      ...option.modifiers,
-      ...typeModifiers,
-    };
-
-    // If we have an object of flattened Modifiers and we have children we need to modify those children's visiblilty
-    // if there is a modifier for the child
-    if (Object.keys(flatConfigModifiers).length !== 0 && option.childOptions?.length) {
-      option.childOptions.forEach((child: any) => {
-        const newChild: OptionInterface = {...child};
-        const childModifier: any = flatConfigModifiers[child.modelicaPath];
-
-        if (childModifier && childModifier?.final !== undefined) {
-          newChild.visible = child?.visible && !childModifier.final;
-        }
-        newChildOptions.push(newChild);
-      });
-    }
-
-    if (option.visible && option.childOptions?.length) {
-      // Adds this option to the object for display
-      flatConfigOptions = [
-        ...flatConfigOptions,
-        {
-          parentModelicaPath,
-          parentName,
-          modelicaPath: option.modelicaPath,
-          name: option.name,
-          modifiers: flatConfigModifiers,
-          choices: newChildOptions.length ? newChildOptions : option.childOptions,
-        },
-      ];
-
-      // Sees if there are child options for this path for display based on the user selection or the default selection
-      if (selectedOptions) {
-        if (selectedOptions[option.modelicaPath]) {
-          flatConfigOptions = [
-            ...flatConfigOptions,
-            ...selectedOptions[option.modelicaPath],
-          ];
-        }
-      }
-    } else if (option.childOptions?.length) {
-      // Gets one level deeper into the data structure
-      flatConfigOptions = [
-        ...flatConfigOptions,
-        ...flattenConfigOptions(
-          newChildOptions.length ? newChildOptions : option.childOptions,
-          option.modelicaPath,
-          option.name,
-          flatConfigModifiers,
-          selectedOptions,
-        ),
-      ];
-    }
-  });
-
-  return flatConfigOptions;
-}
-
 // Takes a flat array of options and group them together according to their parent Modelica path.
-export function groupConfigOptions(flatOptions: FlatConfigOption[]) {
-  let groupedConfigOptions: FlatConfigOptionGroup[] = [];
-  flatOptions.forEach((option) => {
-    const existingGroupIndex = groupedConfigOptions.findIndex(
-      (optionGroup) =>
-        optionGroup.parentModelicaPath === option.parentModelicaPath,
-    );
-    // Creates a new key in the returned object
-    if (existingGroupIndex === -1) {
-      groupedConfigOptions = [
-        ...groupedConfigOptions,
-        {
-          parentModelicaPath: option.parentModelicaPath,
-          parentName: option.parentName,
-          options: [option],
-        },
-      ];
-    } else {
-      // Adds the option to an existing group of options
-      groupedConfigOptions[existingGroupIndex].options = [
-        ...groupedConfigOptions[existingGroupIndex].options,
-        option,
-      ];
-    }
-  });
+// export function groupConfigOptions(flatOptions: FlatConfigOption[]) {
+//   let groupedConfigOptions: FlatConfigOptionGroup[] = [];
+//   flatOptions.forEach((option) => {
+//     const existingGroupIndex = groupedConfigOptions.findIndex(
+//       (optionGroup) =>
+//         optionGroup.parentModelicaPath === option.parentModelicaPath,
+//     );
+//     // Creates a new key in the returned object
+//     if (existingGroupIndex === -1) {
+//       groupedConfigOptions = [
+//         ...groupedConfigOptions,
+//         {
+//           parentModelicaPath: option.parentModelicaPath,
+//           parentName: option.parentName,
+//           options: [option],
+//         },
+//       ];
+//     } else {
+//       // Adds the option to an existing group of options
+//       groupedConfigOptions[existingGroupIndex].options = [
+//         ...groupedConfigOptions[existingGroupIndex].options,
+//         option,
+//       ];
+//     }
+//   });
 
-  return groupedConfigOptions;
-}
+//   return groupedConfigOptions;
+// }
 
-const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
-  const { configStore, templateStore } = useStores();
-  const config = configStore.getById(configId);
-  const template = templateStore.getTemplateByPath(config.templatePath);
-  const options: OptionInterface[] = templateStore.getOptionsForTemplate(
-    template?.modelicaPath,
+const SlideOut = ({
+  config,
+  template,
+  templateOptions,
+  templateModifiers,
+  selections,
+  allOptions,
+  close
+}: ConfigSlideOutProps) => {
+  const { configStore } = useStores();
+  // const [configModifiers, setConfigModifiers] = useState<Modifiers>(templateModifiers);
+  // const [selectedValues, setSelectedValues] = useState<ConfigValues>(selections);
+  // const [evaluatedValues, setEvaluatedValues] = useState<ConfigValues>({});
+  // const [displayedOptions, setDisplayedOptions] = useState<FlatConfigOption[]>([]);
+
+  // useEffect(() => {
+  //   const updatedModifiers: Modifiers = getUpdatedModifiers(selectedValues);
+  //   setConfigModifiers(updatedModifiers);
+
+  //   const updatedValues: ConfigValues = getEvaluatedValues(
+  //     templateOptions,
+  //     "",
+  //     false,
+  //   );
+  //   setEvaluatedValues(updatedValues);
+  // }, [selectedValues]);
+
+  // useEffect(() => {
+  //   const updatedModifiers: Modifiers = getUpdatedModifiers({
+  //     ...evaluatedValues,
+  //     ...selectedValues,
+  //   });
+  //   setConfigModifiers(updatedModifiers);
+
+  //   const updatedDisplayOptions: FlatConfigOption[] = getDisplayOptions(
+  //     templateOptions,
+  //     "root",
+  //     "",
+  //     false,
+  //   );
+  //   setDisplayedOptions(updatedDisplayOptions);
+  // }, [evaluatedValues]);
+
+  const [selectedValues, setSelectedValues] = useState<ConfigValues>(selections);
+  let configModifiers: Modifiers = getUpdatedModifiers(selectedValues);
+  const evaluatedValues: ConfigValues = getEvaluatedValues(
+    templateOptions,
+    "",
+    false,
   );
 
-  function getSavedConfigOption(option: FlatConfigOption) {
-    // Gets from the store the selected choice saved by the user if any for this option
-    const savedSelectedOptionValue: string | undefined =
-      configStore.findOptionValue(config.id, option.modelicaPath);
+  configModifiers = getUpdatedModifiers({
+    ...evaluatedValues,
+    ...selectedValues,
+  });
 
-    // Finds the choice that matches the saved value
-    if (savedSelectedOptionValue) {
-      return option.choices?.find(
-        (choice) => choice.modelicaPath === savedSelectedOptionValue,
-      );
-    }
+  const displayedOptions: FlatConfigOption[] = getDisplayOptions(
+    templateOptions,
+    "root",
+    "",
+    false,
+  );
 
-    // If no saved selection found, returns first choice of the option if any
-    // return option.choices?.[0];
-    // TODO: Display default option of blank
-    return undefined;
-  }
+  function getUpdatedModifiers(values: ConfigValues) {
+    const optionKeys: string[] = Object.keys(values);
+    // let updatedModifiers: Modifiers = { ...configModifiers };
+    let updatedModifiers: Modifiers = { ...templateModifiers };
 
-  // Looks up the store to make sure that the UI takes into consideration the choices selected by the user previously or first choices if nothing was selected
-  function getInitialSelection() {
-    let initialSelection = {};
-    const flatConfigOptions = flattenConfigOptions(options, "root", "", {});
-    flatConfigOptions.forEach((option) => {
-      const savedOptionSelection = getSavedConfigOption(option);
-      if (savedOptionSelection) {
-        const flatChildOptions = flattenConfigOptions(
-          [savedOptionSelection],
-          option.modelicaPath,
-          option.name,
-          option.modifiers
-        );
-        if (flatChildOptions.length > 0) {
-          initialSelection = {
-            ...initialSelection,
-            [option.modelicaPath]: flatChildOptions,
-          };
-        }
+    optionKeys.forEach((key) => {
+      if (values[key] !== null) {
+        const [modelicaPath, instancePath] = key.split('-');
+        const option = allOptions.find(
+          (o) => o.modelicaPath === modelicaPath,
+        ) as OptionInterface;
+
+        updatedModifiers = {
+          ...updatedModifiers,
+          ...buildModifiers(
+            option,
+            instancePath,
+            updatedModifiers,
+            allOptions,
+          )
+        };
       }
     });
 
-    return initialSelection;
+    return updatedModifiers;
   }
 
-  const [selectedOptions, setSelectedOptions] = useState<SelectedConfigOptions>(
-    getInitialSelection(),
-  );
+  function getEvaluatedValues(
+    options: OptionInterface[],
+    scope: string,
+    changeScope: boolean,
+  ): ConfigValues {
+    let evaluatedValues: ConfigValues = {};
+    let currentScope = scope;
 
-  const flatConfigOptions = flattenConfigOptions(
-    options,
-    "root",
-    "",
-    {},
-    selectedOptions,
-  );
+    options.forEach((option) => {
+      if (option.modelicaPath.includes(`.dat`)) {
+        return;
+      }
 
-  // TODO: Finish implementing grouping of options
-  // const groupedConfigOptions = groupConfigOptions(flatConfigOptions);
+      if (changeScope) {
+        const instance = option.modelicaPath.split('.').pop() || "";
+        currentScope = scope ? `${scope}.${instance}` : instance;
+      }
+
+      const selectionPath = `${option.modelicaPath}-${currentScope}`;
+
+      evaluatedValues = {
+        ...evaluatedValues,
+        [selectionPath]: applyValueModifiers(
+          option?.value,
+          currentScope,
+          selectionPath,
+          selectedValues,
+          configModifiers,
+          template.pathModifiers,
+          allOptions,
+        ),
+      };
+
+      if (option.childOptions?.length) {
+        evaluatedValues = {
+          ...evaluatedValues,
+          ...getEvaluatedValues(
+            option.childOptions,
+            currentScope,
+            option.definition,
+          ),
+        };
+      }
+    });
+
+    return evaluatedValues;
+  }
+
+  function getDisplayOptions(
+    options: OptionInterface[],
+    parentModelicaPath: string,
+    scope: string,
+    changeScope: boolean,
+  ): FlatConfigOption[] {
+    let displayOptions: FlatConfigOption[] = [];
+    let currentScope = scope;
+
+    options.forEach((option) => {
+      if (option.modelicaPath.includes(`.dat`)) {
+        return;
+      }
+
+      if (changeScope) {
+        const instance = option.modelicaPath.split('.').pop() || "";
+        currentScope = scope ? `${scope}.${instance}` : instance;
+      }
+
+      const selectionPath = `${option.modelicaPath}-${currentScope}`;
+      const isVisible = applyVisibilityModifiers(
+        option,
+        currentScope,
+        selectionPath,
+        selectedValues,
+        configModifiers,
+        template.pathModifiers,
+        allOptions
+      );
+
+      if (isVisible) {
+        displayOptions = [
+          ...displayOptions,
+          {
+            parentModelicaPath,
+            modelicaPath: option.modelicaPath,
+            name: option.name,
+            choices: option.childOptions || [],
+            value: selectedValues[selectionPath] || evaluatedValues[selectionPath],
+            scope: currentScope,
+          },
+        ];
+
+        if (selectedValues[selectionPath]) {
+          const selectedOption = allOptions.find(
+            (o) => o.modelicaPath === selectedValues[selectionPath],
+          ) as OptionInterface;
+
+          displayOptions = [
+            ...displayOptions,
+            ...getDisplayOptions(
+              [selectedOption],
+              option.modelicaPath,
+              currentScope,
+              option.definition,
+            ),
+          ];
+        } else if (evaluatedValues[selectionPath]) {
+          const evaluatedOption = allOptions.find(
+            (o) => o.modelicaPath === evaluatedValues[selectionPath],
+          ) as OptionInterface;
+
+          displayOptions = [
+            ...displayOptions,
+            ...getDisplayOptions(
+              [evaluatedOption],
+              option.modelicaPath,
+              currentScope,
+              option.definition,
+            ),
+          ];
+        }
+      } else if (option.childOptions?.length) {
+        displayOptions = [
+          ...displayOptions,
+          ...getDisplayOptions(
+            option.childOptions,
+            option.modelicaPath,
+            currentScope,
+            option.definition,
+          ),
+        ];
+      }
+    });
+
+    return displayOptions;
+  }
 
   function updateSelectedConfigOption(
     parentModelicaPath: string,
-    parentName: string,
-    option: OptionInterface,
+    scope: string,
+    choice: string | null,
   ) {
-    const newOptions = flattenConfigOptions(
-      [option],
-      parentModelicaPath,
-      parentName,
-      {}
-    );
+    setSelectedValues((prevState: any) => {
+      const selectionPath = `${parentModelicaPath}-${scope}`;
 
-    setSelectedOptions({
-      ...selectedOptions,
-      [parentModelicaPath]: newOptions,
+      if (!choice) {
+        delete prevState[selectionPath];
+        return prevState;
+      }
+
+      return {
+        ...prevState,
+        [selectionPath]: choice,
+      }
     });
   }
 
@@ -253,13 +335,30 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
     event.preventDefault();
     event.stopPropagation();
 
-    const data = getFormData(event.target as HTMLFormElement);
+    const data = selectedValues;
     configStore.setSelections(
       config.id,
       Object.entries(data).map(([name, value]) => ({ name, value })),
     );
 
     close();
+  }
+
+  function renderDisplayOptions() {
+    return displayedOptions.map((option: FlatConfigOption, optionIndex) => {
+      overallIndex++;
+      return (
+        <OptionSelect
+          key={`${option.parentModelicaPath}---${option.modelicaPath}---${
+            optionIndex + 1
+          }`}
+          index={overallIndex}
+          option={option}
+          configId={config.id}
+          updateSelectedConfigOption={updateSelectedConfigOption}
+        />
+      );
+    });
   }
 
   let overallIndex = 0;
@@ -298,20 +397,7 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
             )}
           </div>
             ))*/}
-        {flatConfigOptions.map((option: FlatConfigOption, optionIndex) => {
-          overallIndex++;
-          return (
-            <OptionSelect
-              key={`${option.parentModelicaPath}---${option.modelicaPath}---${
-                optionIndex + 1
-              }`}
-              index={overallIndex}
-              option={option}
-              configId={config.id}
-              updateSelectedConfigOption={updateSelectedConfigOption}
-            />
-          );
-        })}
+        {renderDisplayOptions()}
         <button type="submit">{itl.terms.save}</button>
       </form>
     </Modal>

@@ -8,8 +8,8 @@ import {
 
 import { getTemplates } from "../../../src/parser/template";
 
-const templatePath = "TestPackage.Template.TestTemplate";
-const nestedTemplatePath =
+const TEMPLATE_PATH = "TestPackage.Template.TestTemplate";
+const NESTED_TEMPLATE_PATH =
   "TestPackage.NestedTemplate.Subcategory.SecondTemplate";
 
 describe("Template wrapper class functionality", () => {
@@ -29,10 +29,10 @@ describe("Template wrapper class functionality", () => {
   it("Templates have expected SystemTypes", () => {
     const templates = getTemplates();
     const template = templates.find(
-      (t) => t.modelicaPath === templatePath,
+      (t) => t.modelicaPath === TEMPLATE_PATH,
     ) as Template;
     const nestedTemplate = templates.find(
-      (t) => t.modelicaPath === nestedTemplatePath,
+      (t) => t.modelicaPath === NESTED_TEMPLATE_PATH,
     ) as Template;
     const templateSystemTypes = template.getSystemTypes();
     expect(templateSystemTypes.length).toBe(1);
@@ -43,13 +43,13 @@ describe("Template wrapper class functionality", () => {
   it("Templates output expected linkage schema for SystemTemplates", () => {
     const expectedTemplateValues = {
       modelicaPath: "TestPackage.Template.TestTemplate",
-      optionLength: 22,
+      optionLength: 25,
       systemTypeLength: 1,
     };
 
     const templates = getTemplates();
     const template = templates.find(
-      (t) => t.modelicaPath === templatePath,
+      (t) => t.modelicaPath === TEMPLATE_PATH,
     ) as Template;
 
     const systemTemplate = template.getSystemTemplate();
@@ -58,19 +58,51 @@ describe("Template wrapper class functionality", () => {
     const systemTemplateOptions = options.find(
       (o) => o.modelicaPath === systemTemplate.modelicaPath,
     );
-    expect(systemTemplateOptions?.options?.length).toBe(
+    // this number changes a lot so using greaterThan
+    expect(systemTemplateOptions?.options?.length).toBeGreaterThanOrEqual(
       expectedTemplateValues.optionLength,
     );
   });
 
   it("Templates generate separate schedule options and configuration options", () => {
     const datPath = "TestPackage.Template.Data.TestTemplate.record_parameter";
+    const datParamPath = "TestPackage.Template.TestTemplate.dat";
+    const templates = getTemplates();
 
-    const { scheduleOptions } = getOptions();
+    const { options, scheduleOptions } = getOptions();
     const datScheduleOption = scheduleOptions.find(
       (o) => o.modelicaPath === datPath,
     );
     expect(datScheduleOption).toBeTruthy();
+
+    const template = templates.find(
+      (t) => t.modelicaPath === TEMPLATE_PATH,
+    ) as Template;
+
+    const templateJson = template.getSystemTemplate();
+    const datRoots = templateJson.scheduleOptionPaths
+      .map((p) => scheduleOptions.find((o) => o.modelicaPath === p))
+      .filter((o) => o !== undefined);
+    // check that the 'dat' parameter is still available as a reference
+    // const template = options.find( (o) => o.modelicaPath === "TestPackage.Template.TestTemplate");
+    expect(datRoots.length).toBeGreaterThan(0);
+  });
+
+  it("Schedule option paths are unique from options", () => {
+    const templates = getTemplates();
+    const template = templates.find(
+      (t) => t.modelicaPath === TEMPLATE_PATH,
+    ) as Template;
+
+    const { options, scheduleOptions } = template.getOptions();
+
+    Object.keys(options).map((o) => {
+      expect(scheduleOptions[o]).toBeUndefined();
+    });
+
+    Object.keys(scheduleOptions).map((o) => {
+      expect(options[o]).toBeUndefined();
+    });
   });
 
   it("Keeps system types in correct order", () => {
@@ -78,7 +110,7 @@ describe("Template wrapper class functionality", () => {
     const templates = getTemplates();
 
     const nestedTemplate = templates.find(
-      (t) => t.modelicaPath === nestedTemplatePath,
+      (t) => t.modelicaPath === NESTED_TEMPLATE_PATH,
     ) as Template;
 
     const templateJSON = nestedTemplate.getSystemTemplate();
@@ -113,5 +145,50 @@ describe("Template wrapper class functionality", () => {
     expect(literal?.definition).toBeFalsy();
     expect(typeDefinition?.definition).toBeTruthy();
     expect(enumValue?.definition).toBeTruthy();
+  });
+
+  it("Assigns scopeList with child and parent options", () => {
+    // Important that scope list is in order!
+    const expectedScopeList = [
+      "TestPackage.Template.TestTemplate",
+      "TestPackage.Interface.ExtendInterface",
+      "TestPackage.Interface.NestedExtendInterface",
+    ];
+
+    const { options } = getOptions();
+
+    const testTemplate = options.find(
+      (o) => o.modelicaPath === "TestPackage.Template.TestTemplate",
+    );
+
+    expect(testTemplate?.treeList).toBeTruthy();
+
+    testTemplate?.treeList?.map((t) => {
+      const expectedScope = expectedScopeList.shift();
+      expect(t).toEqual(expectedScope);
+    });
+  });
+
+  it("Genereates path modifiers", () => {
+    const templates = getTemplates();
+    const template = templates.find(
+      (t) => t.modelicaPath === TEMPLATE_PATH,
+    ) as Template;
+
+    const { pathModifiers } = template.getSystemTemplate();
+
+    expect(pathModifiers).toBeDefined();
+    expect("third.selectable_component" in pathModifiers).toBeTruthy();
+    expect(pathModifiers["third.selectable_component"]).toEqual(
+      "selectable_component",
+    );
+
+    // TODO: I'm a little unsure I'm handling instance pathing correct here
+    // This test is specifically around inherited 'outer' params. Child options
+    // get 'flattened' from inhereted classes, so the outer definition will likely
+    // be in the inherited class and then implemented in the child class. Each would
+    // have the same 'scope'
+    expect("nested_outer_param" in pathModifiers).toBeTruthy();
+    expect(pathModifiers["nested_outer_param"]).toEqual("nested_outer_param");
   });
 });

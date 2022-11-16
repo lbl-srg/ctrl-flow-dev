@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 import RootStore from "./index";
 
@@ -88,6 +88,12 @@ export default class Config {
   setSelections(configId: string, selections: SelectionInterface[]) {
     const config = this.getById(configId);
     if (config) config.selections = selections;
+  }
+
+  getConfigSelections(configId: string): any {
+    const config = this.getById(configId);
+    const selections = config?.selections?.reduce((obj, selection) => ({...obj, [selection.name]: selection.value}), {});
+    return toJS(selections || {});
   }
 
   getActiveConfigs(): ConfigInterface[] {
