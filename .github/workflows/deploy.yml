@@ -1,0 +1,17 @@
+name: Deploy to AWS
+run-name: ${{ github.actor }} deploying to AWS
+on:
+  push:
+    branches:
+      - cdk
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check directory contents
+        run: ls
+
+      - name: Check Node Version
+        run: node --version
