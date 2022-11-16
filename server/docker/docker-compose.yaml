@@ -6,13 +6,13 @@ services:
     container_name: linkage-api
     build:
       context: ../
-      dockerfile: docker/Dockerfile
+      dockerfile: Dockerfile
     command: npm run start
     env_file:
       - ../.env
     environment:
       - MODELICAPATH=/dependencies/ModelicaStandardLibrary:/dependencies/modelica-buildings
     ports:
-      - ${PORT:-3000}:${PORT:-3000}
+      - 80:80
     volumes:
       - ../:/app
