@@ -366,11 +366,9 @@ const SlideOut = ({
 
         if (!optionGroup.items.length) return null;
 
-        const displayGroupClass = index > 0 ? "display-group-container" : "";
-
         return (
-          <div className={displayGroupClass} key={optionGroup.selectionPath}>
-            <label>{optionGroup.groupName}</label>
+          <div className="display-group-container" key={optionGroup.selectionPath}>
+            <label className="display-group-label">{optionGroup.groupName}</label>
               {renderDisplayOptions(optionGroup.items)}
           </div>
         );

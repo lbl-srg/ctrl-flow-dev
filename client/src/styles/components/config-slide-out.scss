@@ -32,7 +32,15 @@
   }
 
   .display-group-container {
-    background-color: rgba(177, 208, 222, 0.5);
-    padding: 0 10px;
+    background-color: rgba(177, 208, 222, 0.75);
+    padding: 0.5rem 0.75rem;
+    margin: 0.5rem 0;
+    border: 1px solid var(--color-gray-medium);
+    border-radius: 0.5rem;
+  }
+
+  .display-group-label {
+    border-bottom: 1px solid black;
+    margin-bottom: 1rem;
   }
 }
