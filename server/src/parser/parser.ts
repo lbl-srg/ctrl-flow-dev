@@ -255,6 +255,10 @@ export class InputGroupShort extends Element {
     }
   }
 
+  getChildElements(): Element[] {
+    return [];
+  }
+
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
     return inputs;
   }
@@ -262,7 +266,7 @@ export class InputGroupShort extends Element {
 
 export class InputGroup extends Element {
   annotation: Modification[] = [];
-  elementList: Element[] = [];
+  elementList: Element[] | undefined = [];
   description: string = "";
   entryPoint = false;
   mods: Modification[] | undefined;
@@ -319,9 +323,10 @@ export class InputGroup extends Element {
    * Returns child elements including extended class child elements as a flat list
    */
   getChildElements(): Element[] {
+    const elements = this.elementList || [];
     return this.deadEnd || this.extendElement === undefined
-      ? this.elementList
-      : [...this.elementList, ...this.extendElement?.getChildElements()];
+      ? elements
+      : [...elements, ...this.extendElement?.getChildElements()];
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
