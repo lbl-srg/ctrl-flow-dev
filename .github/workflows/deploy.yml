@@ -25,3 +25,4 @@ jobs:
         run: |
           cd server
           npm run parseTemplateJSON
+          cat scripts/templates.json
