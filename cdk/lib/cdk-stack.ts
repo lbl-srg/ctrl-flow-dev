@@ -56,6 +56,12 @@ export class LblCdkStack extends cdk.Stack {
 
     ////  End Fargate For API
 
+    new cdk.CfnOutput(this, "LbLApiUrl", {
+      value: `http://${fargateService.loadBalancer.loadBalancerDnsName}`,
+      description: "The url of the lbl fargate service",
+      exportName: "LbLApiUrl",
+    });
+
     ////  Begin S3 Bucket for Client
     const clientBucket = new Bucket(this, "lbl-client", {
       bucketName: "lbl-client",
@@ -64,15 +70,6 @@ export class LblCdkStack extends cdk.Stack {
       websiteErrorDocument: "index.html",
       removalPolicy: RemovalPolicy.DESTROY,
     });
-
-    new s3deploy.BucketDeployment(
-      this,
-      "DeployWithInvalidation",
-      {
-        sources: [s3deploy.Source.asset("../client/build")],
-        destinationBucket: clientBucket,
-      },
-    );
 
     ////  End S3 Bucket for Client
   }

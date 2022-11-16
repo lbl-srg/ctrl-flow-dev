@@ -53,7 +53,7 @@ WORKDIR /server
 RUN npm i
 COPY . .
 
-# RUN npm run parseTemplateJSON
+RUN npm run parseTemplateJSON
 
 RUN npm run build
 RUN npx webpack
