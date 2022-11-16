@@ -10,20 +10,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Check directory contents
-        run: ls
-
-      - name: Check Node Version
-        run: node --version
-
-      - name: Install JDK
-        run: sudo apt-get update && sudo apt-get -y install default-jdk
-
-      - name: Install make curl get
-        run: sudo apt-get -y install make curl git
-
       - name: Install Modelica Dependencies
         run: |
           cd server
           npm i
           npm run install-modelica-deps
+
+      - name: List contents after modelica download
+        run: |
+          cd ../
+          ls
