@@ -23,6 +23,7 @@ jobs:
         run: apt-get -y install make curl git
 
       - name: Install Modelica Dependencies
-        run: cd server
-        run: npm i
-        run: npm run install-modelica-deps
+        run: |
+          cd server
+          npm i
+          npm run install-modelica-deps
