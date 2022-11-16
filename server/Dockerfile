@@ -1,8 +1,5 @@
 # Installs Pandoc, TexLive, and make4ht on a Ubuntu Linux distribution
 FROM ubuntu:22.04 as ubuntu-pandoc
-RUN apt-get --assume-yes update && apt-get --assume-yes install pandoc=2.9.2.1-3ubuntu2 texlive=2021.20220204-1 texlive-extra-utils=2021.20220204-1
-RUN pandoc --version
-RUN tex --version
 
 # Installs Node 16.16.0 LTS with NVM
 # FROM ubuntu-pandoc as ubuntu-pandoc-node
@@ -22,7 +19,7 @@ RUN npm --version
 # FROM ubuntu-pandoc-node as alpine-node-modelica
 RUN apt-get update && apt-get -y install default-jdk
 RUN mkdir dependencies
-WORKDIR /app
+WORKDIR /server
 COPY bin/ bin/
 COPY package*.json ./
 
@@ -30,20 +27,30 @@ COPY package*.json ./
 RUN apt-get -y install make curl git
 RUN npm run install-modelica-deps
 WORKDIR /dependencies
+# These files have typos that need to be fixed before we can bundle with webpack
+RUN sed -i 's/condition_attribute/conditionAttribute/g' ./modelica-json/json2mo/componentDeclaration.js
+RUN sed -i 's/for_indices/forIndices/g' ./modelica-json/json2mo/forStatement.js
+RUN sed -i 's/named_arguments/namedArguments/g' ./modelica-json/json2mo/functionArgument.js
 ENV MODELICAPATH=/dependencies/ModelicaStandardLibrary:/dependencies/modelica-buildings
 RUN mkdir template-json
+# This fails to run on amd64, must be arm64 platform
 RUN node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d template-json
+
+# TODO run parseTemplateJSON
+# output is /server/scripts/templates.json
+# Gets copied to /client/src/data/
 
 # Adds Modelica dependencies to the resulting image
 # FROM alpine-node-modelica as ubuntu-pandoc-node-modelica
 # COPY --from=alpine-node-modelica /dependencies /dependencies
-WORKDIR /app
+WORKDIR /server
 
 # Copy the rest of the server app
 RUN npm i
 COPY . .
 RUN npm run build
+RUN npx webpack
 
 # For when image is run
-# CMD ["npm run start"]
-# EXPOSE 80
+CMD ["node", "dist/index.js"]
+EXPOSE 80
