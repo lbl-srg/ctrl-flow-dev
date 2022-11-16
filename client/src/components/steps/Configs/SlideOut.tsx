@@ -173,6 +173,8 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
     "",
     false,
   );
+
+  getUpdatedModifiers(selectedValues);
   const evaluatedValues: SelectedConfigValues = getEvaluatedValues();
   const displayedConfigOptions = applyModifiers();
 
@@ -181,6 +183,13 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
   console.log('selectedValues: ', selectedValues);
   console.log('evaluatedValues: ', evaluatedValues);
   console.log('displayedConfigOptions: ', displayedConfigOptions);
+
+  /*
+    1. Grab allOptions (dictionary), template Options, templateModifiers (default VAVMultizone), grab selections, build flatConfigOptions
+    2. Update modifiers with selections (missing)
+    3. Evaluate Default Values
+    4. Update modifiers evaluated values
+  */
 
   // TODO: Grab config name field
   // const [configName, setConfigName] = useState()
@@ -217,11 +226,11 @@ const SlideOut = ({ configId, close }: ConfigSlideOutProps) => {
     return applyVisabilityModifiers();
   }
 
-  function getUpdatedModifiers(mergedValues: SelectedConfigValues) {
-    const mergedOptionKeys: string[] = Object.keys(mergedValues);
+  function getUpdatedModifiers(values: SelectedConfigValues) {
+    const optionKeys: string[] = Object.keys(values);
 
-    mergedOptionKeys.forEach((key) => {
-      if (mergedValues[key] !== null) {
+    optionKeys.forEach((key) => {
+      if (values[key] !== null) {
         const [modelicaPath, instancePath] = key.split('-');
         const option = allOptions.find(
           (o) => o.modelicaPath === modelicaPath,
