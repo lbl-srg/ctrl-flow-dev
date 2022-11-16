@@ -5,7 +5,6 @@ import { OptionInterface } from "../../../data/template";
 import { FlatConfigOption } from "./SlideOut";
 
 export interface OptionSelectProps {
-  index: number;
   option: FlatConfigOption;
   configId: string;
   updateSelectedConfigOption: (
@@ -18,7 +17,6 @@ export interface OptionSelectProps {
 }
 
 const OptionSelect = ({
-  index,
   option,
   configId,
   updateSelectedConfigOption,
@@ -35,7 +33,7 @@ const OptionSelect = ({
   return (
     <Fragment>
       <label>
-        {index}. {option.name}
+        {option.name}
       </label>
       <select
         name={`${option.modelicaPath}-${option.scope}`}
