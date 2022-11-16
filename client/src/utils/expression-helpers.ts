@@ -1,4 +1,6 @@
 import { storeHooks } from "./store-helpers";
+import { Modifiers, applyPathModifiers } from "./modifier-helpers";
+
 
 export type Literal = boolean | string | number;
 
@@ -13,6 +15,7 @@ export function resolveValue(
   selectionPath: string,
   selections: any,
   modifiers: any,
+  pathModifiers: any,
   allOptions: any
 ): any {
   const selectionValue = selections[selectionPath];
@@ -27,7 +30,7 @@ export function resolveValue(
   ) return value;
 
   // need to check if there is a modifier
-  const scopePath = `${scope}.${value}`;
+  const scopePath = applyPathModifiers(`${scope}.${value}`, pathModifiers);
   const scopeModifier = modifiers[scopePath];
   const newScope = scopePath.split('.').slice(0, -1).join('.');
   let evaluatedValue: any = undefined;
@@ -39,6 +42,7 @@ export function resolveValue(
       selectionPath,
       selections,
       modifiers,
+      pathModifiers,
       allOptions
     );
 
@@ -56,6 +60,7 @@ export function resolveValue(
         selectionPath,
         selections,
         modifiers,
+        pathModifiers,
         allOptions
       ) : originalOption?.value;
   }
@@ -75,6 +80,7 @@ function resolveExpression(
   selectionPath: string,
   selections: any,
   modifiers: any,
+  pathModifiers: any,
   allOptions: any
 ): any {
   let resolved_expression: any = expression;
@@ -86,6 +92,7 @@ function resolveExpression(
       selectionPath,
       selections,
       modifiers,
+      pathModifiers,
       allOptions
     );
 
@@ -107,6 +114,7 @@ function expressionEvaluator(
   selectionPath: string,
   selections: any,
   modifiers: any,
+  pathModifiers: any,
   allOptions: any
 ): any {
   const resolved_expression = resolveExpression(
@@ -115,6 +123,7 @@ function expressionEvaluator(
     selectionPath,
     selections,
     modifiers,
+    pathModifiers,
     allOptions
   );
   
@@ -189,6 +198,7 @@ export function evaluateExpression(
   selectionPath: string,
   selections: any,
   modifiers: any,
+  pathModifiers: any,
   allOptions: any
 ): any {
   const evaluated_expression: any = expression;
@@ -201,6 +211,7 @@ export function evaluateExpression(
         selectionPath,
         selections,
         modifiers,
+        pathModifiers,
         allOptions
       );
     }
@@ -212,6 +223,7 @@ export function evaluateExpression(
     selectionPath,
     selections,
     modifiers,
+    pathModifiers,
     allOptions
   );
 }
