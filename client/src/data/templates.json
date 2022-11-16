@@ -12,6 +12,10 @@
       "systemTypes": [
         "Buildings.Templates.ZoneEquipment"
       ],
+      "pathModifiers": {
+        "ctl.damVAV": "damVAV",
+        "ctl.coiHea": "coiHea"
+      },
       "name": "VAV terminal unit with reheat"
     },
     {
@@ -26,6 +30,10 @@
       "systemTypes": [
         "Buildings.Templates.ZoneEquipment"
       ],
+      "pathModifiers": {
+        "ctl.damVAV": "damVAV",
+        "ctl.coiHea": "coiHea"
+      },
       "name": "VAV terminal unit cooling only"
     },
     {
@@ -44,6 +52,19 @@
       "systemTypes": [
         "Buildings.Templates.AirHandlersFans"
       ],
+      "pathModifiers": {
+        "secOutRel.secOut.have_recHea": "secOutRel.have_recHea",
+        "secOutRel.secOut.typCtlEco": "secOutRel.typCtlEco",
+        "secOutRel.secRel.typCtlFanRet": "secOutRel.typCtlFanRet",
+        "secOutRel.secRel.have_recHea": "secOutRel.have_recHea",
+        "secOutRel.secRel.typCtlEco": "secOutRel.typCtlEco",
+        "ctl.secOutRel": "secOutRel",
+        "ctl.coiCoo": "coiCoo",
+        "ctl.coiHeaPre": "coiHeaPre",
+        "ctl.coiHeaReh": "coiHeaReh",
+        "ctl.typFanSup": "typFanSup",
+        "ctl.typFanRet": "typFanRet"
+      },
       "name": "Multiple-zone VAV"
     }
   ],

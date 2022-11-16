@@ -3,16 +3,28 @@ import { useDebouncedCallback } from "use-debounce";
 import { observer } from "mobx-react";
 
 import SlideOutOpenButton from "./SlideOutOpenButton";
-import SlideOut from "./SlideOut";
+import SlideOut, { ConfigValues } from "./SlideOut";
 import { useStores } from "../../../data";
+
+import { OptionInterface } from "../../../data/template";
+import { Modifiers } from "../../../utils/modifier-helpers";
 
 export interface ConfigProps {
   configId: string | undefined;
 }
 
 const Config = observer(({ configId }: ConfigProps) => {
-  const { configStore, uiStore } = useStores();
+  const { configStore, templateStore, uiStore } = useStores();
   const config = configStore.getById(configId);
+  const template = templateStore.getTemplateByPath(config.templatePath);
+  const templateOptions: OptionInterface[] = templateStore.getOptionsForTemplate(
+    template?.modelicaPath,
+  );
+  const templateModifiers: Modifiers = templateStore.getModifiersForTemplate(
+    template?.modelicaPath,
+  );
+  const selections: ConfigValues = configStore.getConfigSelections(configId);
+  const allOptions: OptionInterface[] = templateStore.getAllOptions();
 
   function removeConfiguration(event: MouseEvent) {
     event.preventDefault();
@@ -63,7 +75,15 @@ const Config = observer(({ configId }: ConfigProps) => {
         </a>
       </div>
       {openedModal && (
-        <SlideOut configId={config.id} close={() => setOpenedModal(false)} />
+        <SlideOut
+          config={config}
+          template={template}
+          templateOptions={templateOptions}
+          templateModifiers={templateModifiers}
+          selections={selections}
+          allOptions={allOptions}
+          close={() => setOpenedModal(false)}
+        />
       )}
     </Fragment>
   );

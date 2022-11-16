@@ -38,7 +38,7 @@ function addToModObject(
 };
 
 // recursive helper method
-export function updateModifiers(
+function updateModifiers(
   option: OptionInterface,
   baseInstancePath: string,
   modifiers: Modifiers,
@@ -93,32 +93,58 @@ export function updateModifiers(
 
 export function buildModifiers(
   startOption: OptionInterface,
+  baseInstancePath: string,
+  baseModifiers: Modifiers,
   options: OptionInterface[],
 ): Modifiers {
-  const modifiers: Modifiers = {};
+  const modifiers: Modifiers = { ...baseModifiers };
 
-  updateModifiers(startOption, "", modifiers, options);
+  updateModifiers(startOption, baseInstancePath, modifiers, options);
 
   return modifiers;
 };
 
+export function applyPathModifiers(
+  scopePath: string,
+  pathModifiers: Modifiers,
+): string {
+  const splitScopePath = scopePath.split(".");
+  let postFix: string | undefined = '';
+  let modifiedPath = scopePath;
+
+  while (splitScopePath.length > 0) {
+    const testPath = splitScopePath.join(".");
+    if (pathModifiers[testPath]) {
+      modifiedPath = `${pathModifiers[testPath]}.${postFix}`;
+      break;
+    }
+    postFix = postFix ? `${postFix}.${splitScopePath.pop()}` : splitScopePath.pop();
+  }
+
+  return modifiedPath;
+}
+
 export function applyValueModifiers(
-  configOption: FlatConfigOption,
+  // configOption: FlatConfigOption,
+  optionValue: any,
   scope: string,
   selectionPath: string,
   selections: any,
-  modifiers: any,
-  allOptions: any,
+  modifiers: Modifiers,
+  pathModifiers: Modifiers,
+  allOptions: OptionInterface[],
 ): any {
   let evaluatedValue: any = undefined;
 
-  if (!isExpression(configOption?.value)) {
+  if (!isExpression(optionValue)) {
     evaluatedValue = resolveValue(
-      configOption?.value,
+      // configOption?.value,
+      optionValue,
       scope,
       selectionPath,
       selections,
       modifiers,
+      pathModifiers,
       allOptions
     );
 
@@ -127,11 +153,13 @@ export function applyValueModifiers(
   }
 
   evaluatedValue = evaluateExpression(
-    configOption?.value,
+    // configOption?.value,
+    optionValue,
     scope,
     selectionPath,
     selections,
     modifiers,
+    pathModifiers,
     allOptions
   );
 
@@ -139,49 +167,39 @@ export function applyValueModifiers(
   return !isExpression(evaluatedValue) ? evaluatedValue : null;
 }
 
-// applies the modifiers from getModifierContext
-// visible, enable, final, modifier value
+export function applyVisibilityModifiers(
+  option: OptionInterface,
+  scope: string,
+  selectionPath: string,
+  selections: any,
+  modifiers: Modifiers,
+  pathModifiers: Modifiers,
+  allOptions: OptionInterface[],
+): boolean {
+  const scopePath = applyPathModifiers(scope, pathModifiers);
+  const modifier: any = modifiers[scopePath];
+  let enable: Expression | boolean | undefined = option.enable;
+  let visible: boolean | undefined = option.visible;
 
-// export function applyChoiceModifiers(
-//   option: OptionInterface,
-//   modifiers: any,
-//   selections: any,
-// ): OptionInterface[] {
-//   // Setting up newChildren if the visiblity needs to be modified
-//   const newOptions: OptionInterface[] = [];
+  if (isExpression(option.enable)) {
+    enable = evaluateExpression(
+      option.enable,
+      scope,
+      selectionPath,
+      selections,
+      modifiers,
+      pathModifiers,
+      allOptions
+    );
 
-//   // If we have an object of flattened Modifiers and we have children we need to modify those children's visiblilty
-//   // if there is a modifier for the child
-//   if (Object.keys(modifiers).length !== 0 && option.childOptions?.length) {
-//     option.childOptions.forEach((child: any) => {
-//       const newChild: OptionInterface = {...child};
-//       const childModifier: any = modifiers[child.modelicaPath];
+    if (isExpression(enable)) {
+      enable = false;
+    }
+  }
 
-//       if (isExpression(newChild?.enable)) {
-//         newChild.enable = evaluateExpression(newChild.enable, selections);
+  if (modifier?.final !== undefined) {
+    visible = option.visible && !modifier.final;
+  }
 
-//         if (isExpression(newChild.enable)) {
-//           newChild.enable = false;
-//         }
-//       }
-
-//       if (childModifier && childModifier?.final !== undefined) {
-//         newChild.visible = child?.visible && !childModifier.final;
-//       }
-
-//       // TODO: Remove this, it is a temporay hack
-//       const hideArray = ['ASHRAE', 'Title 24'];
-//       hideArray.forEach((condition) => {
-//         if (newChild.name.includes(condition)) {
-//           newChild.visible = false;
-//         }
-//       });
-
-//       newChild.visible = newChild.visible && newChild.enable;
-
-//       newOptions.push(newChild);
-//     });
-//   }
-
-//   return newOptions.length ? newOptions : option.childOptions || [];
-// }
+  return !!(visible && enable && option.childOptions?.length);
+}

@@ -117,7 +117,7 @@ export default class Template {
     const templateOption = this.options.find(
       (opt) => opt.modelicaPath === path,
     ) as OptionInterface;
-    return buildModifiers(templateOption, this.options);
+    return buildModifiers(templateOption, "", {}, this.options);
   }
 
   getAllOptions(): OptionInterface[] {
