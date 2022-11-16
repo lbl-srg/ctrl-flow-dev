@@ -1,17 +1,7 @@
-# Welcome to your CDK TypeScript project
+# Welcome to your CDK TypeScript project for LBL-Linkage
 
-This is a blank project for CDK development with TypeScript.
+If you want to deploy your app, there are a number of commands that you have to run, and they can only be performed locally for now:
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+```bash
 
-## Useful commands
-
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
-
-docker build -t lbl-api-cdk .
-docker run -dp 80:80 lbl-api-cdk 
+```
