@@ -20,5 +20,4 @@ jobs:
         run: |
           cd dependencies
           node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d template-json
-          ls
-          ls -al template-json
+          ls template-json/json
