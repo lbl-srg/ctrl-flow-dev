@@ -16,6 +16,7 @@ jobs:
           npm i
           npm run install-modelica-deps
 
-      - name: List contents after modelica download
+      - name: Run modelica template generator
         run: |
-          ls
+          cd server
+          node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d template-json
