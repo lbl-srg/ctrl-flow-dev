@@ -40,18 +40,21 @@ RUN mkdir template-json
 # This fails to run on amd64, must be arm64 platform
 RUN node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d template-json
 
-# TODO run parseTemplateJSON
-# output is /server/scripts/templates.json
-# Gets copied to /client/src/data/
-
 # Adds Modelica dependencies to the resulting image
 # FROM alpine-node-modelica as ubuntu-pandoc-node-modelica
 # COPY --from=alpine-node-modelica /dependencies /dependencies
 WORKDIR /server
 
+# TODO run parseTemplateJSON
+# output is /server/scripts/templates.json
+# Gets copied to /client/src/data/
+
 # Copy the rest of the server app
 RUN npm i
 COPY . .
+
+# RUN npm run parseTemplateJSON
+
 RUN npm run build
 RUN npx webpack
 

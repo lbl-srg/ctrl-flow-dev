@@ -20,4 +20,8 @@ jobs:
         run: |
           cd dependencies
           node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d template-json
-          ls template-json/json
+
+      - name: Run templates parser
+        run: |
+          cd server
+          npm run parseTemplateJSON
