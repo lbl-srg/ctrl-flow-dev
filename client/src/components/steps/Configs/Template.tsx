@@ -13,7 +13,7 @@ export interface TemplateProps {
 const Template = ({ systemPath, templatePath }: TemplateProps) => {
   const { templateStore, configStore, uiStore } = useStores();
 
-  const configs: [ConfigInterface] = configStore.getConfigsForSystemTemplate(
+  const configs: ConfigInterface[] = configStore.getConfigsForSystemTemplate(
     systemPath,
     templatePath,
   );
@@ -35,7 +35,7 @@ const Template = ({ systemPath, templatePath }: TemplateProps) => {
       id={`template-${templatePath}`}
     >
       <h4 className="with-links">
-        {template.name}
+        {template?.name}
         <div className="links">
           <a>
             <i className="icon-upload" />

@@ -2,7 +2,7 @@ import SystemTemplate from "./SystemTemplate";
 import { scrollToSelector } from "../../utils/dom-utils";
 import { useStores } from "../../data";
 import { observer } from "mobx-react";
-import { TemplateInterface } from "../../data/template";
+import { SystemTypeInterface, TemplateInterface } from "../../data/template";
 
 function getClasses(isEmpty: boolean, isActive: boolean, isOpen: boolean) {
   const classes = ["system"];
@@ -20,7 +20,9 @@ const System = observer(({ systemPath }: { systemPath: string }) => {
 
   const { systemType, templates, icon } = {
     templates: templateStore.getActiveTemplatesForSystem(systemPath),
-    systemType: templateStore.getSystemTypeByPath(systemPath),
+    systemType: templateStore.getSystemTypeByPath(
+      systemPath,
+    ) as SystemTypeInterface,
     icon: templateStore.getIconForSystem(systemPath),
   };
 

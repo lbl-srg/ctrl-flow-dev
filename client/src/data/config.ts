@@ -9,15 +9,17 @@ export interface SelectionInterface {
 }
 
 export interface ConfigInterface {
-  [key: string]: string | number | undefined | boolean | SelectionInterface[];
-  id?: string;
+  id: string;
   name?: string;
-  isLocked?: boolean;
+  isLocked: boolean;
   selections?: SelectionInterface[];
   quantity?: number;
   systemPath: string;
   templatePath: string;
+  [key: string]: string | number | undefined | boolean | SelectionInterface[];
 }
+
+export type ConfigProps = Omit<ConfigInterface, "id">;
 
 export default class Config {
   configs: ConfigInterface[] = [];
@@ -34,7 +36,7 @@ export default class Config {
     });
   }
 
-  add(config: ConfigInterface) {
+  add(config: ConfigProps) {
     const merged = {
       id: uuid(),
       name: "Default",
@@ -43,26 +45,26 @@ export default class Config {
       quantity: 1,
 
       ...config,
-    };
+    } as ConfigInterface;
 
     this.configs.push(merged);
   }
 
-  update(id: string, attrs: ConfigInterface) {
+  update(id: string, attrs: Partial<ConfigInterface>) {
     const config = this.getById(id);
     if (config)
       Object.entries(attrs).forEach(([key, value]) => (config[key] = value));
   }
 
-  getById(id: string | null): ConfigInterface | undefined {
+  getById(id: string | null | undefined): ConfigInterface | undefined {
     return this.configs.find((config) => config.id === id);
   }
 
-  remove(id: string) {
+  remove(id: string | undefined) {
     this.configs = this.configs.filter((config) => config.id !== id);
   }
 
-  toggleConfigLock(id: string) {
+  toggleConfigLock(id: string | undefined) {
     const config = this.getById(id);
     if (config) config.isLocked = !config.isLocked;
   }
@@ -90,7 +92,7 @@ export default class Config {
     if (config) config.selections = selections;
   }
 
-  getConfigSelections(configId: string): any {
+  getConfigSelections(configId: string | undefined): any {
     const config = this.getById(configId);
     const selections = config?.selections?.reduce(
       (obj, selection) => ({ ...obj, [selection.name]: selection.value }),
