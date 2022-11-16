@@ -22,9 +22,9 @@ import {
 import "../../../styles/components/config-slide-out.scss";
 
 export interface FlatConfigOptionGroup {
-  parentModelicaPath: string;
-  parentName: string;
-  options: FlatConfigOption[];
+  groupName: string;
+  selectionPath: string;
+  items: (FlatConfigOptionGroup | FlatConfigOption)[];
 }
 
 export interface FlatConfigOption {
@@ -141,7 +141,7 @@ const SlideOut = ({
     ...selectedValues,
   });
 
-  const displayedOptions: FlatConfigOption[] = getDisplayOptions(
+  const displayedOptions: (FlatConfigOptionGroup | FlatConfigOption)[] = getDisplayOptions(
     templateOptions,
     "root",
     "",
@@ -228,8 +228,8 @@ const SlideOut = ({
     parentModelicaPath: string,
     scope: string,
     changeScope: boolean,
-  ): FlatConfigOption[] {
-    let displayOptions: FlatConfigOption[] = [];
+  ): (FlatConfigOptionGroup | FlatConfigOption)[] {
+    let displayOptions: (FlatConfigOptionGroup | FlatConfigOption)[] = [];
     let currentScope = scope;
 
     options.forEach((option) => {
@@ -295,6 +295,20 @@ const SlideOut = ({
             ),
           ];
         }
+      } else if (option.definition && option.childOptions?.length && parentModelicaPath !== 'root') {
+        displayOptions = [
+          ...displayOptions,
+          {
+            groupName: option.name,
+            selectionPath,
+            items: getDisplayOptions(
+              option.childOptions,
+              option.modelicaPath,
+              currentScope,
+              option.definition,
+            ),
+          }
+        ];
       } else if (option.childOptions?.length) {
         displayOptions = [
           ...displayOptions,
@@ -344,15 +358,27 @@ const SlideOut = ({
     close();
   }
 
-  function renderDisplayOptions() {
-    return displayedOptions.map((option: FlatConfigOption, optionIndex) => {
-      overallIndex++;
+  function renderDisplayOptions(items: (FlatConfigOptionGroup | FlatConfigOption)[]) {
+    return items.map((option: FlatConfigOptionGroup | FlatConfigOption, index) => {
+
+      if ('groupName' in option) {
+        const optionGroup = option as FlatConfigOptionGroup;
+
+        if (!optionGroup.items.length) return null;
+
+        const displayGroupClass = index > 0 ? "display-group-container" : "";
+
+        return (
+          <div className={displayGroupClass} key={optionGroup.selectionPath}>
+            <label>{optionGroup.groupName}</label>
+              {renderDisplayOptions(optionGroup.items)}
+          </div>
+        );
+      }
+
       return (
         <OptionSelect
-          key={`${option.parentModelicaPath}---${option.modelicaPath}---${
-            optionIndex + 1
-          }`}
-          index={overallIndex}
+          key={`${option.parentModelicaPath}---${option.modelicaPath}`}
           option={option}
           configId={config.id}
           updateSelectedConfigOption={updateSelectedConfigOption}
@@ -361,7 +387,6 @@ const SlideOut = ({
     });
   }
 
-  let overallIndex = 0;
   return (
     <Modal isOpen close={close} className="config-slide-out">
       <h3>{template?.name}</h3>
@@ -397,7 +422,7 @@ const SlideOut = ({
             )}
           </div>
             ))*/}
-        {renderDisplayOptions()}
+        {renderDisplayOptions(displayedOptions)}
         <button type="submit">{itl.terms.save}</button>
       </form>
     </Modal>
