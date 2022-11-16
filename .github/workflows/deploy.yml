@@ -15,3 +15,14 @@ jobs:
 
       - name: Check Node Version
         run: node --version
+
+      - name: Install JDK
+        run: apt-get update && apt-get -y install default-jdk
+
+      - name: Install make curl get
+        run: apt-get -y install make curl git
+
+      - name: Install Modelica Dependencies
+        run: cd server
+        run: npm i
+        run: npm run install-modelica-deps
