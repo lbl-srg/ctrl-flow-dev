@@ -17,7 +17,7 @@ jobs:
         run: node --version
 
       - name: Install JDK
-        run: sudo apt-get update && apt-get -y install default-jdk
+        run: sudo apt-get update && sudo apt-get -y install default-jdk
 
       - name: Install make curl get
         run: sudo apt-get -y install make curl git
