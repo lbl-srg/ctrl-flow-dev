@@ -58,6 +58,8 @@ RUN npm run parseTemplateJSON
 RUN npm run build
 RUN npx webpack
 
+ARG PORT
+
 # For when image is run
 CMD ["node", "dist/index.js"]
-EXPOSE 80
+EXPOSE ${PORT}
