@@ -26,7 +26,7 @@ npx aws-cdk deploy --require-approval never --outputs-file cdk.out/cdk-outputs.j
 # this value
 export REACT_APP_API=$(jq -r .LblCdkStack${LBL_STAGE}.LbLApiUrl cdk.out/cdk-outputs.json)/api
 
-# TODO. Copy the templates.json file out of the docker image
+# Copy the templates.json file out of the server docker image
 # and into /client/src/templates.json
 cd ../server
 docker build -t lbl-api-cdk .
