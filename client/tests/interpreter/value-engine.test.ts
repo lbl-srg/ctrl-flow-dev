@@ -14,6 +14,11 @@ import { Expression } from "../../src/utils/expression-helpers";
 let allOptions: OptionInterface[] = [];
 let allTemplates: TemplateInterface[] = [];
 
+/*
+ * TODO: swap in methods from src/utils/modifier-helpers and expression helpers instead of these
+ * local methods
+ */
+
 const addToModObject = (
   newMods: { [key: string]: Expression },
   baseInstancePath: string,
