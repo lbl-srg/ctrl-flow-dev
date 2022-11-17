@@ -1,16 +1,25 @@
 import { OptionInterface } from "../data/template";
 import { FlatConfigOption } from "../components/steps/Configs/SlideOut";
-import { Expression, evaluateExpression, isExpression, resolveValue } from "./expression-helpers";
+import {
+  Expression,
+  evaluateExpression,
+  isExpression,
+  resolveValue,
+} from "./expression-helpers";
 
 export type Modifiers = {
-  [key: string]: Expression
+  [key: string]: Expression;
 };
+
+export interface ConfigValues {
+  [key: string]: string;
+}
 
 function addToModObject(
   newModifiers: Modifiers,
   baseInstancePath: string,
   modifiers: Modifiers,
-  options: OptionInterface[],
+  options: { [key: string]: OptionInterface },
   recursive = true,
 ) {
   Object.entries(newModifiers).forEach(([k, expression]) => {
@@ -27,22 +36,26 @@ function addToModObject(
 
     if (recursive) {
       // grab modifiers from original definition
-      const modOption = options.find(
-        (o) => o.modelicaPath === k,
-      ) as OptionInterface;
+      const modOption = options[k] as OptionInterface;
       if (modOption?.modifiers) {
-        addToModObject(newModifiers, baseInstancePath, modifiers, options, false);
+        addToModObject(
+          newModifiers,
+          baseInstancePath,
+          modifiers,
+          options,
+          false,
+        );
       }
     }
   });
-};
+}
 
 // recursive helper method
 function updateModifiers(
   option: OptionInterface,
   baseInstancePath: string,
   modifiers: Modifiers,
-  options: OptionInterface[],
+  options: { [key: string]: OptionInterface },
 ) {
   if (option === undefined) {
     return; // TODO: not sure this should be allowed - failing with 'Medium'
@@ -64,52 +77,48 @@ function updateModifiers(
 
     if (option.definition) {
       childOptions.map((path) => {
-        const childOption = options.find(
-          (o) => o.modelicaPath === path,
-        ) as OptionInterface;
+        const childOption = options[path] as OptionInterface;
 
         updateModifiers(childOption, newBase, modifiers, options);
       });
     } else {
       // this is a parameter (either replaceable or enum) - grab the type and its modifiers
       // only use the 'type', not child options to fetch modifiers (default options)
-      const typeOption = options.find((o) => o.modelicaPath === option.type);
+      const typeOption = options[option.type];
       if (typeOption && typeOption.options) {
         // add modifiers from type option
         if (typeOption.modifiers) {
           addToModObject(typeOption.modifiers, newBase, modifiers, options);
         }
         typeOption.options.map((path) => {
-          const childOption = options.find(
-            (o) => o.modelicaPath === path,
-          ) as OptionInterface;
+          const childOption = options[path] as OptionInterface;
 
           updateModifiers(childOption, newBase, modifiers, options);
         });
       }
     }
   }
-};
+}
 
 export function buildModifiers(
   startOption: OptionInterface,
   baseInstancePath: string,
   baseModifiers: Modifiers,
-  options: OptionInterface[],
+  options: { [key: string]: OptionInterface },
 ): Modifiers {
-  const modifiers: Modifiers = { ...baseModifiers };
+  const modifiers: Modifiers = baseModifiers;
 
   updateModifiers(startOption, baseInstancePath, modifiers, options);
 
   return modifiers;
-};
+}
 
 export function applyPathModifiers(
   scopePath: string,
   pathModifiers: Modifiers,
 ): string {
   const splitScopePath = scopePath.split(".");
-  let postFix: string | undefined = '';
+  let postFix: string | undefined = "";
   let modifiedPath = scopePath;
 
   while (splitScopePath.length > 0) {
@@ -118,7 +127,9 @@ export function applyPathModifiers(
       modifiedPath = `${pathModifiers[testPath]}.${postFix}`;
       break;
     }
-    postFix = postFix ? `${postFix}.${splitScopePath.pop()}` : splitScopePath.pop();
+    postFix = postFix
+      ? `${postFix}.${splitScopePath.pop()}`
+      : splitScopePath.pop();
   }
 
   return modifiedPath;
@@ -132,8 +143,8 @@ export function applyValueModifiers(
   selections: any,
   modifiers: Modifiers,
   pathModifiers: Modifiers,
-  allOptions: OptionInterface[],
-): any {
+  allOptions: { [key: string]: OptionInterface },
+) {
   let evaluatedValue: any = undefined;
 
   if (!isExpression(optionValue)) {
@@ -145,11 +156,11 @@ export function applyValueModifiers(
       selections,
       modifiers,
       pathModifiers,
-      allOptions
+      allOptions,
     );
 
     // return evaluatedValue if it has fully resolved otherwise return null
-    return evaluatedValue !== 'no_value' ? evaluatedValue : null;
+    return evaluatedValue !== "no_value" ? evaluatedValue : null;
   }
 
   evaluatedValue = evaluateExpression(
@@ -160,7 +171,7 @@ export function applyValueModifiers(
     selections,
     modifiers,
     pathModifiers,
-    allOptions
+    allOptions,
   );
 
   // return evaluatedValue if it has fully resolved otherwise return null
@@ -174,7 +185,7 @@ export function applyVisibilityModifiers(
   selections: any,
   modifiers: Modifiers,
   pathModifiers: Modifiers,
-  allOptions: OptionInterface[],
+  allOptions: { [key: string]: OptionInterface },
 ): boolean {
   const scopePath = applyPathModifiers(scope, pathModifiers);
   const modifier: any = modifiers[scopePath];
@@ -189,7 +200,7 @@ export function applyVisibilityModifiers(
       selections,
       modifiers,
       pathModifiers,
-      allOptions
+      allOptions,
     );
 
     if (isExpression(enable)) {
@@ -202,4 +213,28 @@ export function applyVisibilityModifiers(
   }
 
   return !!(visible && enable && option.childOptions?.length);
+}
+
+export function getUpdatedModifiers(
+  values: ConfigValues,
+  templateModifiers: Modifiers,
+  allOptions: { [key: string]: OptionInterface },
+) {
+  const optionKeys: string[] = Object.keys(values);
+  // let updatedModifiers: Modifiers = { ...configModifiers };
+  let updatedModifiers: Modifiers = { ...templateModifiers };
+
+  optionKeys.forEach((key) => {
+    if (values[key] !== null) {
+      const [modelicaPath, instancePath] = key.split("-");
+      const option = allOptions[modelicaPath] as OptionInterface;
+
+      updatedModifiers = {
+        ...updatedModifiers,
+        ...buildModifiers(option, instancePath, updatedModifiers, allOptions),
+      };
+    }
+  });
+
+  return updatedModifiers;
 }

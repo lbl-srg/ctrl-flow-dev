@@ -26,7 +26,8 @@ const Config = observer(({ configId }: ConfigProps) => {
     template?.modelicaPath,
   );
   const selections: ConfigValues = configStore.getConfigSelections(configId);
-  const allOptions: OptionInterface[] = templateStore.getAllOptions();
+  const allOptions: { [key: string]: OptionInterface } =
+    templateStore.getAllOptions();
 
   function removeConfiguration(event: MouseEvent) {
     event.preventDefault();

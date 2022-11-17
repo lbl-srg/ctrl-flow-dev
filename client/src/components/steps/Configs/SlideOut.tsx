@@ -8,15 +8,10 @@ import Modal from "../../modal/Modal";
 import OptionSelect from "./OptionSelect";
 
 import {
-  Expression,
-  evaluateExpression,
-  isExpression
-} from "../../../utils/expression-helpers";
-import {
   applyValueModifiers,
   applyVisibilityModifiers,
-  buildModifiers,
   Modifiers,
+  getUpdatedModifiers,
 } from "../../../utils/modifier-helpers";
 
 import "../../../styles/components/config-slide-out.scss";
@@ -51,7 +46,7 @@ export interface ConfigSlideOutProps {
   templateOptions: OptionInterface[];
   templateModifiers: Modifiers;
   selections: ConfigValues;
-  allOptions: OptionInterface[];
+  allOptions: { [key: string]: OptionInterface };
   close: () => void;
 }
 
@@ -92,88 +87,39 @@ const SlideOut = ({
   templateModifiers,
   selections,
   allOptions,
-  close
+  close,
 }: ConfigSlideOutProps) => {
-  const { configStore } = useStores();
-  // const [configModifiers, setConfigModifiers] = useState<Modifiers>(templateModifiers);
-  // const [selectedValues, setSelectedValues] = useState<ConfigValues>(selections);
-  // const [evaluatedValues, setEvaluatedValues] = useState<ConfigValues>({});
-  // const [displayedOptions, setDisplayedOptions] = useState<FlatConfigOption[]>([]);
+  const { configStore, templateStore } = useStores();
 
-  // useEffect(() => {
-  //   const updatedModifiers: Modifiers = getUpdatedModifiers(selectedValues);
-  //   setConfigModifiers(updatedModifiers);
-
-  //   const updatedValues: ConfigValues = getEvaluatedValues(
-  //     templateOptions,
-  //     "",
-  //     false,
-  //   );
-  //   setEvaluatedValues(updatedValues);
-  // }, [selectedValues]);
-
-  // useEffect(() => {
-  //   const updatedModifiers: Modifiers = getUpdatedModifiers({
-  //     ...evaluatedValues,
-  //     ...selectedValues,
-  //   });
-  //   setConfigModifiers(updatedModifiers);
-
-  //   const updatedDisplayOptions: FlatConfigOption[] = getDisplayOptions(
-  //     templateOptions,
-  //     "root",
-  //     "",
-  //     false,
-  //   );
-  //   setDisplayedOptions(updatedDisplayOptions);
-  // }, [evaluatedValues]);
-
-  const [selectedValues, setSelectedValues] = useState<ConfigValues>(selections);
-  let configModifiers: Modifiers = getUpdatedModifiers(selectedValues);
+  const [selectedValues, setSelectedValues] =
+    useState<ConfigValues>(selections);
+  let configModifiers: Modifiers = getUpdatedModifiers(
+    selectedValues,
+    templateModifiers,
+    templateStore._options,
+  );
   const evaluatedValues: ConfigValues = getEvaluatedValues(
     templateOptions,
     "",
     false,
   );
 
-  configModifiers = getUpdatedModifiers({
-    ...evaluatedValues,
-    ...selectedValues,
-  });
+  // configModifiers = getUpdatedModifiers({
+  //   ...evaluatedValues,
+  //   ...selectedValues,
+  // });
 
-  const displayedOptions: (FlatConfigOptionGroup | FlatConfigOption)[] = getDisplayOptions(
-    templateOptions,
-    "root",
-    "",
-    false,
+  configModifiers = getUpdatedModifiers(
+    {
+      ...evaluatedValues,
+      ...selectedValues,
+    },
+    configModifiers,
+    templateStore._options,
   );
 
-  function getUpdatedModifiers(values: ConfigValues) {
-    const optionKeys: string[] = Object.keys(values);
-    // let updatedModifiers: Modifiers = { ...configModifiers };
-    let updatedModifiers: Modifiers = { ...templateModifiers };
-
-    optionKeys.forEach((key) => {
-      if (values[key] !== null) {
-        const [modelicaPath, instancePath] = key.split('-');
-        const option = allOptions.find(
-          (o) => o.modelicaPath === modelicaPath,
-        ) as OptionInterface;
-
-        updatedModifiers = {
-          ...updatedModifiers,
-          ...buildModifiers(
-            option,
-            instancePath,
-            updatedModifiers,
-            allOptions,
-          )
-        };
-      }
-    });
-
-    return updatedModifiers;
-  }
+  const displayedOptions: (FlatConfigOptionGroup | FlatConfigOption)[] =
+    getDisplayOptions(templateOptions, "root", "", false);
 
   function getEvaluatedValues(
     options: OptionInterface[],
@@ -189,7 +135,7 @@ const SlideOut = ({
       }
 
       if (changeScope) {
-        const instance = option.modelicaPath.split('.').pop() || "";
+        const instance = option.modelicaPath.split(".").pop() || "";
         currentScope = scope ? `${scope}.${instance}` : instance;
       }
 
@@ -238,7 +184,7 @@ const SlideOut = ({
       }
 
       if (changeScope) {
-        const instance = option.modelicaPath.split('.').pop() || "";
+        const instance = option.modelicaPath.split(".").pop() || "";
         currentScope = scope ? `${scope}.${instance}` : instance;
       }
 
@@ -250,7 +196,7 @@ const SlideOut = ({
         selectedValues,
         configModifiers,
         template.pathModifiers,
-        allOptions
+        allOptions,
       );
 
       if (isVisible) {
@@ -261,15 +207,16 @@ const SlideOut = ({
             modelicaPath: option.modelicaPath,
             name: option.name,
             choices: option.childOptions || [],
-            value: selectedValues[selectionPath] || evaluatedValues[selectionPath],
+            value:
+              selectedValues[selectionPath] || evaluatedValues[selectionPath],
             scope: currentScope,
           },
         ];
 
         if (selectedValues[selectionPath]) {
-          const selectedOption = allOptions.find(
-            (o) => o.modelicaPath === selectedValues[selectionPath],
-          ) as OptionInterface;
+          const selectedOption = allOptions[
+            selectedValues[selectionPath]
+          ] as OptionInterface;
 
           displayOptions = [
             ...displayOptions,
@@ -281,9 +228,9 @@ const SlideOut = ({
             ),
           ];
         } else if (evaluatedValues[selectionPath]) {
-          const evaluatedOption = allOptions.find(
-            (o) => o.modelicaPath === evaluatedValues[selectionPath],
-          ) as OptionInterface;
+          const evaluatedOption = allOptions[
+            evaluatedValues[selectionPath]
+          ] as OptionInterface;
 
           displayOptions = [
             ...displayOptions,
@@ -295,7 +242,11 @@ const SlideOut = ({
             ),
           ];
         }
-      } else if (option.definition && option.childOptions?.length && parentModelicaPath !== 'root') {
+      } else if (
+        option.definition &&
+        option.childOptions?.length &&
+        parentModelicaPath !== "root"
+      ) {
         displayOptions = [
           ...displayOptions,
           {
@@ -307,7 +258,7 @@ const SlideOut = ({
               currentScope,
               option.definition,
             ),
-          }
+          },
         ];
       } else if (option.childOptions?.length) {
         displayOptions = [
@@ -341,7 +292,7 @@ const SlideOut = ({
       return {
         ...prevState,
         [selectionPath]: choice,
-      }
+      };
     });
   }
 
@@ -358,31 +309,39 @@ const SlideOut = ({
     close();
   }
 
-  function renderDisplayOptions(items: (FlatConfigOptionGroup | FlatConfigOption)[]) {
-    return items.map((option: FlatConfigOptionGroup | FlatConfigOption, index) => {
+  function renderDisplayOptions(
+    items: (FlatConfigOptionGroup | FlatConfigOption)[],
+  ) {
+    return items.map(
+      (option: FlatConfigOptionGroup | FlatConfigOption, index) => {
+        if ("groupName" in option) {
+          const optionGroup = option as FlatConfigOptionGroup;
 
-      if ('groupName' in option) {
-        const optionGroup = option as FlatConfigOptionGroup;
+          if (!optionGroup.items.length) return null;
 
-        if (!optionGroup.items.length) return null;
+          return (
+            <div
+              className="display-group-container"
+              key={optionGroup.selectionPath}
+            >
+              <label className="display-group-label">
+                {optionGroup.groupName}
+              </label>
+              {renderDisplayOptions(optionGroup.items)}
+            </div>
+          );
+        }
 
         return (
-          <div className="display-group-container" key={optionGroup.selectionPath}>
-            <label className="display-group-label">{optionGroup.groupName}</label>
-              {renderDisplayOptions(optionGroup.items)}
-          </div>
+          <OptionSelect
+            key={`${option.parentModelicaPath}---${option.modelicaPath}`}
+            option={option}
+            configId={config.id}
+            updateSelectedConfigOption={updateSelectedConfigOption}
+          />
         );
-      }
-
-      return (
-        <OptionSelect
-          key={`${option.parentModelicaPath}---${option.modelicaPath}`}
-          option={option}
-          configId={config.id}
-          updateSelectedConfigOption={updateSelectedConfigOption}
-        />
-      );
-    });
+      },
+    );
   }
 
   return (
