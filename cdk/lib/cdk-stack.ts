@@ -2,7 +2,6 @@ import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as ecs from "aws-cdk-lib/aws-ecs";
-import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
 import * as ecs_patterns from "aws-cdk-lib/aws-ecs-patterns";
 import * as path from "path";
 import { Platform } from "aws-cdk-lib/aws-ecr-assets";
@@ -11,15 +10,20 @@ import { Bucket } from "aws-cdk-lib/aws-s3";
 import { RemovalPolicy } from "aws-cdk-lib";
 
 export class LblCdkStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    stage: string,
+    props?: cdk.StackProps,
+  ) {
     super(scope, id, props);
 
     ////  Start Fargate For API
-    const vpc = new ec2.Vpc(this, "LblVpc", {
+    const vpc = new ec2.Vpc(this, `LblVpc-${stage}`, {
       maxAzs: 3,
     });
 
-    const cluster = new ecs.Cluster(this, "LblCluster", {
+    const cluster = new ecs.Cluster(this, `LblCluster-${stage}`, {
       vpc: vpc,
     });
 
@@ -27,7 +31,7 @@ export class LblCdkStack extends cdk.Stack {
     const fargateService =
       new ecs_patterns.ApplicationLoadBalancedFargateService(
         this,
-        "LblApiFargateService",
+        `LblApiFargateService-${stage}`,
         {
           cluster: cluster,
           taskImageOptions: {
@@ -54,20 +58,21 @@ export class LblCdkStack extends cdk.Stack {
         },
       );
 
-    ////  End Fargate For API
-
-    new cdk.CfnOutput(this, "LbLApiUrl", {
+    new cdk.CfnOutput(this, `LbLApiUrl`, {
       value: `http://${fargateService.loadBalancer.loadBalancerDnsName}`,
       description: "The url of the lbl fargate service",
-      exportName: "LbLApiUrl",
+      exportName: `LbLApiUrl-${stage}`,
     });
 
+    ////  End Fargate For API
+
     ////  Begin S3 Bucket for Client
-    const clientBucket = new Bucket(this, "lbl-client", {
-      bucketName: "lbl-client",
+    new Bucket(this, `lbl-client-${stage}`, {
+      bucketName: `lbl-client-${stage}`,
       publicReadAccess: true,
       websiteIndexDocument: "index.html",
       websiteErrorDocument: "index.html",
+      autoDeleteObjects: true,
       removalPolicy: RemovalPolicy.DESTROY,
     });
 

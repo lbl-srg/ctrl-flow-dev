@@ -4,21 +4,27 @@ If you want to deploy your app, there are a number of commands that you have to 
 
 There are some dependencies:
 
-- AWS CLI
+- AWS CLI (configured with credentials to your desired aws instance `~/.aws/credentials`)
 - Docker
 - Node
+- JQ `brew install jq`
 
 ```bash
+# Set the stage
+export LBL_STAGE=staging
+
 # Deploy Server and Client S3 Bucket through CDK
 cd cdk
 npm i
 npx aws-cdk synth
-npx aws-cdk deploy --require-approval never
+npx aws-cdk deploy --require-approval never --outputs-file cdk.out/cdk-outputs.json
 
 # Export the LbLApiUrl for use in the client build
-# There has got to be some way to grab this directly from CDK, but I have
-# not been able to find it. That would remove the dependency on the aws cli
-export REACT_APP_API=$(aws cloudformation describe-stacks --stack-name LblCdkStack --query "Stacks[0].Outputs[?OutputKey=='LbLApiUrl'].OutputValue" --output text)
+#
+# !!! This may be overwritten by your local .env file, you may need to find
+# out how to build the client with out using the .env file so that it respects
+# this value
+export REACT_APP_API=$(jq -r .LblCdkStack${LBL_STAGE}.LbLApiUrl cdk.out/cdk-outputs.json)/api
 
 # TODO. Copy the templates.json file out of the docker image
 # and into /client/src/templates.json
@@ -34,6 +40,6 @@ npm i
 npm run build
 
 # Deploy the client
-aws s3 rm s3://lbl-client/ --recursive
-aws s3 sync ./build s3://lbl-client/
+aws s3 rm s3://lbl-client-${LBL_STAGE}/ --recursive
+aws s3 sync ./build s3://lbl-client-${LBL_STAGE}/
 ```
