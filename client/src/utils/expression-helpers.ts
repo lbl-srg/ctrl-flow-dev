@@ -26,12 +26,17 @@ export function resolveValue(
   // if value is a boolean or number we are just a value and need to return
   if (typeof value === "boolean" || typeof value === "number") return value;
 
-  // need to check if there is a modifier
+  // update path based on modifiers
   const scopePath = applyPathModifiers(`${scope}.${value}`, pathModifiers);
+  // is there a modifier for the provided path
   const scopeModifier = modifiers[scopePath];
+  // set scope relative to class definition by popping off what is assumed to
+  // be a param name
   const newScope = scopePath.split(".").slice(0, -1).join(".");
   let evaluatedValue: any = undefined;
 
+  // there is a modifier for the given instance path, attempt to resolve
+  // its value
   if (scopeModifier) {
     evaluatedValue = evaluateExpression(
       scopeModifier.expression,
@@ -46,7 +51,7 @@ export function resolveValue(
     if (!isExpression(evaluatedValue)) return evaluatedValue;
   }
 
-  // if we couldn't resolve a modifier we need to check for a default value
+  // if we couldn't resolve a modifier get default value from option (using the modelica path 'value')
   const originalOption = allOptions[value];
 
   if (originalOption) {

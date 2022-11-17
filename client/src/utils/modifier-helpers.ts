@@ -113,6 +113,13 @@ export function buildModifiers(
   return modifiers;
 }
 
+/**
+ * Update path based on path modifiers
+ *
+ * e.g. if we have a path mod of 'ctl.secOutRel' -> 'secOutRel'
+ *
+ * The path 'ctl.secOutRel.typ' become 'secOutRel.typ'
+ */
 export function applyPathModifiers(
   scopePath: string,
   pathModifiers: Modifiers,
@@ -135,6 +142,9 @@ export function applyPathModifiers(
   return modifiedPath;
 }
 
+/**
+ * Attempt to resolve a value
+ */
 export function applyValueModifiers(
   // configOption: FlatConfigOption,
   optionValue: any,

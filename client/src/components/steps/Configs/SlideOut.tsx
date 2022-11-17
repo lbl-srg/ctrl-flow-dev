@@ -93,6 +93,7 @@ const SlideOut = ({
 
   const [selectedValues, setSelectedValues] =
     useState<ConfigValues>(selections);
+  // template defaults + selections
   let configModifiers: Modifiers = getUpdatedModifiers(
     selectedValues,
     templateModifiers,
@@ -103,11 +104,6 @@ const SlideOut = ({
     "",
     false,
   );
-
-  // configModifiers = getUpdatedModifiers({
-  //   ...evaluatedValues,
-  //   ...selectedValues,
-  // });
 
   configModifiers = getUpdatedModifiers(
     {
@@ -121,6 +117,7 @@ const SlideOut = ({
   const displayedOptions: (FlatConfigOptionGroup | FlatConfigOption)[] =
     getDisplayOptions(templateOptions, "root", "", false);
 
+  //
   function getEvaluatedValues(
     options: OptionInterface[],
     scope: string,
@@ -134,11 +131,13 @@ const SlideOut = ({
         return;
       }
 
+      // update local scope if changeScope is true
       if (changeScope) {
         const instance = option.modelicaPath.split(".").pop() || "";
         currentScope = scope ? `${scope}.${instance}` : instance;
       }
 
+      // build selection path
       const selectionPath = `${option.modelicaPath}-${currentScope}`;
 
       evaluatedValues = {
@@ -357,28 +356,6 @@ const SlideOut = ({
           defaultValue={config.name}
           placeholder="Name Your Configuration"
         />
-        {/* TODO: Figure out how we want grouping logic to work. The way the logic is implemented right now, child options from selections are not necessarily displayed right before the parent they belong to because there might be other options in the group the parent belongs to that are displayed first. */}
-        {/*groupedConfigOptions.map((optionGroup) => (
-          <div key={optionGroup.parentModelicaPath}>
-            <label>{optionGroup.parentName}</label>
-            {optionGroup.options.map(
-              (option: FlatConfigOption, optionIndex) => {
-                overallIndex++;
-                return (
-                  <OptionSelect
-                    key={`${option.parentModelicaPath}---${
-                      option.modelicaPath
-                    }---${optionIndex + 1}`}
-                    index={overallIndex}
-                    option={option}
-                    configId={config.id}
-                    updateSelectedConfigOptions={updateSelectedConfigOptions}
-                  />
-                );
-              },
-            )}
-          </div>
-            ))*/}
         {renderDisplayOptions(displayedOptions)}
         <button type="submit">{itl.terms.save}</button>
       </form>
