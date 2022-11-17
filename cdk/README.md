@@ -20,10 +20,6 @@ npx aws-cdk synth
 npx aws-cdk deploy --require-approval never --outputs-file cdk.out/cdk-outputs.json
 
 # Export the LbLApiUrl for use in the client build
-#
-# !!! This may be overwritten by your local .env file, you may need to find
-# out how to build the client with out using the .env file so that it respects
-# this value
 export REACT_APP_API=$(jq -r .LblCdkStack${LBL_STAGE}.LbLApiUrl cdk.out/cdk-outputs.json)/api
 
 # Copy the templates.json file out of the server docker image
