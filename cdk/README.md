@@ -37,7 +37,7 @@ docker rm -v $id
 # Build the client
 cd ../client
 npm i
-npm run build
+npm run buildForS3
 
 # Deploy the client
 aws s3 rm s3://lbl-client-${LBL_STAGE}/ --recursive
