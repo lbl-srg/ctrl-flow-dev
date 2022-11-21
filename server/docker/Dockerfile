@@ -6,11 +6,6 @@ RUN apt-get --assume-yes update
 # RUN pandoc --version
 # RUN tex --version
 
-# Install python dependencies
-RUN apt-get --assume-yes install pip
-# Install python-docx
-RUN python3 -m pip install python-docx
-
 # Installs Node 16.16.0 LTS with NVM
 # FROM ubuntu-pandoc as ubuntu-pandoc-node
 RUN apt-get --assume-yes update && apt-get --assume-yes install curl bash
@@ -26,12 +21,16 @@ RUN node --version
 RUN npm --version
 
 # Prepares Modelica dependency scripts
-# FROM ubuntu-pandoc-node as alpine-node-modelica
 RUN apt-get update && apt-get -y install default-jdk
 RUN mkdir dependencies
 WORKDIR /app
 COPY bin/ bin/
 COPY package*.json ./
+
+# Install python dependencies
+RUN apt-get --assume-yes install pip
+COPY scripts/sequence-doc scripts/sequence-doc
+RUN npm run install-python-deps
 
 # Installs Modelica dependencies
 RUN apt-get -y install make curl git
