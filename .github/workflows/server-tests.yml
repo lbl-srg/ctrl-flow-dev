@@ -31,8 +31,8 @@ jobs:
           cache-dependency-path: server/package-lock.json
       - name: Install Modelica dependencies
         run: npm run install-modelica-deps
-      - name: Install Pandoc
-        run: npm run install-pandoc
+      - name: Install Python dependencies
+        run: npm run install-python-deps
       - name: Install NPM packages
         run: npm ci
       - name: Run tests

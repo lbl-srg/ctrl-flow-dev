@@ -241,11 +241,7 @@ const SlideOut = ({
             ),
           ];
         }
-      } else if (
-        option.definition &&
-        option.childOptions?.length &&
-        parentModelicaPath !== "root"
-      ) {
+      } else if (option.definition && option.childOptions?.length) {
         displayOptions = [
           ...displayOptions,
           {
@@ -259,6 +255,14 @@ const SlideOut = ({
             ),
           },
         ];
+        if ("groupName" in displayOptions[displayOptions.length - 1]) {
+          const optionGroup = displayOptions[
+            displayOptions.length - 1
+          ] as FlatConfigOptionGroup;
+          if (!optionGroup.items.length) {
+            displayOptions.pop();
+          }
+        }
       } else if (option.childOptions?.length) {
         displayOptions = [
           ...displayOptions,
@@ -315,8 +319,6 @@ const SlideOut = ({
       (option: FlatConfigOptionGroup | FlatConfigOption, index) => {
         if ("groupName" in option) {
           const optionGroup = option as FlatConfigOptionGroup;
-
-          if (!optionGroup.items.length) return null;
 
           return (
             <div

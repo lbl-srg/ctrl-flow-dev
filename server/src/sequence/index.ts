@@ -91,9 +91,10 @@ export async function writeControlSequenceDocument(
   const latexFilePath = `${SEQUENCE_OUTPUT_PATH}/${fileName}.tex`;
   const docxFilePath = `${SEQUENCE_OUTPUT_PATH}/${fileName}.docx`;
 
-  await writeLatexFile(controlSequenceInput, latexFilePath);
-  const { stdout, stderr } = await convertToDOCX(latexFilePath, docxFilePath);
-  console.log(stdout);
-  console.log(stderr);
-  return getConvertedDocument(docxFilePath);
+  // await writeLatexFile(controlSequenceInput, latexFilePath);
+  // const { stdout, stderr } = await convertToDOCX(latexFilePath, docxFilePath);
+  // console.log(stdout);
+  // console.log(stderr);
+  // return getConvertedDocument(docxFilePath);
+  return "";
 }
