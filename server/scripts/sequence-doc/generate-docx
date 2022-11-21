@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 import json
+import argparse
+import sys
 import re
 from pathlib import Path
 import logging
@@ -27,6 +29,13 @@ ANNOTATION_STYLE = 'Toggle'
 logging.getLogger().setLevel(logging.DEBUG)
 
 
+def __main__():
+    '''
+    '''
+    # TODO: parse cli args using argparse
+    # TODO: get piped input (using 'sys' to get input) and stuff into 'STORE' object
+    # TODO: call routines below to output docx
+
 document = Document(INPUT_PATH)
 nodes_to_delete = []
 
@@ -40,7 +49,7 @@ with open(MAPPINGS_PATH) as fh:
         if row[MAPPINGS_SHORT_ID]:
             MAPPINGS[row[MAPPINGS_SHORT_ID]] = row[MAPPINGS_MODELICA_PATH]
             
-# TODO: replace STORE with actual selections
+# TODO: replace STORE with actual selections piped in from command line
 STORE = {
     'Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialVAVBoxController.have_CO2Sen': False,
     #'Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.buiPreCon': 'BarometricRelief',
