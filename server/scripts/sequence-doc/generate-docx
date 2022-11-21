@@ -15,9 +15,10 @@ import re
 #output_filename = 'Guideline 36 - Edited.docx'
 #input_filename = '2022-10-07 Guideline 36-2021 (sequence selection source).docx'
 #output_filename = '2022-10-07 Guideline 36-2021.docx'
-INPUT_PATH = '2022-10-31 Guideline 36-2021 (sequence selection source).docx'
+INPUT_PATH = Path('VERSION', '2022-10-31 G36 Decisions')\
+    / '2022-10-31 Guideline 36-2021 (sequence selection source).docx'
 OUTPUT_PATH = '2022-10-31 Guideline 36.docx'
-MAPPINGS_PATH = Path('2022-10-31 G36 Decisions') / 'rev2-Table 1.csv'
+MAPPINGS_PATH = Path('VERSION', '2022-10-31 G36 Decisions') / 'rev2-Table 1.csv'
 MAPPINGS_SHORT_ID = 'Short ID'
 MAPPINGS_MODELICA_PATH = 'Modelica Path'
 
