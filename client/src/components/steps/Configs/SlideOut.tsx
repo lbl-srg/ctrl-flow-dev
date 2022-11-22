@@ -12,6 +12,7 @@ import {
   applyVisibilityModifiers,
   Modifiers,
   getUpdatedModifiers,
+  ConfigValues,
 } from "../../../utils/modifier-helpers";
 
 import "../../../styles/components/config-slide-out.scss";
@@ -34,10 +35,6 @@ export interface FlatConfigOption {
 export interface FlatConfigOptionChoice {
   modelicaPath: string;
   name: string;
-}
-
-export interface ConfigValues {
-  [key: string]: string;
 }
 
 export interface ConfigSlideOutProps {
