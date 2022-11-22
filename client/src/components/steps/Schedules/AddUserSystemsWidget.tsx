@@ -13,7 +13,7 @@ type AddUserSystemFormData = {
 };
 
 const AddUserSystemsWidget = observer(() => {
-  const { configStore } = useStores();
+  const { configStore, uiStore } = useStores();
   const configs = configStore.getActiveConfigs();
 
   const initValues = {
@@ -24,7 +24,7 @@ const AddUserSystemsWidget = observer(() => {
   };
 
   function configChange(ev: ChangeEvent<HTMLSelectElement>) {
-    configStore.setActiveConfigId(ev.target.value);
+    uiStore.setActiveConfigId(ev.target.value);
   }
 
   function onWidgetSubmit(ev: FormEvent<HTMLFormElement>) {

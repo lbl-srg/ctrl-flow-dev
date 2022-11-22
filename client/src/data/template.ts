@@ -1,6 +1,6 @@
 import tplData from "./templates.json";
 import RootStore from ".";
-import { buildModifiers, Modifiers } from '../utils/modifier-helpers';
+import { buildModifiers, Modifiers } from "../utils/modifier-helpers";
 
 export interface TemplateInterface {
   modelicaPath: string;
@@ -54,19 +54,24 @@ const icons = [
 ];
 
 export default class Template {
+  _mods: Modifiers | undefined; // internal cache so we don't recompute... doesn't help
   templates: TemplateInterface[];
-  options: OptionInterface[];
+  optionList: OptionInterface[];
+  _options: { [key: string]: OptionInterface } = {};
   systemTypes: SystemTypeInterface[];
   rootStore: RootStore;
 
   constructor(rootStore: RootStore) {
     this.templates = tplData.templates;
-    this.options = tplData.options;
+    this.optionList = tplData.options;
     this.systemTypes = tplData.systemTypes;
     this.rootStore = rootStore;
+
+    // create option dictionary for quick lookup
+    this.optionList.map((o) => (this._options[o.modelicaPath] = o));
   }
 
-  getTemplateByPath(path: string): TemplateInterface | undefined {
+  getTemplateByPath(path: string | null): TemplateInterface | undefined {
     return this.templates.find((tpl) => tpl.modelicaPath === path);
   }
 
@@ -90,9 +95,9 @@ export default class Template {
   }
 
   get nestedOptions(): OptionInterface[] {
-    const allOptions = this.options;
+    const allOptions = this.optionList;
 
-    return this.options.map((option) => {
+    return this.optionList.map((option) => {
       if (option.options) {
         option.childOptions = option.options.reduce((acc, path) => {
           const match = allOptions.find((opt) => opt.modelicaPath === path);
@@ -114,17 +119,25 @@ export default class Template {
   }
 
   getModifiersForTemplate(path: string): Modifiers {
-    const templateOption = this.options.find(
-      (opt) => opt.modelicaPath === path,
-    ) as OptionInterface;
-    return buildModifiers(templateOption, "", {}, this.options);
+    if (!this._mods) {
+      const templateOption = this.optionList.find(
+        (opt) => opt.modelicaPath === path,
+      ) as OptionInterface;
+      this._mods = buildModifiers(templateOption, "", {}, this._options);
+    }
+
+    return this._mods;
   }
 
-  getAllOptions(): OptionInterface[] {
-    return this.options;
+  getAllTemplates() {
+    return this.templates;
   }
 
-  getOption(path: string): OptionInterface {
-    return this.options.filter((opt) => opt.modelicaPath === path)[0];
+  getAllOptions() {
+    return this._options;
+  }
+
+  getOption(path: string) {
+    return this._options[path];
   }
 }

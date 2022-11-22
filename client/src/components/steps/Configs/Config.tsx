@@ -6,8 +6,9 @@ import SlideOutOpenButton from "./SlideOutOpenButton";
 import SlideOut, { ConfigValues } from "./SlideOut";
 import { useStores } from "../../../data";
 
-import { OptionInterface } from "../../../data/template";
+import { OptionInterface, TemplateInterface } from "../../../data/template";
 import { Modifiers } from "../../../utils/modifier-helpers";
+import { ConfigInterface } from "../../../data/config";
 
 export interface ConfigProps {
   configId: string | undefined;
@@ -15,16 +16,18 @@ export interface ConfigProps {
 
 const Config = observer(({ configId }: ConfigProps) => {
   const { configStore, templateStore, uiStore } = useStores();
-  const config = configStore.getById(configId);
-  const template = templateStore.getTemplateByPath(config.templatePath);
-  const templateOptions: OptionInterface[] = templateStore.getOptionsForTemplate(
-    template?.modelicaPath,
-  );
+  const config = configStore.getById(configId) as ConfigInterface;
+  const template = templateStore.getTemplateByPath(
+    config.templatePath,
+  ) as TemplateInterface;
+  const templateOptions: OptionInterface[] =
+    templateStore.getOptionsForTemplate(template?.modelicaPath);
   const templateModifiers: Modifiers = templateStore.getModifiersForTemplate(
     template?.modelicaPath,
   );
   const selections: ConfigValues = configStore.getConfigSelections(configId);
-  const allOptions: OptionInterface[] = templateStore.getAllOptions();
+  const allOptions: { [key: string]: OptionInterface } =
+    templateStore.getAllOptions();
 
   function removeConfiguration(event: MouseEvent) {
     event.preventDefault();

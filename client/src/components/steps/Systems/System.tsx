@@ -1,15 +1,15 @@
 import { useStores } from "../../../data";
 import { observer } from "mobx-react";
-import { OptionInterface } from "../../../data/template";
+import { OptionInterface, TemplateInterface } from "../../../data/template";
 
 const System = observer(({ systemPath }: { systemPath: string }) => {
   const { uiStore, configStore, templateStore } = useStores();
 
-  const { description } = templateStore.getSystemTypeByPath(systemPath);
+  const systemType = templateStore.getSystemTypeByPath(systemPath);
   const templates = templateStore.getTemplatesForSystem(systemPath);
   const iconClass = templateStore.getIconForSystem(systemPath);
 
-  function onSelect(option: OptionInterface, checked: boolean) {
+  function onSelect(option: TemplateInterface, checked: boolean) {
     uiStore.setOpenSystemPath(systemPath);
     uiStore.setActiveSystemPath(systemPath);
 
@@ -23,11 +23,11 @@ const System = observer(({ systemPath }: { systemPath: string }) => {
     <li className="system" id={`system-${systemPath}`} data-spy="system">
       <h2 className="system-header">
         {iconClass && <i className={iconClass} />}
-        {description}
+        {systemType?.description}
       </h2>
 
       <ul className="check-list">
-        {templates.map((option: OptionInterface) => {
+        {templates.map((option: TemplateInterface) => {
           const { name, modelicaPath } = option;
 
           const checked = configStore.hasSystemTemplateConfigs(

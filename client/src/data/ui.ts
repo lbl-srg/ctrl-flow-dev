@@ -10,7 +10,7 @@ export default class Ui {
   activeSystemPath: string | null = null;
   openSystemPath: string | null = null;
   activeTemplatePath: string | null = null;
-  activeConfigId: string | null = null;
+  activeConfigId: string | null | undefined = null;
   leftColWidth = 300;
   watchScroll = false;
   rootStore;
@@ -59,7 +59,7 @@ export default class Ui {
     this.timeoutScroll();
   }
 
-  setActiveConfigId(id: string) {
+  setActiveConfigId(id: string | undefined) {
     this.activeConfigId = id;
   }
 
