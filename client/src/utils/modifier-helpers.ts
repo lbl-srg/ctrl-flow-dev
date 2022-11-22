@@ -106,7 +106,7 @@ export function buildModifiers(
   baseModifiers: Modifiers,
   options: { [key: string]: OptionInterface },
 ): Modifiers {
-  const modifiers: Modifiers = baseModifiers;
+  const modifiers: Modifiers = { ...baseModifiers };
 
   updateModifiers(startOption, baseInstancePath, modifiers, options);
 
