@@ -1,11 +1,11 @@
 '''
 Basic sequence doc tests
 '''
-from src.generate_doc import parse_args, DEFAULT_DOC_VERSION
+from src.generate_doc import parse_args, extract_input, DEFAULT_DOC_VERSION
 
 ## Test Command Line Args
 def test_command_line_args():
-    '''
+    ''' Tests that the --version flag updates things as expected
     '''
     test_version = 'another-version'
     mock_args = ['--version', test_version]
@@ -15,3 +15,10 @@ def test_command_line_args():
 
     default_args = parse_args([])
     assert default_args.version == DEFAULT_DOC_VERSION
+
+def test_piped_input():
+    ''' Uses a file as an example IO stream
+    '''
+    with open("tests/static/example_selections.txt") as f:
+        selections = extract_input(f)
+        assert selections != None

@@ -39,8 +39,8 @@ def parse_args(args) -> str:
 
     return args
 
-def extract_input(input: TextIO) -> dict:
-    return json.loads(input)
+def extract_input(input_stream: TextIO) -> dict:
+    return json.load(input_stream)
 
 def __main__():
     '''
@@ -79,7 +79,6 @@ def __main__():
 #     'DEL_INFO_BOX': False,
 #     #'UNITS': 'SI',
 # }
-
 
 # def remove_node(node):
 #     ''' Appends node to list to be removed
