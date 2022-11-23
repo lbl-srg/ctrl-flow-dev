@@ -3,6 +3,8 @@ import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 import RootStore from "./index";
 
+import { ConfigValues } from "../utils/modifier-helpers";
+
 export interface SelectionInterface {
   name: string;
   value: string;
@@ -12,11 +14,12 @@ export interface ConfigInterface {
   id: string;
   name?: string;
   isLocked: boolean;
-  selections?: SelectionInterface[];
+  selections?: ConfigValues;
+  evaluatedValues?: ConfigValues;
   quantity?: number;
   systemPath: string;
   templatePath: string;
-  [key: string]: string | number | undefined | boolean | SelectionInterface[];
+  [key: string]: string | number | undefined | boolean | ConfigValues;
 }
 
 export type ConfigProps = Omit<ConfigInterface, "id">;
@@ -41,7 +44,8 @@ export default class Config {
       id: uuid(),
       name: "Default",
       isLocked: false,
-      selections: [] as SelectionInterface[],
+      selections: {},
+      evaluatedValues: {},
       quantity: 1,
 
       ...config,
@@ -79,26 +83,32 @@ export default class Config {
   }
 
   // Look in the config for the value of the first option that matches a given modelicaPath
-  findOptionValue(configId: string, optionPath: string): string | undefined {
-    const config = this.getById(configId);
-    if (!config?.selections) return undefined;
+  // findOptionValue(configId: string, optionPath: string): string | undefined {
+  //   const config = this.getById(configId);
+  //   if (!config?.selections) return undefined;
 
-    return config.selections.find((selection) => selection.name === optionPath)
-      ?.value;
-  }
+  //   return config.selections.find((selection) => selection.name === optionPath)
+  //     ?.value;
+  // }
 
-  setSelections(configId: string, selections: SelectionInterface[]) {
+  setSelections(configId: string, selections: ConfigValues) {
     const config = this.getById(configId);
     if (config) config.selections = selections;
   }
 
+  setEvaluatedValues(configId: string, evaluatedValues: ConfigValues) {
+    const config = this.getById(configId);
+    if (config) config.evaluatedValues = evaluatedValues;
+  }
+
   getConfigSelections(configId: string | undefined): any {
     const config = this.getById(configId);
-    const selections = config?.selections?.reduce(
-      (obj, selection) => ({ ...obj, [selection.name]: selection.value }),
-      {},
-    );
-    return toJS(selections || {});
+    return config?.selections;
+  }
+
+  getConfigEvaluatedValues(configId: string | undefined): any {
+    const config = this.getById(configId);
+    return config?.evaluatedValues;
   }
 
   getActiveConfigs(): ConfigInterface[] {
