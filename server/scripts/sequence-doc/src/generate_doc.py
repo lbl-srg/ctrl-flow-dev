@@ -40,13 +40,42 @@ def parse_args(args) -> str:
     return args
 
 def extract_input(input_stream: TextIO) -> dict:
+    # TODO: define expected object type
     return json.load(input_stream)
+
+def generate_short_map(version: str) -> dict:
+    # load mappings
+    MAPPINGS = {}
+
+    with open(MAPPINGS_PATH) as fh:
+        reader = csv.DictReader(fh)
+        for row in reader:
+            if row[MAPPINGS_SHORT_ID] and MAPPINGS.get(row[MAPPINGS_SHORT_ID]):
+                logging.error('Duplicate entry for "%s"', row[MAPPINGS_SHORT_ID])
+            if row[MAPPINGS_SHORT_ID]:
+                MAPPINGS[row[MAPPINGS_SHORT_ID]] = row[MAPPINGS_MODELICA_PATH]
+
+    return MAPPINGS
 
 def __main__():
     '''
     '''
     args = parse_args([sys.argv[1:]])
     selections = extract_input(sys.stdin)
+
+    # load source document starting point
+    document = Document(INPUT_PATH)
+    # load short code mappings
+    mappings = generate_short_map(args.version)
+
+    # start to create document using the source document as a starting point
+    # set up list to track which document nodes should be deleted at the end
+    nodes_to_delete = []
+
+    # control_structure
+    # iterate through input document and start building output document
+    # 1. Go through paragraphs
+    # 2. Go through tables
 
 # document = Document(INPUT_PATH)
 # nodes_to_delete = []
