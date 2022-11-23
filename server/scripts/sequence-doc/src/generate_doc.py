@@ -1,8 +1,6 @@
-#!/usr/bin/python3
 import json
 import argparse
 import sys
-import re
 from pathlib import Path
 import logging
 from typing import TextIO
@@ -31,13 +29,13 @@ ANNOTATION_STYLE = 'Toggle'
 
 logging.getLogger().setLevel(logging.DEBUG)
 
-def parse_args() -> str:
+def parse_args(args) -> str:
     parser = argparse.ArgumentParser(
         prog = 'GenerateSequenceDoc',
         description = 'Generates a sequence document from ctrl-flow selections'
     )
     parser.add_argument('-v', '--version', default=DEFAULT_DOC_VERSION)
-    args = parser.parse_args()
+    args = parser.parse_args(args)
 
     return args
 
@@ -47,7 +45,7 @@ def extract_input(input: TextIO) -> dict:
 def __main__():
     '''
     '''
-    args = parse_args(ARG_PARSER)
+    args = parse_args([sys.argv[1:]])
     selections = extract_input(sys.stdin)
 
 # document = Document(INPUT_PATH)
