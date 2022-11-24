@@ -1,9 +1,4 @@
-import {
-  ControlSequenceInput,
-  EnergyCode,
-  writeLatexFile,
-  convertToDOCX,
-} from "../../../src/sequence";
+import { generateDoc } from "../../../src/sequence";
 
 const TIMEOUT_IN_MILLISECONDS = 30000;
 
