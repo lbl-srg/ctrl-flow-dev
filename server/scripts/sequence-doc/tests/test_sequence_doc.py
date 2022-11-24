@@ -8,10 +8,12 @@ def test_command_line_args():
     ''' Tests that the --version flag updates things as expected
     '''
     test_version = 'another-version'
-    mock_args = ['--version', test_version]
+    test_path = 'my-bespoke-path'
+    mock_args = ['--version', test_version, '--output', test_path]
 
     args = parse_args(mock_args)
     assert args.version == test_version
+    assert args.output == test_path
 
     default_args = parse_args([])
     assert default_args.version == DEFAULT_DOC_VERSION
