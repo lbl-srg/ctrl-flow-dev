@@ -6,7 +6,7 @@ import logging
 from typing import TextIO
 from docx import Document
 import csv
-from mogrifier import mogrify_doc
+from src.mogrifier import mogrify_doc
 
 
 DEFAULT_DOC_VERSION = '2022-10-31 G36 Decisions'
@@ -28,6 +28,8 @@ def parse_args(args) -> str:
         description = 'Generates a sequence document from ctrl-flow selections'
     )
     parser.add_argument('-v', '--version', default=DEFAULT_DOC_VERSION)
+    parser.add_argument('-o', '--output', default=OUTPUT_PATH)
+
     args = parser.parse_args(args)
 
     return args

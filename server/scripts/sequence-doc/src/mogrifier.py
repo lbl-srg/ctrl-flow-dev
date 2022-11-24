@@ -81,6 +81,7 @@ def remove_section(paragraph: Paragraph, run_op_lookup: dict):
 
     for sib_el in paragraph._element.itersiblings():
         if sib_el.tag == P_TAG:
+            # TODO: para is a bad reference - paragraph?
             sib_p = Paragraph(sib_el, para._parent)
             sib_level = get_heading_level(sib_p)
 
@@ -333,6 +334,8 @@ def convert_units(control_structure, selections):
                 logging.error('"%s" is not a valid unit system', selections['UNITS'])
 
 def remove_toggles(doc):
+    ''' Step through and remove 'toggle' text
+    '''
     for para in doc.paragraphs:
         for run in para.runs:
             if run.style.name == ANNOTATION_STYLE:
@@ -347,7 +350,8 @@ def remove_toggles(doc):
                             remove_node(run)
 
 def mogrify_doc(doc: Document, name_map: dict, selections: dict) -> Document:
-    ''' Applies selections to the provided document
+    ''' Applies selections to the provided document. This mutates the provided
+        document
     '''
     initialize_remove_list()
     # walk through source_doc to find each conditional point in the doc
