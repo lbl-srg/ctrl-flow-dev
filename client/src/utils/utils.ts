@@ -31,3 +31,9 @@ export const sortByName = (a: SortableByName, b: SortableByName): number =>
 
 export const trace = (target: any): any =>
   console.log(JSON.parse(JSON.stringify(target)));
+
+export function removeEmpty(obj: any) {
+  return Object.entries(obj)
+    .filter(([_, v]) => v != null)
+    .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {});
+}
