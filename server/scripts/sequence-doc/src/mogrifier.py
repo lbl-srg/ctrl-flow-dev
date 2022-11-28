@@ -57,7 +57,7 @@ def remove_info_box(paragraph, run_op_lookup: dict):
     remove_node(paragraph)
 
     for sib_el in paragraph._element.itersiblings(P_TAG):
-        sib_p = Paragraph(sib_el, para._parent)
+        sib_p = Paragraph(sib_el, paragraph._parent)
         sib_level = get_heading_level(sib_p)
         
         if (sib_level == 0):
@@ -81,8 +81,7 @@ def remove_section(paragraph: Paragraph, run_op_lookup: dict):
 
     for sib_el in paragraph._element.itersiblings():
         if sib_el.tag == P_TAG:
-            # TODO: para is a bad reference - paragraph?
-            sib_p = Paragraph(sib_el, para._parent)
+            sib_p = Paragraph(sib_el, paragraph._parent)
             sib_level = get_heading_level(sib_p)
 
             if (sib_level <= level) and (sib_level != 9999):
@@ -90,7 +89,7 @@ def remove_section(paragraph: Paragraph, run_op_lookup: dict):
 
             remove_node(sib_p)
         elif sib_el.tag == TABLE_TAG:
-            sib_t = Table(sib_el, para._parent)
+            sib_t = Table(sib_el, paragraph._parent)
             remove_node(sib_t)
             logging.error('Deleted table')
         else:
