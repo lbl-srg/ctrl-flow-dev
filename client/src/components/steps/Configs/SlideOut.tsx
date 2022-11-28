@@ -1,4 +1,4 @@
-import { FormEvent, Fragment, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, Fragment, useEffect, useState } from "react";
 
 import itl from "../../../translations";
 import { useStores } from "../../../data";
@@ -6,6 +6,7 @@ import { OptionInterface } from "../../../data/template";
 import { getFormData } from "../../../utils/dom-utils";
 import Modal from "../../modal/Modal";
 import OptionSelect from "./OptionSelect";
+import { useDebouncedCallback } from "use-debounce";
 
 import {
   applyValueModifiers,
@@ -14,6 +15,8 @@ import {
   getUpdatedModifiers,
   ConfigValues,
 } from "../../../utils/modifier-helpers";
+
+import { removeEmpty } from "../../../utils/utils";
 
 import "../../../styles/components/config-slide-out.scss";
 
@@ -87,9 +90,10 @@ const SlideOut = ({
   close,
 }: ConfigSlideOutProps) => {
   const { configStore, templateStore } = useStores();
-
   const [selectedValues, setSelectedValues] =
     useState<ConfigValues>(selections);
+  const [configName, setConfigName] = useState<string>(config.name);
+
   // template defaults + selections
   let configModifiers: Modifiers = getUpdatedModifiers(
     selectedValues,
@@ -114,7 +118,6 @@ const SlideOut = ({
   const displayedOptions: (FlatConfigOptionGroup | FlatConfigOption)[] =
     getDisplayOptions(templateOptions, "root", "", false);
 
-  //
   function getEvaluatedValues(
     options: OptionInterface[],
     scope: string,
@@ -276,6 +279,13 @@ const SlideOut = ({
     return displayOptions;
   }
 
+  const updateConfigName = useDebouncedCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setConfigName(event.target.value);
+    },
+    1000,
+  );
+
   function updateSelectedConfigOption(
     parentModelicaPath: string,
     scope: string,
@@ -300,11 +310,9 @@ const SlideOut = ({
     event.preventDefault();
     event.stopPropagation();
 
-    const data = selectedValues;
-    configStore.setSelections(
-      config.id,
-      Object.entries(data).map(([name, value]) => ({ name, value })),
-    );
+    configStore.update(config.id, { name: configName });
+    configStore.setSelections(config.id, selectedValues);
+    configStore.setEvaluatedValues(config.id, removeEmpty(evaluatedValues));
 
     close();
   }
@@ -352,7 +360,8 @@ const SlideOut = ({
           type="text"
           id="configName"
           name="configName"
-          defaultValue={config.name}
+          defaultValue={configName}
+          onChange={updateConfigName}
           placeholder="Name Your Configuration"
         />
         {renderDisplayOptions(displayedOptions)}

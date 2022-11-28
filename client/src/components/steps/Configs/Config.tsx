@@ -3,11 +3,11 @@ import { useDebouncedCallback } from "use-debounce";
 import { observer } from "mobx-react";
 
 import SlideOutOpenButton from "./SlideOutOpenButton";
-import SlideOut, { ConfigValues } from "./SlideOut";
+import SlideOut from "./SlideOut";
 import { useStores } from "../../../data";
 
 import { OptionInterface, TemplateInterface } from "../../../data/template";
-import { Modifiers } from "../../../utils/modifier-helpers";
+import { Modifiers, ConfigValues } from "../../../utils/modifier-helpers";
 import { ConfigInterface } from "../../../data/config";
 
 export interface ConfigProps {
@@ -29,6 +29,8 @@ const Config = observer(({ configId }: ConfigProps) => {
   const allOptions: { [key: string]: OptionInterface } =
     templateStore.getAllOptions();
 
+  const [openedModal, setOpenedModal] = useState(false);
+
   function removeConfiguration(event: MouseEvent) {
     event.preventDefault();
     configStore.remove(configId);
@@ -41,7 +43,6 @@ const Config = observer(({ configId }: ConfigProps) => {
     400,
   );
 
-  const [openedModal, setOpenedModal] = useState(false);
   function openModal() {
     setOpenedModal(true);
     uiStore.setOpenSystemPath(config.systemPath);
