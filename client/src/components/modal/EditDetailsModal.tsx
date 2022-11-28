@@ -23,10 +23,12 @@ const EditDetailsModal = observer(
     isOpen,
     close,
   }: EditDetailsModalProps) => {
-    const { projectStore } = useStores();
+    const { projectStore, templateStore } = useStores();
 
     const details = projectStore.activeProject
       ?.projectDetails as ProjectDetailInterface;
+
+    const sharedTemplateOptions = templateStore.getOptionsForTemplate("Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard");
 
     const [selectedEnergy, setSelectedEnergy] = useState(details.energy);
 
@@ -44,6 +46,8 @@ const EditDetailsModal = observer(
     }
 
     //TODO: Energy/Ventilation Standards and Climate Zones need to be pulled in options
+
+    console.log('sharedTemplateOptions: ', sharedTemplateOptions);
 
     return (
       <Modal close={close} isOpen={isOpen}>
