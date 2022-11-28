@@ -21,18 +21,17 @@ export async function getDocument(convertedDocumentPath: string) {
 }
 
 export async function generateDoc(selections: Selections, path: string) {
-  const script = `python3 -m src/scripts/sequence-doc/src/generate_doc.py`;
-  const scriptArgs = `--output ${path}`;
-  const scriptCommand = [script, scriptArgs]
-    .filter((section) => section != "")
-    .join(" ");
-  console.log("Running sequence doc generation script:", scriptCommand);
+  const program = `python3`;
+  const scriptArgs = ['src/scripts/sequence-doc/src/generate_doc.py', `--output ${path}`];
 
   return new Promise<ChildProcess>((resolve, reject) => {
-    const scriptProcess = spawn(scriptCommand);
+    const scriptProcess = spawn(program, scriptArgs);
     // pipe in selections
     // TODO: selections may need to be sanitized
     scriptProcess.stdin.write(JSON.stringify(selections));
+    scriptProcess.stdin.end();
+    scriptProcess.stdout.on('data', (data) => data);
+    scriptProcess.stderr.on('data', (data) => console.log(`${data}`));
     scriptProcess.on("close", (code) => {
       if (code === 0) {
         resolve(scriptProcess);
