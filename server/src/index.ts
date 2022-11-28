@@ -95,6 +95,8 @@ app.post("/api/sequence", async (req, res) => {
   // The Control Sequence Input consists of mock data at the moment.
   // Please note that this is a very naive data format.
   // The shape of this object will most likely need to be modified and massaged when we work with real data.
+  const request = req.body;
+  console.log('request: ', request);
   const controlSequenceInput: ControlSequenceInput = {
     energyCode: EnergyCode.Ashrae,
     choices: {

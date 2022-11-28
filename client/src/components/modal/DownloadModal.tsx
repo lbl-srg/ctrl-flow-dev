@@ -1,6 +1,8 @@
 import Modal, { ModalInterface } from "./Modal";
 import { useState, ChangeEvent } from "react";
 import itl from "../../translations";
+import { useStores } from "../../data";
+import { ConfigInterface } from "../../data/config";
 
 const CONTROL_SEQUENCE = "Control Sequence";
 const DOCX = "docx";
@@ -15,9 +17,12 @@ const DOWNLOADABLE_FILE_LIST = [
 ];
 
 function DownloadModal({ isOpen, close }: ModalInterface) {
+  const { configStore } = useStores();
   const [checked, setChecked] = useState(
     DOWNLOADABLE_FILE_LIST.map(({ label }) => label),
   );
+
+  const projectConfigs: ConfigInterface[] = configStore.getConfigsForProject();
 
   function updateItem(event: ChangeEvent<HTMLInputElement>, label: string) {
     if (event.target.checked) {
@@ -33,11 +38,8 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
       const response = await fetch(`${process.env.REACT_APP_API}/sequence`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // TODO: Replace with actual parameters necessary to generate the document
-        body: JSON.stringify({
-          optional: false,
-          dual_inlet_airflow_sensors: "yes",
-        }),
+        // TODO: Simplify Data to pass to the backend
+        body: JSON.stringify(projectConfigs),
       });
 
       // TODO: Handle error responses which do not contain an actual file
