@@ -13,7 +13,7 @@ DEFAULT_DOC_VERSION = '2022-10-31 G36 Decisions'
 INPUT_PATH = Path('version', DEFAULT_DOC_VERSION)\
     / '2022-10-07 Guideline 36-2021 (sequence selection source).docx'
 OUTPUT_PATH = '2022-10-31 Guideline 36.docx'
-MAPPINGS_PATH = Path('VERSION', '2022-10-31 G36 Decisions') / 'rev2-Table 1.csv'
+MAPPINGS_PATH = Path('version', '2022-10-31 G36 Decisions') / 'rev2-Table 1.csv'
 MAPPINGS_SHORT_ID = 'Short ID'
 MAPPINGS_MODELICA_PATH = 'Modelica Path'
 
@@ -52,17 +52,25 @@ def generate_name_map(version: str) -> dict:
 
     return mappings
 
+def generate_doc(selections, version):
+    ''' Gathers source document and short code map and
+        passes everything on to doc mogrifier
+
+        This is mainly separated from main for testing purposes
+    '''
+    # load source document starting point
+    document = Document(INPUT_PATH) # TODO: source doc will need to be versioned as well
+    # load short code mappings
+    name_map = generate_name_map(version)
+
+    return mogrify_doc(document, name_map, selections)
+
 def __main__():
     '''
     '''
     args = parse_args([sys.argv[1:]])
     selections = extract_input(sys.stdin)
-    # load source document starting point
-    document = Document(INPUT_PATH)
-    # load short code mappings
-    name_map = generate_name_map(args.version)
-
-    document = mogrify_doc(document, name_map, selections)
+    document = generate_doc(selections, args.version)
 
     document.save(OUTPUT_PATH)
-
+    sys.exit(0)
