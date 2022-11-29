@@ -33,13 +33,37 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
     setChecked(checked.filter((item) => item !== label));
   }
 
+  function getSequenceData() {
+    const seqData: {[key: string]: any} = {};
+
+    projectConfigs.forEach((config) => {
+      const configData = { ...config.evaluatedValues, ...config.selections };
+      const configKeys = Object.keys(configData);
+
+      configKeys.forEach((key) => {
+        if (seqData[key] !== undefined) {
+          const initalValue = seqData[key];
+          if (seqData[key].indexOf(configData[key]) === -1) {
+            seqData[key].push(configData[key]);
+          }
+        } else {
+          const [modelicaPath, instancePath] = key.split("-");
+          if (modelicaPath !== configData[key]) {
+            seqData[key] = [configData[key]];
+          }
+        }
+      });
+    });
+
+    return seqData;
+  }
+
   async function downloadFiles() {
     if (checked.includes(CONTROL_SEQUENCE)) {
       const response = await fetch(`${process.env.REACT_APP_API}/sequence`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // TODO: Simplify Data to pass to the backend
-        body: JSON.stringify(projectConfigs),
+        body: JSON.stringify(getSequenceData()),
       });
 
       // TODO: Handle error responses which do not contain an actual file
