@@ -22,7 +22,7 @@ export async function getDocument(convertedDocumentPath: string) {
 
 export async function generateDoc(selections: Selections, path: string) {
   const program = `python3`;
-  const scriptArgs = ['src/scripts/sequence-doc/src/generate_doc.py', `--output ${path}`];
+  const scriptArgs = ['scripts/sequence-doc/src/generate_doc.py', `-o ${path}`];
 
   return new Promise<ChildProcess>((resolve, reject) => {
     const scriptProcess = spawn(program, scriptArgs);
@@ -30,7 +30,10 @@ export async function generateDoc(selections: Selections, path: string) {
     // TODO: selections may need to be sanitized
     scriptProcess.stdin.write(JSON.stringify(selections));
     scriptProcess.stdin.end();
-    scriptProcess.stdout.on('data', (data) => data);
+
+    // stdout and stderr need to have callbacks to close the process
+    // TODO: figure out best place to log response
+    scriptProcess.stdout.on('data', (data) => console.log(`${data}`));
     scriptProcess.stderr.on('data', (data) => console.log(`${data}`));
     scriptProcess.on("close", (code) => {
       if (code === 0) {
