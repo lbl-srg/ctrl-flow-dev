@@ -34,7 +34,7 @@ def find_for_deletion(doc, flag):
     '''
     for para in doc.paragraphs:
         if flag in para.text:
-            print(para.style)
+            # print(para.style)
             yield para
             
     for table in doc.tables:
@@ -45,7 +45,7 @@ def find_for_deletion(doc, flag):
 
 def get_heading_level(paragraph):
     style = paragraph.style.name
-    print(style)
+    # print(style)
     match = re.match(r'Heading (\d+)', style)
 
     if not match:
@@ -164,8 +164,8 @@ def create_control_structures(doc):
         op['op'] = tokens[1]
 
     # Debugging
-    for op in control_structures:
-        print(op)
+    # for op in control_structures:
+    #     print(op)
 
     return control_structures, run_op_lookup
 
