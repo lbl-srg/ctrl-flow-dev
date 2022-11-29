@@ -13,7 +13,7 @@ const EXAMPLE_SELECTIONS = {
   UNITS: "SI",
   DEL_INFO_BOX: false,
 };
-const TIMEOUT_IN_MILLISECONDS = 30000;
+const TIMEOUT_IN_MILLISECONDS = 60000;
 const tempDirPath = "/tmp/test-linkage-widget";
 
 describe("Control Sequence Document", () => {
