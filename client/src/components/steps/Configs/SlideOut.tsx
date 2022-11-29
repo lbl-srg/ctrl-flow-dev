@@ -31,8 +31,10 @@ export interface FlatConfigOption {
   modelicaPath: string;
   name: string;
   choices?: OptionInterface[];
+  booleanChoices?: string[];
   value: any;
   scope: string;
+  selectionType: string;
 }
 
 export interface FlatConfigOptionChoice {
@@ -199,20 +201,36 @@ const SlideOut = ({
       );
 
       if (isVisible) {
-        displayOptions = [
-          ...displayOptions,
-          {
-            parentModelicaPath,
-            modelicaPath: option.modelicaPath,
-            name: option.name,
-            choices: option.childOptions || [],
-            value:
-              selectedValues[selectionPath] || evaluatedValues[selectionPath],
-            scope: currentScope,
-          },
-        ];
+        const value = selectedValues[selectionPath] || evaluatedValues[selectionPath];
+        if (option.childOptions?.length) {
+          displayOptions = [
+            ...displayOptions,
+            {
+              parentModelicaPath,
+              modelicaPath: option.modelicaPath,
+              name: option.name,
+              choices: option.childOptions,
+              value,
+              scope: currentScope,
+              selectionType: "Normal",
+            },
+          ];
+        } else if (option.type === "Boolean") {
+          displayOptions = [
+            ...displayOptions,
+            {
+              parentModelicaPath,
+              modelicaPath: option.modelicaPath,
+              name: option.name,
+              booleanChoices: ["true", "false"],
+              value: value?.toString(),
+              scope: currentScope,
+              selectionType: "Boolean",
+            },
+          ];
+        }
 
-        if (selectedValues[selectionPath]) {
+        if (typeof selectedValues[selectionPath] !== "boolean" && selectedValues[selectionPath]) {
           const selectedOption = allOptions[
             selectedValues[selectionPath]
           ] as OptionInterface;
@@ -226,7 +244,7 @@ const SlideOut = ({
               option.definition,
             ),
           ];
-        } else if (evaluatedValues[selectionPath]) {
+        } else if (typeof evaluatedValues[selectionPath] !== "boolean" && evaluatedValues[selectionPath]) {
           const evaluatedOption = allOptions[
             evaluatedValues[selectionPath]
           ] as OptionInterface;

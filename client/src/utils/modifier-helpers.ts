@@ -222,7 +222,7 @@ export function applyVisibilityModifiers(
     visible = option.visible && !modifier.final;
   }
 
-  return !!(visible && enable && option.childOptions?.length);
+  return !!(visible && enable);
 }
 
 export function getUpdatedModifiers(
