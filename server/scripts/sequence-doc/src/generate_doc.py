@@ -53,10 +53,10 @@ def generate_name_map(mappings_path: str) -> dict:
 
     return mappings
 
-def get_local_path_prefix(version):
+def get_local_path_prefix(version: str) -> Path:
     return Path(os.path.dirname(__file__), 'version', version)
 
-def generate_doc(selections, version):
+def generate_doc(selections, version) -> Document:
     ''' Gathers source document and short code map and
         passes everything on to doc mogrifier
 
@@ -79,7 +79,7 @@ def main():
     args = parse_args(sys.argv[1:])
     selections = extract_input(sys.stdin)
     document = generate_doc(selections, args.version)
-    document.save(OUTPUT_PATH)
+    document.save(args.output)
 
     return 0
 
