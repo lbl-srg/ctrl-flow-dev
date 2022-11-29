@@ -11,10 +11,9 @@ from mogrifier import mogrify_doc
 
 
 DEFAULT_DOC_VERSION = '2022-10-31 G36 Decisions'
-INPUT_PATH = Path('version', DEFAULT_DOC_VERSION)\
-    / '2022-10-07 Guideline 36-2021 (sequence selection source).docx'
 OUTPUT_PATH = '2022-10-31 Guideline 36.docx'
-MAPPINGS_PATH = Path('version', '2022-10-31 G36 Decisions') / 'rev2-Table 1.csv'
+MAPPING_FILE_PATH = 'rev2-Table 1.csv'
+SOURCE_DOC_PATH = '2022-10-07 Guideline 36-2021 (sequence selection source).docx'
 MAPPINGS_SHORT_ID = 'Short ID'
 MAPPINGS_MODELICA_PATH = 'Modelica Path'
 
@@ -62,13 +61,14 @@ def generate_doc(selections, version) -> Document:
 
         This is separated from main for easier testing
     '''
-    # load source document starting point
     local_file_prefix = get_local_path_prefix(version)
-    source_doc_path = local_file_prefix / '2022-10-07 Guideline 36-2021 (sequence selection source).docx'
+
+    # load source document starting point
+    source_doc_path = local_file_prefix / SOURCE_DOC_PATH
     document = Document(source_doc_path)
 
     # load short code mappings
-    short_code_path = local_file_prefix / 'rev2-Table 1.csv'
+    short_code_path = local_file_prefix / MAPPING_FILE_PATH
     name_map = generate_name_map(short_code_path)
 
     return mogrify_doc(document, name_map, selections)
