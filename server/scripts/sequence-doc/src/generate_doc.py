@@ -5,8 +5,9 @@ from pathlib import Path
 import logging
 from typing import TextIO
 from docx import Document
+import os
 import csv
-from src.mogrifier import mogrify_doc
+from mogrifier import mogrify_doc
 
 
 DEFAULT_DOC_VERSION = '2022-10-31 G36 Decisions'
@@ -38,11 +39,11 @@ def extract_input(input_stream: TextIO) -> dict:
     # TODO: define expected object type
     return json.load(input_stream)
 
-def generate_name_map(version: str) -> dict:
+def generate_name_map(mappings_path: str) -> dict:
     # load mappings
     mappings = {}
 
-    with open(MAPPINGS_PATH) as fh:
+    with open(mappings_path) as fh:
         reader = csv.DictReader(fh)
         for row in reader:
             if row[MAPPINGS_SHORT_ID] and mappings.get(row[MAPPINGS_SHORT_ID]):
@@ -52,25 +53,35 @@ def generate_name_map(version: str) -> dict:
 
     return mappings
 
+def get_local_path_prefix(version):
+    return Path(os.path.dirname(__file__), 'version', version)
+
 def generate_doc(selections, version):
     ''' Gathers source document and short code map and
         passes everything on to doc mogrifier
 
-        This is mainly separated from main for testing purposes
+        This is separated from main for easier testing
     '''
     # load source document starting point
-    document = Document(INPUT_PATH) # TODO: source doc will need to be versioned as well
+    local_file_prefix = get_local_path_prefix(version)
+    source_doc_path = local_file_prefix / '2022-10-07 Guideline 36-2021 (sequence selection source).docx'
+    document = Document(source_doc_path)
+
     # load short code mappings
-    name_map = generate_name_map(version)
+    short_code_path = local_file_prefix / 'rev2-Table 1.csv'
+    name_map = generate_name_map(short_code_path)
 
     return mogrify_doc(document, name_map, selections)
 
-def __main__():
+def main():
     '''
     '''
-    args = parse_args([sys.argv[1:]])
+    args = parse_args(sys.argv[1:])
     selections = extract_input(sys.stdin)
     document = generate_doc(selections, args.version)
-
     document.save(OUTPUT_PATH)
-    sys.exit(0)
+
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main())
