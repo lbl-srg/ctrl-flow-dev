@@ -22,7 +22,7 @@ export async function getDocument(convertedDocumentPath: string) {
 
 export async function generateDoc(selections: Selections, path: string) {
   const program = `python3`;
-  const scriptArgs = ['scripts/sequence-doc/src/generate_doc.py', `-o ${path}`];
+  const scriptArgs = ['scripts/sequence-doc/src/generate_doc.py', '-o', `${path}`];
 
   return new Promise<ChildProcess>((resolve, reject) => {
     const scriptProcess = spawn(program, scriptArgs);
