@@ -8,6 +8,7 @@ from docx import Document
 from docx.text.paragraph import Paragraph
 from docx.table import Table
 import logging
+import utils
 
 logging.getLogger().setLevel(logging.DEBUG)
 
@@ -169,6 +170,8 @@ def create_control_structures(doc):
 
     return control_structures, run_op_lookup
 
+
+
 def remove_info_and_instr_boxes(doc, selections):
     ''' Removes info and instruction boxes
     '''
@@ -176,7 +179,7 @@ def remove_info_and_instr_boxes(doc, selections):
     instr_box_style = 'Instr. box'
 
     for para in doc.paragraphs:
-        if selections['DEL_INFO_BOX'] and para.style.name == info_box_style:
+        if utils.reduce_to_boolean(selections['DEL_INFO_BOX']) and para.style.name == info_box_style:
             remove_node(para)
         if para.style.name == instr_box_style:
             remove_node(para)
@@ -194,13 +197,13 @@ def apply_vent_standard_selections(control_structure, run_op_lookup: dict, selec
     + `[VENT T24]` - California Title 24 ventilation requirements
     '''
     for op in control_structure:
-        if op['text'] == '[ENERGY 901]' and selections['DEL_ENERGY_ASHRAE']:
+        if op['text'] == '[ENERGY 901]' and utils.reduce_to_boolean(selections['DEL_ENERGY_ASHRAE']):
             remove_section(op['paragraph'], run_op_lookup)
-        if op['text'] == '[ENERGY T24]' and selections['DEL_ENERGY_TITLE24']:
+        if op['text'] == '[ENERGY T24]' and utils.reduce_to_boolean(selections['DEL_ENERGY_TITLE24']):
             remove_section(op['paragraph'], run_op_lookup)
-        if op['text'] == '[VENT 621]' and selections['DEL_VENTILATION_ASHRAE']:
+        if op['text'] == '[VENT 621]' and utils.reduce_to_boolean(selections['DEL_VENTILATION_ASHRAE']):
             remove_section(op['paragraph'], run_op_lookup)
-        if op['text'] == '[VENT T24]' and selections['DEL_VENTILATION_TITL24']:
+        if op['text'] == '[VENT T24]' and utils.reduce_to_boolean(selections['DEL_VENTILATION_TITL24']):
             remove_section(op['paragraph'], run_op_lookup)
 
     return control_structure # return not necessary but want to reinforce that this is getting modified
@@ -267,13 +270,13 @@ def apply_selections(control_structure, name_map, run_op_lookup, selections):
             if short_name not in name_map:
                 logging.error('%s not found', short_name)
                 continue
-                
+
             long_name = name_map[short_name]
                     
             if long_name not in selections:
                 logging.error('Path "%s" not found in store, deleting', long_name)
                 remove_section(op['paragraph'], run_op_lookup)
-            elif selections[long_name] != compare:
+            elif compare not in selections[long_name]:
                 remove_section(op['paragraph'], run_op_lookup)
                 
         
@@ -291,7 +294,7 @@ def apply_selections(control_structure, name_map, run_op_lookup, selections):
             if long_name not in selections:
                 logging.error('Path "%s" not found in store, deleting', long_name)
                 remove_section(op['paragraph'], run_op_lookup)
-            elif selections[long_name] not in compare:
+            elif not utils.common_member(selections[long_name], compare):
                 remove_section(op['paragraph'], run_op_lookup)
                 
         
@@ -322,15 +325,16 @@ def convert_units(control_structure, selections):
             if not match:
                 logging.error('Invalid format for tag:  %s', op['text'])
                 continue
-            if selections['UNITS'] == 'SI':
+            unit_selection = selections['UNITS']
+            if unit_selection == 'SI':
                 # TODO: use this as an approach for 'writes' to the docx 
                 op['runs'][0].text = match.group(1)
                 op['runs'][0].style = None
-            elif selections['UNITS'] == 'IP':
+            elif unit_selection == 'IP':
                 op['runs'][0].text = match.group(2)
                 op['runs'][0].style = None
             else:
-                logging.error('"%s" is not a valid unit system', selections['UNITS'])
+                logging.error('"%s" is not a valid unit system', unit_selection)
 
 def remove_toggles(doc):
     ''' Step through and remove 'toggle' text
