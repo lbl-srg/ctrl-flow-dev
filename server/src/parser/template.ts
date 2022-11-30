@@ -353,10 +353,11 @@ export class Template {
 
       if (param.outer) {
         // check special case for if path is 'datAll'
-        if (param.name === "datAll") {
+        if (param.name.endsWith("datAll")) {
           pathMods[path] = "datAll";
+        } else {
+          pathMods[path] = inner[param.name]; // OK if undefined
         }
-        pathMods[path] = inner[param.name]; // OK if undefined
       }
     }
   }
