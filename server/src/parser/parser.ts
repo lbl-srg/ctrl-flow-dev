@@ -836,6 +836,7 @@ function _constructElement(
     case "type":
       element = new Enum(definition, basePath, elementType);
       break;
+    case "class":
     case "connector":
     case "model":
     case "block":
@@ -924,4 +925,8 @@ export const loadPackage = (filePath: string) => {
   const paths = findPackageEntryPoints(pathPrefix, filePath);
 
   paths?.map(({ json, path }) => new File(json, path));
+
+  // Attempt to load project settings from a pre-defined path
+  const projectPath = "Buildings.Templates.Data.AllSystems";
+  getFile(projectPath);
 };

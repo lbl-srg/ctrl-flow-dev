@@ -21,8 +21,11 @@ describe("Parser file loading", () => {
     expect(file.package).toBe("TestPackage");
   });
 
-  it("Discovers template files", () => {
+  it("Discovers template files and project options", () => {
     const packagePath = "TestPackage";
+    const projectOptionsPath = "Buildings.Templates.Data.AllSystems";
     parser.loadPackage(packagePath);
+    const projectOptionElement = parser.typeStore.find(projectOptionsPath);
+    expect(projectOptionElement).toBeDefined();
   });
 });
