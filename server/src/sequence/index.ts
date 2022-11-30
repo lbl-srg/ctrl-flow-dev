@@ -15,6 +15,10 @@ export type Selections = {
   [key: string]: any;
 };
 
+export type SequenceData = {
+  [key: string]: any[];
+}
+
 export async function getDocument(convertedDocumentPath: string) {
   const file = await fs.readFile(convertedDocumentPath);
   return file;
@@ -45,7 +49,7 @@ export async function generateDoc(selections: Selections, path: string) {
   });
 }
 
-export async function writeControlSequenceDocument(selections: Selections) {
+export async function writeControlSequenceDocument(selections: SequenceData) {
   const timeMarker = new Date().toISOString();
   const fileName = `sequence-${timeMarker}`;
   const filePath = `${SEQUENCE_OUTPUT_PATH}/${fileName}.docx`;

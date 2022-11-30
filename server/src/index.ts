@@ -14,8 +14,7 @@ import config from "./config";
 import * as parser from "../../dependencies/modelica-json/lib/parser";
 import {
   writeControlSequenceDocument,
-  ControlSequenceInput,
-  EnergyCode,
+  SequenceData,
 } from "./sequence";
 
 const app = express();
@@ -95,17 +94,17 @@ app.post("/api/sequence", async (req, res) => {
   // The Control Sequence Input consists of mock data at the moment.
   // Please note that this is a very naive data format.
   // The shape of this object will most likely need to be modified and massaged when we work with real data.
-  const request = req.body;
-  console.log('request: ', request);
-  const controlSequenceInput: ControlSequenceInput = {
-    energyCode: EnergyCode.Ashrae,
-    choices: {
-      BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet:
-        "Buildings.Templates.Components.Types.Fan.SingleConstant",
-    },
-  };
+  const sequenceData: SequenceData = req.body;
+  console.log('sequenceData: ', sequenceData);
+  // const controlSequenceInput: SequenceData = {
+  //   energyCode: EnergyCode.Ashrae,
+  //   choices: {
+  //     BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet:
+  //       "Buildings.Templates.Components.Types.Fan.SingleConstant",
+  //   },
+  // };
   try {
-    const file = await writeControlSequenceDocument(controlSequenceInput);
+    const file = await writeControlSequenceDocument(sequenceData);
     res.send(file);
   } catch (error) {
     console.error(error);

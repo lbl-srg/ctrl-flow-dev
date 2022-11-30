@@ -16,6 +16,7 @@ MAPPING_FILE_PATH = 'rev2-Table 1.csv'
 SOURCE_DOC_PATH = '2022-10-07 Guideline 36-2021 (sequence selection source).docx'
 MAPPINGS_SHORT_ID = 'Short ID'
 MAPPINGS_MODELICA_PATH = 'Modelica Path'
+# MAPPINGS_VALUE = 'Value'
 
 
 ANNOTATION_STYLE = 'Toggle'
@@ -48,6 +49,7 @@ def generate_name_map(mappings_path: str) -> dict:
             if row[MAPPINGS_SHORT_ID] and mappings.get(row[MAPPINGS_SHORT_ID]):
                 logging.error('Duplicate entry for "%s"', row[MAPPINGS_SHORT_ID])
             if row[MAPPINGS_SHORT_ID]:
+                # mappings[row[MAPPINGS_SHORT_ID]] = row[MAPPINGS_MODELICA_PATH] or row[MAPPINGS_VALUE]
                 mappings[row[MAPPINGS_SHORT_ID]] = row[MAPPINGS_MODELICA_PATH]
 
     return mappings

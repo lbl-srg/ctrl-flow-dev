@@ -1,7 +1,7 @@
 '''
 Basic sequence doc tests
 '''
-from generate_doc import parse_args, extract_input, DEFAULT_DOC_VERSION, generate_doc
+from generate_doc import parse_args, extract_input, DEFAULT_DOC_VERSION, generate_doc, generate_name_map
 
 ## Test Command Line Args
 def test_command_line_args():
@@ -33,3 +33,10 @@ def test_document_generation():
         version = DEFAULT_DOC_VERSION
 
         generate_doc(selections, version)
+
+def test_name_map_generation():
+    test_mappings = {'SHORTNAME': 'LONGNAME', 'SHORTNAME1': 'VALUENAME'}
+    # test_mappings = {'SHORTNAME': 'LONGNAME', 'SHORTNAME1': 'VALUENAME'}
+
+    mappings = generate_name_map("tests/static/example_mappings.csv")
+    assert mappings == test_mappings
