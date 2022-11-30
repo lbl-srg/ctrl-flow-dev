@@ -35,3 +35,7 @@ export function getOptions() {
 export function getAllTemplates(): templates.Template[] {
   return templates.getTemplates();
 }
+
+export function getProject(): templates.Project {
+  return templates.getProject();
+}
