@@ -31,6 +31,7 @@ export function getOptions(): {
   scheduleOptions: ScheduleOption[];
 } {
   const templates = [...templateStore.values()];
+
   let allConfigOptions = {};
   let allScheduleOptions = {};
 
@@ -327,6 +328,7 @@ export class Template {
         .filter((p) => p !== "")
         .join(".");
       if (param.inner && !(path in inner)) {
+        // key: just the param name, value: the full path
         inner[param.name] = path; // inner declarations resolve just by param name NOT the full instance path
         if (path in pathMods && pathMods[path] !== undefined) {
           pathMods[path] = inner[path];
@@ -334,6 +336,10 @@ export class Template {
       }
 
       if (param.outer) {
+        // check special case for if path is 'datAll'
+        if (param.name === "datAll") {
+          pathMods[path] = "Buildings.Templates.Data.datAll";
+        }
         pathMods[path] = inner[param.name]; // OK if undefined
       }
     }

@@ -193,6 +193,34 @@ function assertType(type: string) {
   }
 }
 
+export function getProject() {
+  return typeStore.find(PROJECT_PATH);
+}
+
+const PROJECT_PATH = "Buildings.Templates.Data.AllSystems";
+
+/**
+ * We have to spoof an instance of the project settings
+ */
+export function getProjectOptions(): { [key: string]: TemplateInput } {
+  const allSystems = typeStore.find(PROJECT_PATH);
+  const projectInputs = allSystems?.getInputs();
+  const spoofName = "datAll";
+
+  const spoofedDatAllInstance: TemplateInput = {
+    modelicaPath: spoofName,
+    name: spoofName,
+    type: PROJECT_PATH,
+    value: PROJECT_PATH,
+    visible: false,
+    modifiers: [],
+    inputs: projectInputs ? Object.keys(projectInputs) : [],
+    elementType: "component_clause",
+  };
+
+  return { [spoofName]: spoofedDatAllInstance, ...projectInputs };
+}
+
 export interface TemplateInput {
   type: string;
   name: string;
