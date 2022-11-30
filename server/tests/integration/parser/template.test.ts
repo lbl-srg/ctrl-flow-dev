@@ -233,6 +233,9 @@ describe("'Project' items are extracted", () => {
 
     const { pathModifiers } = template.getSystemTemplate();
 
+    const datAllList = Object.keys(pathModifiers).filter((path => path.endsWith(PROJECT_INSTANCE_NAME)));
+    expect(datAllList.length).toBeGreaterThan(0);
+
     // expect pathModifiers to include paths to project data
     Object.keys(pathModifiers)
       .filter((path) => path.endsWith(PROJECT_INSTANCE_NAME))
