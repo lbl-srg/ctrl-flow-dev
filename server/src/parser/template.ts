@@ -48,7 +48,7 @@ export function getOptions(): {
 
   // append project options
   const projectOptions: { [key: string]: Option } = {};
-  Object.entries(parser.getProjectInputs()).map(
+  Object.entries(parser.createProjectInputs()).map(
     ([key, input]) => (projectOptions[key] = _mapInputToOption(input)),
   );
   allConfigOptions = { ...allConfigOptions, ...projectOptions };

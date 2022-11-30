@@ -197,7 +197,7 @@ function assertType(type: string) {
 }
 
 export function getProject() {
-  const inputs = getProjectInputs();
+  const inputs = createProjectInputs();
 
   return inputs[PROJECT_INSTANCE_PATH];
 }
@@ -205,9 +205,15 @@ export function getProject() {
 /**
  * We have to spoof an instance of the project settings
  */
-export function getProjectInputs(): { [key: string]: TemplateInput } {
+export function createProjectInputs(): { [key: string]: TemplateInput } {
   const allSystems = typeStore.find(PROJECT_PATH);
-  const projectInputs = allSystems?.getInputs();
+  const projectInputs = allSystems?.getInputs() as {
+    [key: string]: TemplateInput;
+  };
+  const spoofedModList = Object.values(projectInputs).map((i) => {
+    const modName = i.modelicaPath.split('.').pop();
+    return new Modification(PROJECT_PATH, modName, i.value);
+  });
 
   const spoofedDatAllInstance: TemplateInput = {
     modelicaPath: PROJECT_INSTANCE_PATH,
@@ -215,7 +221,7 @@ export function getProjectInputs(): { [key: string]: TemplateInput } {
     type: PROJECT_PATH,
     value: PROJECT_PATH,
     visible: false,
-    modifiers: [],
+    modifiers: spoofedModList,
     inputs: [PROJECT_PATH],
     elementType: "component_clause",
   };
