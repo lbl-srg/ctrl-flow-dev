@@ -23,6 +23,11 @@ export function getSystemTypes() {
   return [...systemTypeStore.values()];
 }
 
+export function getProject(): Project {
+  const { modelicaPath } = parser.getProject() as parser.TemplateInput;
+  return { modelicaPath };
+}
+
 type Options = { [key: string]: Option };
 type ScheduleOptions = { [key: string]: ScheduleOption };
 
@@ -40,6 +45,13 @@ export function getOptions(): {
     allConfigOptions = { ...allConfigOptions, ...options };
     allScheduleOptions = { ...allScheduleOptions, ...scheduleOptions };
   });
+
+  // append project options
+  const projectOptions: { [key: string]: Option } = {};
+  Object.entries(parser.getProjectInputs()).map(
+    ([key, input]) => (projectOptions[key] = _mapInputToOption(input)),
+  );
+  allConfigOptions = { ...allConfigOptions, ...projectOptions };
 
   return {
     options: Object.values(allConfigOptions),
@@ -62,6 +74,10 @@ export interface Option {
   replaceable: boolean;
   elementType: string;
   definition: boolean;
+}
+
+export interface Project {
+  modelicaPath: string;
 }
 
 export interface ScheduleOption extends Option {
@@ -338,7 +354,7 @@ export class Template {
       if (param.outer) {
         // check special case for if path is 'datAll'
         if (param.name === "datAll") {
-          pathMods[path] = "Buildings.Templates.Data.datAll";
+          pathMods[path] = "datAll";
         }
         pathMods[path] = inner[param.name]; // OK if undefined
       }

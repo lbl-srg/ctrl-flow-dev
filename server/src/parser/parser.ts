@@ -27,6 +27,9 @@ export const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
+const PROJECT_PATH = "Buildings.Templates.Data.AllSystems";
+const PROJECT_INSTANCE_PATH = "datAll";
+
 // TODO: convert 'elementType' to an enum
 export const isInputGroup = (elementType: string) =>
   ["model", "block", "package"].includes(elementType);
@@ -194,31 +197,30 @@ function assertType(type: string) {
 }
 
 export function getProject() {
-  return typeStore.find(PROJECT_PATH);
-}
+  const inputs = getProjectInputs();
 
-const PROJECT_PATH = "Buildings.Templates.Data.AllSystems";
+  return inputs[PROJECT_INSTANCE_PATH];
+}
 
 /**
  * We have to spoof an instance of the project settings
  */
-export function getProjectOptions(): { [key: string]: TemplateInput } {
+export function getProjectInputs(): { [key: string]: TemplateInput } {
   const allSystems = typeStore.find(PROJECT_PATH);
   const projectInputs = allSystems?.getInputs();
-  const spoofName = "datAll";
 
   const spoofedDatAllInstance: TemplateInput = {
-    modelicaPath: spoofName,
-    name: spoofName,
+    modelicaPath: PROJECT_INSTANCE_PATH,
+    name: PROJECT_INSTANCE_PATH,
     type: PROJECT_PATH,
     value: PROJECT_PATH,
     visible: false,
     modifiers: [],
-    inputs: projectInputs ? Object.keys(projectInputs) : [],
+    inputs: [PROJECT_PATH],
     elementType: "component_clause",
   };
 
-  return { [spoofName]: spoofedDatAllInstance, ...projectInputs };
+  return { [PROJECT_INSTANCE_PATH]: spoofedDatAllInstance, ...projectInputs };
 }
 
 export interface TemplateInput {
