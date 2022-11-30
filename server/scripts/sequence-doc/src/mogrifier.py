@@ -9,12 +9,16 @@ from docx.text.paragraph import Paragraph
 from docx.table import Table
 import logging
 import utils
+from typing import Dict, List
 
 logging.getLogger().setLevel(logging.DEBUG)
 
 P_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p'
 TABLE_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tbl'
 ANNOTATION_STYLE = 'Toggle'
+
+# Type hints
+Selections = Dict[str, List]
 
 nodes_to_delete = []
 
@@ -54,7 +58,7 @@ def get_heading_level(paragraph):
     return int(match.group(1))
 
 
-def remove_info_box(paragraph, run_op_lookup: dict):
+def remove_info_box(paragraph, run_op_lookup: Dict):
     remove_node(paragraph)
 
     for sib_el in paragraph._element.itersiblings(P_TAG):
@@ -73,7 +77,7 @@ def remove_info_box(paragraph, run_op_lookup: dict):
         remove_node(sib_p)
 
 
-def remove_section(paragraph: Paragraph, run_op_lookup: dict):
+def remove_section(paragraph: Paragraph, run_op_lookup: Dict):
     style = paragraph.style.name
     level = get_heading_level(paragraph)
     
@@ -172,7 +176,7 @@ def create_control_structures(doc):
 
 
 
-def remove_info_and_instr_boxes(doc, selections):
+def remove_info_and_instr_boxes(doc, selections: Selections):
     ''' Removes info and instruction boxes
     '''
     info_box_style = 'Info. box'
@@ -185,7 +189,7 @@ def remove_info_and_instr_boxes(doc, selections):
             remove_node(para)
 
 
-def apply_vent_standard_selections(control_structure, run_op_lookup: dict, selections: dict):
+def apply_vent_standard_selections(control_structure, run_op_lookup: Dict, selections: Selections):
     ''' 
     Modifies the control structure based on selections for ventilators
 
@@ -208,7 +212,7 @@ def apply_vent_standard_selections(control_structure, run_op_lookup: dict, selec
 
     return control_structure # return not necessary but want to reinforce that this is getting modified
 
-def apply_selections(control_structure, name_map, run_op_lookup, selections):
+def apply_selections(control_structure, name_map, run_op_lookup, selections: Selections):
     ''' 
         Applies content toggles based on selections, doing the appropriate update based on the operator type
 
@@ -316,7 +320,7 @@ def apply_table_selections():
     '''
     return
 
-def convert_units(control_structure, selections):
+def convert_units(control_structure, selections: Selections):
     ''' Based on unit selection, goes through doc to update
     '''
     for op in control_structure:
@@ -352,7 +356,7 @@ def remove_toggles(doc):
                         if run.style.name == ANNOTATION_STYLE:
                             remove_node(run)
 
-def mogrify_doc(doc: Document, name_map: dict, selections: dict) -> Document:
+def mogrify_doc(doc: Document, name_map: Dict, selections: Selections) -> Document:
     ''' Applies selections to the provided document. This mutates the provided
         document
     '''
