@@ -1,18 +1,21 @@
 import { generateDoc } from "../../../src/sequence";
-
+// TODO: this is a duplicate of scripts/sequence-doc/tests/static/example_selection.txt
+// We should import this rather than copying
 const EXAMPLE_SELECTIONS = {
   "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialVAVBoxController.have_CO2Sen":
-    false,
-  "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.buiPreCon":
+    [false],
+  "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.buiPreCon": [
     "ReturnFanCalculatedAir",
-  "Buildings.Templates.ZoneEquipment.Types.Configuration": "CO",
-  DEL_ENERGY_ASHRAE: true,
-  DEL_ENERGY_TITLE24: false,
-  DEL_VENTILATION_ASHRAE: true,
-  DEL_VENTILATION_TITL24: false,
-  UNITS: "SI",
-  DEL_INFO_BOX: false,
+  ],
+  "Buildings.Templates.ZoneEquipment.Types.Configuration": ["CO"],
+  DEL_ENERGY_ASHRAE: [true],
+  DEL_ENERGY_TITLE24: [false],
+  DEL_VENTILATION_ASHRAE: [true],
+  DEL_VENTILATION_TITL24: [false],
+  UNITS: ["SI"],
+  DEL_INFO_BOX: [false],
 };
+
 const TIMEOUT_IN_MILLISECONDS = 60000;
 const tempDirPath = "/tmp/test-linkage-widget";
 
