@@ -10,9 +10,7 @@
 import RootStore from "../../src/data";
 import { TemplateInterface, OptionInterface } from "../../src/data/template";
 import { Expression } from "../../src/utils/expression-helpers";
-
-let allOptions: OptionInterface[] = [];
-let allTemplates: TemplateInterface[] = [];
+import { buildModifiers } from "../../src/utils/modifier-helpers";
 
 /*
  * TODO: swap in methods from src/utils/modifier-helpers and expression helpers instead of these
@@ -119,25 +117,55 @@ const buildMods = (
   return mods;
 };
 
+let allOptions: { [key: string]: OptionInterface } = {};
+let allTemplates: TemplateInterface[] = [];
+let templateOption: OptionInterface | undefined;
+
 describe("package.json loading", () => {
   beforeAll(() => {
     const store = new RootStore();
 
     allOptions = store.templateStore.getAllOptions();
     allTemplates = store.templateStore.getAllTemplates();
-  });
-
-  it("Builds the modifier dictionary for a given template", () => {
     const template = allTemplates.find(
       (t) =>
         t.modelicaPath === "Buildings.Templates.AirHandlersFans.VAVMultiZone",
     ) as TemplateInterface;
+    templateOption = allOptions[template.modelicaPath] as OptionInterface;
+  });
 
-    const templateOption = allOptions.find(
-      (o) => o.modelicaPath === template.modelicaPath,
-    ) as OptionInterface;
-
-    const mods = buildMods(templateOption, allOptions);
+  it("Builds the modifier dictionary for a given template", () => {
+    const mods = buildModifiers(
+      templateOption as OptionInterface,
+      "",
+      {},
+      allOptions,
+    );
     expect(mods).toBeTruthy();
+
+    // check that 'datAll'
+    const datAllPath = "datAll";
+    const datAllMods = Object.keys(mods).filter((m) =>
+      m.startsWith(datAllPath),
+    );
+
+    expect(datAllMods.length).toBeGreaterThan(0);
+  });
+
+  it("Modifiers include project level mods", () => {
+    const mods = buildModifiers(
+      templateOption as OptionInterface,
+      "",
+      {},
+      allOptions,
+    );
+
+    // check that 'datAll'
+    const datAllPath = "datAll";
+    const datAllMods = Object.keys(mods).filter((m) =>
+      m.startsWith(datAllPath),
+    );
+
+    expect(datAllMods.length).toBeGreaterThan(0);
   });
 });

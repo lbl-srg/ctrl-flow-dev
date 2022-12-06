@@ -1,0 +1,21 @@
+,,Short ID,Mutually Exclusive? (Y/N),Modelica Parameter,Modelica Path,Question/Comments
+,Pre-heating:,PREHEAT,Y,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.coiHeaPre-ctl.coiHeaPre,Buildings.Templates.Components.Types.Coil,
+,None,NO_PH,,,Buildings.Templates.Components.Types.Coil.None,
+,HW Preheat,HW,,,Buildings.Templates.Components.Types.Coil.WaterBasedHeating,
+,Electric Heating Coil Preheat,ELEC,,,Buildings.Templates.Components.Types.Coil.ElectricHeating,
+,Reheating:,REHEAT,Y,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.coiHeaReh-ctl.coiHeaReh,Buildings.Templates.Components.Types.Coil,
+,None,NO_RH,,,Buildings.Templates.Components.Types.Coil.None,
+,Cooling:,COOL,Y,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.coiCoo-ctl.coiCoo,Buildings.Templates.Components.Types.Coil,
+,None,NO_CL,,,Buildings.Templates.Components.Types.Coil.None,
+,CHW,CHW,,,Buildings.Templates.Components.Types.Coil.WaterBasedCooling,
+,DX/Evaporator coil w/ variable speed compressor (future),DX_VFD,,,Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed,Implemented in Templates. NOT covered by G36.
+,DX/Evaporator coil w/ multi-stage compressor (future),DX_STGD,,,Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage,Implemented in Templates. NOT covered by G36.
+,Economizer High Limit Type:,ECON_HL,Y,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typCtlEco-ctl.typCtlEco,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer,
+,Fixed DB,DB,,,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulb,
+,Differential DB,DIFFDB,,,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.DifferentialDryBulb,
+,Fixed DB + Differential DB,FXDIFFDB,,,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulbWithDifferentialDryBulb,
+,Fixed enthalpy + Fixed DB,ENTH,,,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedEnthalpyWithFixedDryBulb,
+,Differential Enthalpy + Fixed DB,DIFFENTH,,,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.DifferentialEnthalpyWithFixedDryBulb,The constraint related to the energy standard is not implemented yet.
+,CO2 Sensor:,CO2,N,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.have_CO2Sen-ctl.have_CO2Sen,Boolean,
+,Yes,,,,true,"DEPT:  if any terminals have a CO2 sensor, this applies"
+,No,,,,false,

@@ -1,6 +1,8 @@
 import Modal, { ModalInterface } from "./Modal";
 import { useState, ChangeEvent } from "react";
 import itl from "../../translations";
+import { useStores } from "../../data";
+import { ConfigInterface } from "../../data/config";
 
 const CONTROL_SEQUENCE = "Control Sequence";
 const DOCX = "docx";
@@ -15,9 +17,12 @@ const DOWNLOADABLE_FILE_LIST = [
 ];
 
 function DownloadModal({ isOpen, close }: ModalInterface) {
+  const { configStore } = useStores();
   const [checked, setChecked] = useState(
     DOWNLOADABLE_FILE_LIST.map(({ label }) => label),
   );
+
+  const projectConfigs: ConfigInterface[] = configStore.getConfigsForProject();
 
   function updateItem(event: ChangeEvent<HTMLInputElement>, label: string) {
     if (event.target.checked) {
@@ -28,16 +33,49 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
     setChecked(checked.filter((item) => item !== label));
   }
 
+  function getSequenceData() {
+    let seqData: {[key: string]: any} = {};
+
+    projectConfigs.forEach((config) => {
+      const configData = { ...config.evaluatedValues, ...config.selections };
+      const configKeys = Object.keys(configData);
+
+      configKeys.forEach((key) => {
+        if (seqData[key] !== undefined) {
+          const initalValue = seqData[key];
+          if (seqData[key].indexOf(configData[key]) === -1) {
+            seqData[key].push(configData[key]);
+          }
+        } else {
+          const [modelicaPath, instancePath] = key.split("-");
+          if (modelicaPath !== configData[key]) {
+            seqData[key] = [configData[key]];
+          }
+        }
+      });
+    });
+
+    seqData = {
+      ...seqData,
+      DEL_ENERGY_ASHRAE: [false],
+      DEL_ENERGY_TITLE24: [true],
+      DEL_VENTILATION_ASHRAE: [false],
+      DEL_VENTILATION_TITL24: [true],
+      UNITS: ['SI'],
+      DEL_INFO_BOX: [true],
+    }
+
+    console.log('seqData: ', seqData);
+
+    return seqData;
+  }
+
   async function downloadFiles() {
     if (checked.includes(CONTROL_SEQUENCE)) {
       const response = await fetch(`${process.env.REACT_APP_API}/sequence`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // TODO: Replace with actual parameters necessary to generate the document
-        body: JSON.stringify({
-          optional: false,
-          dual_inlet_airflow_sensors: "yes",
-        }),
+        body: JSON.stringify(getSequenceData()),
       });
 
       // TODO: Handle error responses which do not contain an actual file

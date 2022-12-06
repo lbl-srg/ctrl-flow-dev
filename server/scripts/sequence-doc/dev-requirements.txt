@@ -1,0 +1,3 @@
+######### sequence-doc dev requirements ###########
+pytest
+pytest-mock

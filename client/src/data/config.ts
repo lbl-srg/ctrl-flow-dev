@@ -128,6 +128,16 @@ export default class Config {
     );
   }
 
+  getConfigsForProject(
+    //TODO: need to connect project to configs
+    //projectId: string,
+  ): ConfigInterface[] {
+    return toJS(this.configs);
+    /*return this.configs.filter(
+      (config) => config.projectId === projectId
+    );*/
+  }
+
   removeAllForSystemTemplate(systemPath: string, templatePath: string) {
     this.configs = this.configs.filter((config) =>
       config.systemPath === systemPath && config.templatePath === templatePath
