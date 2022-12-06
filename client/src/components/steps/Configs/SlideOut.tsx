@@ -350,6 +350,8 @@ const SlideOut = ({
     );
   }
 
+  console.log('evaluatedValues: ', evaluatedValues);
+
   return (
     <Modal isOpen close={close} className="config-slide-out">
       <h3>{template?.name}</h3>
