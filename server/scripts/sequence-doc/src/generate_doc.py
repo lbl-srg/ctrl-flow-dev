@@ -12,11 +12,11 @@ from mogrifier import mogrify_doc
 
 DEFAULT_DOC_VERSION = '2022-10-31 G36 Decisions'
 OUTPUT_PATH = '2022-10-31 Guideline 36.docx'
-MAPPING_FILE_PATH = 'rev2-Table 1.csv'
-SOURCE_DOC_PATH = '2022-10-07 Guideline 36-2021 (sequence selection source).docx'
+MAPPING_FILE_PATH = 'rev3-mappings.csv'
+SOURCE_DOC_PATH = '2022-10-31 Guideline 36-2021 (sequence selection source).docx'
 MAPPINGS_SHORT_ID = 'Short ID'
-MAPPINGS_MODELICA_PATH = 'Modelica Path'
-# MAPPINGS_VALUE = 'Value'
+MAPPINGS_MODELICA_INSTANCE = 'Modelica Parameter'
+MAPPINGS_MODELICA_VALUES = 'Modelica Path'
 
 
 ANNOTATION_STYLE = 'Toggle'
@@ -49,8 +49,7 @@ def generate_name_map(mappings_path: str) -> dict:
             if row[MAPPINGS_SHORT_ID] and mappings.get(row[MAPPINGS_SHORT_ID]):
                 logging.error('Duplicate entry for "%s"', row[MAPPINGS_SHORT_ID])
             if row[MAPPINGS_SHORT_ID]:
-                # mappings[row[MAPPINGS_SHORT_ID]] = row[MAPPINGS_MODELICA_PATH] or row[MAPPINGS_VALUE]
-                mappings[row[MAPPINGS_SHORT_ID]] = row[MAPPINGS_MODELICA_PATH]
+                mappings[row[MAPPINGS_SHORT_ID]] = row[MAPPINGS_MODELICA_INSTANCE] or row[MAPPINGS_MODELICA_VALUES]
 
     return mappings
 

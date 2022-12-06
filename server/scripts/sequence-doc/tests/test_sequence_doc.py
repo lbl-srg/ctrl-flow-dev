@@ -36,7 +36,6 @@ def test_document_generation():
 
 def test_name_map_generation():
     test_mappings = {'SHORTNAME': 'LONGNAME', 'SHORTNAME1': 'VALUENAME'}
-    # test_mappings = {'SHORTNAME': 'LONGNAME', 'SHORTNAME1': 'VALUENAME'}
 
     mappings = generate_name_map("tests/static/example_mappings.csv")
     assert mappings == test_mappings

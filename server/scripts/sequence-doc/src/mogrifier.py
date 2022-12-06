@@ -11,12 +11,14 @@ import logging
 import utils
 from typing import Dict, List
 
-logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().setLevel(logging.ERROR)
 
 P_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p'
 TABLE_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tbl'
 ANNOTATION_STYLE = 'Toggle'
 
+OP_LIST = ['AND', 'OR', 'YES', 'NO', 'EQUALS', 'NOT_EQUALS', 'ANY', 'DELETE']
+TABLE_OP_LIST = ['TABLE', 'ROW', 'COLUMN']
 # Type hints
 Selections = Dict[str, List]
 
@@ -34,31 +36,21 @@ def remove_node(node):
     global nodes_to_delete
     nodes_to_delete.append(node)
 
-def find_for_deletion(doc, flag):
-    ''' Iterate 
-    '''
-    for para in doc.paragraphs:
-        if flag in para.text:
-            # print(para.style)
-            yield para
-            
-    for table in doc.tables:
-        for row in table.rows:
-            for cell in row.cells:
-                if flag in cell.text:
-                    yield row
-
 def get_heading_level(paragraph):
+    ''' Gets heading level of paragraph
+    '''
     style = paragraph.style.name
-    # print(style)
     match = re.match(r'Heading (\d+)', style)
 
     if not match:
         return 100
     return int(match.group(1))
 
-
 def remove_info_box(paragraph, run_op_lookup: Dict):
+    '''
+        Removes info box text within a section (paragraph is a detected info box in a section)
+        Also removes any sibling elements within the paragraph
+    '''
     remove_node(paragraph)
 
     for sib_el in paragraph._element.itersiblings(P_TAG):
@@ -76,8 +68,9 @@ def remove_info_box(paragraph, run_op_lookup: Dict):
                 
         remove_node(sib_p)
 
-
 def remove_section(paragraph: Paragraph, run_op_lookup: Dict):
+    ''' Removes a section of text and its siblings
+    '''
     style = paragraph.style.name
     level = get_heading_level(paragraph)
     
@@ -96,21 +89,41 @@ def remove_section(paragraph: Paragraph, run_op_lookup: Dict):
         elif sib_el.tag == TABLE_TAG:
             sib_t = Table(sib_el, paragraph._parent)
             remove_node(sib_t)
-            logging.error('Deleted table')
+            logging.info('Deleted table')
         else:
             logging.error('Saw unrecognized tag "%s"', sib_el.tag)
             print(paragraph.text)
-    remove_node(paragraph)    
+            
+    remove_node(paragraph)
+
+def edit_table(table_item):
+    ''' Removes items from table or whole table depending on the operation
+    '''
+    if table_item['op'] == 'COLUMN':
+        for cell in table_item['column'].cells:
+            remove_node(cell)
+    else:
+        remove_node(table_item)
+
+def get_column(table: Table, table_cell):
+    ''' Determins the column of a cell within a table
+    '''
+    for column in table.columns:
+        for cell in column.cells:
+            if cell.text == table_cell.text:
+                return column
 
 def create_control_structures(doc):
+    ''' Sets up the control structure for Sections and Tables
+    '''
     control_structures = []
     run_op_lookup = {}
 
     current = None
 
+    ## Sections
     for para in doc.paragraphs:
         for run in para.runs:
-            
             if (
                 (current and run.style.name != ANNOTATION_STYLE)
                 or
@@ -135,7 +148,6 @@ def create_control_structures(doc):
                 current['text'] += run.text
 
     ## Tables
-
     for table in doc.tables:
         for row in table.rows:
             for cell in row.cells:
@@ -156,6 +168,10 @@ def create_control_structures(doc):
                                 'paragraph': para,
                                 'text': '',
                                 'runs': [],
+                                'table': table,
+                                'row': row,
+                                'column': get_column(table, cell),
+                                'cell': cell,
                             }
                             run.op = current
 
@@ -165,16 +181,17 @@ def create_control_structures(doc):
                             current['text'] += run.text
 
     for op in control_structures:
-        tokens = re.split(r'\W+', op['text'])
-        op['op'] = tokens[1]
+        tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
+        if tokens:
+            op['op'] = tokens[0]
+        else:
+            op['op'] = ''
 
     # Debugging
     # for op in control_structures:
-    #     print(op)
+    #     logging.info(op)
 
     return control_structures, run_op_lookup
-
-
 
 def remove_info_and_instr_boxes(doc, selections: Selections):
     ''' Removes info and instruction boxes
@@ -188,17 +205,16 @@ def remove_info_and_instr_boxes(doc, selections: Selections):
         if para.style.name == instr_box_style:
             remove_node(para)
 
-
 def apply_vent_standard_selections(control_structure, run_op_lookup: Dict, selections: Selections):
     ''' 
-    Modifies the control structure based on selections for ventilators
+        Modifies the control structure based on selections for ventilators
 
-    ### Standards/Ventilation Requirements
-
-    + `[ENERGY 901]` - ASHRAE/IES Standard 90.1 economizer high-limit requirements
-    + `[ENERGY T24]` - California Title 24 economizer high-limit requirements
-    + `[VENT 621]` - ASHRAE Standard 62.1 ventilation requirements
-    + `[VENT T24]` - California Title 24 ventilation requirements
+        ### Standards/Ventilation Requirements
+        + **TODO** Adjust for real selections of these items
+        + `[ENERGY 901]` - ASHRAE/IES Standard 90.1 economizer high-limit requirements
+        + `[ENERGY T24]` - California Title 24 economizer high-limit requirements
+        + `[VENT 621]` - ASHRAE Standard 62.1 ventilation requirements
+        + `[VENT T24]` - California Title 24 ventilation requirements
     '''
     for op in control_structure:
         if op['text'] == '[ENERGY 901]' and utils.reduce_to_boolean(selections['DEL_ENERGY_ASHRAE']):
@@ -212,113 +228,240 @@ def apply_vent_standard_selections(control_structure, run_op_lookup: Dict, selec
 
     return control_structure # return not necessary but want to reinforce that this is getting modified
 
-def apply_selections(control_structure, name_map, run_op_lookup, selections: Selections):
-    ''' 
-        Applies content toggles based on selections, doing the appropriate update based on the operator type
+def evaluate_annotation(op, name_map, selections: Selections):
+    '''
+        Determines the operation and decides if the operation requires us to delete (return True).
+        This is a recursive funtion if the operation is an AND or OR.
+        Tables use this function as well after their table operation logic is determined.
 
         Example toggles:
-        + **TODO** `[DELETE]` - Delete this section.
         + `[YES have_CO2Sen]` – Keep this section if a CO2 sensor is present. Otherwise remove.
         + `[NO have_CO2Sen]` – Keep this section if a CO2 sensor is not present. Otherwise remove.
         + `[EQUALS buiPreCon ReliefFan]` – Keep this section if the type of building pressure control system is an actuated relief damper, with relief fan(s). Otherwise remove.
-        + **TODO** `[NOT_EQUALS buiPreCon RelifFan]` - Keep this section if the type of building pressure control system is *not* an actuated relief damper, with relief fans(s). Otherwise remove.
+        + `[NOT_EQUALS buiPreCon RelifFan]`  Keep this section if the type of building pressure control system is *not* an actuated relief damper, with relief fans(s). Otherwise remove.
         + `[ANY buiPreCon ReturnFanMeasuredAir ReturnFanCalculatedAir]` – Keep this section if the type of building pressure control system is a return fan, tracking measured supply and return airflow or a return fan, tracking calculated supply and return airflow. Otherwise remove.
+        + `[AND [any toggle] [any toggle]]` - Keep this section if both nested toggles would keep the section. The nested toggles can be any of these toggles including AND or OR. Otherwise remove.
+        + `[OR [any toggle] [any toggle]]` - Keep this section if one of the nested toggles would keep the section. The nested toggles can be any of these toggles including AND or OR. Otherwise remove.
         + `[DELETE]` - Remove this section.
     '''
-    for op in control_structure:
-        if op['text'] != '[EQUALS VAV RH]':
-            continue
-            
-        if op['op'] == 'YES':
-            # 1: map short name to long name
-            tokens = re.split(r'\W+', op['text'])
-            short_name = tokens[2]
-            
-            if short_name not in name_map:
-                logging.error('%s not found', short_name)
-                continue
-                
-            long_name = name_map[short_name]
-            
-            # 2: check if relevant selection is available
-            if long_name not in selections:
-                logging.error('Path "%s" not found in store, deleting', long_name)
-                remove_section(op['paragraph'], run_op_lookup)
-            # 3: apply the operation type
-            elif not selections[long_name]:
-                remove_section(op['paragraph'], run_op_lookup)
-                
-        
-        if op['op'] == 'NO':
-            tokens = re.split(r'\W+', op['text'])
-            short_name = tokens[2]
-            
-            if short_name not in name_map:
-                logging.error('%s not found', short_name)
-                continue
-                
-            long_name = name_map[short_name]
-                    
-            if long_name not in selections:
-                logging.error('Path "%s" not found in store, deleting', long_name)
-                remove_section(op['paragraph'], run_op_lookup)
-            elif selections[long_name]:
-                remove_section(op['paragraph'], run_op_lookup)
-                
-        
-        if op['op'] == 'EQUALS':
-            tokens = re.split(r'\W+', op['text'])
-            short_name = tokens[2]
-            compare = tokens[3]
-            
-            if short_name not in name_map:
-                logging.error('%s not found', short_name)
-                continue
-
-            long_name = name_map[short_name]
-                    
-            if long_name not in selections:
-                logging.error('Path "%s" not found in store, deleting', long_name)
-                remove_section(op['paragraph'], run_op_lookup)
-            elif compare not in selections[long_name]:
-                remove_section(op['paragraph'], run_op_lookup)
-                
-        
-        if op['op'] == 'ANY':
-            tokens = [token for token in re.split(r'\W+', op['text']) if token]
+    if op['op'] == 'YES':
+        # 1: map short name to long name
+        tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
+        if len(tokens) == 2:
             short_name = tokens[1]
-            compare = tokens[2:]
+        else:
+            logging.error('Invalid operation: %s', op['text'])
+            return False
+
+        if short_name not in name_map:
+            logging.error('%s not found', short_name)
+            return False
             
-            if short_name not in name_map:
-                logging.error('%s not found', short_name)
-                continue
-                
-            long_name = name_map[short_name]
-                    
-            if long_name not in selections:
-                logging.error('Path "%s" not found in store, deleting', long_name)
-                remove_section(op['paragraph'], run_op_lookup)
-            elif not utils.common_member(selections[long_name], compare):
-                remove_section(op['paragraph'], run_op_lookup)
-                
+        long_name = name_map[short_name]
+
+        # 2: check if relevant selection is available
+        if long_name not in selections:
+            logging.error('Path "%s" not found in store, deleting', long_name)
+            return True
+        # 3: apply the operation type
+        elif not utils.reduce_to_boolean(selections[long_name]):
+            return True
+            
+    if op['op'] == 'NO':
+        tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
+        if len(tokens) == 2:
+            short_name = tokens[1]
+        else:
+            logging.error('Invalid operation: %s', op['text'])
+            return False
+
+        if short_name not in name_map:
+            logging.error('%s not found', short_name)
+            return False
+            
+        long_name = name_map[short_name]
+
+        if long_name not in selections:
+            logging.error('Path "%s" not found in store, deleting', long_name)
+            return True
+        elif utils.reduce_to_boolean(selections[long_name]):
+            return True
+
+    if op['op'] == 'EQUALS':
+        tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
+        if len(tokens) == 3:
+            short_name = tokens[1]
+            short_compare = tokens[2]
+        else:
+            logging.error('Invalid operation: %s', op['text'])
+            return False
         
-        if op['op'] == 'DELETE':
-            remove_section(op['paragraph'], run_op_lookup)
+        if short_name not in name_map:
+            logging.error('%s not found', short_name)
+            return False
 
-        # return not necessary - just reinforcing that control_structure is what is modified
-        return control_structure
+        if short_compare not in name_map:
+            logging.error('%s not found', short_compare)
+            return False
 
-def apply_table_selections():
+        long_name = name_map[short_name]
+        long_compare = name_map[short_compare]
+                
+        if long_name not in selections:
+            logging.error('Path "%s" not found in store, deleting', long_name)
+            return True
+        elif long_compare not in selections[long_name]:
+            return True
+
+    if op['op'] == 'NOT_EQUALS':
+        tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
+        if len(tokens) == 3:
+            short_name = tokens[1]
+            short_compare = tokens[2]
+        else:
+            logging.error('Invalid operation: %s', op['text'])
+            return False
+        
+        if short_name not in name_map:
+            logging.error('%s not found', short_name)
+            return False
+
+        if short_compare not in name_map:
+            logging.error('%s not found', short_compare)
+            return False
+
+        long_name = name_map[short_name]
+        long_compare = name_map[short_compare]
+                
+        if long_name not in selections:
+            logging.error('Path "%s" not found in store, deleting', long_name)
+            return True
+        elif long_compare in selections[long_name]:
+            return True
+            
+    if op['op'] == 'ANY':
+        tokens = [token for token in re.split(r'\W+', op['text']) if token]
+        if len(tokens) >= 3:
+            short_name = tokens[1]
+            short_compare = tokens[2:]
+        else:
+            logging.error('Invalid operation: %s', op['text'])
+            return False
+
+        if short_name not in name_map:
+            logging.error('%s not found', short_name)
+            return False
+            
+        long_name = name_map[short_name]
+        long_compare = map(lambda name: name_map[name], short_compare)
+                
+        if long_name not in selections:
+            logging.error('Path "%s" not found in store, deleting', long_name)
+            return True
+        elif not utils.common_member(selections[long_name], long_compare):
+            return True
+            
+    if op['op'] == 'DELETE':
+        return True
+
+    if op['op'] == 'AND':
+        match = re.match(r'\[AND \[(.+)] \[(.+)]]', op['text'])
+        if not match:
+            logging.error('Invalid format for tag:  %s', op['text'])
+            return False
+
+        condition_one = condition_two = False
+        group_one_tokens = re.split(r'\W+', match.group(1))
+        group_one_op = group_one_tokens[0]
+        group_two_tokens = re.split(r'\W+', match.group(2))
+        group_two_op = group_two_tokens[0]
+
+        if group_one_op in OP_LIST:
+            nested_op = {**op, 'text': f'[{match.group(1)}]', 'op': group_one_op}
+            condition_one = evaluate_annotation(nested_op, name_map, selections)
+        else:
+            logging.error('Unknown operation: %s', group_one_op)
+            return False
+
+        if group_two_op in OP_LIST:
+            nested_op = {**op, 'text': f'[{match.group(2)}]', 'op': group_two_op}
+            condition_two = evaluate_annotation(nested_op, name_map, selections)
+        else:
+            logging.error('Unknown operation: %s', group_two_op)
+            return False
+
+        return condition_one and condition_two
+
+    if op['op'] == 'OR':
+        match = re.match(r'\[OR \[(.+)] \[(.+)]]', op['text'])
+        if not match:
+            logging.error('Invalid format for tag:  %s', op['text'])
+            return False
+
+        condition_one = condition_two = False
+        group_one_tokens = re.split(r'\W+', match.group(1))
+        group_one_op = group_one_tokens[0]
+        group_two_tokens = re.split(r'\W+', match.group(2))
+        group_two_op = group_two_tokens[0]
+
+        if group_one_op in OP_LIST:
+            nested_op = {**op, 'text': f'[{match.group(1)}]', 'op': group_one_op}
+            condition_one = evaluate_annotation(nested_op, name_map, selections)
+        else:
+            logging.error('Unknown operation: %s', group_one_op)
+            return False
+
+        if group_two_op in OP_LIST:
+            nested_op = {**op, 'text': f'[{match.group(2)}]', 'op': group_two_op}
+            condition_two = evaluate_annotation(nested_op, name_map, selections)
+        else:
+            logging.error('Unknown operation: %s', group_two_op)
+            return False
+
+        return condition_one or condition_two
+
+    return False
+
+def apply_selections(control_structure, name_map, run_op_lookup, selections: Selections):
+    ''' 
+        Determines how to handle toggles, section vs table
+
+        Example section toggles:
+        + `[YES have_CO2Sen]` – Keep this section if a CO2 sensor is present. Otherwise remove.
+        + `[NO have_CO2Sen]` – Keep this section if a CO2 sensor is not present. Otherwise remove.
+        + `[EQUALS buiPreCon ReliefFan]` – Keep this section if the type of building pressure control system is an actuated relief damper, with relief fan(s). Otherwise remove.
+        + `[NOT_EQUALS buiPreCon RelifFan]` - Keep this section if the type of building pressure control system is *not* an actuated relief damper, with relief fans(s). Otherwise remove.
+        + `[ANY buiPreCon ReturnFanMeasuredAir ReturnFanCalculatedAir]` – Keep this section if the type of building pressure control system is a return fan, tracking measured supply and return airflow or a return fan, tracking calculated supply and return airflow. Otherwise remove.
+        + `[AND [any toggle] [any toggle]]` - Keep this section if both nested toggles would keep the section. The nested toggles can be any of these toggles including AND or OR.  Otherwise remove.
+        + `[OR [any toggle] [any toggle]]` - Keep this section if one of the nested toggles would keep the section. The nested toggles can be any of these toggles including AND or OR.  Otherwise remove.
+        + `[DELETE]` - Remove this section.
+
+        Example table toggles:
+        + `[TABLE YES have_CO2Sen]` - Keep the whole table if a CO2 sensor is present. Otherwise remove.
+        + `[ROW YES have_CO2Sen]` - Keep this row if a CO2 sensor is present. Otherwise remove.
+        + `[COLUMN YES have_CO2Sen]` - Keep this column if a CO2 sensor is present. Otherwise remove.
+        + `[COLUMN AND [any toggle] [any toggle]]` - Keep this column if both nested toggles would keep the column. Otherwise remove.
     '''
-    Stub method for applying table selections
-    ### TODO - Table Toggles
-    + `[TABLE YES have_CO2Sen]`
-    + `[ROW YES have_CO2Sen]`
-    + `[COLUMN YES have_CO2Sen]`
+    for op in control_structure:
+        if op['op'] in OP_LIST:
+            if evaluate_annotation(op, name_map, selections):
+                remove_section(op['paragraph'], run_op_lookup)
 
-    Tables will implement all of the content toggle operations (YES, NO, EQUALS, ANY) with an additional specifier indicating if the operation should apply to the entire table, a single row, or a single column.
-    '''
-    return
+        if op['op'] in TABLE_OP_LIST:
+            text_op = op['text'].replace(f"{op['op']} ", "")
+            tokens = utils.remove_empty_strings(re.split(r'\W+', text_op))
+            next_op = tokens[0]
+
+            if next_op in OP_LIST:
+                table_op = {**op, 'text': text_op, 'op': next_op}
+                if evaluate_annotation(table_op, name_map, selections):
+                    edit_table(op)
+            else:
+                logging.error('Invlaid format for tag: %s', op['text'])
+
+
+    # return not necessary - just reinforcing that control_structure is what is modified
+    return control_structure
 
 def convert_units(control_structure, selections: Selections):
     ''' Based on unit selection, goes through doc to update
@@ -329,7 +472,7 @@ def convert_units(control_structure, selections: Selections):
             if not match:
                 logging.error('Invalid format for tag:  %s', op['text'])
                 continue
-            unit_selection = selections['UNITS']
+            unit_selection = selections['UNITS'][0]
             if unit_selection == 'SI':
                 # TODO: use this as an approach for 'writes' to the docx 
                 op['runs'][0].text = match.group(1)
@@ -367,21 +510,16 @@ def mogrify_doc(doc: Document, name_map: Dict, selections: Selections) -> Docume
     # Remove info and Instruction Boxes - updates remove_list internally
     remove_info_and_instr_boxes(doc, selections)
 
-    # TODO: maybe could be combined in general 'apply_selections' call that handles
-    # standards, paragraphs and tables
     # modify control_structure for vent and other standards
     apply_vent_standard_selections(control_structure, run_op_lookup, selections)
 
-    # apply all paragraph selections
+    # apply all paragraph and table selections
     apply_selections(control_structure, name_map, run_op_lookup, selections)
 
     # convert units
     convert_units(control_structure, selections)
 
-    # TODO
-    apply_table_selections()
-
-    # remove toggle text?
+    # remove toggle text
     remove_toggles(doc)
 
     # finally remove all nodes flagged for deletion

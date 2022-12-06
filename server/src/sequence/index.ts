@@ -24,7 +24,7 @@ export async function getDocument(convertedDocumentPath: string) {
   return file;
 }
 
-export async function generateDoc(selections: Selections, path: string) {
+export async function generateDoc(selections: SequenceData, path: string) {
   const program = `python3`;
   const scriptArgs = ['scripts/sequence-doc/src/generate_doc.py', '-o', `${path}`];
 
@@ -55,7 +55,7 @@ export async function writeControlSequenceDocument(selections: SequenceData) {
   const filePath = `${SEQUENCE_OUTPUT_PATH}/${fileName}.docx`;
 
   const { stdout, stderr } = await generateDoc(selections, filePath);
-  console.log(stdout);
-  console.log(stderr);
+  // console.log(stdout);
+  // console.log(stderr);
   return getDocument(filePath);
 }

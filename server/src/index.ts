@@ -95,14 +95,7 @@ app.post("/api/sequence", async (req, res) => {
   // Please note that this is a very naive data format.
   // The shape of this object will most likely need to be modified and massaged when we work with real data.
   const sequenceData: SequenceData = req.body;
-  console.log('sequenceData: ', sequenceData);
-  // const controlSequenceInput: SequenceData = {
-  //   energyCode: EnergyCode.Ashrae,
-  //   choices: {
-  //     BuildingsTemplatesAirHandlersFansInterfacesPartialAirHandlertypFanRet:
-  //       "Buildings.Templates.Components.Types.Fan.SingleConstant",
-  //   },
-  // };
+
   try {
     const file = await writeControlSequenceDocument(sequenceData);
     res.send(file);
