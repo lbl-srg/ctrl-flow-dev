@@ -188,7 +188,7 @@ describe("Expected Inputs are extracted", () => {
     const firstComponentInput =
       inputs["TestPackage.Template.TestTemplate.first"];
 
-    expect(firstComponentInput.inputs?.length).toBe(3);
+    expect(firstComponentInput.inputs?.length).toBe(4);
   });
 
   it("Extracts expected extend class inputs", () => {
