@@ -12,7 +12,7 @@ import itl from "../../translations";
 const Sidebarlayout = observer(
   ({ contentLeft, contentRight, isFullScreen = true }) => {
     const { uiStore, projectStore } = useStores();
-    const projectDetails = projectStore.projectDetails;
+    const projectDetails = projectStore.getProjectDetails();
 
     const [isDragging, setIsDragging] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
@@ -70,7 +70,7 @@ const Sidebarlayout = observer(
               <header>
                 <div className="truncate">
                   All Projects &gt; &nbsp;
-                  <strong>{projectDetails.name || "unnamed"}</strong>
+                  <strong>{projectDetails?.name || "unnamed"}</strong>
                 </div>
                 {modalOpen ? null : (
                   <button

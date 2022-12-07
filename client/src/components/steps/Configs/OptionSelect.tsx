@@ -6,11 +6,8 @@ import { FlatConfigOption } from "./SlideOut";
 
 export interface OptionSelectProps {
   option: FlatConfigOption;
-  configId: string;
-  updateSelectedConfigOption: (
+  updateSelectedOption: (
     modelicaPath: string,
-    // name: string,
-    // selectedOption: OptionInterface,
     scope: string,
     choice: string | null,
   ) => void;
@@ -18,12 +15,11 @@ export interface OptionSelectProps {
 
 const OptionSelect = ({
   option,
-  configId,
-  updateSelectedConfigOption,
+  updateSelectedOption,
 }: OptionSelectProps) => {
 
   function selectOption(event: ChangeEvent<HTMLSelectElement>) {
-    updateSelectedConfigOption(
+    updateSelectedOption(
       option.modelicaPath,
       option.scope,
       event.target.value || null,

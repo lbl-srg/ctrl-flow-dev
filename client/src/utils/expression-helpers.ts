@@ -83,7 +83,7 @@ function resolveExpression(
   pathModifiers: any,
   allOptions: { [key: string]: OptionInterface },
 ): any {
-  let resolved_expression: any = expression;
+  let resolved_expression: any = { ...expression };
 
   expression.operands.every((operand: any, index: number) => {
     const resolvedValue = resolveValue(
@@ -211,7 +211,7 @@ export function evaluateExpression(
   pathModifiers: any,
   allOptions: { [key: string]: OptionInterface },
 ): any {
-  const evaluated_expression: any = expression;
+  const evaluated_expression: any = { ...expression };
 
   expression.operands.forEach((operand: any, index: number) => {
     if (isExpression(operand)) {
