@@ -8,10 +8,8 @@ const EXAMPLE_SELECTIONS = {
     "ReturnFanCalculatedAir",
   ],
   "Buildings.Templates.ZoneEquipment.Types.Configuration": ["CO"],
-  DEL_ENERGY_ASHRAE: [true],
-  DEL_ENERGY_TITLE24: [false],
-  DEL_VENTILATION_ASHRAE: [true],
-  DEL_VENTILATION_TITL24: [false],
+  "Buildings.Templates.Data.AllSystems.stdEne": ["Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1_2016"],
+  "Buildings.Templates.Data.AllSystems.stdVen": ["Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24_2016"],
   UNITS: ["SI"],
   DEL_INFO_BOX: [false],
 };
