@@ -6,15 +6,17 @@ import { ConfigInterface } from "../../data/config";
 import { ProjectDetailInterface } from "../../data/project";
 
 const CONTROL_SEQUENCE = "Control Sequence";
+const CONTROL_SEQUENCE_WITH_INFO_TEXT = "Control Sequence with info text"
 const DOCX = "docx";
 
 const DOWNLOADABLE_FILE_LIST = [
-  { label: "Full Project", ext: "zip" },
-  { label: "Schematics", ext: "rvt" },
+  // { label: "Full Project", ext: "zip" },
+  // { label: "Schematics", ext: "rvt" },
   { label: CONTROL_SEQUENCE, ext: DOCX },
-  { label: "Points List", ext: "pdf" },
-  { label: "Equipment Schedules", ext: "csv" },
-  { label: "CDL", ext: "json" },
+  { label: CONTROL_SEQUENCE_WITH_INFO_TEXT, ext: DOCX },
+  // { label: "Points List", ext: "pdf" },
+  // { label: "Equipment Schedules", ext: "csv" },
+  // { label: "CDL", ext: "json" },
 ];
 
 function DownloadModal({ isOpen, close }: ModalInterface) {
@@ -66,10 +68,7 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
     seqData = {
       ...seqData,
       UNITS: [projectDetails?.units],
-      DEL_INFO_BOX: [true],
     }
-
-    console.log('seqData: ', seqData);
 
     return seqData;
   }
@@ -79,7 +78,22 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
       const response = await fetch(`${process.env.REACT_APP_API}/sequence`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(getSequenceData()),
+        body: JSON.stringify({...getSequenceData(), DEL_INFO_BOX: [true]}),
+      });
+
+      // TODO: Handle error responses which do not contain an actual file
+      const sequenceDocument = await response.blob();
+      const placeholderLink = document.createElement("a");
+      placeholderLink.href = window.URL.createObjectURL(sequenceDocument);
+      placeholderLink.download = `${CONTROL_SEQUENCE}.${DOCX}`;
+      placeholderLink.click();
+    }
+
+    if (checked.includes(CONTROL_SEQUENCE_WITH_INFO_TEXT)) {
+      const response = await fetch(`${process.env.REACT_APP_API}/sequence`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({...getSequenceData(), DEL_INFO_BOX: [false]}),
       });
 
       // TODO: Handle error responses which do not contain an actual file

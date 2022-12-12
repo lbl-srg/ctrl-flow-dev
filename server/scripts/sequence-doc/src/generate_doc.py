@@ -12,7 +12,7 @@ from mogrifier import mogrify_doc
 
 DEFAULT_DOC_VERSION = '2022-10-31 G36 Decisions'
 OUTPUT_PATH = '2022-10-31 Guideline 36.docx'
-MAPPING_FILE_PATH = 'rev3-mappings.csv'
+MAPPING_FILE_PATH = 'rev3-mappings-working.csv'
 SOURCE_DOC_PATH = '2022-10-31 Guideline 36-2021 (sequence selection source).docx'
 MAPPINGS_SHORT_ID = 'Short ID'
 MAPPINGS_MODELICA_INSTANCE = 'Modelica Parameter'

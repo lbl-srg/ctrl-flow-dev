@@ -11,7 +11,7 @@ import logging
 import utils
 from typing import Dict, List
 
-logging.getLogger().setLevel(logging.ERROR)
+logging.getLogger().setLevel(logging.DEBUG)
 
 P_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p'
 TABLE_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tbl'
@@ -205,7 +205,7 @@ def remove_info_and_instr_boxes(doc, selections: Selections):
         if para.style.name == instr_box_style:
             remove_node(para)
 
-def apply_vent_standard_selections(control_structure, run_op_lookup: Dict, selections: Selections):
+def apply_vent_standard_selections(control_structure, name_map, run_op_lookup: Dict, selections: Selections):
     ''' 
         Modifies the control structure based on selections for ventilators
 
@@ -216,14 +216,51 @@ def apply_vent_standard_selections(control_structure, run_op_lookup: Dict, selec
         + `[VENT 621]` - ASHRAE Standard 62.1 ventilation requirements
         + `[VENT T24]` - California Title 24 ventilation requirements
     '''
+    # for op in control_structure:
+    #     if op['text'] == '[ENERGY 901]' and utils.reduce_to_boolean(selections['DEL_ENERGY_ASHRAE']):
+    #         remove_section(op['paragraph'], run_op_lookup)
+    #     if op['text'] == '[ENERGY T24]' and utils.reduce_to_boolean(selections['DEL_ENERGY_TITLE24']):
+    #         remove_section(op['paragraph'], run_op_lookup)
+    #     if op['text'] == '[VENT 621]' and utils.reduce_to_boolean(selections['DEL_VENTILATION_ASHRAE']):
+    #         remove_section(op['paragraph'], run_op_lookup)
+    #     if op['text'] == '[VENT T24]' and utils.reduce_to_boolean(selections['DEL_VENTILATION_TITL24']):
+    #         remove_section(op['paragraph'], run_op_lookup)
+
+    if 'ENERGY' not in name_map:
+        logging.error('ENERGY not found in name map')
+        return
+
+    if 'VENT' not in name_map:
+        logging.error('VENT not found in name map')
+        return
+
+    if '901' not in name_map:
+        logging.error('901 not found in name map')
+        return
+
+    if 'ET24' not in name_map:
+        logging.error('ET24 not found in name map')
+        return
+
+    if '621' not in name_map:
+        logging.error('621 not found in name map')
+        return
+
+    if 'VT24' not in name_map:
+        logging.error('VT24 not found in name map')
+        return
+
+    energy = name_map['ENERGY']
+    ventilation = name_map['VENT']
+
     for op in control_structure:
-        if op['text'] == '[ENERGY 901]' and utils.reduce_to_boolean(selections['DEL_ENERGY_ASHRAE']):
+        if op['text'] == '[ENERGY 901]' and selections[energy][0] != name_map['901']:
             remove_section(op['paragraph'], run_op_lookup)
-        if op['text'] == '[ENERGY T24]' and utils.reduce_to_boolean(selections['DEL_ENERGY_TITLE24']):
+        if op['text'] == '[ENERGY T24]' and selections[energy][0] != name_map['ET24']:
             remove_section(op['paragraph'], run_op_lookup)
-        if op['text'] == '[VENT 621]' and utils.reduce_to_boolean(selections['DEL_VENTILATION_ASHRAE']):
+        if op['text'] == '[VENT 621]' and selections[ventilation][0] != name_map['621']:
             remove_section(op['paragraph'], run_op_lookup)
-        if op['text'] == '[VENT T24]' and utils.reduce_to_boolean(selections['DEL_VENTILATION_TITL24']):
+        if op['text'] == '[VENT T24]' and selections[ventilation][0] != name_map['VT24']:
             remove_section(op['paragraph'], run_op_lookup)
 
     return control_structure # return not necessary but want to reinforce that this is getting modified
@@ -511,7 +548,7 @@ def mogrify_doc(doc: Document, name_map: Dict, selections: Selections) -> Docume
     remove_info_and_instr_boxes(doc, selections)
 
     # modify control_structure for vent and other standards
-    apply_vent_standard_selections(control_structure, run_op_lookup, selections)
+    apply_vent_standard_selections(control_structure, name_map, run_op_lookup, selections)
 
     # apply all paragraph and table selections
     apply_selections(control_structure, name_map, run_op_lookup, selections)

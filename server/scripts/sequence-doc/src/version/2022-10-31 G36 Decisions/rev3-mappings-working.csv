@@ -1,14 +1,13 @@
-,,The rows highlighted in grey are not yet implemented in Modelica,,,"Antoine's edits are either in red font (10/20/22) or green font (11/8/22, MBL commit 466236e02f)",
 ,,Short ID,Mutually Exclusive? (Y/N),Modelica Parameter,Modelica Path,Question/Comments
 ,Unit of Measurement:,,Y,,,
 ,1 = SI,,,,,
 ,2 = IP,,,,,
 ,Ventilation Standard:,VENT,Y,Buildings.Templates.Data.AllSystems.stdVen,Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard,
 ,ASHRAE Standard 62.1,621,,,Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1_2016,
-,California Title 24,T24,,,Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24_2016,
+,California Title 24,VT24,,,Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24_2016,
 ,Energy Standard:,ENERGY,Y,Buildings.Templates.Data.AllSystems.stdEne,Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard,
 ,ASHRAE Standard 90.1,901,,,Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1_2016,
-,California Title 24,T24,,,Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24_2016,
+,California Title 24,ET24,,,Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24_2016,
 ,ASHRAE Climate Zone:,CZ,Y,Buildings.Templates.Data.AllSystems.ashCliZon,Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone,
 ,ASHRAE CZ 1A,1A,,,Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A,
 ,ASHRAE CZ 1B,1B,,,Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B,
@@ -62,8 +61,8 @@
 ,DX/Evaporator coil w/ variable speed compressor (future),DX_VFD,,,Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed,Implemented in Templates. NOT covered by G36.
 ,DX/Evaporator coil w/ multi-stage compressor (future),DX_STGD,,,Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage,Implemented in Templates. NOT covered by G36.
 ,Economizer:,ECON,Y,secOutRel.have_eco,Boolean,"This refers to the economizer FUNCTION, see https://github.com/lbl-srg/modelica-buildings/pull/3140#issue-1434648178"
-,None,NO_ECON,,,false,NOT implemented in Templates. Not covered by G36.
-,Yes,YES,,,true,
+,None,,,,false,NOT implemented in Templates. Not covered by G36.
+,Yes,,,,true,
 ,Economizer High Limit Type:,ECON_HL,Y,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typCtlEco-ctl.typCtlEco,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer,
 ,Fixed DB,DB,,,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulb,
 ,Differential DB,DIFFDB,,,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.DifferentialDryBulb,
@@ -90,13 +89,13 @@ The list of options should be revised in the template."
 ,Dedicated minimum OA damper with AFMS,SEP_AFMS,,,Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow,
 ,Dedicated minimum OA damper DPT,SEP_DP,,,Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure,
 ,Damper mapping (SZVAV-only),MAPSPD,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
-,Multiple Relief Fans:,,N,N/A,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
+,Multiple Relief Fans:,,N,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,Yes,,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,No,,,,,
-,Common Relief Fan Inlet Plenum:,,N,N/A,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
+,Common Relief Fan Inlet Plenum:,,N,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,Yes,,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,No,,,,,
-,Filter Alarm:,,,N/A,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
+,Filter Alarm:,,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,Yes,,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,No,,,,,
 ,Perimeter Reheat Box:,PERIM_RH,N,Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.have_perZonRehBox-ctl.have_perZonRehBox,Boolean,
@@ -110,7 +109,7 @@ The list of options should be revised in the template."
 ,Freezestat hardwired directly to the equipment,WIRED,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_equipment,
 ,"Freezestat connected to BAS, normally open",,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NO,Why does polarity matter here but nowhere else?
 ,"Freezestat connected to BAS, normally closed",,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NC,To be discussed with Jianjun.
-,AFDD:,,N,N/A,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
+,AFDD:,,N,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,Yes,,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,No,,,,,
 ,,,,,,
