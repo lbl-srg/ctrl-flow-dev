@@ -244,7 +244,7 @@ const EditDetailsModal = observer(
         <h1>{modalTitle}</h1>
 
         <form className="no-margin" onSubmit={save}>
-          <label htmlFor="name">
+          {/*<label htmlFor="name">
             {itl.phrases.projectName}:
             <input name="name" type="text" onChange={updateTextInput} defaultValue={formInputs.name} />
           </label>
@@ -278,8 +278,9 @@ const EditDetailsModal = observer(
                 onChange={updateTextInput}
                 defaultValue={formInputs.size}
               />
-            </label>
-
+            </label>*/}
+            
+          <div className="grid">
             <label htmlFor="units">
               {itl.terms.units}
               <select
@@ -296,8 +297,8 @@ const EditDetailsModal = observer(
 
           {renderStandards()}
 
-          <label htmlFor="notes">{itl.terms.notes}:</label>
-          <textarea name="notes"  onChange={updateTextInput} defaultValue={formInputs.notes} />
+          {/*<label htmlFor="notes">{itl.terms.notes}:</label>
+          <textarea name="notes"  onChange={updateTextInput} defaultValue={formInputs.notes} />*/}
 
           <div className="action-bar">
             {cancelText ? (

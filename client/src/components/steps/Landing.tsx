@@ -15,8 +15,8 @@ function Landing() {
       <EditDetailsModal
         close={() => setModalOpen(false)}
         isOpen={modalOpen}
-        modalTitle="Create New Project"
-        submitText="Create Project"
+        modalTitle="Project Configuration"
+        submitText="Configure Project"
         afterSubmit={() => navigate("/systems")}
       ></EditDetailsModal>
 
@@ -72,11 +72,22 @@ function Landing() {
           </div>
         </article>
 
-        <div className="row">
+        <div className='container'>
+          <div className="row justify-content-center">
+            <div className="col-xs-12">
+              <button onClick={() => setModalOpen(true)} className="outline">
+                <i className="icon-plus-squared-alt large" />
+                Configure Project
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/*<div className="row">
           <div className="col-md-6 col-xs-12">
             <button onClick={() => setModalOpen(true)} className="outline">
               <i className="icon-plus-squared-alt large" />
-              Create New Project
+              Configure Project
             </button>
           </div>
 
@@ -89,7 +100,7 @@ function Landing() {
               Upload Existing Project
             </button>
           </div>
-        </div>
+        </div>*/}
       </main>
     </Fragment>
   );
