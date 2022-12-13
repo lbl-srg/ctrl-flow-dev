@@ -312,7 +312,7 @@ const SlideOut = ({
     setSelectedValues((prevState: any) => {
       const selectionPath = `${parentModelicaPath}-${scope}`;
 
-      if (!choice) {
+      if (choice === null) {
         delete prevState[selectionPath];
         return prevState;
       }
@@ -368,7 +368,10 @@ const SlideOut = ({
     );
   }
 
+  console.log('templateOptions: ', templateOptions);
+  console.log('selectedValues: ', selectedValues);
   console.log('evaluatedValues: ', evaluatedValues);
+  console.log('displayOptions: ', displayedOptions);
 
   return (
     <Modal isOpen close={close} className="config-slide-out">
