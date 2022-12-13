@@ -27,6 +27,9 @@ export const EXTEND_NAME = "__extend";
 // TODO: templates *should* have all types defined within a template - however there will
 // be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
+const PROJECT_PATH = "Buildings.Templates.Data.AllSystems";
+const PROJECT_INSTANCE_PATH = "datAll";
+
 // TODO: convert 'elementType' to an enum
 export const isInputGroup = (elementType: string) =>
   ["model", "block", "package"].includes(elementType);
@@ -191,6 +194,39 @@ function assertType(type: string) {
   if (!MODELICA_LITERALS.includes(type) && !typeStore.has(type)) {
     throw new Error(`${type} not defined`);
   }
+}
+
+export function getProject() {
+  const inputs = createProjectInputs();
+
+  return inputs[PROJECT_INSTANCE_PATH];
+}
+
+/**
+ * We have to spoof an instance of the project settings
+ */
+export function createProjectInputs(): { [key: string]: TemplateInput } {
+  const allSystems = typeStore.find(PROJECT_PATH);
+  const projectInputs = allSystems?.getInputs() as {
+    [key: string]: TemplateInput;
+  };
+  const spoofedModList = Object.values(projectInputs).map((i) => {
+    const modName = i.modelicaPath.split('.').pop();
+    return new Modification(PROJECT_PATH, modName, i.value);
+  });
+
+  const spoofedDatAllInstance: TemplateInput = {
+    modelicaPath: PROJECT_INSTANCE_PATH,
+    name: PROJECT_INSTANCE_PATH,
+    type: PROJECT_PATH,
+    value: PROJECT_PATH,
+    visible: false,
+    modifiers: spoofedModList,
+    inputs: [PROJECT_PATH],
+    elementType: "component_clause",
+  };
+
+  return { [PROJECT_INSTANCE_PATH]: spoofedDatAllInstance, ...projectInputs };
 }
 
 export interface TemplateInput {
@@ -836,6 +872,7 @@ function _constructElement(
     case "type":
       element = new Enum(definition, basePath, elementType);
       break;
+    case "class":
     case "connector":
     case "model":
     case "block":
@@ -924,4 +961,8 @@ export const loadPackage = (filePath: string) => {
   const paths = findPackageEntryPoints(pathPrefix, filePath);
 
   paths?.map(({ json, path }) => new File(json, path));
+
+  // Attempt to load project settings from a pre-defined path
+  const projectPath = "Buildings.Templates.Data.AllSystems";
+  getFile(projectPath);
 };

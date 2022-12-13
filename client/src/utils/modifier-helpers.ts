@@ -105,9 +105,13 @@ export function buildModifiers(
   baseInstancePath: string,
   baseModifiers: Modifiers,
   options: { [key: string]: OptionInterface },
+  addProjectMods = true,
 ): Modifiers {
   const modifiers: Modifiers = { ...baseModifiers };
-
+  if (addProjectMods) {
+    const datAll = options["datAll"]; // project settings
+    updateModifiers(datAll, "", modifiers, options);
+  }
   updateModifiers(startOption, baseInstancePath, modifiers, options);
 
   return modifiers;
@@ -241,7 +245,13 @@ export function getUpdatedModifiers(
 
       updatedModifiers = {
         ...updatedModifiers,
-        ...buildModifiers(option, instancePath, updatedModifiers, allOptions),
+        ...buildModifiers(
+          option,
+          instancePath,
+          updatedModifiers,
+          allOptions,
+          false,
+        ),
       };
     }
   });

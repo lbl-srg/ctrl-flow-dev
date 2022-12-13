@@ -23,6 +23,11 @@ export function getSystemTypes() {
   return [...systemTypeStore.values()];
 }
 
+export function getProject(): Project {
+  const { modelicaPath } = parser.getProject() as parser.TemplateInput;
+  return { modelicaPath };
+}
+
 type Options = { [key: string]: Option };
 type ScheduleOptions = { [key: string]: ScheduleOption };
 
@@ -31,6 +36,7 @@ export function getOptions(): {
   scheduleOptions: ScheduleOption[];
 } {
   const templates = [...templateStore.values()];
+
   let allConfigOptions = {};
   let allScheduleOptions = {};
 
@@ -39,6 +45,13 @@ export function getOptions(): {
     allConfigOptions = { ...allConfigOptions, ...options };
     allScheduleOptions = { ...allScheduleOptions, ...scheduleOptions };
   });
+
+  // append project options
+  const projectOptions: { [key: string]: Option } = {};
+  Object.entries(parser.createProjectInputs()).map(
+    ([key, input]) => (projectOptions[key] = _mapInputToOption(input)),
+  );
+  allConfigOptions = { ...allConfigOptions, ...projectOptions };
 
   return {
     options: Object.values(allConfigOptions),
@@ -61,6 +74,10 @@ export interface Option {
   replaceable: boolean;
   elementType: string;
   definition: boolean;
+}
+
+export interface Project {
+  modelicaPath: string;
 }
 
 export interface ScheduleOption extends Option {
@@ -327,6 +344,7 @@ export class Template {
         .filter((p) => p !== "")
         .join(".");
       if (param.inner && !(path in inner)) {
+        // key: just the param name, value: the full path
         inner[param.name] = path; // inner declarations resolve just by param name NOT the full instance path
         if (path in pathMods && pathMods[path] !== undefined) {
           pathMods[path] = inner[path];
@@ -334,7 +352,12 @@ export class Template {
       }
 
       if (param.outer) {
-        pathMods[path] = inner[param.name]; // OK if undefined
+        // check special case for if path is 'datAll'
+        if (param.name.endsWith("datAll")) {
+          pathMods[path] = "datAll";
+        } else {
+          pathMods[path] = inner[param.name]; // OK if undefined
+        }
       }
     }
   }

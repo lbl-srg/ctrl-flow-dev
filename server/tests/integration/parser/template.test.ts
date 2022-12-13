@@ -6,7 +6,7 @@ import {
   getOptions,
 } from "../../../src/parser/";
 
-import { getTemplates } from "../../../src/parser/template";
+import { getTemplates, getProject } from "../../../src/parser/template";
 
 const TEMPLATE_PATH = "TestPackage.Template.TestTemplate";
 const NESTED_TEMPLATE_PATH =
@@ -190,5 +190,57 @@ describe("Template wrapper class functionality", () => {
     // have the same 'scope'
     expect("nested_outer_param" in pathModifiers).toBeTruthy();
     expect(pathModifiers["nested_outer_param"]).toEqual("nested_outer_param");
+  });
+});
+
+const PROJECT_INSTANCE_NAME = "datAll";
+
+describe("'Project' items are extracted", () => {
+  beforeAll(() => {
+    createTestModelicaJson();
+    loadPackage(`${fullTempDirPath}/TestPackage`);
+  });
+  it("Project is populated and all project options are included in options", () => {
+    const project = getProject();
+    const { options } = getOptions();
+    const optionList = [];
+
+    expect(project).toBeDefined();
+    expect(project.modelicaPath).toBe(PROJECT_INSTANCE_NAME);
+    // recursive helper to collect options
+    const optionAccumulator = (path: string) => {
+      const option = options.find((o) => o.modelicaPath === path);
+      if (option) {
+        optionList.push(option);
+        option.options
+          ?.filter((p) => p !== undefined)
+          .map((p) => optionAccumulator(p));
+      }
+    };
+
+    optionAccumulator(project.modelicaPath);
+    // More than 1 means the project option and child options have been found
+    expect(optionList.length).toBeGreaterThan(1);
+  });
+
+  it("Path modifiers point to correct 'datAll'", () => {
+    // check all pathModifiers that end with 'datAll' link to
+    // 'datAll'
+    const templates = getTemplates();
+    const template = templates.find(
+      (t) => t.modelicaPath === TEMPLATE_PATH,
+    ) as Template;
+
+    const { pathModifiers } = template.getSystemTemplate();
+
+    const datAllList = Object.keys(pathModifiers).filter((path => path.endsWith(PROJECT_INSTANCE_NAME)));
+    expect(datAllList.length).toBeGreaterThan(0);
+
+    // expect pathModifiers to include paths to project data
+    Object.keys(pathModifiers)
+      .filter((path) => path.endsWith(PROJECT_INSTANCE_NAME))
+      .forEach((path) => {
+        expect(pathModifiers[path]).toEqual(PROJECT_INSTANCE_NAME);
+      });
   });
 });

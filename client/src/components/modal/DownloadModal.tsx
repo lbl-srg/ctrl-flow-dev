@@ -34,7 +34,7 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
   }
 
   function getSequenceData() {
-    const seqData: {[key: string]: any} = {};
+    let seqData: {[key: string]: any} = {};
 
     projectConfigs.forEach((config) => {
       const configData = { ...config.evaluatedValues, ...config.selections };
@@ -54,6 +54,18 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
         }
       });
     });
+
+    seqData = {
+      ...seqData,
+      DEL_ENERGY_ASHRAE: [false],
+      DEL_ENERGY_TITLE24: [true],
+      DEL_VENTILATION_ASHRAE: [false],
+      DEL_VENTILATION_TITL24: [true],
+      UNITS: ['SI'],
+      DEL_INFO_BOX: [true],
+    }
+
+    console.log('seqData: ', seqData);
 
     return seqData;
   }

@@ -1,2 +1,2 @@
-######### sequence-doc python requirements ###########
+######### sequence-doc requirements ###########
 python-docx

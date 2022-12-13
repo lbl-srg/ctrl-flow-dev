@@ -45,7 +45,7 @@
     "debug": "nodemon --inspect=0.0.0.0:9229 --exec node -r ts-node/register src/index.ts",
     "build": "tsc",
     "install-modelica-deps": "./bin/install-modelica-dependencies.sh",
-    "install-python-deps": "python3 -m pip install -r scripts/sequence-doc/requirements.txt",
+    "install-python-deps": "python3 -m pip install -r scripts/sequence-doc/requirements.txt -r scripts/sequence-doc/dev-requirements.txt",
     "format": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --write .",
     "test": "jest",
     "test:ci": "jest --testPathIgnorePatterns=\\(/node_modules/ long\\)",
