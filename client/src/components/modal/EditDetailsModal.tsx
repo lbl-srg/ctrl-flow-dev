@@ -114,7 +114,7 @@ const EditDetailsModal = observer(
           allOptions,
         );
 
-        if (isVisible) {
+        if (isVisible && option.childOptions?.length) {
           displayOptions = [
             ...displayOptions,
             {
@@ -134,25 +134,29 @@ const EditDetailsModal = observer(
               selectedValues[selectionPath]
             ] as OptionInterface;
 
-            displayOptions = [
-              ...displayOptions,
-              ...getDisplayOptions(
-                [selectedOption],
-                option.modelicaPath,
-              ),
-            ];
+            if (selectedOption) {
+              displayOptions = [
+                ...displayOptions,
+                ...getDisplayOptions(
+                  [selectedOption],
+                  option.modelicaPath,
+                ),
+              ];
+            }
           } else if (evaluatedValues[selectionPath]) {
             const evaluatedOption = allOptions[
               evaluatedValues[selectionPath]
             ] as OptionInterface;
 
-            displayOptions = [
-              ...displayOptions,
-              ...getDisplayOptions(
-                [evaluatedOption],
-                option.modelicaPath,
-              ),
-            ];
+            if (evaluatedOption) {
+              displayOptions = [
+                ...displayOptions,
+                ...getDisplayOptions(
+                  [evaluatedOption],
+                  option.modelicaPath,
+                ),
+              ];
+            }
           }
         } else if (option.childOptions?.length) {
           displayOptions = [
