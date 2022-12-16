@@ -207,34 +207,38 @@ const SlideOut = ({
           ];
         }
 
-        if (typeof selectedValues[selectionPath] !== "boolean" && selectedValues[selectionPath]) {
+        if (typeof selectedValues[selectionPath] === "string" && selectedValues[selectionPath]) {
           const selectedOption = allOptions[
             selectedValues[selectionPath]
           ] as OptionInterface;
 
-          displayOptions = [
-            ...displayOptions,
-            ...getDisplayOptions(
-              [selectedOption],
-              option.modelicaPath,
-              currentScope,
-              option.definition,
-            ),
-          ];
-        } else if (typeof evaluatedValues[selectionPath] !== "boolean" && evaluatedValues[selectionPath]) {
+          if (selectedOption) {
+            displayOptions = [
+              ...displayOptions,
+              ...getDisplayOptions(
+                [selectedOption],
+                option.modelicaPath,
+                currentScope,
+                option.definition,
+              ),
+            ];
+          }
+        } else if (typeof evaluatedValues[selectionPath] === "string" && evaluatedValues[selectionPath]) {
           const evaluatedOption = allOptions[
             evaluatedValues[selectionPath]
           ] as OptionInterface;
 
-          displayOptions = [
-            ...displayOptions,
-            ...getDisplayOptions(
-              [evaluatedOption],
-              option.modelicaPath,
-              currentScope,
-              option.definition,
-            ),
-          ];
+          if (evaluatedOption) {
+            displayOptions = [
+              ...displayOptions,
+              ...getDisplayOptions(
+                [evaluatedOption],
+                option.modelicaPath,
+                currentScope,
+                option.definition,
+              ),
+            ];
+          }
         }
       } else if (option.definition && option.childOptions?.length) {
         displayOptions = [

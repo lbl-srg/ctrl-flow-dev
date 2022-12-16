@@ -47,7 +47,7 @@ const EditDetailsModal = observer(
       notes: details?.notes || '',
     });
     const [selectedValues, setSelectedValues] = useState<ConfigValues>(
-      details?.selections || {}
+      projectStore.getProjectSelections()
     );
 
     const evaluatedValues = getEvaluatedValues(projectOptions);
@@ -125,6 +125,7 @@ const EditDetailsModal = observer(
               value:
                 selectedValues[selectionPath] || evaluatedValues[selectionPath],
               scope: "",
+              selectionType: "Normal",
             },
           ];
 
