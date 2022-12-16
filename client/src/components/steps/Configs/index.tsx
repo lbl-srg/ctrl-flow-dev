@@ -7,10 +7,13 @@ import { useStores } from "../../../data";
 import "../../../styles/steps/configs.scss";
 
 import { SystemTypeInterface } from "../../../data/template";
+import { ConfigValues } from "../../../utils/modifier-helpers";
 
 const Configs = () => {
-  const { templateStore } = useStores();
+  const { projectStore, templateStore } = useStores();
   const systemTypes: SystemTypeInterface[] = templateStore.systemTypes;
+  const projectSelections: ConfigValues = projectStore.getProjectSelections();
+  const projectEvaluatedValues: ConfigValues = projectStore.getProjectEvaluatedValues();
 
   return (
     <Fragment>
@@ -21,6 +24,8 @@ const Configs = () => {
           <System
             key={systemType.modelicaPath}
             systemPath={systemType.modelicaPath}
+            projectSelections={projectSelections}
+            projectEvaluatedValues={projectEvaluatedValues}
           />
         ))}
       </div>

@@ -12,9 +12,11 @@ import { ConfigInterface } from "../../../data/config";
 
 export interface ConfigProps {
   configId: string | undefined;
+  projectSelections: ConfigValues;
+  projectEvaluatedValues: ConfigValues;
 }
 
-const Config = observer(({ configId }: ConfigProps) => {
+const Config = observer(({ configId, projectSelections, projectEvaluatedValues }: ConfigProps) => {
   const { configStore, templateStore, uiStore } = useStores();
   const config = configStore.getById(configId) as ConfigInterface;
   const template = templateStore.getTemplateByPath(
@@ -81,6 +83,8 @@ const Config = observer(({ configId }: ConfigProps) => {
       {openedModal && (
         <SlideOut
           config={config}
+          projectSelections={projectSelections}
+          projectEvaluatedValues={projectEvaluatedValues}
           template={template}
           templateOptions={templateOptions}
           templateModifiers={templateModifiers}

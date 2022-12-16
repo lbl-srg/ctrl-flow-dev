@@ -6,11 +6,8 @@ import { FlatConfigOption } from "./SlideOut";
 
 export interface OptionSelectProps {
   option: FlatConfigOption;
-  configId: string;
-  updateSelectedConfigOption: (
+  updateSelectedOption: (
     modelicaPath: string,
-    // name: string,
-    // selectedOption: OptionInterface,
     scope: string,
     choice: string | null,
   ) => void;
@@ -18,23 +15,50 @@ export interface OptionSelectProps {
 
 const OptionSelect = ({
   option,
-  configId,
-  updateSelectedConfigOption,
+  updateSelectedOption,
 }: OptionSelectProps) => {
 
   function selectOption(event: ChangeEvent<HTMLSelectElement>) {
-    updateSelectedConfigOption(
-      option.modelicaPath,
-      option.scope,
-      event.target.value || null,
-    );
+    if (option.selectionType === "Boolean") {
+      const value =
+        event.target.value === "true" || event.target.value === "false"
+          ? JSON.parse(event.target.value)
+          : null;
+      updateSelectedOption(
+        option.modelicaPath,
+        option.scope,
+        value,
+      );
+    } else {
+      updateSelectedOption(
+        option.modelicaPath,
+        option.scope,
+        event.target.value || null,
+      );
+    }
   }
 
-  return (
-    <Fragment>
-      <label>
-        {option.name}
-      </label>
+  function renderSelect() {
+    const isBooleanSelection = option.selectionType === "Boolean";
+
+    if (isBooleanSelection) {
+      return (
+        <select
+          name={`${option.modelicaPath}-${option.scope}`}
+          defaultValue={option.value || ''}
+          onChange={selectOption}
+        >
+          <option value=''></option>
+          {option.booleanChoices?.map((choice) => (
+            <option key={`${option.modelicaPath}-${choice}`} value={choice}>
+              {choice}
+            </option>
+          ))}
+        </select>
+      );
+    }
+
+    return (
       <select
         name={`${option.modelicaPath}-${option.scope}`}
         defaultValue={option.value || ''}
@@ -47,6 +71,15 @@ const OptionSelect = ({
           </option>
         ))}
       </select>
+    );
+  }
+
+  return (
+    <Fragment>
+      <label>
+        {option.name}
+      </label>
+      {renderSelect()}
     </Fragment>
   );
 };
