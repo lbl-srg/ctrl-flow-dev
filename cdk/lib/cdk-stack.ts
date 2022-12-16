@@ -38,7 +38,7 @@ export class LblCdkStack extends cdk.Stack {
             image: ecs.ContainerImage.fromAsset(
               path.resolve(__dirname, "../../server"),
               {
-                platform: Platform.LINUX_ARM64,
+                platform: Platform.LINUX_AMD64,
               },
             ),
             environment: {
@@ -53,7 +53,7 @@ export class LblCdkStack extends cdk.Stack {
           assignPublicIp: true,
           runtimePlatform: {
             operatingSystemFamily: OperatingSystemFamily.LINUX,
-            cpuArchitecture: CpuArchitecture.ARM64,
+            cpuArchitecture: CpuArchitecture.X86_64,
           },
         },
       );
