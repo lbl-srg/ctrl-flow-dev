@@ -11,6 +11,7 @@
 import * as parser from "./parser";
 import { Expression, Literal } from "./expression";
 import { Modification } from "./modification";
+import { accessSync } from "fs";
 
 const templateStore = new Map<string, Template>();
 const systemTypeStore = new Map<string, SystemTypeN>();
@@ -90,6 +91,9 @@ export interface Mods {
 
 /**
  * Maps the nested modifier structure into a flat dictionary
+ *
+ * While flattening the dictionary, any redeclare types found and collected
+ * to be returned.
  */
 export function flattenModifiers(
   modList: (Modification | undefined | null)[] | undefined,
@@ -262,8 +266,50 @@ export class Template {
     }
   }
 
+  _findRedeclareTypesHelper(
+    mods: Modification[],
+    redeclareTypes: { [key: string]: null },
+  ) {
+    mods
+      .filter((m) => m.redeclare)
+      .map((m) => {
+        redeclareTypes[m.modelicaPath] = null;
+        if (m.mods) {
+          this._findRedeclareTypesHelper(m.mods, redeclareTypes);
+        }
+      });
+  }
+
+  /**
+   * Iterates through every modifier, finding any 'redeclare' modifiers
+   */
+  _findRedeclareTypes(inputs: { [key: string]: parser.TemplateInput }) {
+    const redeclaredTypes: { [key: string]: null } = {};
+    Object.values(inputs)
+      .filter((i) => i.modifiers !== undefined)
+      .map((input) => {
+        if (input.modifiers) {
+          this._findRedeclareTypesHelper(input.modifiers, redeclaredTypes);
+        }
+      });
+
+    return Object.keys(redeclaredTypes);
+  }
+
   _extractOptions(element: parser.Element) {
-    const inputs = element.getInputs();
+    let inputs = element.getInputs();
+    const redeclaredTypes = this._findRedeclareTypes(inputs);
+    const redeclaredInputs = redeclaredTypes
+      .map((t) => parser.typeStore.get(t))
+      .filter((element) => element !== undefined)
+      .reduce((acc, element) => {
+        return element
+          ? { ...acc, [element.modelicaPath]: element.getInputs() }
+          : acc;
+      }, {}) as { [key: string]: parser.TemplateInput };
+
+    inputs = { ...inputs, ...redeclaredInputs };
+
     const datEntryPoints = Object.values(inputs).filter((i) => {
       return i.modelicaPath.endsWith(".dat");
     });

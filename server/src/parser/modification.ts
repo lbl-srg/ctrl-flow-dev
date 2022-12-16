@@ -131,6 +131,7 @@ function unpackRedeclaration(props: ModificationProps) {
       getExpression(element.type, basePath, baseType),
       childMods,
       final,
+      true,
     );
   } else if ("short_class_definition" in redeclaration) {
   } else if ("element_replaceable" in redeclaration) {
@@ -279,6 +280,7 @@ export class Modification {
     public value: any,
     public mods: Modification[] = [],
     public final = false,
+    public redeclare = false,
   ) {
     this.modelicaPath = [basePath, name].filter((s) => s !== "").join(".");
     if (this.modelicaPath) {
