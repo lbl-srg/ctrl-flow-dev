@@ -20,8 +20,18 @@ export function resolveValue(
 ): any {
   const selectionValue = selections[selectionPath];
 
+  if (value === 'Buildings.Templates.Data.AllSystems.stdEne') {
+    console.log('resolveValue selections: ', selections);
+    console.log('selectionPath: ', selectionPath);
+    console.log('selectionValue: ', selectionValue);
+  }
+
   // if we have a selection we just need to return the selection (I don't think we need to test the selection)
   if (selectionValue !== undefined) return selectionValue;
+
+  if (value === 'Buildings.Templates.Data.AllSystems.stdEne') {
+    console.log('uh-oh!');
+  }
 
   // if value is a boolean or number we are just a value and need to return
   if (typeof value === "boolean" || typeof value === "number") return value;
@@ -83,7 +93,7 @@ function resolveExpression(
   pathModifiers: any,
   allOptions: { [key: string]: OptionInterface },
 ): any {
-  let resolved_expression: any = expression;
+  let resolved_expression: any = { ...expression };
 
   expression.operands.every((operand: any, index: number) => {
     const resolvedValue = resolveValue(
@@ -211,7 +221,7 @@ export function evaluateExpression(
   pathModifiers: any,
   allOptions: { [key: string]: OptionInterface },
 ): any {
-  const evaluated_expression: any = expression;
+  const evaluated_expression: any = { ...expression };
 
   expression.operands.forEach((operand: any, index: number) => {
     if (isExpression(operand)) {

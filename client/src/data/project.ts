@@ -1,19 +1,17 @@
 import { v4 as uuid } from "uuid";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 import RootStore from ".";
+import { ConfigValues } from "../utils/modifier-helpers";
 
 export interface ProjectDetailInterface {
   name: string;
   address: string;
   type: string;
   size: number;
-  units: string;
-  energy: string;
-  ventilation: string;
-  ashraeZone: string;
-  californiaZone: string;
   notes: string;
+  selections: ConfigValues;
+  evaluatedValues: ConfigValues;
 }
 
 export interface ProjectInterface {
@@ -28,12 +26,9 @@ const DEFAULT_PROJECT = {
     address: "",
     type: "Multi-Story Office",
     size: 0,
-    units: "IP",
-    energy: "Not specified",
-    ventilation: "Not specified",
-    ashraeZone: "Not specified",
-    californiaZone: "Not specified",
     notes: "",
+    selections: {},
+    evaluatedValues: {},
   },
 };
 
@@ -63,8 +58,18 @@ export default class Project {
     if (project) project.projectDetails = details;
   }
 
-  get projectDetails(): ProjectDetailInterface | undefined {
-    return this.activeProject?.projectDetails;
+  getProjectDetails(): ProjectDetailInterface | undefined {
+    return toJS(this.activeProject?.projectDetails);
+  }
+
+  getProjectSelections(): ConfigValues {
+    const projectDetails = this.activeProject?.projectDetails;
+    return projectDetails?.selections || {};
+  }
+
+  getProjectEvaluatedValues(): ConfigValues {
+    const projectDetails = this.activeProject?.projectDetails;
+    return projectDetails?.evaluatedValues || {};
   }
 
   get activeProject(): ProjectInterface | undefined {

@@ -42,6 +42,8 @@ export interface FlatConfigOptionChoice {
 
 export interface ConfigSlideOutProps {
   config: any;
+  projectSelections: ConfigValues;
+  projectEvaluatedValues: ConfigValues;
   template: any;
   templateOptions: OptionInterface[];
   templateModifiers: Modifiers;
@@ -50,38 +52,10 @@ export interface ConfigSlideOutProps {
   close: () => void;
 }
 
-// Takes a flat array of options and group them together according to their parent Modelica path.
-// export function groupConfigOptions(flatOptions: FlatConfigOption[]) {
-//   let groupedConfigOptions: FlatConfigOptionGroup[] = [];
-//   flatOptions.forEach((option) => {
-//     const existingGroupIndex = groupedConfigOptions.findIndex(
-//       (optionGroup) =>
-//         optionGroup.parentModelicaPath === option.parentModelicaPath,
-//     );
-//     // Creates a new key in the returned object
-//     if (existingGroupIndex === -1) {
-//       groupedConfigOptions = [
-//         ...groupedConfigOptions,
-//         {
-//           parentModelicaPath: option.parentModelicaPath,
-//           parentName: option.parentName,
-//           options: [option],
-//         },
-//       ];
-//     } else {
-//       // Adds the option to an existing group of options
-//       groupedConfigOptions[existingGroupIndex].options = [
-//         ...groupedConfigOptions[existingGroupIndex].options,
-//         option,
-//       ];
-//     }
-//   });
-
-//   return groupedConfigOptions;
-// }
-
 const SlideOut = ({
   config,
+  projectSelections,
+  projectEvaluatedValues,
   template,
   templateOptions,
   templateModifiers,
@@ -91,7 +65,7 @@ const SlideOut = ({
 }: ConfigSlideOutProps) => {
   const { configStore, templateStore } = useStores();
   const [selectedValues, setSelectedValues] =
-    useState<ConfigValues>(selections);
+    useState<ConfigValues>({...selections, ...projectSelections});
   const [configName, setConfigName] = useState<string>(config.name);
 
   // template defaults + selections
@@ -100,11 +74,14 @@ const SlideOut = ({
     templateModifiers,
     templateStore._options,
   );
-  const evaluatedValues: ConfigValues = getEvaluatedValues(
-    templateOptions,
-    "",
-    false,
-  );
+  const evaluatedValues: ConfigValues = {
+    ...getEvaluatedValues(
+      templateOptions,
+      "",
+      false,
+    ),
+    ...projectEvaluatedValues,
+  };
 
   configModifiers = getUpdatedModifiers(
     {
@@ -342,14 +319,14 @@ const SlideOut = ({
           <OptionSelect
             key={`${option.parentModelicaPath}---${option.modelicaPath}`}
             option={option}
-            configId={config.id}
-            updateSelectedConfigOption={updateSelectedConfigOption}
+            updateSelectedOption={updateSelectedConfigOption}
           />
         );
       },
     );
   }
 
+  console.log('selectedValues: ', selectedValues);
   console.log('evaluatedValues: ', evaluatedValues);
 
   return (

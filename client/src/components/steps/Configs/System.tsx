@@ -3,12 +3,15 @@ import { useStores } from "../../../data";
 import { observer } from "mobx-react";
 
 import { SystemTypeInterface, TemplateInterface } from "../../../data/template";
+import { ConfigValues } from "../../../utils/modifier-helpers";
 
 export interface SystemProps {
   systemPath: string;
+  projectSelections: ConfigValues;
+  projectEvaluatedValues: ConfigValues;
 }
 
-const System = observer(({ systemPath }: SystemProps) => {
+const System = observer(({ systemPath, projectSelections, projectEvaluatedValues }: SystemProps) => {
   const { templateStore } = useStores();
 
   const { system, templates, icon } = {
@@ -31,6 +34,8 @@ const System = observer(({ systemPath }: SystemProps) => {
           key={template.modelicaPath}
           systemPath={systemPath}
           templatePath={template.modelicaPath}
+          projectSelections={projectSelections}
+          projectEvaluatedValues={projectEvaluatedValues}
         />
       ))}
     </div>

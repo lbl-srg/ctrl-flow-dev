@@ -114,6 +114,10 @@ export default class Template {
     return match ? match.iconClass : "";
   }
 
+  getOptionsForProject(): OptionInterface[] {
+    return this.nestedOptions.filter((opt) => opt.modelicaPath === 'datAll');
+  }
+
   getOptionsForTemplate(path: string): OptionInterface[] {
     return this.nestedOptions.filter((opt) => opt.modelicaPath === path);
   }
