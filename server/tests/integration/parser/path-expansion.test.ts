@@ -59,7 +59,7 @@ describe("Path Expansion", () => {
 
   it("Redeclare modifier paths are expanded", () => {
     const { options } = getOptions();
-    const expectedValue = "TestPackage.Component.ThirdComponent";
+    const expectedValue = "TestPackage.Component.FifthComponent";
     const shortPathComponent = options.find(
       (o) =>
         o.modelicaPath ===

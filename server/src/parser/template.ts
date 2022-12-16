@@ -9,7 +9,7 @@
  */
 
 import * as parser from "./parser";
-import { Expression, Literal } from "./expression";
+import { evaluateExpression, Expression, Literal } from "./expression";
 import { Modification } from "./modification";
 import { accessSync } from "fs";
 
@@ -271,9 +271,11 @@ export class Template {
     redeclareTypes: { [key: string]: null },
   ) {
     mods
-      .filter((m) => m.redeclare)
       .map((m) => {
-        redeclareTypes[m.modelicaPath] = null;
+        if (m.redeclare) {
+          const redeclareType = evaluateExpression(m.value);
+          redeclareTypes[redeclareType] = null;
+        }
         if (m.mods) {
           this._findRedeclareTypesHelper(m.mods, redeclareTypes);
         }
@@ -298,13 +300,12 @@ export class Template {
 
   _extractOptions(element: parser.Element) {
     let inputs = element.getInputs();
-    const redeclaredTypes = this._findRedeclareTypes(inputs);
-    const redeclaredInputs = redeclaredTypes
+    const redeclaredInputs = this._findRedeclareTypes(inputs)
       .map((t) => parser.typeStore.get(t))
       .filter((element) => element !== undefined)
       .reduce((acc, element) => {
         return element
-          ? { ...acc, [element.modelicaPath]: element.getInputs() }
+          ? { ...acc, ...element.getInputs() }
           : acc;
       }, {}) as { [key: string]: parser.TemplateInput };
 
