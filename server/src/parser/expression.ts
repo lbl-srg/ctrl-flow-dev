@@ -39,7 +39,7 @@ function buildArithmeticExpression(
     }
     return o;
   });
-
+  
   return arithmetic_expression;
 }
 
@@ -226,6 +226,8 @@ export function evaluateExpression(expression: Expression): any {
   // (BE) If expression operator isn't none just return the expression
   // TODO: If expression operand is path should we keep as expression or just return the path?
   return expression.operator === "none" ? expression.operands[0] : expression;
+
+  // Buildings.Templates.Data.AllSystems.stdEne
 }
 
 export function getExpression(value: any, basePath = "", baseType = ""): Expression {

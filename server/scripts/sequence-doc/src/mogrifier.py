@@ -11,7 +11,7 @@ import logging
 import utils
 from typing import Dict, List
 
-logging.getLogger().setLevel(logging.ERROR)
+logging.getLogger().setLevel(logging.DEBUG)
 
 P_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p'
 TABLE_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tbl'
@@ -204,29 +204,6 @@ def remove_info_and_instr_boxes(doc, selections: Selections):
             remove_node(para)
         if para.style.name == instr_box_style:
             remove_node(para)
-
-def apply_vent_standard_selections(control_structure, run_op_lookup: Dict, selections: Selections):
-    ''' 
-        Modifies the control structure based on selections for ventilators
-
-        ### Standards/Ventilation Requirements
-        + **TODO** Adjust for real selections of these items
-        + `[ENERGY 901]` - ASHRAE/IES Standard 90.1 economizer high-limit requirements
-        + `[ENERGY T24]` - California Title 24 economizer high-limit requirements
-        + `[VENT 621]` - ASHRAE Standard 62.1 ventilation requirements
-        + `[VENT T24]` - California Title 24 ventilation requirements
-    '''
-    for op in control_structure:
-        if op['text'] == '[ENERGY 901]' and utils.reduce_to_boolean(selections['DEL_ENERGY_ASHRAE']):
-            remove_section(op['paragraph'], run_op_lookup)
-        if op['text'] == '[ENERGY T24]' and utils.reduce_to_boolean(selections['DEL_ENERGY_TITLE24']):
-            remove_section(op['paragraph'], run_op_lookup)
-        if op['text'] == '[VENT 621]' and utils.reduce_to_boolean(selections['DEL_VENTILATION_ASHRAE']):
-            remove_section(op['paragraph'], run_op_lookup)
-        if op['text'] == '[VENT T24]' and utils.reduce_to_boolean(selections['DEL_VENTILATION_TITL24']):
-            remove_section(op['paragraph'], run_op_lookup)
-
-    return control_structure # return not necessary but want to reinforce that this is getting modified
 
 def evaluate_annotation(op, name_map, selections: Selections):
     '''
@@ -463,21 +440,36 @@ def apply_selections(control_structure, name_map, run_op_lookup, selections: Sel
     # return not necessary - just reinforcing that control_structure is what is modified
     return control_structure
 
-def convert_units(control_structure, selections: Selections):
+def convert_units(control_structure, name_map, selections: Selections):
     ''' Based on unit selection, goes through doc to update
     '''
+    short_name = "UNITS"
+    si_short_name = "SI"
+    ip_short_name = "IP"
+
+    if short_name not in name_map:
+        logging.error('%s not found', short_name)
+        return
+    if si_short_name not in name_map:
+        logging.error('%s not found', si_short_name)
+        return
+    if ip_short_name not in name_map:
+        logging.error('%s not found', ip_short_name)
+        return
+
     for op in control_structure:
-        if op['op'] == 'UNITS':
+        if op['op'] == short_name:
             match = re.match(r'\[UNITS \[(.+)] \[(.+)]]', op['text'])
             if not match:
                 logging.error('Invalid format for tag:  %s', op['text'])
                 continue
-            unit_selection = selections['UNITS'][0]
-            if unit_selection == 'SI':
+            long_name = name_map[short_name]
+            unit_selection = selections[long_name][0]
+            if unit_selection == name_map[si_short_name]:
                 # TODO: use this as an approach for 'writes' to the docx 
                 op['runs'][0].text = match.group(1)
                 op['runs'][0].style = None
-            elif unit_selection == 'IP':
+            elif unit_selection == name_map[ip_short_name]:
                 op['runs'][0].text = match.group(2)
                 op['runs'][0].style = None
             else:
@@ -510,14 +502,11 @@ def mogrify_doc(doc: Document, name_map: Dict, selections: Selections) -> Docume
     # Remove info and Instruction Boxes - updates remove_list internally
     remove_info_and_instr_boxes(doc, selections)
 
-    # modify control_structure for vent and other standards
-    apply_vent_standard_selections(control_structure, run_op_lookup, selections)
-
     # apply all paragraph and table selections
     apply_selections(control_structure, name_map, run_op_lookup, selections)
 
     # convert units
-    convert_units(control_structure, selections)
+    convert_units(control_structure, name_map, selections)
 
     # remove toggle text
     remove_toggles(doc)

@@ -203,12 +203,14 @@ export function applyVisibilityModifiers(
 ): boolean {
   const scopePath = applyPathModifiers(scope, pathModifiers);
   const modifier: any = modifiers[scopePath];
-  let enable: Expression | boolean | undefined = option.enable;
+  let enable: Expression | boolean | undefined = isExpression(option.enable)
+    ? { ...option.enable }
+    : option.enable;
   let visible: boolean | undefined = option.visible;
 
-  if (isExpression(option.enable)) {
+  if (isExpression(enable)) {
     enable = evaluateExpression(
-      option.enable,
+      enable,
       scope,
       selectionPath,
       selections,
