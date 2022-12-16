@@ -44,7 +44,6 @@ const EditDetailsModal = observer(
       address: details?.address || '',
       type: details?.type || '',
       size: details?.size || 0,
-      units: details?.units || "IP",
       notes: details?.notes || '',
     });
     const [selectedValues, setSelectedValues] = useState<ConfigValues>(
@@ -54,8 +53,8 @@ const EditDetailsModal = observer(
     const evaluatedValues = getEvaluatedValues(projectOptions);
     const displayedOptions = getDisplayOptions(projectOptions, 'root');
 
-    console.log('details: ', details);
-    console.log('formInputs: ', formInputs);
+    // console.log('details: ', details);
+    // console.log('formInputs: ', formInputs);
     console.log('selectedValues: ', selectedValues);
     console.log('evaluatedValues: ', evaluatedValues);
     console.log('projectOptions: ', projectOptions);
@@ -197,7 +196,7 @@ const EditDetailsModal = observer(
       setSelectedValues((prevState: any) => {
         const selectionPath = parentModelicaPath;
 
-        if (!choice) {
+        if (choice == null) {
           delete prevState[selectionPath];
           return prevState;
         }
@@ -221,7 +220,7 @@ const EditDetailsModal = observer(
       if (afterSubmit) afterSubmit();
     }
 
-    function renderStandards() {
+    function renderAllSystemOptions() {
       return (
         <div className="grid">
           {displayedOptions.map((option) => {
@@ -280,7 +279,7 @@ const EditDetailsModal = observer(
               />
             </label>*/}
             
-          <div className="grid">
+          {/*<div className="grid">
             <label htmlFor="units">
               {itl.terms.units}
               <select
@@ -293,9 +292,9 @@ const EditDetailsModal = observer(
                 <option value="SI">SI</option>
               </select>
             </label>
-          </div>
+          </div>*/}
 
-          {renderStandards()}
+          {renderAllSystemOptions()}
 
           {/*<label htmlFor="notes">{itl.terms.notes}:</label>
           <textarea name="notes"  onChange={updateTextInput} defaultValue={formInputs.notes} />*/}

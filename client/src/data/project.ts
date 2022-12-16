@@ -9,7 +9,6 @@ export interface ProjectDetailInterface {
   address: string;
   type: string;
   size: number;
-  units: string;
   notes: string;
   selections: ConfigValues;
   evaluatedValues: ConfigValues;
@@ -27,7 +26,6 @@ const DEFAULT_PROJECT = {
     address: "",
     type: "Multi-Story Office",
     size: 0,
-    units: "IP",
     notes: "",
     selections: {},
     evaluatedValues: {},
@@ -62,6 +60,16 @@ export default class Project {
 
   getProjectDetails(): ProjectDetailInterface | undefined {
     return toJS(this.activeProject?.projectDetails);
+  }
+
+  getProjectSelections(): ConfigValues {
+    const projectDetails = this.activeProject?.projectDetails;
+    return projectDetails?.selections || {};
+  }
+
+  getProjectEvaluatedValues(): ConfigValues {
+    const projectDetails = this.activeProject?.projectDetails;
+    return projectDetails?.evaluatedValues || {};
   }
 
   get activeProject(): ProjectInterface | undefined {

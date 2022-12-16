@@ -42,6 +42,8 @@ export interface FlatConfigOptionChoice {
 
 export interface ConfigSlideOutProps {
   config: any;
+  projectSelections: ConfigValues;
+  projectEvaluatedValues: ConfigValues;
   template: any;
   templateOptions: OptionInterface[];
   templateModifiers: Modifiers;
@@ -52,6 +54,8 @@ export interface ConfigSlideOutProps {
 
 const SlideOut = ({
   config,
+  projectSelections,
+  projectEvaluatedValues,
   template,
   templateOptions,
   templateModifiers,
@@ -61,7 +65,7 @@ const SlideOut = ({
 }: ConfigSlideOutProps) => {
   const { configStore, templateStore } = useStores();
   const [selectedValues, setSelectedValues] =
-    useState<ConfigValues>(selections);
+    useState<ConfigValues>({...selections, ...projectSelections});
   const [configName, setConfigName] = useState<string>(config.name);
 
   // template defaults + selections
@@ -70,11 +74,14 @@ const SlideOut = ({
     templateModifiers,
     templateStore._options,
   );
-  const evaluatedValues: ConfigValues = getEvaluatedValues(
-    templateOptions,
-    "",
-    false,
-  );
+  const evaluatedValues: ConfigValues = {
+    ...getEvaluatedValues(
+      templateOptions,
+      "",
+      false,
+    ),
+    ...projectEvaluatedValues,
+  };
 
   configModifiers = getUpdatedModifiers(
     {
@@ -319,6 +326,7 @@ const SlideOut = ({
     );
   }
 
+  console.log('selectedValues: ', selectedValues);
   console.log('evaluatedValues: ', evaluatedValues);
 
   return (

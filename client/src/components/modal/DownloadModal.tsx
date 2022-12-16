@@ -25,7 +25,6 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
     DOWNLOADABLE_FILE_LIST.map(({ label }) => label),
   );
 
-  const projectDetails: ProjectDetailInterface | undefined = projectStore.getProjectDetails();
   const projectConfigs: ConfigInterface[] = configStore.getConfigsForProject();
 
   function updateItem(event: ChangeEvent<HTMLInputElement>, label: string) {
@@ -38,37 +37,28 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
   }
 
   function getSequenceData() {
-    let seqData: {[key: string]: any} = {};
-    const projectSelections = {
-      selections: {...projectDetails?.selections},
-      evaluatedValues: {...projectDetails?.evaluatedValues},
-    };
+    const seqData: {[key: string]: any} = {};
 
-    const projectItem: any = [...projectConfigs, projectSelections];
+    projectConfigs.forEach((config) => {
+      const configData = { ...config.evaluatedValues, ...config.selections };
+      const configKeys = Object.keys(configData);
 
-    projectItem.forEach((item: any) => {
-      const itemData = { ...item.evaluatedValues, ...item.selections };
-      const itemKeys = Object.keys(itemData);
-
-      itemKeys.forEach((key) => {
+      configKeys.forEach((key) => {
         if (seqData[key] !== undefined) {
           const initalValue = seqData[key];
-          if (seqData[key].indexOf(itemData[key]) === -1) {
-            seqData[key].push(itemData[key]);
+          if (seqData[key].indexOf(configData[key]) === -1) {
+            seqData[key].push(configData[key]);
           }
         } else {
           const [modelicaPath, instancePath] = key.split("-");
-          if (modelicaPath !== itemData[key]) {
-            seqData[key] = [itemData[key]];
+          if (modelicaPath !== configData[key]) {
+            seqData[key] = [configData[key]];
           }
         }
       });
     });
 
-    seqData = {
-      ...seqData,
-      UNITS: [projectDetails?.units],
-    }
+    console.log('seqData: ', seqData);
 
     return seqData;
   }
