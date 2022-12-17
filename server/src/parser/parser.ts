@@ -211,7 +211,7 @@ export function createProjectInputs(): { [key: string]: TemplateInput } {
     [key: string]: TemplateInput;
   };
   const spoofedModList = Object.values(projectInputs).map((i) => {
-    const modName = i.modelicaPath.split('.').pop();
+    const modName = i.modelicaPath.split(".").pop();
     return new Modification(PROJECT_PATH, modName, i.value);
   });
 

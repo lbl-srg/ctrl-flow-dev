@@ -87,7 +87,13 @@ export function createModification(
  */
 function unpackRedeclaration(props: ModificationProps) {
   let { basePath, definition, baseType } = props;
-  const redeclaration = (definition as mj.RedeclareMod).element_redeclaration;
+  let redeclaration = (definition as mj.RedeclareMod).element_redeclaration;
+
+  redeclaration =
+    "element_replaceable" in redeclaration
+      ? redeclaration.element_replaceable
+      : (redeclaration as any); // TODO: type this correctly
+
   const final = "final" in redeclaration ? redeclaration.final : false;
   if ("component_clause1" in redeclaration) {
     const componentClause1 =
@@ -108,7 +114,9 @@ function unpackRedeclaration(props: ModificationProps) {
     }
 
     if (element === undefined) {
-      console.log(`${basePath}\t${componentClause1.type_specifier}`);
+      console.log(
+        `Unable to find mod type: ${basePath}\t${componentClause1.type_specifier}`,
+      );
       return;
     }
     const redeclareDefinition =
@@ -134,7 +142,6 @@ function unpackRedeclaration(props: ModificationProps) {
       true,
     );
   } else if ("short_class_definition" in redeclaration) {
-  } else if ("element_replaceable" in redeclaration) {
   }
 }
 
