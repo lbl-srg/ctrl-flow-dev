@@ -1,5 +1,5 @@
 ,,Short ID,Mutually Exclusive? (Y/N),Modelica Parameter,Modelica Path,Question/Comments
-,Unit of Measurement:,UNITS,Y,Buildings.Templates.Data.AllSystems.uniSys,Buildings.Templates.Data.AllSystems.uniSys,
+,Unit of Measurement:,UNITS,Y,Buildings.Templates.Data.AllSystems.sysUni,Buildings.Templates.Data.AllSystems.sysUni,
 ,1 = SI,SI,,,Buildings.Templates.Types.Units.SI,
 ,2 = IP,IP,,,Buildings.Templates.Types.Units.IP,
 ,Ventilation Standard:,VENT,Y,Buildings.Templates.Data.AllSystems.stdVen,Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard,
