@@ -24,6 +24,7 @@ export interface OptionInterface {
   modifiers: any;
   treeList: string[];
   definition: boolean;
+  replaceable: boolean;
 }
 
 export interface SystemTypeInterface {
@@ -115,7 +116,7 @@ export default class Template {
   }
 
   getOptionsForProject(): OptionInterface[] {
-    return this.nestedOptions.filter((opt) => opt.modelicaPath === 'datAll');
+    return this.nestedOptions.filter((opt) => opt.modelicaPath === "datAll");
   }
 
   getOptionsForTemplate(path: string): OptionInterface[] {

@@ -149,7 +149,7 @@ function _mapInputToOption(input: parser.TemplateInput): Option {
 
   option.options = options;
   option.definition = parser.isDefinition(input.elementType);
-  //
+  option.replaceable = input.elementType === "replaceable";
 
   if (option.definition) {
     option.treeList = _getTreeList(option);
