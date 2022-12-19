@@ -91,9 +91,6 @@ export interface Mods {
 
 /**
  * Maps the nested modifier structure into a flat dictionary
- *
- * While flattening the dictionary, any redeclare types found and collected
- * to be returned.
  */
 export function flattenModifiers(
   modList: (Modification | undefined | null)[] | undefined,
@@ -270,16 +267,15 @@ export class Template {
     mods: Modification[],
     redeclareTypes: { [key: string]: null },
   ) {
-    mods
-      .map((m) => {
-        if (m.redeclare) {
-          const redeclareType = evaluateExpression(m.value);
-          redeclareTypes[redeclareType] = null;
-        }
-        if (m.mods) {
-          this._findRedeclareTypesHelper(m.mods, redeclareTypes);
-        }
-      });
+    mods.map((m) => {
+      if (m.redeclare) {
+        const redeclareType = evaluateExpression(m.value);
+        redeclareTypes[redeclareType] = null;
+      }
+      if (m.mods) {
+        this._findRedeclareTypesHelper(m.mods, redeclareTypes);
+      }
+    });
   }
 
   /**
@@ -304,9 +300,7 @@ export class Template {
       .map((t) => parser.typeStore.get(t))
       .filter((element) => element !== undefined)
       .reduce((acc, element) => {
-        return element
-          ? { ...acc, ...element.getInputs() }
-          : acc;
+        return element ? { ...acc, ...element.getInputs() } : acc;
       }, {}) as { [key: string]: parser.TemplateInput };
 
     inputs = { ...inputs, ...redeclaredInputs };
