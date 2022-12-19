@@ -191,6 +191,19 @@ describe("Template wrapper class functionality", () => {
     expect("nested_outer_param" in pathModifiers).toBeTruthy();
     expect(pathModifiers["nested_outer_param"]).toEqual("nested_outer_param");
   });
+
+  it("Finds types associated by redeclares", () => {
+    const { options } = getOptions();
+
+    // FifthComponent is only reference through a modifier and not a choices annotation
+    // The modifier is in the scope of the template so the referenced type should be
+    // found and included in the big list of options
+    expect(
+      options.find(
+        (o) => o.modelicaPath === "TestPackage.Component.FifthComponent",
+      ),
+    ).toBeDefined();
+  });
 });
 
 const PROJECT_INSTANCE_NAME = "datAll";
@@ -233,7 +246,9 @@ describe("'Project' items are extracted", () => {
 
     const { pathModifiers } = template.getSystemTemplate();
 
-    const datAllList = Object.keys(pathModifiers).filter((path => path.endsWith(PROJECT_INSTANCE_NAME)));
+    const datAllList = Object.keys(pathModifiers).filter((path) =>
+      path.endsWith(PROJECT_INSTANCE_NAME),
+    );
     expect(datAllList.length).toBeGreaterThan(0);
 
     // expect pathModifiers to include paths to project data
