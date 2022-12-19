@@ -211,7 +211,7 @@ export function createProjectInputs(): { [key: string]: TemplateInput } {
     [key: string]: TemplateInput;
   };
   const spoofedModList = Object.values(projectInputs).map((i) => {
-    const modName = i.modelicaPath.split('.').pop();
+    const modName = i.modelicaPath.split(".").pop();
     return new Modification(PROJECT_PATH, modName, i.value);
   });
 
@@ -251,6 +251,8 @@ export abstract class Element {
   entryPoint = false;
   duplicate = false;
   elementType = "";
+  enable: Expression | boolean = false;
+  annotation: Modification[] = [];
 
   abstract getInputs(
     inputs?: { [key: string]: TemplateInput },
@@ -271,6 +273,26 @@ export abstract class Element {
     const pathList = this.modelicaPath.split(".");
     pathList.pop();
     return pathList.join(".");
+  }
+
+  /**
+   * The linkage keyword annotation is used to override any logic around 'enable'
+   */
+  getLinkageKeywordValue(): boolean | undefined {
+    if (this.annotation) {
+      const linkageKeyword = "__Linkage";
+      const linkageAnnotation = this.annotation.find(
+        (m) => m.name === linkageKeyword,
+      );
+
+      if (linkageAnnotation) {
+        const enable = linkageAnnotation.mods.find(
+          (m) => m.name === "enable",
+        )?.value;
+
+        return enable !== undefined ? evaluateExpression(enable) : enable;
+      }
+    }
   }
 }
 
@@ -408,10 +430,8 @@ export class Input extends Element {
   inner: boolean | null = null;
   outer: boolean | null = null;
   connectorSizing = false;
-  annotation: Modification[] = [];
   tab? = "";
   group?: any = "";
-  enable: Expression | boolean = false;
 
   constructor(
     definition: mj.ProtectedElement,
@@ -514,6 +534,9 @@ export class Input extends Element {
     } else {
       this.enable = isInputGroupType && !isReplaceable ? this.enable : true;
     }
+
+    const linkage = this.getLinkageKeywordValue();
+    this.enable = linkage !== undefined ? linkage : this.enable;
   }
 
   _setInputVisible(inputType: TemplateInput | undefined): boolean {
@@ -779,13 +802,10 @@ export class InputGroupExtend extends Element {
   }
 
   _setUIInfo() {
-    const __Linkage = this.annotation.find((m) => m.name === "__Linkage");
+    const linkage = this.getLinkageKeywordValue();
 
-    if (__Linkage) {
-      const enable = __Linkage.mods.find((m) => m.name === "enable")?.value;
-
-      this.deadEnd = enable ? !evaluateExpression(enable) : false;
-    }
+    this.deadEnd = linkage !== undefined ? !linkage : false;
+    this.enable = linkage || false;
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
