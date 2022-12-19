@@ -95,7 +95,7 @@ const SlideOut = ({
   );
 
   const displayedOptions: (FlatConfigOptionGroup | FlatConfigOption)[] =
-    getDisplayOptions(templateOptions, "root", "", false);
+    getDisplayOptions(templateOptions, "root", "", false, templateOptions[0].name);
 
   function getEvaluatedValues(
     options: OptionInterface[],
@@ -152,6 +152,7 @@ const SlideOut = ({
     parentModelicaPath: string,
     scope: string,
     changeScope: boolean,
+    groupName: string,
   ): (FlatConfigOptionGroup | FlatConfigOption)[] {
     let displayOptions: (FlatConfigOptionGroup | FlatConfigOption)[] = [];
     let currentScope = scope;
@@ -220,6 +221,7 @@ const SlideOut = ({
                 option.modelicaPath,
                 currentScope,
                 option.definition,
+                option.name,
               ),
             ];
           }
@@ -236,6 +238,7 @@ const SlideOut = ({
                 option.modelicaPath,
                 currentScope,
                 option.definition,
+                option.name,
               ),
             ];
           }
@@ -244,13 +247,14 @@ const SlideOut = ({
         displayOptions = [
           ...displayOptions,
           {
-            groupName: option.name,
+            groupName: groupName,
             selectionPath,
             items: getDisplayOptions(
               option.childOptions,
               option.modelicaPath,
               currentScope,
               option.definition,
+              groupName,
             ),
           },
         ];
@@ -270,6 +274,7 @@ const SlideOut = ({
             option.modelicaPath,
             currentScope,
             option.definition,
+            option.name,
           ),
         ];
       }
