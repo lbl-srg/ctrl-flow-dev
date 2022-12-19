@@ -139,9 +139,9 @@ model TestTemplate "Test Template"
     "Second Param to test component redeclares"
     annotation(Dialog(enable=true));
 
-  // path testing
+  // path testing and redeclare modifier testing
   Component.FourthComponent short_path_component(
-    redeclare ThirdComponent replaceable_param
+    redeclare FifthComponent replaceable_param
   );
 
   LocalVars test_record(
@@ -169,4 +169,5 @@ model TestTemplate "Test Template"
       Dialog(group="Selectable Component"));
 
   annotation (__LinkageTemplate=true);
+
 end TestTemplate;
