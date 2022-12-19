@@ -107,9 +107,19 @@ model TestTemplate "Test Template"
 
   // enable condition: 'connectorSizing=false'
   parameter Integer connector_param_false
-    "Connector Param with 'connectorSizing=false'"
+    "Param with connectorSizing"
     annotation (Dialog(connectorSizing=false));
   // END DISABLE CONDITIONS
+
+  // Linkage keyword override - false to true
+  parameter Integer linkage_keyword_true
+    "Param to test linkage keyword override to true"
+    annotation (Dialog(connectorSizing=false), __Linkage(enable=true));
+
+  // Linkage keyword override - true to false
+  parameter Integer linkage_keyword_false
+    "Param to test linkage keyword override to false"
+    annotation (Dialog(enable=true), __Linkage(enable=false));
 
   parameter TestPackage.Types.IceCream typ = TestPackage.Types.IceCream.Chocolate
     "Test Enum"

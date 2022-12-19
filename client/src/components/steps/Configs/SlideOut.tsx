@@ -31,8 +31,10 @@ export interface FlatConfigOption {
   modelicaPath: string;
   name: string;
   choices?: OptionInterface[];
+  booleanChoices?: string[];
   value: any;
   scope: string;
+  selectionType: string;
 }
 
 export interface FlatConfigOptionChoice {
@@ -93,7 +95,7 @@ const SlideOut = ({
   );
 
   const displayedOptions: (FlatConfigOptionGroup | FlatConfigOption)[] =
-    getDisplayOptions(templateOptions, "root", "", false);
+    getDisplayOptions(templateOptions, "root", "", false, templateOptions[0].name);
 
   function getEvaluatedValues(
     options: OptionInterface[],
@@ -150,6 +152,7 @@ const SlideOut = ({
     parentModelicaPath: string,
     scope: string,
     changeScope: boolean,
+    groupName: string,
   ): (FlatConfigOptionGroup | FlatConfigOption)[] {
     let displayOptions: (FlatConfigOptionGroup | FlatConfigOption)[] = [];
     let currentScope = scope;
@@ -176,59 +179,82 @@ const SlideOut = ({
       );
 
       if (isVisible) {
-        displayOptions = [
-          ...displayOptions,
-          {
-            parentModelicaPath,
-            modelicaPath: option.modelicaPath,
-            name: option.name,
-            choices: option.childOptions || [],
-            value:
-              selectedValues[selectionPath] || evaluatedValues[selectionPath],
-            scope: currentScope,
-          },
-        ];
+        const value = selectedValues[selectionPath] || evaluatedValues[selectionPath];
+        if (option.childOptions?.length) {
+          displayOptions = [
+            ...displayOptions,
+            {
+              parentModelicaPath,
+              modelicaPath: option.modelicaPath,
+              name: option.name,
+              choices: option.childOptions,
+              value,
+              scope: currentScope,
+              selectionType: "Normal",
+            },
+          ];
+        } else if (option.type === "Boolean") {
+          displayOptions = [
+            ...displayOptions,
+            {
+              parentModelicaPath,
+              modelicaPath: option.modelicaPath,
+              name: option.name,
+              booleanChoices: ["true", "false"],
+              value: value?.toString(),
+              scope: currentScope,
+              selectionType: "Boolean",
+            },
+          ];
+        }
 
-        if (selectedValues[selectionPath]) {
+        if (typeof selectedValues[selectionPath] === "string" && selectedValues[selectionPath]) {
           const selectedOption = allOptions[
             selectedValues[selectionPath]
           ] as OptionInterface;
 
-          displayOptions = [
-            ...displayOptions,
-            ...getDisplayOptions(
-              [selectedOption],
-              option.modelicaPath,
-              currentScope,
-              option.definition,
-            ),
-          ];
-        } else if (evaluatedValues[selectionPath]) {
+          if (selectedOption) {
+            displayOptions = [
+              ...displayOptions,
+              ...getDisplayOptions(
+                [selectedOption],
+                option.modelicaPath,
+                currentScope,
+                option.definition,
+                option.name,
+              ),
+            ];
+          }
+        } else if (typeof evaluatedValues[selectionPath] === "string" && evaluatedValues[selectionPath]) {
           const evaluatedOption = allOptions[
             evaluatedValues[selectionPath]
           ] as OptionInterface;
 
-          displayOptions = [
-            ...displayOptions,
-            ...getDisplayOptions(
-              [evaluatedOption],
-              option.modelicaPath,
-              currentScope,
-              option.definition,
-            ),
-          ];
+          if (evaluatedOption) {
+            displayOptions = [
+              ...displayOptions,
+              ...getDisplayOptions(
+                [evaluatedOption],
+                option.modelicaPath,
+                currentScope,
+                option.definition,
+                option.name,
+              ),
+            ];
+          }
         }
       } else if (option.definition && option.childOptions?.length) {
         displayOptions = [
           ...displayOptions,
           {
-            groupName: option.name,
+            groupName: groupName,
             selectionPath,
             items: getDisplayOptions(
               option.childOptions,
               option.modelicaPath,
               currentScope,
               option.definition,
+              groupName,
             ),
           },
         ];
@@ -248,6 +274,7 @@ const SlideOut = ({
             option.modelicaPath,
             currentScope,
             option.definition,
+            option.name,
           ),
         ];
       }
@@ -271,7 +298,7 @@ const SlideOut = ({
     setSelectedValues((prevState: any) => {
       const selectionPath = `${parentModelicaPath}-${scope}`;
 
-      if (!choice) {
+      if (choice === null) {
         delete prevState[selectionPath];
         return prevState;
       }
@@ -326,8 +353,10 @@ const SlideOut = ({
     );
   }
 
+  console.log('templateOptions: ', templateOptions);
   console.log('selectedValues: ', selectedValues);
   console.log('evaluatedValues: ', evaluatedValues);
+  console.log('displayOptions: ', displayedOptions);
 
   return (
     <Modal isOpen close={close} className="config-slide-out">
