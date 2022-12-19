@@ -3,7 +3,6 @@ import { ChangeEvent, FormEvent, Fragment, useEffect, useState } from "react";
 import itl from "../../../translations";
 import { useStores } from "../../../data";
 import { OptionInterface } from "../../../data/template";
-import { getFormData } from "../../../utils/dom-utils";
 import Modal from "../../modal/Modal";
 import OptionSelect from "./OptionSelect";
 import { useDebouncedCallback } from "use-debounce";
@@ -171,7 +170,7 @@ const SlideOut = ({
         currentScope = scope ? `${scope}.${instance}` : instance;
       }
 
-      const selectionPath = `${option.modelicaPath}-${currentScope}`;
+      let selectionPath = `${option.modelicaPath}-${currentScope}`;
       const isVisible = applyVisibilityModifiers(
         option,
         currentScope,
@@ -181,6 +180,26 @@ const SlideOut = ({
         template.pathModifiers,
         allOptions,
       );
+
+      // a modifier can redeclare a replaceable parameter, swapping the option type
+      // When a swap happens, we need to make sure
+      const optionMod = configModifiers[currentScope]; // could be a value change or a path change
+      if (optionMod) {
+        const resolvedValue = applyOptionModifier(
+          // TODO: implement
+          optionMod,
+          configModifiers,
+          allOptions,
+        );
+        // is this a replaceable - figure out how to do this
+        const isReplaceable = option.replaceable; // TODO - how to determine if something is a replaceable
+        if (isReplaceable) {
+          option = allOptions[resolvedValue];
+          // update selectionPath: replace left-hand-side with new option modelica path
+          selectionPath = `${option.type}-${currentScope}`;
+          // need to update evaluated-values with all downstream value options
+        }
+      }
 
       if (isVisible) {
         const value =
@@ -277,9 +296,6 @@ const SlideOut = ({
             displayOptions.pop();
           }
         }
-        // } else if (/** modifier is present specifying type */) {}
-        // TODO: add condition to check for a modifier that specifies a
-        // redeclare type here
       } else if (option.childOptions?.length) {
         displayOptions = [
           ...displayOptions,
@@ -290,7 +306,7 @@ const SlideOut = ({
             option.definition,
             option.name,
           ),
-        ]; // TODO: add modifier checkif so, ge
+        ];
       }
     });
 
