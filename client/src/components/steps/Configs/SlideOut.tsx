@@ -66,8 +66,10 @@ const SlideOut = ({
   close,
 }: ConfigSlideOutProps) => {
   const { configStore, templateStore } = useStores();
-  const [selectedValues, setSelectedValues] =
-    useState<ConfigValues>({...selections, ...projectSelections});
+  const [selectedValues, setSelectedValues] = useState<ConfigValues>({
+    ...selections,
+    ...projectSelections,
+  });
   const [configName, setConfigName] = useState<string>(config.name);
 
   // template defaults + selections
@@ -77,11 +79,7 @@ const SlideOut = ({
     templateStore._options,
   );
   const evaluatedValues: ConfigValues = {
-    ...getEvaluatedValues(
-      templateOptions,
-      "",
-      false,
-    ),
+    ...getEvaluatedValues(templateOptions, "", false),
     ...projectEvaluatedValues,
   };
 
@@ -95,7 +93,13 @@ const SlideOut = ({
   );
 
   const displayedOptions: (FlatConfigOptionGroup | FlatConfigOption)[] =
-    getDisplayOptions(templateOptions, "root", "", false, templateOptions[0].name);
+    getDisplayOptions(
+      templateOptions,
+      "root",
+      "",
+      false,
+      templateOptions[0].name,
+    );
 
   function getEvaluatedValues(
     options: OptionInterface[],
@@ -179,7 +183,8 @@ const SlideOut = ({
       );
 
       if (isVisible) {
-        const value = selectedValues[selectionPath] || evaluatedValues[selectionPath];
+        const value =
+          selectedValues[selectionPath] || evaluatedValues[selectionPath];
         if (option.childOptions?.length) {
           displayOptions = [
             ...displayOptions,
@@ -208,7 +213,10 @@ const SlideOut = ({
           ];
         }
 
-        if (typeof selectedValues[selectionPath] === "string" && selectedValues[selectionPath]) {
+        if (
+          typeof selectedValues[selectionPath] === "string" &&
+          selectedValues[selectionPath]
+        ) {
           const selectedOption = allOptions[
             selectedValues[selectionPath]
           ] as OptionInterface;
@@ -225,7 +233,10 @@ const SlideOut = ({
               ),
             ];
           }
-        } else if (typeof evaluatedValues[selectionPath] === "string" && evaluatedValues[selectionPath]) {
+        } else if (
+          typeof evaluatedValues[selectionPath] === "string" &&
+          evaluatedValues[selectionPath]
+        ) {
           const evaluatedOption = allOptions[
             evaluatedValues[selectionPath]
           ] as OptionInterface;
@@ -266,6 +277,9 @@ const SlideOut = ({
             displayOptions.pop();
           }
         }
+        // } else if (/** modifier is present specifying type */) {}
+        // TODO: add condition to check for a modifier that specifies a
+        // redeclare type here
       } else if (option.childOptions?.length) {
         displayOptions = [
           ...displayOptions,
@@ -276,7 +290,7 @@ const SlideOut = ({
             option.definition,
             option.name,
           ),
-        ];
+        ]; // TODO: add modifier checkif so, ge
       }
     });
 
@@ -353,10 +367,10 @@ const SlideOut = ({
     );
   }
 
-  console.log('templateOptions: ', templateOptions);
-  console.log('selectedValues: ', selectedValues);
-  console.log('evaluatedValues: ', evaluatedValues);
-  console.log('displayOptions: ', displayedOptions);
+  console.log("templateOptions: ", templateOptions);
+  console.log("selectedValues: ", selectedValues);
+  console.log("evaluatedValues: ", evaluatedValues);
+  console.log("displayOptions: ", displayedOptions);
 
   return (
     <Modal isOpen close={close} className="config-slide-out">
