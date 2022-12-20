@@ -334,7 +334,6 @@ export class InputGroup extends Element {
   entryPoint = false;
   mods: Modification[] | undefined;
   extendElement: InputGroup | undefined;
-  deadEnd: boolean = false;
 
   constructor(definition: any, basePath: string, public elementType: string) {
     super();
@@ -358,7 +357,6 @@ export class InputGroup extends Element {
           if (element?.elementType === "extends_clause") {
             const extendParam = element as InputGroupExtend;
             this.mods = extendParam.mods; // TODO: merge modifiers?
-            this.deadEnd = extendParam.deadEnd;
             // make sure
             this.extendElement = typeStore.get(extendParam.type) as InputGroup;
           }
@@ -790,14 +788,13 @@ export class InputGroupExtend extends Element {
   type: string = "";
   value: string = "";
   annotation: Modification[] = [];
-  deadEnd: boolean;
+
   constructor(definition: any, basePath: string, public elementType: string) {
     super();
     this.name = EXTEND_NAME; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${this.name}`;
     const typeElement = typeStore.get(definition.extends_clause.name, basePath);
     this.type = typeElement?.modelicaPath || definition.extends_clause.name;
-    this.deadEnd = false;
 
     const annotations = definition.extends_clause?.annotation;
 
@@ -811,7 +808,10 @@ export class InputGroupExtend extends Element {
           }),
         )
         .filter((m: any) => m !== undefined) as Modification[];
-      this._setUIInfo();
+      
+      // always false: inherited params are flattend into child
+      // class params in InputGroup class
+      this.enable = false;
     }
 
     const registered = this.registerPath(this.modelicaPath, this.type);
@@ -829,13 +829,6 @@ export class InputGroupExtend extends Element {
     }
   }
 
-  _setUIInfo() {
-    const linkage = this.getLinkageKeywordValue();
-
-    this.deadEnd = linkage !== undefined ? !linkage : false;
-    this.enable = linkage || false;
-  }
-
   getInputs(
     inputs: { [key: string]: TemplateInput } = {},
     recursive = true,
@@ -845,17 +838,8 @@ export class InputGroupExtend extends Element {
       return inputs;
     }
 
+    forceDisable = (this.getLinkageKeywordValue() === false) ? true : forceDisable;
     const typeInstance = typeStore.get(this.type);
-    // inputs[this.modelicaPath] = {
-    //   modelicaPath: this.modelicaPath,
-    //   type: this.type,
-    //   value: this.value,
-    //   name: typeInstance?.name || "",
-    //   visible: false,
-    //   inputs: this.type.startsWith("Modelica") ? [] : [this.type],
-    //   elementType: this.elementType,
-    //   modifiers: this.mods,
-    // };
 
     return typeInstance
       ? typeInstance.getInputs(inputs, recursive, forceDisable)
