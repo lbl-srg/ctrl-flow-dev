@@ -53,15 +53,6 @@ const EditDetailsModal = observer(
     const evaluatedValues = getEvaluatedValues(projectOptions);
     const displayedOptions = getDisplayOptions(projectOptions, 'root');
 
-    // console.log('details: ', details);
-    // console.log('formInputs: ', formInputs);
-    console.log('selectedValues: ', selectedValues);
-    console.log('evaluatedValues: ', evaluatedValues);
-    console.log('projectOptions: ', projectOptions);
-    console.log('displayedOptions: ', displayedOptions);
-
-    // const [selectedEnergy, setSelectedEnergy] = useState(details.energy);
-
     function getEvaluatedValues(
       options: OptionInterface[],
     ): ConfigValues {
@@ -107,7 +98,6 @@ const EditDetailsModal = observer(
         const isVisible = applyVisibilityModifiers(
           option,
           "",
-          selectionPath,
           selectedValues,
           {},
           {},

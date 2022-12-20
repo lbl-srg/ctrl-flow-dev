@@ -1,4 +1,5 @@
 import { storeHooks } from "./store-helpers";
+import { deepCopy } from "./utils";
 import { Modifiers, applyPathModifiers } from "./modifier-helpers";
 import { OptionInterface } from "../data/template";
 
@@ -18,20 +19,33 @@ export function resolveValue(
   pathModifiers: any,
   allOptions: { [key: string]: OptionInterface },
 ): any {
-  const selectionValue = selections[selectionPath];
+  let selectionValue = undefined;
 
-  if (value === 'Buildings.Templates.Data.AllSystems.stdEne') {
-    console.log('resolveValue selections: ', selections);
-    console.log('selectionPath: ', selectionPath);
-    console.log('selectionValue: ', selectionValue);
+  if (selectionPath) {
+    selectionValue = selections[selectionPath];
+  }
+
+  if (typeof value === 'string') {
+    const splitScopePath = scope.split('.');
+
+    while(splitScopePath.length > 0) {
+      const testPath = splitScopePath.join(".");
+      const valueSelectionPath: any = `${value}-${testPath}`;
+
+      if (valueSelectionPath in selections) {
+        selectionValue = selections[valueSelectionPath];
+        break;
+      }
+      splitScopePath.pop();
+    }
+
+    if (selectionValue == undefined) {
+      selectionValue = selections[value];
+    }
   }
 
   // if we have a selection we just need to return the selection (I don't think we need to test the selection)
   if (selectionValue !== undefined) return selectionValue;
-
-  if (value === 'Buildings.Templates.Data.AllSystems.stdEne') {
-    console.log('uh-oh!');
-  }
 
   // if value is a boolean or number we are just a value and need to return
   if (typeof value === "boolean" || typeof value === "number") return value;
@@ -48,8 +62,9 @@ export function resolveValue(
   // there is a modifier for the given instance path, attempt to resolve
   // its value
   if (scopeModifier) {
+    const scopeModExpression = deepCopy(scopeModifier.expression);
     evaluatedValue = evaluateExpression(
-      scopeModifier.expression,
+      scopeModExpression,
       newScope,
       selectionPath,
       selections,
@@ -65,9 +80,10 @@ export function resolveValue(
   const originalOption = allOptions[value];
 
   if (originalOption) {
+    const originalValExpression = deepCopy(originalOption?.value);
     evaluatedValue = isExpression(originalOption?.value)
       ? evaluateExpression(
-          originalOption?.value,
+          originalValExpression,
           newScope,
           selectionPath,
           selections,
@@ -93,7 +109,7 @@ function resolveExpression(
   pathModifiers: any,
   allOptions: { [key: string]: OptionInterface },
 ): any {
-  let resolved_expression: any = { ...expression };
+  let resolved_expression: any = expression;
 
   expression.operands.every((operand: any, index: number) => {
     const resolvedValue = resolveValue(
@@ -221,12 +237,13 @@ export function evaluateExpression(
   pathModifiers: any,
   allOptions: { [key: string]: OptionInterface },
 ): any {
-  const evaluated_expression: any = { ...expression };
+  const evaluated_expression: any = expression;
 
   expression.operands.forEach((operand: any, index: number) => {
     if (isExpression(operand)) {
+      const nestedExpression = deepCopy(operand);
       evaluated_expression.operands[index] = evaluateExpression(
-        operand,
+        nestedExpression,
         scope,
         selectionPath,
         selections,
