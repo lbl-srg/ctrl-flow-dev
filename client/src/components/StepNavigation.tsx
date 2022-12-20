@@ -25,6 +25,12 @@ function StepNavigation() {
   const previous = steps[currentIndex - 1];
   const next = steps[currentIndex + 1];
 
+  function openDownloadModal() {
+    if (next.label === "Results") {
+      setDownloadOpen(true);
+    }
+  }
+
   return (
     <Fragment>
       <DownloadModal
@@ -60,7 +66,7 @@ function StepNavigation() {
 
         <div className="next-container">
           {next && (
-            <Link role="button" to={next.path}>
+            <Link role="button" to={next.path} onClick={() => openDownloadModal()}>
               {itl.phrases.nextStep}: {next.label}
               <i className="icon-right-open right" />
             </Link>

@@ -62,14 +62,14 @@ const Config = observer(({ configId, projectSelections, projectEvaluatedValues }
             disabled={config.isLocked}
           />
           <div className="config-actions">
-            <i
+            {/*<i
               onClick={() => configStore.toggleConfigLock(configId)}
               className={
                 config.isLocked
                   ? "lock-toggle icon-lock"
                   : "lock-toggle icon-lock-open"
               }
-            />
+            />*/}
             <SlideOutOpenButton
               disabled={config.isLocked}
               onClick={openModal}
