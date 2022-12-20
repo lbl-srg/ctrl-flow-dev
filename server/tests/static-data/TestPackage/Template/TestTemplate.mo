@@ -111,6 +111,11 @@ model TestTemplate "Test Template"
     annotation (Dialog(connectorSizing=false));
   // END DISABLE CONDITIONS
 
+  // Linkage keyword override - false to true
+  parameter Integer linkage_keyword_true
+    "Param to test linkage keyword override to true"
+    annotation (Dialog(connectorSizing=false), __Linkage(enable=true));
+
   // Linkage keyword override - true to false
   parameter Integer linkage_keyword_false
     "Param to test linkage keyword override to false"
