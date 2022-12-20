@@ -183,17 +183,18 @@ const SlideOut = ({
 
       // a modifier can redeclare a replaceable parameter, swapping the option type
       // When a swap happens, we need to make sure
-      const optionMod = configModifiers[currentScope]; // could be a value change or a path change
-      if (optionMod) {
-        const resolvedValue = applyOptionModifier(
-          // TODO: implement
-          optionMod,
-          configModifiers,
-          allOptions,
-        );
-        // is this a replaceable - figure out how to do this
-        const isReplaceable = option.replaceable; // TODO - how to determine if something is a replaceable
-        if (isReplaceable) {
+      // could be a value change or a path change
+      if (option.replaceable) {
+        const optionMod = configModifiers[currentScope];
+        if (optionMod) {
+          // resolve the modifier
+          const resolvedValue = applyOptionModifier(
+            // TODO: implement
+            optionMod,
+            configModifiers,
+            allOptions,
+          );
+
           option = allOptions[resolvedValue];
           // update selectionPath: replace left-hand-side with new option modelica path
           selectionPath = `${option.type}-${currentScope}`;
