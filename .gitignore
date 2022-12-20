@@ -2,6 +2,7 @@ node_modules
 client/build
 client/src/templates/**
 server/build/**
+server/dist/
 server/public/templates/**
 
 # env files

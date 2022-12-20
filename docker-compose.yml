@@ -40,7 +40,7 @@ services:
   server:
     build:
       context: ./server
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ./Dockerfile
     expose:
       - 3000
     environment:

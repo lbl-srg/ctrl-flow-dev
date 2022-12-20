@@ -8,7 +8,7 @@ import _ from "underscore";
 const execPromise = util.promisify(exec);
 
 const SEQUENCE_PATH = path.resolve(__dirname).replace(process.cwd(), ".");
-const SEQUENCE_OUTPUT_PATH = `${SEQUENCE_PATH}/output-documents`;
+const SEQUENCE_OUTPUT_PATH = `${SEQUENCE_PATH}`;
 const STYLE_REFERENCE_DOCUMENT = `${SEQUENCE_PATH}/source-styles.docx`;
 
 export type Selections = {
