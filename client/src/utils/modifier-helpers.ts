@@ -1,5 +1,6 @@
 import { OptionInterface } from "../data/template";
 import { FlatConfigOption } from "../components/steps/Configs/SlideOut";
+import { deepCopy } from "./utils";
 import {
   Expression,
   evaluateExpression,
@@ -146,11 +147,16 @@ export function applyPathModifiers(
   return modifiedPath;
 }
 
+export function applyOptionModifier(
+
+) {
+  
+}
+
 /**
  * Attempt to resolve a value
  */
 export function applyValueModifiers(
-  // configOption: FlatConfigOption,
   optionValue: any,
   scope: string,
   selectionPath: string,
@@ -163,7 +169,6 @@ export function applyValueModifiers(
 
   if (!isExpression(optionValue)) {
     evaluatedValue = resolveValue(
-      // configOption?.value,
       optionValue,
       scope,
       selectionPath,
@@ -177,11 +182,12 @@ export function applyValueModifiers(
     return evaluatedValue !== "no_value" ? evaluatedValue : null;
   }
 
+  const expression = deepCopy(optionValue);
+
   evaluatedValue = evaluateExpression(
-    // configOption?.value,
-    optionValue,
+    expression,
     scope,
-    selectionPath,
+    "",
     selections,
     modifiers,
     pathModifiers,
@@ -195,7 +201,6 @@ export function applyValueModifiers(
 export function applyVisibilityModifiers(
   option: OptionInterface,
   scope: string,
-  selectionPath: string,
   selections: any,
   modifiers: Modifiers,
   pathModifiers: Modifiers,
@@ -204,7 +209,7 @@ export function applyVisibilityModifiers(
   const scopePath = applyPathModifiers(scope, pathModifiers);
   const modifier: any = modifiers[scopePath];
   let enable: Expression | boolean | undefined = isExpression(option.enable)
-    ? { ...option.enable }
+    ? deepCopy(option.enable)
     : option.enable;
   let visible: boolean | undefined = option.visible;
 
@@ -212,7 +217,7 @@ export function applyVisibilityModifiers(
     enable = evaluateExpression(
       enable,
       scope,
-      selectionPath,
+      "",
       selections,
       modifiers,
       pathModifiers,
