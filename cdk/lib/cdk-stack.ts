@@ -18,6 +18,17 @@ export class LblCdkStack extends cdk.Stack {
   ) {
     super(scope, id, props);
 
+    ////  Begin S3 Bucket for Client
+    const bucket = new Bucket(this, `lbl-client-${stage}`, {
+      bucketName: `lbl-client-${stage}`,
+      publicReadAccess: true,
+      websiteIndexDocument: "index.html",
+      websiteErrorDocument: "index.html",
+      autoDeleteObjects: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+    ////  End S3 Bucket for Client
+
     ////  Start Fargate For API
     const vpc = new ec2.Vpc(this, `LblVpc-${stage}`, {
       maxAzs: 3,
@@ -44,11 +55,12 @@ export class LblCdkStack extends cdk.Stack {
             environment: {
               NODE_ENV: "production",
               MODELICA_DEPENDENCIES: "/dependencies",
+              FE_ORIGIN_URL: `http://${bucket.bucketDomainName}`,
               PORT: "80",
             },
           },
-          memoryLimitMiB: 512,
-          cpu: 256,
+          memoryLimitMiB: 1024,
+          cpu: 512,
           desiredCount: 1,
           assignPublicIp: true,
           runtimePlatform: {
@@ -58,6 +70,11 @@ export class LblCdkStack extends cdk.Stack {
         },
       );
 
+    new cdk.CfnOutput(this, `LbLALBArn`, {
+      value: `${fargateService.loadBalancer.loadBalancerArn}`,
+      description: "The id of lbl ALB",
+      exportName: `LbLALBName-${stage}`,
+    });
     new cdk.CfnOutput(this, `LbLApiUrl`, {
       value: `http://${fargateService.loadBalancer.loadBalancerDnsName}`,
       description: "The url of the lbl fargate service",
@@ -65,17 +82,5 @@ export class LblCdkStack extends cdk.Stack {
     });
 
     ////  End Fargate For API
-
-    ////  Begin S3 Bucket for Client
-    new Bucket(this, `lbl-client-${stage}`, {
-      bucketName: `lbl-client-${stage}`,
-      publicReadAccess: true,
-      websiteIndexDocument: "index.html",
-      websiteErrorDocument: "index.html",
-      autoDeleteObjects: true,
-      removalPolicy: RemovalPolicy.DESTROY,
-    });
-
-    ////  End S3 Bucket for Client
   }
 }

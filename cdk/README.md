@@ -19,7 +19,12 @@ npm i
 npx aws-cdk synth
 npx aws-cdk deploy --require-approval never --outputs-file cdk.out/cdk-outputs.json
 
-# Export the LbLApiUrl for use in the client build
+export API_ARN=$(jq -r .LblCdkStack${LBL_STAGE}.LblALBArn cdk.out/cdk-outputs.json)
+
+#Add longer timeout to give time to generate file
+aws elbv2 modify-load-balancer-attributes --load-balancer-arn $API_ARN --attributes Key=idle_timeout.timeout_seconds,Value=300
+
+# Export the LbLApiUrl and client url for cors for use in the client build
 export REACT_APP_API=$(jq -r .LblCdkStack${LBL_STAGE}.LbLApiUrl cdk.out/cdk-outputs.json)/api
 
 # Copy the templates.json file out of the server docker image
