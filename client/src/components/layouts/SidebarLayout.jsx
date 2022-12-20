@@ -69,8 +69,8 @@ const Sidebarlayout = observer(
 
               <header>
                 <div className="truncate">
-                  All Projects &gt; &nbsp;
-                  <strong>{projectDetails?.name || "unnamed"}</strong>
+                  Project &gt; &nbsp;
+                  <strong>{"details"}</strong>
                 </div>
                 {modalOpen ? null : (
                   <button
