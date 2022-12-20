@@ -171,7 +171,6 @@ const SlideOut = ({
       const isVisible = applyVisibilityModifiers(
         option,
         currentScope,
-        selectionPath,
         selectedValues,
         configModifiers,
         template.pathModifiers,
@@ -352,11 +351,6 @@ const SlideOut = ({
       },
     );
   }
-
-  console.log('templateOptions: ', templateOptions);
-  console.log('selectedValues: ', selectedValues);
-  console.log('evaluatedValues: ', evaluatedValues);
-  console.log('displayOptions: ', displayedOptions);
 
   return (
     <Modal isOpen close={close} className="config-slide-out">
