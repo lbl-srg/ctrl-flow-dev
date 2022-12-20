@@ -8,6 +8,7 @@ import OptionSelect from "./OptionSelect";
 import { useDebouncedCallback } from "use-debounce";
 
 import {
+  applyOptionModifier,
   applyValueModifiers,
   applyVisibilityModifiers,
   Modifiers,
@@ -119,16 +120,19 @@ const SlideOut = ({
         currentScope = scope ? `${scope}.${instance}` : instance;
       }
 
+      if (option.replaceable) {
+        option = applyOptionModifier(
+          option,
+          currentScope,
+          selectedValues,
+          configModifiers,
+          template.pathModifiers,
+          allOptions
+        );
+      }
+
       // build selection path
       const selectionPath = `${option.modelicaPath}-${currentScope}`;
-
-      if (option.replaceable && currentScope === 'ctl') {
-        console.log("currentScope: ", currentScope);
-        console.log('option: ', option);
-        console.log('configModifiers: ', configModifiers);
-
-        const optionModifier = applyOptionModifier();
-      }
 
       evaluatedValues = {
         ...evaluatedValues,
@@ -178,6 +182,17 @@ const SlideOut = ({
         currentScope = scope ? `${scope}.${instance}` : instance;
       }
 
+      if (option.replaceable) {
+        option = applyOptionModifier(
+          option,
+          currentScope,
+          selectedValues,
+          configModifiers,
+          template.pathModifiers,
+          allOptions
+        );
+      }
+
       const selectionPath = `${option.modelicaPath}-${currentScope}`;
       const isVisible = applyVisibilityModifiers(
         option,
@@ -187,27 +202,6 @@ const SlideOut = ({
         template.pathModifiers,
         allOptions,
       );
-
-      // a modifier can redeclare a replaceable parameter, swapping the option type
-      // When a swap happens, we need to make sure
-      // could be a value change or a path change
-      // if (option.replaceable) {
-      //   const optionMod = configModifiers[currentScope];
-      //   if (optionMod) {
-      //     // resolve the modifier
-      //     const resolvedValue = applyOptionModifier(
-      //       // TODO: implement
-      //       optionMod,
-      //       configModifiers,
-      //       allOptions,
-      //     );
-
-      //     option = allOptions[resolvedValue];
-      //     // update selectionPath: replace left-hand-side with new option modelica path
-      //     selectionPath = `${option.type}-${currentScope}`;
-      //     // need to update evaluated-values with all downstream value options
-      //   }
-      // }
 
       if (isVisible) {
         const value =

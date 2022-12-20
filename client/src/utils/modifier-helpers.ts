@@ -148,9 +148,30 @@ export function applyPathModifiers(
 }
 
 export function applyOptionModifier(
+  option: OptionInterface,
+  scope: string,
+  selections: ConfigValues,
+  modifiers: Modifiers,
+  pathModifiers: Modifiers,
+  allOptions: { [key: string]: OptionInterface },
+): OptionInterface {
+  const modifier = deepCopy(modifiers[scope]);
 
-) {
-  
+  if (!isExpression(modifier?.expression)) {
+    return option;
+  }
+
+  const resolved_expression = evaluateExpression(
+    modifier.expression,
+    scope,
+    "",
+    selections,
+    modifiers,
+    pathModifiers,
+    allOptions,
+  );
+
+  return allOptions[resolved_expression] || option;
 }
 
 /**
@@ -238,12 +259,11 @@ export function applyVisibilityModifiers(
 
 export function getUpdatedModifiers(
   values: ConfigValues,
-  templateModifiers: Modifiers,
+  modifiers: Modifiers,
   allOptions: { [key: string]: OptionInterface },
 ) {
   const optionKeys: string[] = Object.keys(values);
-  // let updatedModifiers: Modifiers = { ...configModifiers };
-  let updatedModifiers: Modifiers = { ...templateModifiers };
+  let updatedModifiers: Modifiers = deepCopy(modifiers);
 
   optionKeys.forEach((key) => {
     if (values[key] !== null) {
