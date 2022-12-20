@@ -37,3 +37,8 @@ export function removeEmpty(obj: any) {
     .filter(([_, v]) => v != null)
     .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {});
 }
+
+export function deepCopy(obj: any) {
+  if (!obj) return obj;
+  return JSON.parse(JSON.stringify(obj));
+}

@@ -64,7 +64,7 @@ export default class Project {
 
   getProjectSelections(): ConfigValues {
     const projectDetails = this.activeProject?.projectDetails;
-    return projectDetails?.selections || {};
+    return toJS(projectDetails?.selections || {});
   }
 
   getProjectEvaluatedValues(): ConfigValues {
