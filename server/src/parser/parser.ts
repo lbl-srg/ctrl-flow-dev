@@ -241,6 +241,7 @@ export interface TemplateInput {
   enable?: any;
   modifiers?: Modification[];
   elementType: string;
+  deadEnd?: boolean;
 }
 
 export abstract class Element {
@@ -253,6 +254,7 @@ export abstract class Element {
   elementType = "";
   enable: Expression | boolean = false;
   annotation: Modification[] = [];
+  deadEnd = false;
 
   abstract getInputs(
     inputs?: { [key: string]: TemplateInput },
@@ -277,6 +279,8 @@ export abstract class Element {
 
   /**
    * The linkage keyword annotation is used to override any logic around 'enable'
+   *
+   * This should only be called after the annotation has attempted to be parsed!
    */
   getLinkageKeywordValue(): boolean | undefined {
     if (this.annotation) {
@@ -329,7 +333,6 @@ export class InputGroup extends Element {
   entryPoint = false;
   mods: Modification[] | undefined;
   extendElement: InputGroup | undefined;
-  deadEnd: boolean = false;
 
   constructor(definition: any, basePath: string, public elementType: string) {
     super();
@@ -353,8 +356,6 @@ export class InputGroup extends Element {
           if (element?.elementType === "extends_clause") {
             const extendParam = element as InputGroupExtend;
             this.mods = extendParam.mods; // TODO: merge modifiers?
-            this.deadEnd = extendParam.deadEnd;
-            // make sure
             this.extendElement = typeStore.get(extendParam.type) as InputGroup;
           }
           return element;
@@ -365,6 +366,7 @@ export class InputGroup extends Element {
     this.annotation = specifier.composition.annotation?.map(
       (m: mj.Mod | mj.WrappedMod) => createModification({ definition: m }),
     );
+    this.deadEnd = this.getLinkageKeywordValue() === false;
 
     if (
       this.annotation &&
@@ -382,7 +384,7 @@ export class InputGroup extends Element {
    */
   getChildElements(): Element[] {
     const elements = this.elementList || [];
-    return this.deadEnd || this.extendElement === undefined
+    return this.extendElement === undefined
       ? elements
       : [...elements, ...this.extendElement?.getChildElements()];
   }
@@ -414,6 +416,7 @@ export class InputGroup extends Element {
         .filter((c) => !(c in MODELICA_LITERALS)),
       elementType: this.elementType,
       modifiers: this.mods,
+      deadEnd: this.deadEnd,
     };
 
     return inputs;
@@ -476,7 +479,7 @@ export class Input extends Element {
           .filter((m) => m !== undefined) as Modification[];
       }
     }
-
+    this.deadEnd = this.getLinkageKeywordValue() === false;
     this.mod = declarationBlock.modification
       ? createModification({
           definition: declarationBlock,
@@ -534,9 +537,6 @@ export class Input extends Element {
     } else {
       this.enable = isInputGroupType && !isReplaceable ? this.enable : true;
     }
-
-    const linkage = this.getLinkageKeywordValue();
-    this.enable = linkage !== undefined ? linkage : this.enable;
   }
 
   _setInputVisible(inputType: TemplateInput | undefined): boolean {
@@ -583,6 +583,7 @@ export class Input extends Element {
       inputs: childInputs,
       modifiers: this.mod ? [this.mod as Modification] : [],
       elementType: this.elementType,
+      deadEnd: this.deadEnd,
     };
 
     if (recursive) {
@@ -675,6 +676,7 @@ export class ReplaceableInput extends Input {
       modifiers: this.mods,
       elementType: this.elementType,
       enable: this.enable,
+      deadEnd: this.deadEnd,
     };
 
     if (recursive) {
@@ -737,6 +739,7 @@ export class Enum extends Element {
       visible: true,
       inputs: this.enumList.map((e) => e.modelicaPath),
       elementType: this.elementType,
+      deadEnd: this.deadEnd,
     };
 
     // outputs a parent input, then an input for each enum type
@@ -762,14 +765,13 @@ export class InputGroupExtend extends Element {
   type: string = "";
   value: string = "";
   annotation: Modification[] = [];
-  deadEnd: boolean;
+
   constructor(definition: any, basePath: string, public elementType: string) {
     super();
     this.name = EXTEND_NAME; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${this.name}`;
     const typeElement = typeStore.get(definition.extends_clause.name, basePath);
     this.type = typeElement?.modelicaPath || definition.extends_clause.name;
-    this.deadEnd = false;
 
     const annotations = definition.extends_clause?.annotation;
 
@@ -785,6 +787,7 @@ export class InputGroupExtend extends Element {
         .filter((m: any) => m !== undefined) as Modification[];
       this._setUIInfo();
     }
+    this.deadEnd = this.getLinkageKeywordValue() === false;
 
     const registered = this.registerPath(this.modelicaPath, this.type);
     if (!registered) {
@@ -802,10 +805,7 @@ export class InputGroupExtend extends Element {
   }
 
   _setUIInfo() {
-    const linkage = this.getLinkageKeywordValue();
-
-    this.deadEnd = linkage !== undefined ? !linkage : false;
-    this.enable = linkage || false;
+    this.enable = false;
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
@@ -814,16 +814,6 @@ export class InputGroupExtend extends Element {
     }
 
     const typeInstance = typeStore.get(this.type);
-    // inputs[this.modelicaPath] = {
-    //   modelicaPath: this.modelicaPath,
-    //   type: this.type,
-    //   value: this.value,
-    //   name: typeInstance?.name || "",
-    //   visible: false,
-    //   inputs: this.type.startsWith("Modelica") ? [] : [this.type],
-    //   elementType: this.elementType,
-    //   modifiers: this.mods,
-    // };
 
     return typeInstance ? typeInstance.getInputs(inputs, recursive) : inputs;
   }
