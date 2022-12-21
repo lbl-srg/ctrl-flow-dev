@@ -1,0 +1,63 @@
+/* Transparent Overlay */
+.loader-container {
+  content: '';
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 998;
+  background-color: rgba(0,0,0,0.20);
+  overflow: visible;
+}
+
+/* Spinner */
+.loader {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  height: 100px;
+  width: 100px;
+  margin: auto;
+  z-index: 999;
+  overflow: show;
+  -webkit-animation: rotation 1s infinite linear;
+  -moz-animation: rotation 1s infinite linear;
+  -o-animation: rotation 1s infinite linear;
+  animation: rotation 1s infinite linear;
+  border-left: 6px solid rgba(0,174,239,.15);
+  border-right: 6px solid rgba(0,174,239,.15);
+  border-bottom: 6px solid rgba(0,174,239,.15);
+  border-top: 6px solid rgba(0,174,239,.8);
+  border-radius: 100%;
+}
+
+.loader-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding-top: 150px;
+  font-weight: var(--font-weight-medium);
+}
+
+/* Spinner Animation */
+@-webkit-keyframes rotation {
+  from {-webkit-transform: rotate(0deg);}
+  to {-webkit-transform: rotate(359deg);}
+}
+@-moz-keyframes rotation {
+  from {-moz-transform: rotate(0deg);}
+  to {-moz-transform: rotate(359deg);}
+}
+@-o-keyframes rotation {
+  from {-o-transform: rotate(0deg);}
+  to {-o-transform: rotate(359deg);}
+}
+@keyframes rotation {
+  from {transform: rotate(0deg);}
+  to {transform: rotate(359deg);}
+}

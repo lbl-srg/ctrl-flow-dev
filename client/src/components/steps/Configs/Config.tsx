@@ -1,4 +1,4 @@
-import { MouseEvent, ChangeEvent, Fragment, useState } from "react";
+import { MouseEvent, ChangeEvent, Fragment, useEffect, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { observer } from "mobx-react";
 
@@ -9,6 +9,7 @@ import { useStores } from "../../../data";
 import { OptionInterface, TemplateInterface } from "../../../data/template";
 import { Modifiers, ConfigValues } from "../../../utils/modifier-helpers";
 import { ConfigInterface } from "../../../data/config";
+import Spinner from '../../Spinner';
 
 export interface ConfigProps {
   configId: string | undefined;
@@ -31,7 +32,10 @@ const Config = observer(({ configId, projectSelections, projectEvaluatedValues }
   const allOptions: { [key: string]: OptionInterface } =
     templateStore.getAllOptions();
 
-  const [openedModal, setOpenedModal] = useState(false);
+  const [openedModal, setOpenedModal] = useState({
+    isOpen: false,
+    isLoading: false,
+  });
 
   function removeConfiguration(event: MouseEvent) {
     event.preventDefault();
@@ -46,12 +50,18 @@ const Config = observer(({ configId, projectSelections, projectEvaluatedValues }
   );
 
   function openModal() {
-    setOpenedModal(true);
+    // setLoading
+    // setOpen
+    setOpenedModal({ isOpen: true, isLoading: true });
     uiStore.setOpenSystemPath(config.systemPath);
   }
 
   return (
     <Fragment>
+      <Spinner
+        loading={openedModal.isLoading}
+        text="Please wait..."
+      />
       <div className="config" id={`config-${configId}`} data-spy="config">
         <div className="input-container">
           <input
@@ -80,17 +90,20 @@ const Config = observer(({ configId, projectSelections, projectEvaluatedValues }
           <i className="icon-close" />
         </a>
       </div>
-      {openedModal && (
+      {openedModal.isOpen && (
         <SlideOut
           config={config}
           projectSelections={projectSelections}
           projectEvaluatedValues={projectEvaluatedValues}
           template={template}
-          templateOptions={templateOptions}
+          templateOptions={templateOptions} 
           templateModifiers={templateModifiers}
           selections={selections}
           allOptions={allOptions}
-          close={() => setOpenedModal(false)}
+          isLoading={openedModal.isLoading}
+          startLoading={() => setOpenedModal({ ...openedModal, isLoading: true})}
+          stopLoading={() => setOpenedModal({ ...openedModal, isLoading: false })}
+          close={() => setOpenedModal({ ...openedModal, isOpen: false })}
         />
       )}
     </Fragment>

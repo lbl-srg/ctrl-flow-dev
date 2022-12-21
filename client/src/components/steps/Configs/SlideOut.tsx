@@ -51,6 +51,9 @@ export interface ConfigSlideOutProps {
   templateModifiers: Modifiers;
   selections: ConfigValues;
   allOptions: { [key: string]: OptionInterface };
+  isLoading: boolean;
+  startLoading: () => void;
+  stopLoading: () => void;
   close: () => void;
 }
 
@@ -63,6 +66,9 @@ const SlideOut = ({
   templateModifiers,
   selections,
   allOptions,
+  isLoading,
+  startLoading,
+  stopLoading,
   close,
 }: ConfigSlideOutProps) => {
   const { configStore, templateStore } = useStores();
@@ -96,6 +102,10 @@ const SlideOut = ({
 
   const displayedOptions: (FlatConfigOptionGroup | FlatConfigOption)[] =
     getDisplayOptions(templateOptions, "root", "", false, templateOptions[0].name);
+
+  useEffect(() => {
+    stopLoading();
+  }, []);
 
   function getEvaluatedValues(
     options: OptionInterface[],
@@ -294,6 +304,7 @@ const SlideOut = ({
     scope: string,
     choice: string | null,
   ) {
+    // startLoading();
     setSelectedValues((prevState: any) => {
       const selectionPath = `${parentModelicaPath}-${scope}`;
 
@@ -323,6 +334,8 @@ const SlideOut = ({
   function renderDisplayOptions(
     items: (FlatConfigOptionGroup | FlatConfigOption)[],
   ) {
+    if (isLoading) return null;
+
     return items.map(
       (option: FlatConfigOptionGroup | FlatConfigOption, index) => {
         if ("groupName" in option) {
