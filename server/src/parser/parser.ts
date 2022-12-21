@@ -351,12 +351,6 @@ export class InputGroup extends Element {
           const element = _constructElement(e, this.modelicaPath);
           if (element?.elementType === "extends_clause") {
             const extendParam = element as InputGroupExtend;
-            if (
-              extendParam.type ===
-              "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
-            ) {
-              console.log("stop");
-            }
             this.mods = extendParam.mods;
             this.extendElement = typeStore.get(extendParam.type) as InputGroup;
             // Kludge - the instatiation of the extend type (extendParam) should
