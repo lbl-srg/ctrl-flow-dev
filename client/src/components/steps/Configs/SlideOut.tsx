@@ -367,7 +367,9 @@ const SlideOut = ({
           placeholder="Name Your Configuration"
         />
         {renderDisplayOptions(displayedOptions)}
-        <button type="submit">{itl.terms.save}</button>
+        <div className="submit-container">
+          <button type="submit">{itl.terms.save}</button>
+        </div>
       </form>
     </Modal>
   );

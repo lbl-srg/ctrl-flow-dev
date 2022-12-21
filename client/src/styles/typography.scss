@@ -80,6 +80,10 @@ ul.styled-ul {
   }
 }
 
+.no-pointer {
+  cursor: default !important;
+}
+
 ul.check-list {
   padding: 0;
 

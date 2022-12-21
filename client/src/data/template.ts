@@ -56,6 +56,7 @@ const icons = [
 export default class Template {
   _mods: Modifiers | undefined; // internal cache so we don't recompute... doesn't help
   templates: TemplateInterface[];
+  _templates: { [key: string]: TemplateInterface } = {};
   optionList: OptionInterface[];
   _options: { [key: string]: OptionInterface } = {};
   systemTypes: SystemTypeInterface[];
@@ -69,6 +70,8 @@ export default class Template {
 
     // create option dictionary for quick lookup
     this.optionList.map((o) => (this._options[o.modelicaPath] = o));
+    // create template dictionary for quick lookup
+    this.templates.map((o) => (this._templates[o.modelicaPath] = o));
   }
 
   getTemplateByPath(path: string | null): TemplateInterface | undefined {
@@ -134,7 +137,7 @@ export default class Template {
   }
 
   getAllTemplates() {
-    return this.templates;
+    return this._templates;
   }
 
   getAllOptions() {

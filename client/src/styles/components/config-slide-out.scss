@@ -43,4 +43,13 @@
     border-bottom: 1px solid black;
     margin-bottom: 1rem;
   }
+
+  .submit-container {
+    position: sticky;
+    bottom: -1.75rem;
+    z-index: 1;
+    padding-top: 1.5rem;
+    padding-bottom: 0.5rem;
+    background-color: rgba(247, 247, 247);
+  }
 }
