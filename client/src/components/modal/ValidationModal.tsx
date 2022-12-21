@@ -28,20 +28,25 @@ function ValidationModal({ isOpen, close }: ModalInterface) {
   return (
     <Modal close={close} isOpen={isOpen}>
       <h1>Please edit and save all configs</h1>
-      <div>Below is a list of your unsaved configs.</div>
-      <ul className="check-list">
-        {configStatus.map(({ templateName, configName, isSaved }) => (
-          !isSaved ? (
-            <li key={`${templateName}-${configName}`} className="template">
-              <label className="no-pointer">
-                <div>Config: {configName}</div>
-                <span className="info">{templateName}</span>
-              </label>
-            </li>
-          ) : null
-        ))}
-      </ul>
-
+      {configStatus.length > 0 && (
+        <div>Below is a list of your unsaved configs.</div>
+      )}
+      {configStatus.length > 0 ? (
+        <ul className="check-list">
+          {configStatus.map(({ templateName, configName, isSaved }) => (
+            !isSaved ? (
+              <li key={`${templateName}-${configName}`} className="template">
+                <label className="no-pointer">
+                  <div>Config: {configName}</div>
+                  <span className="info">{templateName}</span>
+                </label>
+              </li>
+            ) : null
+          ))}
+        </ul>
+      ) : (
+        <div>You currently have no configs selected. Please go back, select and save at least one config.</div>
+      )}
       <div className="action-bar margin-top-lg">
         <button className="inline" onClick={close}>
           Close

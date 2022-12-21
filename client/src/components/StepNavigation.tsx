@@ -34,7 +34,7 @@ function StepNavigation() {
 
   function checkIfActive() {
     const configs: ConfigInterface[] = configStore.getConfigsForProject();
-    let isActive = true;
+    let isActive = configs.length > 0;
 
     configs.every((config) => {
       const evaluatedValues = { ...config.evaluatedValues };
