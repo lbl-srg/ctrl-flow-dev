@@ -47,6 +47,7 @@ const OptionSelect = ({
           name={`${option.modelicaPath}-${option.scope}`}
           defaultValue={option.value || ''}
           onChange={selectOption}
+          required
         >
           <option value=''></option>
           {option.booleanChoices?.map((choice) => (
@@ -63,6 +64,7 @@ const OptionSelect = ({
         name={`${option.modelicaPath}-${option.scope}`}
         defaultValue={option.value || ''}
         onChange={selectOption}
+        required
       >
         <option value=''></option>
         {option.choices?.map((choice) => (

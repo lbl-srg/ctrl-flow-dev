@@ -58,7 +58,7 @@ const SystemTemplate = observer(
                 onClick={(ev) => chooseConfig(config.id, ev)}
               >
                 <div className="truncate">{config.name}</div>
-                <div>{`qty.${config.quantity}`}</div>
+                {/*<div>{`qty.${config.quantity}`}</div>*/}
               </a>
             </li>
           ))}

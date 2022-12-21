@@ -49,7 +49,7 @@ const System = observer(({ systemPath }: { systemPath: string }) => {
                   onChange={(e) => onSelect(option, e.target.checked)}
                 />
                 {name}
-                <i className="icon-info-circled" />
+                {/*<i className="icon-info-circled" />*/}
               </label>
             </li>
           );

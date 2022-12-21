@@ -21,19 +21,27 @@ const DOWNLOADABLE_FILE_LIST = [
 
 function DownloadModal({ isOpen, close }: ModalInterface) {
   const { projectStore, configStore } = useStores();
-  const [checked, setChecked] = useState(
-    DOWNLOADABLE_FILE_LIST.map(({ label }) => label),
-  );
+  // const [checked, setChecked] = useState(
+  //   DOWNLOADABLE_FILE_LIST.map(({ label }) => label),
+  // );
+
+  const [checked, setChecked] = useState<string[]>([]);
 
   const projectConfigs: ConfigInterface[] = configStore.getConfigsForProject();
 
   function updateItem(event: ChangeEvent<HTMLInputElement>, label: string) {
+    // if (event.target.checked) {
+    //   setChecked(checked.concat(label));
+    //   return;
+    // }
+
+    // setChecked(checked.filter((item) => item !== label));
     if (event.target.checked) {
-      setChecked(checked.concat(label));
+      setChecked([label]);
       return;
     }
 
-    setChecked(checked.filter((item) => item !== label));
+    setChecked([]);
   }
 
   function getSequenceData() {

@@ -7,7 +7,7 @@ import ImgControl from "./ImgControl";
 import { useStores } from "../../../data";
 
 function Results() {
-  const [activeTab, setActiveTab] = useState("schematics");
+  const [activeTab, setActiveTab] = useState("sequence");
   const { uiStore } = useStores();
 
   const activeTemplate = uiStore.activeTemplate;
@@ -29,7 +29,7 @@ function Results() {
             >
               {itl.terms.sequence}
             </li>
-            <li
+            {/*<li
               className={getClass("pointList")}
               onClick={() => setActiveTab("pointList")}
             >
@@ -46,11 +46,11 @@ function Results() {
               onClick={() => setActiveTab("schedules")}
             >
               {itl.terms.schedules}
-            </li>
+            </li>*/}
           </ul>
         </nav>
 
-        <ImgControl />
+        {/*<ImgControl />*/}
       </div>
     </Fragment>
   );

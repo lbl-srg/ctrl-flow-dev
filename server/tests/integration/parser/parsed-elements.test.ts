@@ -240,16 +240,10 @@ describe("Expected Inputs are extracted", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.InputGroup;
     const templateInputs = template.getInputs();
-    const forcedTrue = templateInputs[
-      "TestPackage.Template.TestTemplate.linkage_keyword_true"
-    ];
 
-    const forcedFalse = templateInputs[
-      "TestPackage.Template.TestTemplate.linkage_keyword_false"
-    ];
+    const forcedFalse =
+      templateInputs["TestPackage.Template.TestTemplate.linkage_keyword_false"];
 
-
-    expect(forcedTrue.enable).toBeTruthy();   
-    expect(forcedFalse.enable).toBeFalsy(); 
+    expect(forcedFalse.enable).toBeFalsy();
   });
 });

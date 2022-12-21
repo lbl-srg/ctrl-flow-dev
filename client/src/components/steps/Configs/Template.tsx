@@ -39,7 +39,7 @@ const Template = ({ systemPath, templatePath, projectSelections, projectEvaluate
     >
       <h4 className="with-links">
         {template?.name}
-        <div className="links">
+        {/*<div className="links">
           <a>
             <i className="icon-upload" />
             {itl.terms.upload}
@@ -48,7 +48,7 @@ const Template = ({ systemPath, templatePath, projectSelections, projectEvaluate
             <i className="icon-download" />
             {itl.terms.download}
           </a>
-        </div>
+        </div>*/}
       </h4>
 
       <strong className="uppercase">Configuration(s):</strong>

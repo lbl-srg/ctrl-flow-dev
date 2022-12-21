@@ -95,6 +95,7 @@ app.post("/api/sequence", async (req, res) => {
   // Please note that this is a very naive data format.
   // The shape of this object will most likely need to be modified and massaged when we work with real data.
   const sequenceData: SequenceData = req.body;
+  res.header("Access-Control-Allow-Origin", config.FE_ORIGIN_URL);
 
   try {
     const file = await writeControlSequenceDocument(sequenceData);

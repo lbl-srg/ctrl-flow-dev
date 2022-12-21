@@ -1,7 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import DownloadModal from "./modal/DownloadModal";
-import { useState, Fragment } from "react";
+import ValidationModal from "./modal/ValidationModal";
+import { useState, Fragment, SyntheticEvent } from "react";
 import itl from "../translations";
+import { useStores } from "../data";
+import { ConfigInterface } from "../data/config";
 
 import "../styles/components/step-navigation.scss";
 
@@ -15,6 +18,7 @@ const steps = [
 
 function StepNavigation() {
   const [downloadOpen, setDownloadOpen] = useState(false);
+  const [validationOpen, setValidationOpen] = useState(false);
 
   const location = useLocation();
   const currentIndex = steps.findIndex(
@@ -25,11 +29,48 @@ function StepNavigation() {
   const previous = steps[currentIndex - 1];
   const next = steps[currentIndex + 1];
 
+  const { configStore, templateStore } = useStores();
+  const allTemplates = templateStore.getAllTemplates();
+
+  function checkIfActive() {
+    const configs: ConfigInterface[] = configStore.getConfigsForProject();
+    let isActive = configs.length > 0;
+
+    configs.every((config) => {
+      const evaluatedValues = { ...config.evaluatedValues };
+      const hasEvaluatedValues = Object.keys(evaluatedValues).length > 0;
+
+      if (!hasEvaluatedValues) {
+        isActive = false;
+        return false;
+      }
+      return true;
+    });
+
+    return isActive;
+  }
+
+  function onNextStep(e: SyntheticEvent, path: string) {
+    if (path === "/results") {
+      const isActive = checkIfActive();
+      if (isActive) {
+        setDownloadOpen(true);
+      } else {
+        e.preventDefault();
+        setValidationOpen(true);
+      }
+    }
+  }
+
   return (
     <Fragment>
       <DownloadModal
         isOpen={downloadOpen}
         close={() => setDownloadOpen(false)}
+      />
+      <ValidationModal
+        isOpen={validationOpen}
+        close={() => setValidationOpen(false)}
       />
       <div className="step-navigation">
         {previous && (
@@ -50,6 +91,7 @@ function StepNavigation() {
                   key={label}
                   to={path}
                   className={location.pathname === path ? "active" : ""}
+                  onClick={(e) => onNextStep(e, path)}
                 >
                   <div className="marker"></div>
                   {label}
@@ -60,7 +102,7 @@ function StepNavigation() {
 
         <div className="next-container">
           {next && (
-            <Link role="button" to={next.path}>
+            <Link role="button" to={next.path} onClick={(e) => onNextStep(e, next.path)}>
               {itl.phrases.nextStep}: {next.label}
               <i className="icon-right-open right" />
             </Link>
