@@ -24,8 +24,6 @@ import {
 import * as mj from "./mj-types";
 
 export const EXTEND_NAME = "__extend";
-// TODO: templates *should* have all types defined within a template - however there will
-// be upcoming changes once unit changes are supported
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 const PROJECT_PATH = "Buildings.Templates.Data.AllSystems";
 const PROJECT_INSTANCE_PATH = "datAll";
@@ -81,8 +79,6 @@ class Store {
    *
    * If load is true, if a type is not found in the store attempt to load
    * the corresponding file into the store, then return the loaded results
-   *
-   * TODO: throw an exception when not found
    */
   get(path: string, basePath: string = "", load: boolean = true) {
     if (isLiteral(path) || path === "") {
@@ -102,14 +98,14 @@ class Store {
     if (load) {
       const { path } = this._load(paths);
       if (!path) {
-        return; // PUNCH-OUT! File not found. TODO: error here?
+        return; // PUNCH-OUT! File not found
       }
       return this._get(path);
     }
   }
 
   /**
-   * TODO: This needs to match the lookup behavior for modelica type references
+   * This needs to match the lookup behavior for modelica type references
    * where it is able to follow an order of searching based on the type. Full rules
    * are defined here: https://mbe.modelica.university/components/packages/lookup/
    *
@@ -253,6 +249,7 @@ export abstract class Element {
   elementType = "";
   enable: Expression | boolean = false;
   annotation: Modification[] = [];
+  deadEnd = false;
 
   abstract getInputs(
     inputs?: { [key: string]: TemplateInput },
@@ -277,6 +274,8 @@ export abstract class Element {
 
   /**
    * The linkage keyword annotation is used to override any logic around 'enable'
+   *
+   * This should only be called after the annotation has attempted to be parsed!
    */
   getLinkageKeywordValue(): boolean | undefined {
     if (this.annotation) {
@@ -329,7 +328,7 @@ export class InputGroup extends Element {
   entryPoint = false;
   mods: Modification[] | undefined;
   extendElement: InputGroup | undefined;
-  deadEnd: boolean = false;
+  extendElementDeadEnd = false;
 
   constructor(definition: any, basePath: string, public elementType: string) {
     super();
@@ -352,10 +351,13 @@ export class InputGroup extends Element {
           const element = _constructElement(e, this.modelicaPath);
           if (element?.elementType === "extends_clause") {
             const extendParam = element as InputGroupExtend;
-            this.mods = extendParam.mods; // TODO: merge modifiers?
-            this.deadEnd = extendParam.deadEnd;
-            // make sure
+            this.mods = extendParam.mods;
             this.extendElement = typeStore.get(extendParam.type) as InputGroup;
+            // Kludge - the instatiation of the extend type (extendParam) should
+            // likely be assigned and not the fetched type. However with how
+            // the extend param is unpacked into the InputGroup, this is a smaller
+            // change
+            this.extendElementDeadEnd = extendParam.deadEnd;
           }
           return element;
         })
@@ -365,6 +367,7 @@ export class InputGroup extends Element {
     this.annotation = specifier.composition.annotation?.map(
       (m: mj.Mod | mj.WrappedMod) => createModification({ definition: m }),
     );
+    this.deadEnd = this.getLinkageKeywordValue() === false;
 
     if (
       this.annotation &&
@@ -378,13 +381,17 @@ export class InputGroup extends Element {
   }
 
   /**
-   * Returns child elements including extended class child elements as a flat list
+   * Returns the list of elements with all inherited elements flattened
    */
-  getChildElements(): Element[] {
+  getChildElements(useDeadEnd = false): Element[] {
     const elements = this.elementList || [];
-    return this.deadEnd || this.extendElement === undefined
-      ? elements
-      : [...elements, ...this.extendElement?.getChildElements()];
+
+    return (
+      this.extendElement === undefined ||
+      (this.extendElementDeadEnd && useDeadEnd)
+        ? elements
+        : [...elements, ...this.extendElement?.getChildElements(useDeadEnd)]
+    ).filter((el) => Object.keys(el.getInputs({}, false)).length > 0);
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
@@ -393,15 +400,21 @@ export class InputGroup extends Element {
       return inputs;
     }
 
-    const elementList = this.getChildElements();
+    // DO only assign child element paths from this.getChildElements
+    // DO load from the full elementList
+    // make sure all options are added to the bag of inputs
+    this.getChildElements().forEach((el) => el.getInputs(inputs));
 
-    const children = elementList.filter((el) => {
-      return Object.keys(el.getInputs(inputs)).length > 0;
-    });
+    // get filtered child list
+    const children = this.getChildElements(true)
+      .filter((el) => !el.deadEnd)
+      .filter((el) => !(el.modelicaPath in MODELICA_LITERALS))
+      .map((el) => el.modelicaPath);
 
-    // extend element children may or may not be included as children
-    // this call just makes sure the children get added to 'inputs'
+    // make sure all child elements (extend + other elements) get
+    // template inputs added
     this.extendElement?.getInputs(inputs);
+    this.elementList?.map((e) => e.getInputs(inputs));
 
     inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
@@ -409,9 +422,7 @@ export class InputGroup extends Element {
       name: this.description,
       value: this.modelicaPath,
       visible: false,
-      inputs: children
-        .map((c) => c.modelicaPath)
-        .filter((c) => !(c in MODELICA_LITERALS)),
+      inputs: children,
       elementType: this.elementType,
       modifiers: this.mods,
     };
@@ -476,7 +487,7 @@ export class Input extends Element {
           .filter((m) => m !== undefined) as Modification[];
       }
     }
-
+    this.deadEnd = this.getLinkageKeywordValue() === false;
     this.mod = declarationBlock.modification
       ? createModification({
           definition: declarationBlock,
@@ -500,7 +511,6 @@ export class Input extends Element {
     const dialog = this.annotation.find((m) => m.name === "Dialog");
 
     const typeInstance = typeStore.find(this.type) as Element;
-    // TODO: elementTypes need to be split out into an enum...
     const isInputGroupType = isInputGroup(typeInstance?.elementType);
     const isReplaceable =
       this.annotation.find((m) => m.name === "choices") !== undefined;
@@ -517,11 +527,7 @@ export class Input extends Element {
 
       this.group = group ? evaluateExpression(group) : "";
       this.tab = tab ? evaluateExpression(tab) : "";
-      // const typeInstance = typeStore.find(this.type) as Element;
-      // // TODO: elementTypes need to be split out into an enum...
-      // const isInputGroupType = isInputGroup(typeInstance?.elementType);
-      // // for class types, no dialog annotation means don't enable UNLESS it is a replaceable
-      // // for all other types it is true
+
       if (isInputGroupType && !isReplaceable) {
         this.enable = enable ? evaluateExpression(enable) : false;
       } else {
@@ -534,9 +540,6 @@ export class Input extends Element {
     } else {
       this.enable = isInputGroupType && !isReplaceable ? this.enable : true;
     }
-
-    const linkage = this.getLinkageKeywordValue();
-    this.enable = linkage !== undefined ? linkage : this.enable;
   }
 
   _setInputVisible(inputType: TemplateInput | undefined): boolean {
@@ -568,8 +571,13 @@ export class Input extends Element {
     const typeInstance = typeStore.get(this.type) || null;
     const inputTypes = typeInstance ? typeInstance.getInputs({}, false) : {};
     const visible = this._setInputVisible(inputTypes[this.type]);
-    const childInputs =
+    let childInputs =
       this.enable === false ? [] : inputTypes[this.type]?.inputs || [];
+
+    childInputs.filter((inputType) => {
+      const element = typeStore.get(inputType);
+      return !element?.deadEnd;
+    });
 
     inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
@@ -579,7 +587,7 @@ export class Input extends Element {
       group: this.group,
       tab: this.tab,
       visible: visible,
-      enable: this.enable,
+      enable: this.deadEnd ? false : this.enable,
       inputs: childInputs,
       modifiers: this.mod ? [this.mod as Modification] : [],
       elementType: this.elementType,
@@ -762,14 +770,13 @@ export class InputGroupExtend extends Element {
   type: string = "";
   value: string = "";
   annotation: Modification[] = [];
-  deadEnd: boolean;
+
   constructor(definition: any, basePath: string, public elementType: string) {
     super();
     this.name = EXTEND_NAME; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${this.name}`;
     const typeElement = typeStore.get(definition.extends_clause.name, basePath);
     this.type = typeElement?.modelicaPath || definition.extends_clause.name;
-    this.deadEnd = false;
 
     const annotations = definition.extends_clause?.annotation;
 
@@ -786,6 +793,7 @@ export class InputGroupExtend extends Element {
       this._setUIInfo();
     }
 
+    this.deadEnd = this.getLinkageKeywordValue() === false;
     const registered = this.registerPath(this.modelicaPath, this.type);
     if (!registered) {
       return; // PUNCH-OUT!
@@ -802,10 +810,7 @@ export class InputGroupExtend extends Element {
   }
 
   _setUIInfo() {
-    const linkage = this.getLinkageKeywordValue();
-
-    this.deadEnd = linkage !== undefined ? !linkage : false;
-    this.enable = linkage || false;
+    this.enable = false;
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
@@ -814,16 +819,6 @@ export class InputGroupExtend extends Element {
     }
 
     const typeInstance = typeStore.get(this.type);
-    // inputs[this.modelicaPath] = {
-    //   modelicaPath: this.modelicaPath,
-    //   type: this.type,
-    //   value: this.value,
-    //   name: typeInstance?.name || "",
-    //   visible: false,
-    //   inputs: this.type.startsWith("Modelica") ? [] : [this.type],
-    //   elementType: this.elementType,
-    //   modifiers: this.mods,
-    // };
 
     return typeInstance ? typeInstance.getInputs(inputs, recursive) : inputs;
   }
@@ -844,6 +839,10 @@ export class Import extends Element {
     }
   }
 
+  /**
+   * 'Extend' statements do not generate a unique TemplateInput as they are inherited
+   * by the InputGroup that uses them. So this function is a noop
+   */
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
     return inputs;
   }
@@ -872,8 +871,6 @@ function _constructElement(
   let elementType = null;
   if ("class_prefixes" in definition) {
     elementType = definition.class_prefixes;
-    // TODO: class prefix descriptors like 'partial' and 'expandable' may
-    // need to be taken into account when constructing the appropriate element
     elementType = elementType.replace("partial ", "");
     elementType = elementType.replace("expandable ", "");
   } else if (extend in definition) {
@@ -922,7 +919,6 @@ function _constructElement(
     ? typeStore.get(element?.modelicaPath)
     : element;
   if (!result) {
-    // TODO: log `definition` that could not be parsed
     // console.log(`Unable to parse the following block:\n${definition}`);
   }
   return result;

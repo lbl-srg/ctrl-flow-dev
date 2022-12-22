@@ -3,12 +3,12 @@ import { ChangeEvent, FormEvent, Fragment, useEffect, useState } from "react";
 import itl from "../../../translations";
 import { useStores } from "../../../data";
 import { OptionInterface } from "../../../data/template";
-import { getFormData } from "../../../utils/dom-utils";
 import Modal from "../../modal/Modal";
 import OptionSelect from "./OptionSelect";
 import { useDebouncedCallback } from "use-debounce";
 
 import {
+  applyOptionModifier,
   applyValueModifiers,
   applyVisibilityModifiers,
   Modifiers,
@@ -72,8 +72,10 @@ const SlideOut = ({
   close,
 }: ConfigSlideOutProps) => {
   const { configStore, templateStore } = useStores();
-  const [selectedValues, setSelectedValues] =
-    useState<ConfigValues>({...selections, ...projectSelections});
+  const [selectedValues, setSelectedValues] = useState<ConfigValues>({
+    ...selections,
+    ...projectSelections,
+  });
   const [configName, setConfigName] = useState<string>(config.name);
 
   // template defaults + selections
@@ -83,11 +85,7 @@ const SlideOut = ({
     templateStore._options,
   );
   const evaluatedValues: ConfigValues = {
-    ...getEvaluatedValues(
-      templateOptions,
-      "",
-      false,
-    ),
+    ...getEvaluatedValues(templateOptions, "", false),
     ...projectEvaluatedValues,
   };
 
@@ -101,7 +99,13 @@ const SlideOut = ({
   );
 
   const displayedOptions: (FlatConfigOptionGroup | FlatConfigOption)[] =
-    getDisplayOptions(templateOptions, "root", "", false, templateOptions[0].name);
+    getDisplayOptions(
+      templateOptions,
+      "root",
+      "",
+      false,
+      templateOptions[0].name,
+    );
 
   useEffect(() => {
     stopLoading();
@@ -124,6 +128,17 @@ const SlideOut = ({
       if (changeScope) {
         const instance = option.modelicaPath.split(".").pop() || "";
         currentScope = scope ? `${scope}.${instance}` : instance;
+      }
+
+      if (option.replaceable) {
+        option = applyOptionModifier(
+          option,
+          currentScope,
+          selectedValues,
+          configModifiers,
+          template.pathModifiers,
+          allOptions
+        );
       }
 
       // build selection path
@@ -177,6 +192,17 @@ const SlideOut = ({
         currentScope = scope ? `${scope}.${instance}` : instance;
       }
 
+      if (option.replaceable) {
+        option = applyOptionModifier(
+          option,
+          currentScope,
+          selectedValues,
+          configModifiers,
+          template.pathModifiers,
+          allOptions
+        );
+      }
+
       const selectionPath = `${option.modelicaPath}-${currentScope}`;
       const isVisible = applyVisibilityModifiers(
         option,
@@ -188,7 +214,8 @@ const SlideOut = ({
       );
 
       if (isVisible) {
-        const value = selectedValues[selectionPath] || evaluatedValues[selectionPath];
+        const value =
+          selectedValues[selectionPath] || evaluatedValues[selectionPath];
         if (option.childOptions?.length) {
           displayOptions = [
             ...displayOptions,
@@ -217,7 +244,10 @@ const SlideOut = ({
           ];
         }
 
-        if (typeof selectedValues[selectionPath] === "string" && selectedValues[selectionPath]) {
+        if (
+          typeof selectedValues[selectionPath] === "string" &&
+          selectedValues[selectionPath]
+        ) {
           const selectedOption = allOptions[
             selectedValues[selectionPath]
           ] as OptionInterface;
@@ -234,7 +264,10 @@ const SlideOut = ({
               ),
             ];
           }
-        } else if (typeof evaluatedValues[selectionPath] === "string" && evaluatedValues[selectionPath]) {
+        } else if (
+          typeof evaluatedValues[selectionPath] === "string" &&
+          evaluatedValues[selectionPath]
+        ) {
           const evaluatedOption = allOptions[
             evaluatedValues[selectionPath]
           ] as OptionInterface;

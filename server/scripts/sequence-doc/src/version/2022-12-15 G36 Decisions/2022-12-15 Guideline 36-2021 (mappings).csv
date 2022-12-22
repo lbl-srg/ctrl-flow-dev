@@ -125,10 +125,10 @@ The list of options should be revised in the template."
 ,DD VAV - Mixing Control with Discharge Airflow Sensor,DDDIS,,,,NOT implemented in Templates. Covered by G36.
 ,DD VAV - Cold-Duct Minimum Control,DDCDMIN,,,,NOT implemented in Templates. Covered by G36.
 ,Fan Coil Unit,FCU,,,,NOT implemented in Templates. Covered by G36.
-,Occupancy Sensor:,OCC,N,ctl.have_occSen,Boolean,Missing modelica path for occupancy sensors
+,Occupancy Sensor:,OCC,N,Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.have_occSen-ctl.have_occSen,Boolean,Missing modelica path for occupancy sensors
 ,Yes,,,,true,"DEPT:  if any terminals have an occupancy sensor, this applies"
 ,No,,,,false,
-,Window Switch:,WIN,N,ctl.have_winSen,Boolean,Missing modelica path for window switches
+,Window Switch:,WIN,N,Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.have_winSen-ctl.have_winSen,Boolean,Missing modelica path for window switches
 ,Yes,,,,true,"DEPT:  if any terminals have a window switch, this applies"
 ,No,,,,false,
 ,CO2 Sensor:,CO2,N,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.have_CO2Sen-ctl.have_CO2Sen,Boolean,
