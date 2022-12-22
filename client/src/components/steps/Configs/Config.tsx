@@ -32,10 +32,8 @@ const Config = observer(({ configId, projectSelections, projectEvaluatedValues }
   const allOptions: { [key: string]: OptionInterface } =
     templateStore.getAllOptions();
 
-  const [openedModal, setOpenedModal] = useState({
-    isOpen: false,
-    isLoading: false,
-  });
+  const [openedModal, setOpenedModal] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   function removeConfiguration(event: MouseEvent) {
     event.preventDefault();
@@ -50,16 +48,20 @@ const Config = observer(({ configId, projectSelections, projectEvaluatedValues }
   );
 
   function openModal() {
-    // setLoading
-    // setOpen
-    setOpenedModal({ isOpen: true, isLoading: true });
-    uiStore.setOpenSystemPath(config.systemPath);
+    setLoading(true);
   }
+
+  useEffect(() => {
+    if (isLoading && !openedModal) {
+      setOpenedModal(true);
+      uiStore.setOpenSystemPath(config.systemPath);
+    }
+  }, [isLoading]);
 
   return (
     <Fragment>
       <Spinner
-        loading={openedModal.isLoading}
+        loading={isLoading}
         text="Please wait..."
       />
       <div className="config" id={`config-${configId}`} data-spy="config">
@@ -90,7 +92,7 @@ const Config = observer(({ configId, projectSelections, projectEvaluatedValues }
           <i className="icon-close" />
         </a>
       </div>
-      {openedModal.isOpen && (
+      {openedModal && (
         <SlideOut
           config={config}
           projectSelections={projectSelections}
@@ -100,10 +102,9 @@ const Config = observer(({ configId, projectSelections, projectEvaluatedValues }
           templateModifiers={templateModifiers}
           selections={selections}
           allOptions={allOptions}
-          isLoading={openedModal.isLoading}
-          startLoading={() => setOpenedModal({ ...openedModal, isLoading: true})}
-          stopLoading={() => setOpenedModal({ ...openedModal, isLoading: false })}
-          close={() => setOpenedModal({ ...openedModal, isOpen: false })}
+          // startLoading={() => setLoading(true)}
+          stopLoading={() => setLoading(false)}
+          close={() => setOpenedModal(false)}
         />
       )}
     </Fragment>
