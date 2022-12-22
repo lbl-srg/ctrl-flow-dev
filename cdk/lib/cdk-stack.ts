@@ -55,7 +55,7 @@ export class LblCdkStack extends cdk.Stack {
             environment: {
               NODE_ENV: "production",
               MODELICA_DEPENDENCIES: "/dependencies",
-              FE_ORIGIN_URL: `http://${bucket.bucketDomainName}`,
+              FE_ORIGIN_URL: `http://${bucket.bucketWebsiteDomainName},http://${bucket.bucketRegionalDomainName}`,
               PORT: "80",
             },
           },

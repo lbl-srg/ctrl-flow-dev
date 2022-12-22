@@ -27,6 +27,7 @@ app.use(express.static("public"));
 app.use(cors());
 
 const logMode = config.NODE_ENV == "development" ? "dev" : "combined";
+const allowedOrigins = config.FE_ORIGIN_URL.split(',');
 app.use(morgan(logMode));
 
 // TODO: Investigate if 'tmp.dirSync' can be used to create the directory
@@ -95,7 +96,10 @@ app.post("/api/sequence", async (req, res) => {
   // Please note that this is a very naive data format.
   // The shape of this object will most likely need to be modified and massaged when we work with real data.
   const sequenceData: SequenceData = req.body;
-  res.header("Access-Control-Allow-Origin", config.FE_ORIGIN_URL);
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+  }
 
   try {
     const file = await writeControlSequenceDocument(sequenceData);
