@@ -72,6 +72,7 @@ export interface Option {
   enable?: any;
   treeList?: string[];
   modifiers: { [key: string]: { expression: Expression; final: boolean } };
+  choiceModifiers?: { [key: string]: Modification[] };
   replaceable: boolean;
   elementType: string;
   definition: boolean;
