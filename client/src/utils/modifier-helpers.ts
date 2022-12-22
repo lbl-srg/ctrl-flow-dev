@@ -270,6 +270,13 @@ export function getUpdatedModifiers(
       const [modelicaPath, instancePath] = key.split("-");
       const option = allOptions[modelicaPath] as OptionInterface;
 
+      if (option?.choiceModifiers && option.modelicaPath === 'Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo') {
+        console.log('all choiceModifiers: ', option?.choiceModifiers);
+        const choiceModifiers: Modifiers[] = option?.choiceModifiers[values[key]];
+        console.log('choiceModifier list: ', choiceModifiers);
+        // take modifiers and change to instace keys, instancePath above and add to updatedModifiers as the last item. 
+      }
+
       updatedModifiers = {
         ...updatedModifiers,
         ...buildModifiers(
