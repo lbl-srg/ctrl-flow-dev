@@ -9,7 +9,7 @@ import {
 } from "./expression-helpers";
 
 export type Modifiers = {
-  [key: string]: Expression;
+  [key: string]: { expression: Expression; final: boolean };
 };
 
 export interface ConfigValues {
@@ -269,12 +269,11 @@ export function getUpdatedModifiers(
     if (values[key] !== null) {
       const [modelicaPath, instancePath] = key.split("-");
       const option = allOptions[modelicaPath] as OptionInterface;
+      let choiceModifiers = {};
 
-      if (option?.choiceModifiers && option.modelicaPath === 'Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo') {
-        console.log('all choiceModifiers: ', option?.choiceModifiers);
-        const choiceModifiers: Modifiers[] = option?.choiceModifiers[values[key]];
-        console.log('choiceModifier list: ', choiceModifiers);
-        // take modifiers and change to instace keys, instancePath above and add to updatedModifiers as the last item. 
+      if (option?.choiceModifiers) {
+        choiceModifiers = option?.choiceModifiers[values[key]];
+        // take modifiers and change to instace keys, instancePath above and add to updatedModifiers as the last item.
       }
 
       updatedModifiers = {
@@ -286,6 +285,7 @@ export function getUpdatedModifiers(
           allOptions,
           false,
         ),
+        ...choiceModifiers,
       };
     }
   });

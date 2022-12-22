@@ -72,7 +72,7 @@ export interface Option {
   enable?: any;
   treeList?: string[];
   modifiers: { [key: string]: { expression: Expression; final: boolean } };
-  choiceModifiers?: { [key: string]: Modification[] };
+  choiceModifiers?: { [key: string]: Mods };
   replaceable: boolean;
   elementType: string;
   definition: boolean;
@@ -87,7 +87,7 @@ export interface ScheduleOption extends Option {
 }
 
 export interface Mods {
-  [key: string]: Expression;
+  [key: string]: { expression: Expression; final: boolean };
 }
 
 /**
@@ -146,6 +146,16 @@ function _mapInputToOption(input: parser.TemplateInput): Option {
     const flattenedMods = flattenModifiers(input.modifiers);
     delete flattenedMods[input.modelicaPath]; // don't include 'default path'
     option.modifiers = flattenedMods;
+  }
+
+  if (input.choiceModifiers) {
+    // map from choice value to modifiers
+    const flattenedChoiceMods: { [key: string]: Mods } = {};
+
+    Object.entries(input.choiceModifiers).map(([key, modList]) => {
+      flattenedChoiceMods[key] = flattenModifiers(modList);
+    });
+    option.choiceModifiers = flattenedChoiceMods;
   }
 
   option.options = options;
