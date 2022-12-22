@@ -236,6 +236,7 @@ export interface TemplateInput {
   value?: any;
   enable?: any;
   modifiers?: Modification[];
+  choiceModifiers?: {[key: string]: Modification[]};
   elementType: string;
 }
 
@@ -605,6 +606,7 @@ export class Input extends Element {
 
 export class ReplaceableInput extends Input {
   choices: string[] = [];
+  choiceMods: {[key: string]: Modification[]} = {};
   constraint: Element | undefined;
   mods: Modification[] = [];
   mod: Modification | undefined;
@@ -654,6 +656,9 @@ export class ReplaceableInput extends Input {
       choices.mods.map((choice) => {
         if (choice.value) {
           this.choices.push(choice.value as string);
+          if (choice.mods.length > 0) {
+            this.choiceMods[choice.value] = choice.mods;
+          }
         } else {
           throw new Error("Malformed 'Choices' specified");
         }
@@ -683,6 +688,7 @@ export class ReplaceableInput extends Input {
       modifiers: this.mods,
       elementType: this.elementType,
       enable: this.enable,
+      choiceModifiers: this.choiceMods
     };
 
     if (recursive) {

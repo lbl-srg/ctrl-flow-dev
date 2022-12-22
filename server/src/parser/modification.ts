@@ -124,7 +124,7 @@ function unpackRedeclaration(props: ModificationProps) {
     const name = redeclareDefinition.identifier;
     const childModProps = {
       ...props,
-      element: element.type,
+      name: element.type,
       definition: redeclareDefinition,
       baseType: element.type,
       final,
@@ -235,8 +235,23 @@ function unpackModblock(props: ModificationProps) {
           replaceable.component_clause1.type_specifier,
           basePath,
         );
-
-        value = replaceableType?.modelicaPath || "";
+        value = replaceableType?.modelicaPath || ""; // modelicaPath is the replaceable type
+        // get selection mods
+        const declaration =
+          replaceable.component_clause1.component_declaration1.declaration;
+        // Additional modifiers can be attached to choice
+        if (declaration?.modification) {
+          mods = getModificationList(
+            declaration.modification as mj.ClassMod,
+            basePath,
+            value,
+          );
+          // TODO: getModificationList should handle redeclares but it is not
+          // correctly unpacking nested modifiers - this is a bug
+          // kludge: remove nested modifiers
+          mods.forEach((m) => (m.mods = []));
+          console.log(mods);
+        }
       }
     } else if ("class_modification" in mod) {
       let typePath = baseType;
