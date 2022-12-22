@@ -22,7 +22,7 @@ export interface OptionInterface {
   valueExpression?: any; //{ expression: string; modelicaPath: string };
   enable?: any; // { modelicaPath: string; expression: string };
   modifiers: any;
-  choiceModifiers?: {[key: string]: Modifiers[]};
+  choiceModifiers?: { [key: string]: Modifiers };
   treeList: string[];
   definition: boolean;
   replaceable: boolean;
