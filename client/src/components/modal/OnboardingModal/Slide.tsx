@@ -13,10 +13,10 @@ const slides = [
           <i className="icon-cog" />
           Configure
         </div>
-        <div>
+        {/*<div>
           <i className="icon-table" />
           Schedule
-        </div>
+        </div>*/}
         <div>
           <i className="icon-download" />
           Results
@@ -34,16 +34,16 @@ const slides = [
   },
   {
     icon: <i className="icon-cog" />,
-    img: <img src="/onboarding/edit-config.png" />,
+    img: <img src="/onboarding/edit-configs.png" />,
   },
-  {
-    icon: <i className="icon-table" />,
-    img: <img src="/onboarding/schedules.png" />,
-  },
-  {
-    icon: <i className="icon-table" />,
-    img: <img src="/onboarding/schedules.png" />,
-  },
+  // {
+  //   icon: <i className="icon-table" />,
+  //   img: <img src="/onboarding/schedules.png" />,
+  // },
+  // {
+  //   icon: <i className="icon-table" />,
+  //   img: <img src="/onboarding/schedules.png" />,
+  // },
   {
     icon: <i className="icon-download" />,
     img: <img src="/onboarding/results.png" />,

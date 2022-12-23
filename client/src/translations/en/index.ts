@@ -21,7 +21,7 @@ const en: Translations = {
     projectName: "Project Name",
     scheduleInstruct:
       "Add tags, IDs, and quantities for your selected systems. Edit your system's schedule directly from the table.",
-    selectToDownload: "Select Components to Download",
+    selectToDownload: "Select a Document to Download",
   },
 };
 
