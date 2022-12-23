@@ -8,7 +8,7 @@ import { ProjectDetailInterface } from "../../data/project";
 import Spinner from '../Spinner';
 
 const CONTROL_SEQUENCE = "Control Sequence";
-const CONTROL_SEQUENCE_WITH_INFO_TEXT = "Control Sequence with info text"
+const CONTROL_SEQUENCE_WITH_INFO_TEXT = "Control Sequence with Informative Text"
 const DOCX = "docx";
 
 const DOWNLOADABLE_FILE_LIST = [
@@ -68,8 +68,6 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
         }
       });
     });
-
-    console.log('seqData: ', seqData);
 
     return seqData;
   }
