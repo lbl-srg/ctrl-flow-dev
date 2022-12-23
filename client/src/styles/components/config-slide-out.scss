@@ -52,4 +52,11 @@
     padding-bottom: 0.5rem;
     background-color: rgba(247, 247, 247);
   }
+
+  .config-name-label {
+    font-weight: var(--font-weight-medium);
+    padding-bottom: 0.75rem;
+    margin-top: -0.75rem;
+    overflow-wrap: break-word;
+  }
 }

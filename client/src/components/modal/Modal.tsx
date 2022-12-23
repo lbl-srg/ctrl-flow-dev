@@ -15,7 +15,7 @@ function Modal({ isOpen, close, className, children }: ModalInterface) {
   return (
     <div className={classes.join(" ")}>
       <dialog open={isOpen}>
-        <div className="underlay" onClick={close}></div>
+        {/*<div className="underlay" onClick={close}></div>*/}
         <article>
           <button
             aria-label="Close"

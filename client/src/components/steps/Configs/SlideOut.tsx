@@ -51,6 +51,8 @@ export interface ConfigSlideOutProps {
   templateModifiers: Modifiers;
   selections: ConfigValues;
   allOptions: { [key: string]: OptionInterface };
+  // startLoading: () => void;
+  stopLoading: () => void;
   close: () => void;
 }
 
@@ -63,6 +65,8 @@ const SlideOut = ({
   templateModifiers,
   selections,
   allOptions,
+  // startLoading,
+  stopLoading,
   close,
 }: ConfigSlideOutProps) => {
   const { configStore, templateStore } = useStores();
@@ -100,6 +104,10 @@ const SlideOut = ({
       false,
       templateOptions[0].name,
     );
+
+  useEffect(() => {
+    stopLoading();
+  }, []);
 
   function getEvaluatedValues(
     options: OptionInterface[],
@@ -315,18 +323,19 @@ const SlideOut = ({
     return displayOptions;
   }
 
-  const updateConfigName = useDebouncedCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setConfigName(event.target.value);
-    },
-    1000,
-  );
+  // const updateConfigName = useDebouncedCallback(
+  //   (event: ChangeEvent<HTMLInputElement>) => {
+  //     setConfigName(event.target.value);
+  //   },
+  //   1000,
+  // );
 
   function updateSelectedConfigOption(
     parentModelicaPath: string,
     scope: string,
     choice: string | null,
   ) {
+    // startLoading();
     setSelectedValues((prevState: any) => {
       const selectionPath = `${parentModelicaPath}-${scope}`;
 
@@ -346,7 +355,7 @@ const SlideOut = ({
     event.preventDefault();
     event.stopPropagation();
 
-    configStore.update(config.id, { name: configName });
+    // configStore.update(config.id, { name: configName });
     configStore.setSelections(config.id, selectedValues);
     configStore.setEvaluatedValues(config.id, removeEmpty(evaluatedValues));
 
@@ -389,16 +398,16 @@ const SlideOut = ({
     <Modal isOpen close={close} className="config-slide-out">
       <h3>{template?.name}</h3>
       <form onSubmit={saveConfigOptions}>
-        <label>Configuration name</label>
+        <label className="config-name-label">Configuration Name: {configName}</label>
         {/* TODO: Fix how updating configuration name on submit is not working. */}
-        <input
+        {/*<input
           type="text"
           id="configName"
           name="configName"
           defaultValue={configName}
           onChange={updateConfigName}
           placeholder="Name Your Configuration"
-        />
+        />*/}
         {renderDisplayOptions(displayedOptions)}
         <div className="submit-container">
           <button type="submit">{itl.terms.save}</button>
