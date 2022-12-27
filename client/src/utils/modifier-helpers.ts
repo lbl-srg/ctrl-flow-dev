@@ -1,5 +1,4 @@
 import { OptionInterface } from "../data/template";
-import { FlatConfigOption } from "../components/steps/Configs/SlideOut";
 import { deepCopy } from "./utils";
 import {
   Expression,
@@ -16,6 +15,19 @@ export interface ConfigValues {
   [key: string]: string;
 }
 
+type PathModifier = { [key: string]: string | undefined };
+
+/**
+ * Combines two modifier objects together by recursively going through newModifiers
+ *
+ * 'baseInstancePath' is used to construct the instance path name
+ *
+ * @param newModifiers: new modifier object
+ * @param baseInstancePath: used to correctly construct the instance path name (providing the appropriate scope)
+ * @param modifiers: modifier object getting udpated
+ * @param options: full list of options for referencing other types
+ * @param recursive: continue traversing down modifier trees
+ */
 function addToModObject(
   newModifiers: Modifiers,
   baseInstancePath: string,
@@ -51,7 +63,16 @@ function addToModObject(
   });
 }
 
-// recursive helper method
+/**
+ * When given an option, adds that options modifiers to the provided modifier
+ * object
+ *
+ * @param option: option to grab modifiers from
+ * @param baseInstancePath: current scope to append to the front of modifier instance paths
+ * @param modifiers: modifier object that gets mutated
+ * @param options: all option reference
+ * @returns
+ */
 function updateModifiers(
   option: OptionInterface,
   baseInstancePath: string,
@@ -101,6 +122,16 @@ function updateModifiers(
   }
 }
 
+/**
+ * Entry method to build the modifier object
+ *
+ * @param startOption
+ * @param baseInstancePath
+ * @param baseModifiers
+ * @param options
+ * @param addProjectMods
+ * @returns
+ */
 export function buildModifiers(
   startOption: OptionInterface,
   baseInstancePath: string,
@@ -119,7 +150,7 @@ export function buildModifiers(
 }
 
 /**
- * Update path based on path modifiers
+ * Update path based on the provided path modifiers
  *
  * e.g. if we have a path mod of 'ctl.secOutRel' -> 'secOutRel'
  *
@@ -127,7 +158,7 @@ export function buildModifiers(
  */
 export function applyPathModifiers(
   scopePath: string,
-  pathModifiers: Modifiers,
+  pathModifiers: PathModifier | undefined,
 ): string {
   const splitScopePath = scopePath.split(".");
   let postFix: string | undefined = "";
@@ -135,7 +166,7 @@ export function applyPathModifiers(
 
   while (splitScopePath.length > 0) {
     const testPath = splitScopePath.join(".");
-    if (pathModifiers[testPath]) {
+    if (pathModifiers && pathModifiers[testPath]) {
       modifiedPath = `${pathModifiers[testPath]}.${postFix}`;
       break;
     }
@@ -147,12 +178,22 @@ export function applyPathModifiers(
   return modifiedPath;
 }
 
+/**
+ *
+ * @param option
+ * @param scope
+ * @param selections
+ * @param modifiers
+ * @param pathModifiers
+ * @param allOptions
+ * @returns
+ */
 export function applyOptionModifier(
   option: OptionInterface,
   scope: string,
   selections: ConfigValues,
   modifiers: Modifiers,
-  pathModifiers: Modifiers,
+  pathModifiers: PathModifier | undefined,
   allOptions: { [key: string]: OptionInterface },
 ): OptionInterface {
   const modifier = deepCopy(modifiers[scope]);
@@ -183,7 +224,7 @@ export function applyValueModifiers(
   selectionPath: string,
   selections: any,
   modifiers: Modifiers,
-  pathModifiers: Modifiers,
+  pathModifiers: PathModifier,
   allOptions: { [key: string]: OptionInterface },
 ) {
   let evaluatedValue: any = undefined;
@@ -224,7 +265,7 @@ export function applyVisibilityModifiers(
   scope: string,
   selections: any,
   modifiers: Modifiers,
-  pathModifiers: Modifiers,
+  pathModifiers: PathModifier | undefined,
   allOptions: { [key: string]: OptionInterface },
 ): boolean {
   const scopePath = applyPathModifiers(scope, pathModifiers);
@@ -245,6 +286,7 @@ export function applyVisibilityModifiers(
       allOptions,
     );
 
+    // 'enable' value is still an expression, set to false
     if (isExpression(enable)) {
       enable = false;
     }
@@ -254,6 +296,7 @@ export function applyVisibilityModifiers(
     visible = option.visible && !modifier.final;
   }
 
+  // !! is to ensure we have a type of bool
   return !!(visible && enable);
 }
 
@@ -285,3 +328,80 @@ export function getUpdatedModifiers(
 
   return updatedModifiers;
 }
+
+export const deepDiffMapper = (function () {
+  return {
+    VALUE_CREATED: "created",
+    VALUE_UPDATED: "updated",
+    VALUE_DELETED: "deleted",
+    VALUE_UNCHANGED: "unchanged",
+    map: function (obj1: any, obj2: any) {
+      if (this.isFunction(obj1) || this.isFunction(obj2)) {
+        throw "Invalid argument. Function given, object expected.";
+      }
+      if (this.isValue(obj1) || this.isValue(obj2)) {
+        return {
+          type: this.compareValues(obj1, obj2),
+          data: obj1 === undefined ? obj2 : obj1,
+        };
+      }
+
+      const diff: any = {};
+      for (const key in obj1) {
+        if (this.isFunction(obj1[key])) {
+          continue;
+        }
+
+        let value2 = undefined;
+        if (obj2[key] !== undefined) {
+          value2 = obj2[key];
+        }
+
+        diff[key] = this.map(obj1[key], value2);
+      }
+      for (const key in obj2) {
+        if (this.isFunction(obj2[key]) || diff[key] !== undefined) {
+          continue;
+        }
+
+        diff[key] = this.map(undefined, obj2[key]);
+      }
+
+      return diff;
+    },
+    compareValues: function (value1: any, value2: any) {
+      if (value1 === value2) {
+        return this.VALUE_UNCHANGED;
+      }
+      if (
+        this.isDate(value1) &&
+        this.isDate(value2) &&
+        value1.getTime() === value2.getTime()
+      ) {
+        return this.VALUE_UNCHANGED;
+      }
+      if (value1 === undefined) {
+        return this.VALUE_CREATED;
+      }
+      if (value2 === undefined) {
+        return this.VALUE_DELETED;
+      }
+      return this.VALUE_UPDATED;
+    },
+    isFunction: function (x: any) {
+      return Object.prototype.toString.call(x) === "[object Function]";
+    },
+    isArray: function (x: any) {
+      return Object.prototype.toString.call(x) === "[object Array]";
+    },
+    isDate: function (x: any) {
+      return Object.prototype.toString.call(x) === "[object Date]";
+    },
+    isObject: function (x: any) {
+      return Object.prototype.toString.call(x) === "[object Object]";
+    },
+    isValue: function (x: any) {
+      return !this.isObject(x) && !this.isArray(x);
+    },
+  };
+})();
