@@ -47,22 +47,38 @@ export function deepCopy(obj: any) {
   return JSON.parse(JSON.stringify(obj));
 }
 
+type SimpleDisplay = {
+  path: string;
+  items?: SimpleDisplay[];
+  choices?: string[];
+};
+
 /**
  * Displays a concise list of options
  * @param displayList
  */
-export function printDisplayList(
+export function extractSimpleDisplayList(
   displayList: (FlatConfigOptionGroup | FlatConfigOption)[],
   tabPrefix = "",
+  print = false,
 ) {
+  const simpleList: SimpleDisplay[] = [];
   displayList.map((o) => {
     if ("items" in o) {
       const option = o as FlatConfigOptionGroup;
-      console.log(`${tabPrefix}${option.groupName}`);
-      printDisplayList(option.items, tabPrefix + "\t");
+      const oSimple = { path: o.selectionPath } as SimpleDisplay;
+      if (print) {
+        console.log(`${tabPrefix}${option.groupName}`);
+      }
+      oSimple.items = extractSimpleDisplayList(option.items, tabPrefix + "\t");
     } else {
       const option = o as FlatConfigOption;
-      console.log(`${tabPrefix}${option.name}`);
+      const oSimple = { path: o.modelicaPath } as SimpleDisplay;
+      oSimple.choices = option.choices?.map((c) => c.modelicaPath);
+      if (print) {
+        console.log(`${tabPrefix}${option.name}`);
+      }
     }
   });
+  return simpleList;
 }
