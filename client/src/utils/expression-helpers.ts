@@ -10,8 +10,14 @@ export type Expression = {
   operands: Array<Literal | Expression>;
 };
 
-export function resolveValue(
-  value: boolean | number | string,
+/**
+ * Resolves a symbol to its assigned value
+ *
+ * The symbol may already be a primitive (boolean, number). If so it is
+ * directly returned
+ */
+export function resolveSymbol(
+  symbol: boolean | number | string,
   scope: string,
   selectionPath: string,
   selections: any,
@@ -25,12 +31,12 @@ export function resolveValue(
     selectionValue = selections[selectionPath];
   }
 
-  if (typeof value === 'string') {
-    const splitScopePath = scope.split('.');
+  if (typeof symbol === "string") {
+    const splitScopePath = scope.split(".");
 
-    while(splitScopePath.length > 0) {
+    while (splitScopePath.length > 0) {
       const testPath = splitScopePath.join(".");
-      const valueSelectionPath: any = `${value}-${testPath}`;
+      const valueSelectionPath: any = `${symbol}-${testPath}`;
 
       if (valueSelectionPath in selections) {
         selectionValue = selections[valueSelectionPath];
@@ -40,7 +46,7 @@ export function resolveValue(
     }
 
     if (selectionValue == undefined) {
-      selectionValue = selections[value];
+      selectionValue = selections[symbol];
     }
   }
 
@@ -48,10 +54,10 @@ export function resolveValue(
   if (selectionValue !== undefined) return selectionValue;
 
   // if value is a boolean or number we are just a value and need to return
-  if (typeof value === "boolean" || typeof value === "number") return value;
+  if (typeof symbol === "boolean" || typeof symbol === "number") return symbol;
 
   // update path based on modifiers
-  const scopePath = applyPathModifiers(`${scope}.${value}`, pathModifiers);
+  const scopePath = applyPathModifiers(`${scope}.${symbol}`, pathModifiers);
   // is there a modifier for the provided path
   const scopeModifier = modifiers[scopePath];
   // set scope relative to class definition by popping off what is assumed to
@@ -77,7 +83,7 @@ export function resolveValue(
   }
 
   // if we couldn't resolve a modifier get default value from option (using the modelica path 'value')
-  const originalOption = allOptions[value];
+  const originalOption = allOptions[symbol];
 
   if (originalOption) {
     const originalValExpression = deepCopy(originalOption?.value);
@@ -112,7 +118,7 @@ function resolveExpression(
   let resolved_expression: any = expression;
 
   expression.operands.every((operand: any, index: number) => {
-    const resolvedValue = resolveValue(
+    const resolvedValue = resolveSymbol(
       operand,
       scope,
       selectionPath,

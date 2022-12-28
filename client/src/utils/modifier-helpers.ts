@@ -4,7 +4,7 @@ import {
   Expression,
   evaluateExpression,
   isExpression,
-  resolveValue,
+  resolveSymbol,
 } from "./expression-helpers";
 
 export type Modifiers = {
@@ -230,7 +230,7 @@ export function applyValueModifiers(
   let evaluatedValue: any = undefined;
 
   if (!isExpression(optionValue)) {
-    evaluatedValue = resolveValue(
+    evaluatedValue = resolveSymbol(
       optionValue,
       scope,
       selectionPath,
