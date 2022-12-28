@@ -1,4 +1,8 @@
 export type SortableByName = Required<{ name: string }>;
+import {
+  FlatConfigOption,
+  FlatConfigOptionGroup,
+} from "../components/steps/Configs/SlideOut";
 
 /**
  * Returns changed object values (does NOT do nested comparisons)
@@ -41,4 +45,24 @@ export function removeEmpty(obj: any) {
 export function deepCopy(obj: any) {
   if (!obj) return obj;
   return JSON.parse(JSON.stringify(obj));
+}
+
+/**
+ * Displays a concise list of options
+ * @param displayList
+ */
+export function printDisplayList(
+  displayList: (FlatConfigOptionGroup | FlatConfigOption)[],
+  tabPrefix = "",
+) {
+  displayList.map((o) => {
+    if ("items" in o) {
+      const option = o as FlatConfigOptionGroup;
+      console.log(`${tabPrefix}${option.groupName}`);
+      printDisplayList(option.items, tabPrefix + "\t");
+    } else {
+      const option = o as FlatConfigOption;
+      console.log(`${tabPrefix}${option.name}`);
+    }
+  });
 }

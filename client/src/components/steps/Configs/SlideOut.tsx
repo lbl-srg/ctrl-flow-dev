@@ -14,7 +14,7 @@ import {
   ConfigValues,
 } from "../../../utils/modifier-helpers";
 import { getContext } from "../../../utils/interpreter";
-import { removeEmpty } from "../../../utils/utils";
+import { removeEmpty, printDisplayList } from "../../../utils/utils";
 
 import "../../../styles/components/config-slide-out.scss";
 
@@ -252,6 +252,8 @@ const SlideOut = ({
       allOptions,
       evaluatedValues,
     });
+
+  printDisplayList(displayedOptions);
 
   useEffect(() => {
     stopLoading();
