@@ -11,6 +11,8 @@ import RootStore from "../../src/data";
 import { TemplateInterface, OptionInterface } from "../../src/data/template";
 import { Expression } from "../../src/utils/expression-helpers";
 import { buildModifiers } from "../../src/utils/modifier-helpers";
+import { getContext } from "../../src/utils/interpreter";
+import { getOptionTree } from "../../src/components/steps/Configs/SlideOut";
 
 /*
  * TODO: swap in methods from src/utils/modifier-helpers and expression helpers instead of these
@@ -165,5 +167,30 @@ describe("package.json loading", () => {
     );
 
     expect(datAllMods.length).toBeGreaterThan(0);
+  });
+});
+
+let template: TemplateInterface | null = null;
+let configID = "REASSIGN!";
+
+describe("Specific Modelica Bulidings visibility tests", () => {
+  beforeAll(() => {
+    const store = new RootStore();
+
+    allOptions = store.templateStore.getAllOptions();
+    allTemplates = store.templateStore.getAllTemplates();
+    template = allTemplates["Buildings.Templates.AirHandlersFans.VAVMultiZone"];
+    templateOption = allOptions[template.modelicaPath] as OptionInterface;
+    // TODO: make config and get config ID
+    // make config
+    // get config ID
+  });
+
+  it("Correctly applies redeclare modifiers", () => {
+    const { configModifiers, evaluatedValues } = getContext(
+      template as TemplateInterface,
+      configID,
+    );
+    // TODO: getOptionTree()
   });
 });
