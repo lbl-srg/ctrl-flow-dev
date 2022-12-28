@@ -59,8 +59,8 @@ type SimpleDisplay = {
  */
 export function extractSimpleDisplayList(
   displayList: (FlatConfigOptionGroup | FlatConfigOption)[],
-  tabPrefix = "",
   print = false,
+  tabPrefix = "",
 ) {
   const simpleList: SimpleDisplay[] = [];
   displayList.map((o) => {
@@ -70,7 +70,11 @@ export function extractSimpleDisplayList(
       if (print) {
         console.log(`${tabPrefix}${option.groupName}`);
       }
-      oSimple.items = extractSimpleDisplayList(option.items, tabPrefix + "\t");
+      oSimple.items = extractSimpleDisplayList(
+        option.items,
+        print,
+        tabPrefix + "\t",
+      );
     } else {
       const option = o as FlatConfigOption;
       const oSimple = { path: o.modelicaPath } as SimpleDisplay;

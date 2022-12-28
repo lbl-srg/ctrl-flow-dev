@@ -22,7 +22,7 @@ import {
  *
  * value 'keys' have the following format:
  *
- * <modelica-path>-<instance-path>
+ * `${modelicaPath}-${instancePath}`
  *
  * @param template
  * @param configId
@@ -31,9 +31,10 @@ import {
 export const getContext = (
   template: TemplateInterface,
   configId: string | undefined,
+  configStore: any,
+  templateStore: any,
+  projectStore: any,
 ) => {
-  const { configStore, templateStore, projectStore } = useStores();
-
   // get all options for reference
   const allOptions: { [key: string]: OptionInterface } =
     templateStore.getAllOptions();

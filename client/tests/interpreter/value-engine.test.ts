@@ -122,11 +122,10 @@ const buildMods = (
 let allOptions: { [key: string]: OptionInterface } = {};
 let allTemplates: { [key: string]: TemplateInterface } = {};
 let templateOption: OptionInterface | undefined;
+const store = new RootStore();
 
 describe("package.json loading", () => {
   beforeAll(() => {
-    const store = new RootStore();
-
     allOptions = store.templateStore.getAllOptions();
     allTemplates = store.templateStore.getAllTemplates();
     const template =
@@ -175,8 +174,6 @@ let configID = "REASSIGN!";
 
 describe("Specific Modelica Bulidings visibility tests", () => {
   beforeAll(() => {
-    const store = new RootStore();
-
     allOptions = store.templateStore.getAllOptions();
     allTemplates = store.templateStore.getAllTemplates();
     template = allTemplates["Buildings.Templates.AirHandlersFans.VAVMultiZone"];
@@ -190,7 +187,9 @@ describe("Specific Modelica Bulidings visibility tests", () => {
     const { configModifiers, evaluatedValues } = getContext(
       template as TemplateInterface,
       configID,
+      store.configStore,
+      store.templateStore,
+      store.projectStore,
     );
-    // TODO: getOptionTree()
   });
 });

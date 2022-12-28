@@ -234,7 +234,7 @@ const SlideOut = ({
   stopLoading,
   close,
 }: ConfigSlideOutProps) => {
-  const { configStore, templateStore } = useStores();
+  const { configStore, templateStore, projectStore } = useStores();
   const [selectedValues, setSelectedValues] = useState<ConfigValues>({
     ...selections,
     ...projectSelections,
@@ -242,7 +242,13 @@ const SlideOut = ({
 
   const configName = config.name as string;
 
-  const { configModifiers, evaluatedValues } = getContext(template, config.id);
+  const { configModifiers, evaluatedValues } = getContext(
+    template,
+    config.id,
+    configStore,
+    templateStore,
+    projectStore,
+  );
 
   const displayedOptions: (FlatConfigOptionGroup | FlatConfigOption)[] =
     getOptionTree(templateOptions, "root", "", false, templateOptions[0].name, {
