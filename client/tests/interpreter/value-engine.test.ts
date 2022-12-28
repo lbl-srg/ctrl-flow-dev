@@ -118,7 +118,7 @@ const buildMods = (
 };
 
 let allOptions: { [key: string]: OptionInterface } = {};
-let allTemplates: TemplateInterface[] = [];
+let allTemplates: { [key: string]: TemplateInterface } = {};
 let templateOption: OptionInterface | undefined;
 
 describe("package.json loading", () => {
@@ -127,10 +127,8 @@ describe("package.json loading", () => {
 
     allOptions = store.templateStore.getAllOptions();
     allTemplates = store.templateStore.getAllTemplates();
-    const template = allTemplates.find(
-      (t) =>
-        t.modelicaPath === "Buildings.Templates.AirHandlersFans.VAVMultiZone",
-    ) as TemplateInterface;
+    const template =
+      allTemplates["Buildings.Templates.AirHandlersFans.VAVMultiZone"];
     templateOption = allOptions[template.modelicaPath] as OptionInterface;
   });
 
