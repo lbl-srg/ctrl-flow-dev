@@ -6,7 +6,6 @@
  * - user selections for the template and project
  */
 
-import { useStores } from "../data";
 import { OptionInterface, TemplateInterface } from "../data/template";
 import {
   applyOptionModifier,
