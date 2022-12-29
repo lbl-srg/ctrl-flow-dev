@@ -241,6 +241,10 @@ export function isExpression(item: any): boolean {
   return !!item?.operator;
 }
 
+export function evaluateSimpleExprssion(expression: Expression) {
+  return expression;
+}
+
 export function evaluateExpression(
   expression: any,
   scope: string,

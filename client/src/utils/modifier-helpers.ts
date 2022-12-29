@@ -9,7 +9,7 @@ import {
 } from "./expression-helpers";
 
 export type Modifiers = {
-  [key: string]: Expression;
+  [key: string]: { expression: Expression; final: boolean };
 };
 
 export interface ConfigValues {
@@ -62,6 +62,8 @@ function addToModObject(
       }
     }
   });
+
+  return modifiers;
 }
 
 /**
@@ -71,7 +73,7 @@ function addToModObject(
  *
  * @param option: option to grab modifiers from
  * @param baseInstancePath: current scope to append to the front of modifier instance paths
- * @param modifiers: modifier object that gets mutated
+ * @param modifiers: modifier object
  * @param options: all option reference
  * @returns
  */
@@ -83,36 +85,47 @@ function updateModifiers(
   redeclaredType?: string,
 ) {
   if (option === undefined) {
-    return; // TODO: not sure this should be allowed - failing with 'Medium'
+    return modifiers; // TODO: not sure this should be allowed - failing with 'Medium'
   }
+  let newMods: Modifiers = modifiers;
   const optionModifiers = option.modifiers as Modifiers;
   const childOptions = option.options;
+  const optionName = option.modelicaPath.split(".").pop();
+
   // grab the current options modifiers
   if (optionModifiers) {
-    addToModObject(optionModifiers, baseInstancePath, modifiers, options);
+    newMods = addToModObject(
+      optionModifiers,
+      baseInstancePath,
+      modifiers,
+      options,
+    );
   }
 
+  // if a redeclared type, directly add as a modifier
   if (redeclaredType) {
+    // TODO: apply 'final'!
     const redeclareMod: Modifiers = {
-      [baseInstancePath]: buildSimpleExpression(redeclaredType),
+      [`${baseInstancePath}.${optionName}`]: {
+        expression: buildSimpleExpression(redeclaredType),
+        final: false,
+      },
     };
-    // TODO: I'm not handling base path and instance path building
-    // correctly
-    addToModObject(redeclareMod, "", modifiers, options);
+    const newModsFromRedeclare = addToModObject(redeclareMod, "", {}, options);
+    newMods = { ...newMods, ...newModsFromRedeclare };
   }
 
   // if this is a definition - visit all child options and grab modifiers
   if (childOptions) {
-    const name = option.modelicaPath.split(".").pop();
     const newBase = option.definition
       ? baseInstancePath
-      : [baseInstancePath, name].filter((p) => p !== "").join(".");
+      : [baseInstancePath, optionName].filter((p) => p !== "").join(".");
 
     if (option.definition) {
       childOptions.map((path) => {
         const childOption = options[path] as OptionInterface;
 
-        updateModifiers(childOption, newBase, modifiers, options);
+        newMods = updateModifiers(childOption, newBase, newMods, options);
       });
     } else {
       // this is a parameter (either replaceable or enum) - grab the type and its modifiers
@@ -121,18 +134,25 @@ function updateModifiers(
         ? options[redeclaredType]
         : options[option.type];
       if (typeOption && typeOption.options) {
-        // add modifiers from type option
         if (typeOption.modifiers) {
-          addToModObject(typeOption.modifiers, newBase, modifiers, options);
+          const newTypeMods = addToModObject(
+            typeOption.modifiers,
+            newBase,
+            {},
+            options,
+          );
+          newMods = { ...newMods, ...newTypeMods };
         }
         typeOption.options.map((path) => {
           const childOption = options[path] as OptionInterface;
 
-          updateModifiers(childOption, newBase, modifiers, options);
+          newMods = updateModifiers(childOption, newBase, newMods, options);
         });
       }
     }
   }
+
+  return newMods;
 }
 
 /**
@@ -345,17 +365,17 @@ export function applyRedeclareChoices(
   modifiers: Modifiers,
   allOptions: { [key: string]: OptionInterface },
 ) {
-  const optionKeys: string[] = Object.keys(values);
   let updatedModifiers: Modifiers = deepCopy(modifiers);
 
   Object.entries(values).map(([key, redeclaredType]) => {
     if (redeclaredType !== null) {
       const [modelicaPath, instancePath] = key.split("-");
+      const basePath = instancePath.split(".").slice(0, -1).join();
       // Merge and overwrite based on the selected/redeclared option
-      updateModifiers(
+      updatedModifiers = updateModifiers(
         allOptions[modelicaPath],
-        instancePath,
-        modifiers,
+        basePath,
+        updatedModifiers,
         allOptions,
         redeclaredType,
       );
