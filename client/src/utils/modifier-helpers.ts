@@ -370,7 +370,9 @@ export function applyRedeclareChoices(
   Object.entries(values).map(([key, redeclaredType]) => {
     if (redeclaredType !== null) {
       const [modelicaPath, instancePath] = key.split("-");
-      const basePath = instancePath.split(".").slice(0, -1).join();
+      const basePath = instancePath
+        ? instancePath.split(".").slice(0, -1).join(".")
+        : "";
       // Merge and overwrite based on the selected/redeclared option
       updatedModifiers = updateModifiers(
         allOptions[modelicaPath],
