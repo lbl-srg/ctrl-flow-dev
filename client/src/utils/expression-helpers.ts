@@ -10,6 +10,13 @@ export type Expression = {
   operands: Array<Literal | Expression>;
 };
 
+export function buildSimpleExpression(value: any): Expression {
+  return {
+    operator: "none",
+    operands: [value],
+  };
+}
+
 /**
  * Resolves a symbol to its assigned value
  *

@@ -5,6 +5,7 @@ import {
   evaluateExpression,
   isExpression,
   resolveSymbol,
+  buildSimpleExpression,
 } from "./expression-helpers";
 
 export type Modifiers = {
@@ -64,8 +65,9 @@ function addToModObject(
 }
 
 /**
- * When given an option, adds that options modifiers to the provided modifier
- * object
+ * When given an option, adds that option's modifiers to the provided modifier
+ * object, descending into the downstream tree of related option to grab
+ * all related modifiers
  *
  * @param option: option to grab modifiers from
  * @param baseInstancePath: current scope to append to the front of modifier instance paths
@@ -78,16 +80,25 @@ function updateModifiers(
   baseInstancePath: string,
   modifiers: Modifiers,
   options: { [key: string]: OptionInterface },
+  redeclaredType?: string,
 ) {
   if (option === undefined) {
     return; // TODO: not sure this should be allowed - failing with 'Medium'
   }
   const optionModifiers = option.modifiers as Modifiers;
   const childOptions = option.options;
-
   // grab the current options modifiers
   if (optionModifiers) {
     addToModObject(optionModifiers, baseInstancePath, modifiers, options);
+  }
+
+  if (redeclaredType) {
+    const redeclareMod: Modifiers = {
+      [baseInstancePath]: buildSimpleExpression(redeclaredType),
+    };
+    // TODO: I'm not handling base path and instance path building
+    // correctly
+    addToModObject(redeclareMod, "", modifiers, options);
   }
 
   // if this is a definition - visit all child options and grab modifiers
@@ -105,8 +116,10 @@ function updateModifiers(
       });
     } else {
       // this is a parameter (either replaceable or enum) - grab the type and its modifiers
-      // only use the 'type', not child options to fetch modifiers (default options)
-      const typeOption = options[option.type];
+      // Use the type OR the red 'type', not child options to fetch modifiers (default options)
+      const typeOption = redeclaredType
+        ? options[redeclaredType]
+        : options[option.type];
       if (typeOption && typeOption.options) {
         // add modifiers from type option
         if (typeOption.modifiers) {
@@ -301,9 +314,9 @@ export function applyVisibilityModifiers(
 }
 
 /**
- * Replaceable components can be swapped by either:
+ * Replaceable components can be redeclared by either:
  * - having a selection made by the user
- * - a redeclared modifier
+ * - a redeclare modifier
  *
  * Modifiers are collected by traversing the tree of related options, grabbing
  * each visited options modifiers and putting it in the global modifiers object
@@ -327,7 +340,7 @@ export function applyVisibilityModifiers(
  *
  * Also: a redeclare modifier (not included as a user selection) has the same behavior
  */
-export function getUpdatedModifiers(
+export function applyRedeclareChoices(
   values: ConfigValues,
   modifiers: Modifiers,
   allOptions: { [key: string]: OptionInterface },
@@ -335,24 +348,18 @@ export function getUpdatedModifiers(
   const optionKeys: string[] = Object.keys(values);
   let updatedModifiers: Modifiers = deepCopy(modifiers);
 
-  optionKeys.forEach((key) => {
-    if (values[key] !== null) {
+  Object.entries(values).map(([key, redeclaredType]) => {
+    if (redeclaredType !== null) {
       const [modelicaPath, instancePath] = key.split("-");
-      const option = allOptions[modelicaPath] as OptionInterface;
-
       // Merge and overwrite based on the selected/redeclared option
-      updatedModifiers = {
-        ...updatedModifiers,
-        ...buildModifiers(
-          option,
-          instancePath,
-          updatedModifiers,
-          allOptions,
-          false,
-        ),
-      };
+      updateModifiers(
+        allOptions[modelicaPath],
+        instancePath,
+        modifiers,
+        allOptions,
+        redeclaredType,
+      );
     }
   });
-
   return updatedModifiers;
 }

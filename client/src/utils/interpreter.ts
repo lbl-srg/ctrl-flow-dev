@@ -11,21 +11,23 @@ import {
   applyOptionModifier,
   applyValueModifiers,
   Modifiers,
-  getUpdatedModifiers,
+  applyRedeclareChoices,
   ConfigValues,
 } from "./modifier-helpers";
 
 /**
- * For a given configuration, returns the current context
- * of values
+ * For a given configuration, returns config modifiers and evaluated values
  *
- * value 'keys' have the following format:
+ * configModifiers is all the instance data present in the template
+ * evaluated Values is a cache of currently resolved values
+ *
+ * evaluatedValue 'keys' have the following format:
  *
  * `${modelicaPath}-${instancePath}`
  *
  * @param template
  * @param configId
- * @returns
+ * @returns { configModifiers, evaluatedValues }
  */
 export const getContext = (
   template: TemplateInterface,
@@ -51,7 +53,7 @@ export const getContext = (
     templateStore.getOptionsForTemplate(template?.modelicaPath);
 
   // template defaults + selections. First pass
-  const configModifiers: Modifiers = getUpdatedModifiers(
+  const configModifiers: Modifiers = applyRedeclareChoices(
     selectedValues,
     templateModifiers,
     templateStore._options,
@@ -71,7 +73,7 @@ export const getContext = (
     ...projectEvaluatedValues,
   };
 
-  const context = getUpdatedModifiers(
+  const context = applyRedeclareChoices(
     { ...evaluatedValues, ...selectedValues },
     configModifiers,
     templateStore._options,

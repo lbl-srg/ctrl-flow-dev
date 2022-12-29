@@ -10,7 +10,12 @@
 import RootStore from "../../src/data";
 import { TemplateInterface, OptionInterface } from "../../src/data/template";
 import { Expression } from "../../src/utils/expression-helpers";
-import { buildModifiers } from "../../src/utils/modifier-helpers";
+import {
+  applyPathModifiers,
+  applyRedeclareChoices,
+  buildModifiers,
+  ConfigValues,
+} from "../../src/utils/modifier-helpers";
 import { getContext } from "../../src/utils/interpreter";
 import { getOptionTree } from "../../src/components/steps/Configs/SlideOut";
 
@@ -169,10 +174,10 @@ describe("package.json loading", () => {
   });
 });
 
-let template: TemplateInterface | null = null;
+let template: TemplateInterface | undefined;
 let configID = "REASSIGN!";
 
-describe("Specific Modelica Bulidings visibility tests", () => {
+describe("Basic Context Generation", () => {
   beforeAll(() => {
     allOptions = store.templateStore.getAllOptions();
     allTemplates = store.templateStore.getAllTemplates();
@@ -181,15 +186,69 @@ describe("Specific Modelica Bulidings visibility tests", () => {
     // TODO: make config and get config ID
     // make config
     // get config ID
+    store.configStore.add({ name: "TestConfig" });
+    const [config] = store.configStore.configs;
+    configID = config.id;
   });
 
-  it("Correctly applies redeclare modifiers", () => {
+  it("Config Modifiers and evaluatedValues are generated", () => {
     const { configModifiers, evaluatedValues } = getContext(
       template as TemplateInterface,
       configID,
       store.configStore,
       store.templateStore,
       store.projectStore,
+    );
+    expect(configModifiers).toBeDefined();
+    expect(evaluatedValues).toBeDefined();
+  });
+});
+
+describe("Modifier-helper tests", () => {
+  beforeAll(() => {
+    allOptions = store.templateStore.getAllOptions();
+    allTemplates = store.templateStore.getAllTemplates();
+    template = allTemplates["Buildings.Templates.AirHandlersFans.VAVMultiZone"];
+    templateOption = allOptions[template.modelicaPath] as OptionInterface;
+    // TODO: make config and get config ID
+    // make config
+    // get config ID
+    store.configStore.add({ name: "TestConfig" });
+    const [config] = store.configStore.configs;
+    configID = config.id;
+  });
+
+  it("Apply redeclare updates configModifiers", () => {
+    const { configModifiers, evaluatedValues } = getContext(
+      template as TemplateInterface,
+      configID,
+      store.configStore,
+      store.templateStore,
+      store.projectStore,
+    );
+
+    const testParamModPath =
+      "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo";
+
+    const mockSelections: ConfigValues = {
+      [testParamModPath]: "Buildings.Templates.Components.Coils.None",
+    };
+
+    const newMods = applyRedeclareChoices(
+      mockSelections,
+      configModifiers,
+      allOptions,
+    );
+
+    const [optionPath, instancePath] = testParamModPath.split("-");
+    // A number of things should have been updated, but I'm just going to
+    // test the base parameter (coiCoo) and one nested parameter (coiCoo.typ)
+    expect(newMods[instancePath]).toEqual(
+      "Buildings.Templates.Components.Coils.None",
+    );
+
+    expect(configModifiers[`${testParamModPath}.typ`]).toEqual(
+      "Buildings.Templates.Components.Coils.None",
     );
   });
 });
