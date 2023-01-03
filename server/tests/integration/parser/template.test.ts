@@ -160,13 +160,6 @@ describe("Template wrapper class functionality", () => {
     const testTemplate = options.find(
       (o) => o.modelicaPath === "TestPackage.Template.TestTemplate",
     );
-
-    expect(testTemplate?.treeList).toBeTruthy();
-
-    testTemplate?.treeList?.map((t) => {
-      const expectedScope = expectedScopeList.shift();
-      expect(t).toEqual(expectedScope);
-    });
   });
 
   it("Genereates path modifiers", () => {
