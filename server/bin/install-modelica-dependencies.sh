@@ -13,6 +13,6 @@ cd modelica-buildings
 git apply $parent_path/bin/linkage-keyword.patch
 
 cd ../modelica-json
-git apply $parent_path/bin/ignore-cert.patch
+git apply $parent_path/bin/maven-install.patch
 make install
 make compile
