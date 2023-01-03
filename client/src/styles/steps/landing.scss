@@ -1,5 +1,5 @@
 main.landing {
-  padding: var(--spacing-xl) var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-lg);
 
   ul.components {
     display: flex;
@@ -22,4 +22,16 @@ main.landing {
   .cta button {
     padding: var(--spacing);
   }
+}
+
+.header-one {
+  
+}
+
+.header-two {
+  font-weight: var(--font-weight-medium);
+}
+
+.header-three {
+  color: #007681;
 }

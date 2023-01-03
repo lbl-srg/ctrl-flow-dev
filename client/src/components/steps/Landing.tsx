@@ -3,6 +3,8 @@ import EditDetailsModal from "../modal/EditDetailsModal";
 import OnboardingModal from "../modal/OnboardingModal";
 import { useState, Fragment } from "react";
 
+import PageHeader from "../PageHeader";
+
 import "../../styles/steps/landing.scss";
 
 // step 0
@@ -22,34 +24,38 @@ function Landing() {
 
       <OnboardingModal />
 
+      <PageHeader headerText="" showLogo={true} />
+
       <main className="landing">
         <header>
-          <h1>Welcome to Lawrence Berkley National Labs</h1>
-          <h2>HVAC Controls Design Tool</h2>
+          <h1 className="header-one">Welcome to Lawrence Berkley National Labs</h1>
+          <h2 className="header-two">ctrl-flow</h2>
+          <h3 className="header-three">High Performance Controls Design Tool</h3>
         </header>
 
         <article>
           <div className="row">
             <div className="col-md-7 col-xs-12">
               {/* TODO: this needs localized */}
-              <h3>HVAC Controls Design Tool</h3>
+              <h3 className="header-three">High Performance Controls Design Tool</h3>
               <p>
-                The Controls Design Tool allows you to design high performance
-                building control systems. By inputting your design selections
-                and settings, the tool will provide you with the files you need
-                for your project including:
+                Writing a detailed and accurate control sequence is hard to do!
+                This tool makes it easy to design high performance control sequences following ASHRAE Guideline 36 and best practices.
+                After inputting project details, the tool will produce a detailed sequence of operations document.
+                You will have the option to download this document with or without the instructional text.
               </p>
 
-              <ul>
+              {/*<ul>
                 <li>Detailed sequence</li>
                 <li>Points lists</li>
                 <li>Controls diagrams</li>
                 <li>Additional files to assist with modeling and deployment</li>
-              </ul>
+              </ul>*/}
 
               <p>
                 This tool has been developed for the US Department of Energy and
                 includes use of the sequence from ASHRAE Guideline 36.
+                ASHRAE is not endorsing or supporting the use of this tool.
               </p>
             </div>
 
