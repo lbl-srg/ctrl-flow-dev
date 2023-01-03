@@ -106,7 +106,8 @@ function getEvaluatedValues(
       currentScope = scope ? `${scope}.${instance}` : instance;
     }
 
-    //
+    // check if the current option needs to be swapped based
+    // on modifiers if it is a replaceable
     if (option.replaceable) {
       option = applyOptionModifier(
         option,

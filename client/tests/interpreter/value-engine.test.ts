@@ -217,6 +217,20 @@ describe("Modifier-helper tests", () => {
     configID = config.id;
   });
 
+  it("Correctly builds 'instance paths' in evaluated values", () => {
+    const { configModifiers, evaluatedValues } = getContext(
+      template as TemplateInterface,
+      configID,
+      store.configStore,
+      store.templateStore,
+      store.projectStore,
+    );
+
+    const expectedPath = "coiHeaPre.hex.use_Q_flow_nominal";
+
+    expect(expectedPath in evaluatedValues).toBeTruthy();
+  });
+
   it("Apply redeclare updates configModifiers", () => {
     const { configModifiers, evaluatedValues } = getContext(
       template as TemplateInterface,
@@ -233,13 +247,13 @@ describe("Modifier-helper tests", () => {
       [testParamModPath]: "Buildings.Templates.Components.Coils.None",
     };
     const [optionPath, instancePath] = testParamModPath.split("-");
-
     const newMods = applyRedeclareChoices(
       mockSelections,
       configModifiers,
       allOptions,
     );
 
+    //
     // A number of things should have been updated, but I'm just going to
     // test the base parameter (coiCoo) and one nested parameter (coiCoo.typ)
     expect(newMods[instancePath].expression.operands[0]).toEqual(
@@ -249,12 +263,45 @@ describe("Modifier-helper tests", () => {
     expect(newMods[`${instancePath}.typ`].expression.operands[0]).toEqual(
       "Buildings.Templates.Components.Types.Coil.None",
     );
-
-    // Test that previous modifier remain unmutated
-    // TODO: this is failing and it should NOT. applyRedeclareChoices does a deep
-    // copy of the passed in 'configModifiers' so I'm not sure why this is happening
-    // expect(
-    //   configModifiers[`${instancePath}.typ`].expression.operands[0],
-    // ).toEqual("Buildings.Templates.Components.Types.Coil.WaterBasedCooling");
   });
 });
+
+// describe("Option Visibility Tests", () => {
+//   beforeAll(() => {
+//     allOptions = store.templateStore.getAllOptions();
+//     allTemplates = store.templateStore.getAllTemplates();
+//     template = allTemplates["Buildings.Templates.AirHandlersFans.VAVMultiZone"] as TemplateInterface;
+//     templateOption = allOptions[template.modelicaPath] as OptionInterface;
+//     // TODO: make config and get config ID
+//     // make config
+//     // get config ID
+//     store.configStore.add({ name: "TestConfig" });
+//     const [config] = store.configStore.configs;
+//     configID = config.id;
+//   });
+
+//   it("Basic DisplayOption generation", () => {
+//     const templateOptions: OptionInterface[] =
+//       store.templateStore.getOptionsForTemplate(template?.modelicaPath as string);
+//     const templateInterface = template as TemplateInterface;
+
+//     const { configModifiers, evaluatedValues } = getContext(
+//       templateInterface,
+//       configID,
+//       store.configStore,
+//       store.templateStore,
+//       store.projectStore,
+//     );
+
+//     getOptionTree(
+//       templateOptions,
+//       "root",
+//       "",
+//       false,
+//       templateOptions[0].name, {
+//         template: templateInterface,
+//         selectedValues:
+//       }
+//     )
+//   });
+// });
