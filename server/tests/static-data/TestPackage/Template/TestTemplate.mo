@@ -37,7 +37,13 @@ model TestTemplate "Test Template"
           "Second Test Component"),
         choice(
           redeclare replaceable TestPackage.Component.ThirdComponent selectable_component
-          "Third Test Component"))
+          "Third Test Component"),
+        choice(
+          redeclare replaceable TestPackage.Component.FourthComponent selectable_component(
+            redeclare final TestPackage.Component.SecondComponent replaceable_param 
+          )
+          "Fourth Test Component")
+        )
       );
 
   /*
@@ -124,7 +130,7 @@ model TestTemplate "Test Template"
 
   // redclare modifier params
   TestPackage.Component.FourthComponent redeclare_param_01(
-      redeclare final TestPackage.Component.SecondComponent replaceable_param
+      redeclare final TestPackage.Component.SecondComponent replaceable_param 
     )
     "First Param to test component redeclares"
     annotation(Dialog(enable=true));
