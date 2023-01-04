@@ -12,6 +12,16 @@ import {
 } from "../../src/utils/expression-helpers";
 import { buildModifiers, Modifiers } from "../../src/utils/modifier-helpers";
 
+/**
+ * TODO:
+ *
+ * - finish instance path to option method
+ * - Integrate expression evaluation (start without redeclares and selections). Eventually integrate 'context'
+ * - finish symbol resolver method
+ * - Integrate redeclare modifier mechanism
+ * - Integrate selections
+ */
+
 const addToModObject = (
   newMods: { [key: string]: Expression },
   baseInstancePath: string,
@@ -319,22 +329,23 @@ describe("Path and value resolution without selections and then with selections"
       config as ConfigInterface,
       allOptions,
     );
+
+    const optionPath = instancePathToOption("TAirRet.isDifPreSen", context);
+    expect(optionPath).toEqual(
+      "Buildings.Templates.Components.Interfaces.PartialSensor.isDifPreSen",
+    );
   });
+
+  it("Maps an instance path to an option path modified by in template redeclares", () => {});
+
+  it("Maps an instance path to an option path modified by selections", () => {});
 
   /**
    * This is a test of the simplist values to get, parameters at
    * the root of a template that are assigned a literal. This also tests
    * symbol resolution
    */
-  it("Context has root literal types assigned", () => {
-    const context = new ConfigContext(
-      template as TemplateInterface,
-      config as ConfigInterface,
-      allOptions,
-    );
-
-    instancePathToOption("coiHeaPre.val", context);
-  });
+  it("Context has root literal types assigned", () => {});
 
   it("Fetches the correct value for a redeclared type", () => {});
 });
