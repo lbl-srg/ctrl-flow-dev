@@ -7,6 +7,7 @@ export interface TemplateInterface {
   name: string;
   systemTypes: string[];
   options?: string[];
+  pathModifiers?: { [key: string]: string | undefined };
 }
 
 export interface OptionInterface {
