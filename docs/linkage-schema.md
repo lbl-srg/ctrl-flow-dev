@@ -3,7 +3,7 @@
 Linkage Schema is the intermediate format extracted by the parser from modelica-json to narrowly capture what is necessary to:
 
 1. Render available input from a template
-2. Record input to be used to write out a completed template in modelica
+2. Record input to for use to generate a completed modelica template
 
 ## Overview of Data Types
 
@@ -11,9 +11,9 @@ Read-Only Data types (static data extracted from modelica packages)
 
 - `SystemType`: template category
 - `Template`: Modelica Template
-- `Option`: a node of info from the template that either specifies how to render a dropdown or bit of UI, or links to a list of child options
-- `ScheduleOption`: Like an `Option` but it also has `ScheduleCategory` categories
-- `ScheduleCategory`: Categories for `ScheduleOption`
+- `Option`: a node of info from the template that either specifies how to render a dropdown or bit of UI, or links to a list of child `Option`s
+- `ScheduleOption`: Like an `Option` but it also has a list of `ScheduleCategory`s
+- `ScheduleCategory`: Category for `ScheduleOption`
 
 Write Data types (data created from user input):
 
@@ -35,15 +35,15 @@ sequenceDiagram
     modelica_json->>BE: Modelica-JSON
     BE->>FE: RO Linkage Schema
     FE->> BE: Linkage Schema (Selections)
+    BE->>doc_pipeline: Linkage Schema
+    doc_pipeline->>FE: Sequence Document
+    Note over modelica_json,BE: Planned
     BE->>BE: Write Selections to Modelica
     BE->>modelica_json: Modelica
-    modelica_json->>FE: modelica-json
-    modelica_json->>FE: SVGs
-    BE->>doc_pipeline: Linkage Schema
-    doc_pipeline->>FE: docx
+    modelica_json->>FE: all other artifacts
 ```
 
-## Modelica Paths as UUIDs
+## Modelica Path
 
 The parser extracts portions of a template and uses `modelicaPath`s as a unique identifier for that portion of a template. This is leveraging modelica's path system that uses dot access to indicate where to find a given piece of modelica.
 
@@ -73,36 +73,51 @@ export interface SystemTypeInterface {
 ### Templates
 
 Holds meta info about a given template. Templates have a one to many relationship with SystemTypes.
+
 `modelicaPath`: the UUID for the template, as well as the identifier for the entrypoint option in the options table.
 
 `systemTypes`: this is an in-order hierarchical list of categories. Currently modelica-buildings only has categories one level deep, but we need to support multiple levels.
 
+`pathModifiers`: Templates have implementations of components that contain `outer` declarations, with the template implementing the `inner` portion. This ends up as a map, mapping from the `outer` path segment to the `inner` path segment.
+
 ```typescript
 export interface TemplateInterface {
-  modelicaPath: string; // unique identifier
-  name: string; // user facing string
-  systemTypes: string[]; // in-order list of system type modelicaPaths
+  modelicaPath: string;
+  pathModifiers: { [key: string]: string };
+  scheduleOptionPaths: string[];
+  systemTypes: string[];
+  name: string; // Class Description
 }
 ```
+
+For example, `VAVBoxReheat` has the following modifiers:
+
+```json
+"pathModifiers": {
+  "ctl.damVAV": "damVAV",
+  "ctl.coiHea": "coiHea",
+  "ctl.datAll": "datAll"
+},
+```
+
+In an evaluation engine, all path segments that reference `ctl.damVAV` get replaced with `damVAV` when using the `VAVBoxReheat` template.
 
 ### Options
 
 An option represents a 'node' of info from the template that _could_ be rendered into visible UI in the front-end.
 
-`visible`: Options are a modal data structure that can behave in two ways:
-
-1. If `visible` is true, it will be rendered with childOptions rendered in a dropdown list
-2. If `visible` is false, attempt to render each childOption.
-
+```
+`visible`: if 'true' this option can be rendered depending on the value of 'enable'
 `type`: a modelica path to a specific type OR a primitive type ('String', 'Number', 'Boolean')
-`value`: If a default value is assigned in the template it is represented here. This assignment will have the same type as 'type'.
-`valueExpression`: Default values can be assigned by expression (e.g. `if param is > 5 true else false`).
+`value`: the 'value' of an option. What value means depends on the template node (is it a replaceable, a definition, a primitive?)
 `enable`: An expression to determine whether or not an option is enabled.
-
-NOTE: expression integration is ongoing so `valueExpression` and `enable` are always null. When the parser starts extacting expressions it will do so in a TBD `Expression` format used for both `valueExpression` and `enable`.
+`modifiers`: instance data that can overwrite the values present in an `Option`.
+`options`: available selections for a given option OR
+`choiceModifiers`: some instance data is only applied if a specific choice is made. Those modifiers are included grouped by the 'choice' path (which )
+```
 
 ```typescript
-interface OptionInterface {
+export interface OptionInterface {
   modelicaPath: string;
   type: string;
   name: string;
@@ -111,20 +126,31 @@ interface OptionInterface {
   tab?: string;
   visible?: boolean;
   options?: string[];
-  childOptions?: OptionInterface[];
-  valueExpression?: any; //
-  enable?: any; // { modelicaPath: string; expression: string };
+  enable?: Expression;
+  modifiers: { [key]: { expression: Expression; final: boolean } };
+  choiceModifiers?: { [key: string]: Modifiers };
+  definition: boolean;
+  replaceable: boolean;
 }
 ```
 
-Options have a recursive structure with options having options. To traverse the entire list of options for a given template:
+Options have a recursive structure with each `Option` potentially having child `options`.
 
-1. Lookup the entrypoint option of a template by finding the option with a matching modelica path
-2. For each childOption, visit that option and each of it's childOptions
+This one-to-many relationship creates the tree representing the nodes that make up a template.
 
-TODO: there is an open question about separating option groups and single options as a data type.
+### Expressions
 
-### Expression - TBD
+```typescript
+export type Literal = boolean | string | number;
+
+export type Expression = {
+  operator: "<>" | "!=" | "if" | "else" | "if_elseif" | "none";
+  operands: Array<Literal | Expression>;
+};
+```
+
+`Operator`: a string indicating which operation. `none` is a special operator indiciating the operand is a `Literal` that requires no evaluation.
+`Operands`: a list that can either be a literal value (like the number `4`) or another expression to resolve
 
 ### Schedule Table reorganization
 
@@ -166,7 +192,7 @@ From this example table:
 
 ### Project
 
-`Project` contains metadata about a project. The linkage-widget store is setup to handle setting an active project, however UI has not been setup yet to switch the active project.
+`Project` contains metadata about a project
 
 ```typescript
 export interface ProjectDetailInterface {
@@ -204,18 +230,6 @@ export interface Config {
 
 ### Selections
 
-Each input in the linkage widget gets captured using a selection.
-
-`name`: the modelica path of an option
-`value`: the selection/value
-
-TODO: this data type may need to be expanded to include `type` as `value` will need to hold the following types of input:
-
-- A modelica path for a component/enum selected in a dropdown
-- strings
-- numbers
-- booleans
-
 ```typescript
 export interface Selection {
   path: string;
@@ -223,14 +237,21 @@ export interface Selection {
 }
 ```
 
-### FullConfig
+When a user makes a selection related to a component in `ctrl-flow`, (e.g., when selecting 'Fan array'for a component of the Multi-zone ) the following key-value pair is created:
 
-```typescript
-export interface FullConfig {
-  id: string;
-  config: string; // config id
-  tag: string;
-  controlPoints: Selection[];
-  mechanicalPoints: Selection[];
+```json
+{
+  "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut-secOutRel.secOut": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure"
 }
 ```
+
+The 'key' is composed of two parts, a modelica path and an instance path. The 'value' of the component is a modelica path.
+
+```
+modelicaPath: Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut
+instancePath: secOutRel.secOut
+
+value: "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure"
+```
+
+The instance path is required as components can be re-used within the same template.
