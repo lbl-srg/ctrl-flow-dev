@@ -121,7 +121,7 @@ export interface OptionInterface {
   modelicaPath: string;
   type: string;
   name: string;
-  value?: string | boolean | null | number;
+  value?: string | boolean | null | number | expression;
   group?: string;
   tab?: string;
   visible?: boolean;

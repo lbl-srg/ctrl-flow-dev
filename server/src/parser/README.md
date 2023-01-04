@@ -1,5 +1,7 @@
 # Modelica-JSON Parser
 
+This document outlines the structure and strategy of the modelica-json parser. The parser generates a normalized data set containing nodes of information about modelica-templates
+
 ## Modelica-JSON and Parser Strategy
 
 Modelica-JSON is a complete representation of the modelica grammar. The linkage parser is narrowly focused on extracting information relevant to modelica templates, and generating a format consumable by the front-end (FE) interpreter.
@@ -65,13 +67,17 @@ This elements gets put in the type store at the path: `ExamplePackage.ExampleMod
 
 This extend element get added to the type store with the following path: `ExamplePackage.ExampleModel.__extend`. This is a purely internal reference that is not exposed in linkage schema (and is likely not necessary since input groups hold onto a reference to the `InputGroupExtend` reference).
 
-3. `parameter Example.Component component`
+3.  '''
+    parameter Example.Component component(
+    componentParam=5
+    )
+    '''
 
-This element gets added as type `Input` at the path `ExamplePackage.ExampleModel.component`
+This element gets added as type an element type `Input` at the path `ExamplePackage.ExampleModel.component`. This description also has a `componentParam=5`. This is unpacked as a modifier with an 'instance path' of `component.componentParam`. See the modifier section for more details.
 
-4. `parameter String id`
+4. `parameter String id = "An example assignment"`
 
-This element gets added to the type store as type `Input` at the path `ExamplePackage.ExampleModel.id`
+This element gets added to the type store as type `Input` at the path `ExamplePackage.ExampleModel.id`. The `Input` param 'value' gets assigned as a simple expression.
 
 #### Export Format
 
@@ -88,6 +94,146 @@ The template class serves two purposes:
 
 Refer to the [linkage-schema.md doc](../../../docs/linkage-schema.md)
 
-## Simplifying Modelica for ctrl-flow
+## Modifiers
 
-A goal of the parser is to bake in features of modelica to simplify interpretation on the FE.
+Modifiers are a broad construct in modelica-json that encompasses all assignments. Any place with an `=` sign (including annotations) will result in the generation of a `Modification`. There is an internal representation and then a serializable format.
+
+### Internal Use
+
+Modifiers have the following parameters:
+
+```typescript
+class Modifier {
+    name: string;
+    value: any;
+    modelicaPath: string;
+    modifiers: Modifier[];
+    redeclare: boolean;
+    final: boolean;
+}
+```
+
+```modelica
+parameter Boolean have_sen=true
+    "Set to true for sensor, false for direct pass through"
+    annotation (Evaluate=true, Dialog(group="Configuration"));
+```
+
+The above snippet creates several modifications.
+
+The assignement `have_sen=true` creates a modifier. `modelicaPath` is `have_sen`.
+
+The annotation creates multiple modifiers:
+
+- Modifier with name of `annotation`.
+- That modifier has nested modifiers `Evaluate`, and `Dialog`
+- `Dialog` has nested modifiers `Group` with a value of `configuration`
+
+The modification object is used throughout the parser where it attempts to do context aware behaviors. For example:
+- modifications generated from an annotation are typically separated out
+- A `choices` definition is separated out and explicitly separated into the defined component choices
+- The `have_sen` modifier is used to assign `value` for the parser `Element`
+
+### Linkage Schema Representation
+
+The template class 'flattens' all modifiers that have an assigned `modelicaPath` (instance path) into the following shape:
+
+```typescript
+{[key: modelicaPath]: {expression: Expression, final: boolean}}
+```
+
+If you have the following parameter declaration:
+
+```modelica
+Buildings.Templates.Components.Sensors.DifferentialPressure pAirSup_rel(
+    redeclare final package Medium = MediumAir,
+    final have_sen=true)
+    "Duct static pressure sensor";
+```
+
+It creates the following dictionary of modifiers on the option `Buildings.Templates.AirHandlersFans.VAVMultiZone.pAirSup_rel`:
+
+```json
+
+{
+    "modelicaPath": "Buildings.Templates.AirHandlersFans.VAVMultiZone.pAirSup_rel"
+    "modifiers": {
+        "Buildings.Templates.Components.Interfaces.PartialSensor.have_sen": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              true
+            ]
+        },
+        "final": true
+    }
+}
+```
+
+## Loading Modelica-JSON
+In [parser.ts](./parser.ts) `loadPackage` wwill attemp to load the provided path.
+
+### Template Entry Points
+There is a simple template discovery process with a grep for "__LinkageTemplate".
+
+The executed command looks as follows:
+
+```typescript
+const cmd = `grep -rl ${dirPath} -e "${TEMPLATE_IDENTIFIER}"`;
+```
+
+This command ultimately returns a list of files that contain the unique string.
+
+Each of these file paths then get 'loaded' in [parser.ts](./parser.ts) into a `File` instance, which starts the process of consuming modelica JSON and generating various types of parse `Element`s.
+
+
+### Type Store
+During the process of creating `Element`s, each element gets registered to a typestore using the modelica path.
+
+If an `Element` indicates that it is a type not currently in the TypeStore, it attempts to find the file and load it.
+
+**The type store attempts to expand any relative paths**. 
+
+Modelica supports relative pathing in multiple ways. The typestore generates a list of possible paths and iterates through the list in an attempt to find the file. The order of this list is meant to match modelicas priority order for search.
+
+### Loader
+
+The loader is used for package loading, but also for the lazy loading of types. When a type is provided, the loader attempts to take care of the fact that defintions can be nested:
+
+>"A.Nested.Model.Path"
+
+Could be found at `A/Nested/Model/Path.mo` OR `A/Nested/Model.mo` with `Path` defined inside of `Model`, etc.
+
+### MODELICAPATH
+
+There is an implementation of the `MODELICAPATH` concept in [loader.ts](./loader.ts) to allow searching multiple packages for a type defintion.
+
+## TODO
+
+### Modelica Standard Library
+Currently data is NOT being pulled in from the Modelica Standard Library.
+
+### Modifiers
+It is likely a good idea to try and separate out 'Modifier' like objects that have a modelicaPath vs. those that do not. `redeclare` and `final` only relate to modifiers that have a `modelicaPath`.
+
+### Template Entry Points
+
+The current approach is a simplistic and not very flexible. A more robust approach has been discussed:
+
+- Use a flag indicating that a package (in our case Buildings.Templates) is to be considered as the "root" for all template URIs, for instance:
+__Linkage(routing="root")
+- For each template class (for instance Buildings.Templates.AirHandlersFans.VAVMultiZone):
+__Linkage(routing="template")
+
+
+>The contract for the template developer will then be that the class URI dictates the explorer tree structure, starting from the "root" package (necessarily unique inside a library).
+So for instance the template Buildings.Templates.AirHandlersFans.VAVMultiZone with the above annotation would yield the following tree structure:
+>
+>AirHandlersFans
+>
+>└── VAVMultiZone
+>
+>Without having to add any annotation to the subpackage Buildings.Templates.AirHandlersFans.
+```
+
+To implement this, the grep command can continue to be used (by changing the template identifier), however the process for finding subpackages would need to be tweaked a bit in the parser since they are not explicitly listed from the grep command.
