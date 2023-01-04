@@ -2,7 +2,7 @@
 
 ## Modelica-JSON and Parser Strategy
 
-Modelica-JSON is a complete representation of the modelica grammar. The linkage parser is narrowly focused on extracting each declaration of user input, meaning that as a default unknown shapes in modelica-json is ignored (without throwing an error).
+Modelica-JSON is a complete representation of the modelica grammar. The linkage parser is narrowly focused on extracting information relevant to modelica templates, and generating a format consumable by the front-end (FE) interpreter.
 
 ## Structure
 
@@ -16,30 +16,32 @@ Modelica-JSON is a complete representation of the modelica grammar. The linkage 
 |------------------------------|
 |          Template            | <-- Helper class that interacts with `Element`s to extract linkage schema
 |------------------------------|
-|        Linkage-Schema        | <-- format consumable by front-end
+|        Linkage-Schema        | <-- format consumable by FE interpreter
 |------------------------------|
 
 ```
 
 ### Modelica-JSON
 
-The Modelieca-JSON format behaves a lot like an abstract syntax tree. Features of the modelica language are represented in JSON, and interpretting those features is a required behavior for the parser.
+The Modelieca-JSON format behaves a lot like an abstract syntax tree. Features of the modelica language are represented in JSON, and interpretting those features is a required behavior for the parser and FE.
 
 This includes:
 
 - evaluating type references
-- 
+-
 
 ### Element
 
-Each type and parameter definition gets extracted as an `Element`. There are several types of `Element`s based on the declaration type. As each 
+Each type and parameter definition gets extracted as an `Element`. There are several types of `Element`s based on the declaration type. As each
 
 ```modelica
 within ExamplePackage "An Example Package"
 model ExampleModel "An Example Model"
     extends ExampleExtendModel;
 
-    parameter Example.Component component
+    parameter Example.Component component(
+        componentParam=5
+        )
         "An example param that is a component instance";
 
     parameter String id
@@ -59,7 +61,9 @@ This elements gets put in the type store at the path: `ExamplePackage.ExampleMod
 
 `Extend` statements in modelica are effectively treated as an additional parameter on a model. An implicit parameter name of `__extend` is given. There is a unique type for extend classes `InputGroupExtend`.
 
-This extend element get added to the type store with the following path: `ExamplePackage.ExampleModel.__extend`
+`InputGroup`s have a reference to `InputGroupExtend` instance (in this case `ExampleModel` has a reference to `ExampleExtendModel`). The behavior required to 'flatten' inherited properties is taken care of in the `InputGroup` implementation.
+
+This extend element get added to the type store with the following path: `ExamplePackage.ExampleModel.__extend`. This is a purely internal reference that is not exposed in linkage schema (and is likely not necessary since input groups hold onto a reference to the `InputGroupExtend` reference).
 
 3. `parameter Example.Component component`
 
@@ -69,14 +73,21 @@ This element gets added as type `Input` at the path `ExamplePackage.ExampleModel
 
 This element gets added to the type store as type `Input` at the path `ExamplePackage.ExampleModel.id`
 
-
 #### Export Format
 
-Each element can be exported in a `TemplateInput` format by calling `getInputs` on the element. This will return the element and all child elements of that element (recursive!) in a format easier to format into the final an`Option` or `ScheduleOption` format.
+Each element can be exported in a serializable format called `TemplateInput` format by calling `getInputs` on the element. This will return the element and all child elements of that element (recursive!) in a format easier to format into the final linkage schema `Option` or `ScheduleOption` format.
 
 ### Template
 
 The template class serves two purposes:
 
-1. Hold logic around grouping elements into a cohesive 'template'
+1. Hold logic around grouping parser elements into a cohesive 'template'
 2. Mapping `TemplateInput`s to linkage schema.
+
+### Linkage Schema
+
+Refer to the [linkage-schema.md doc](../../../docs/linkage-schema.md)
+
+## Simplifying Modelica for ctrl-flow
+
+A goal of the parser is to bake in features of modelica to simplify interpretation on the FE.

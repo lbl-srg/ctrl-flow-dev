@@ -162,7 +162,7 @@ Inputs for the schedule table are generically extracted in the same option tree 
 interface ScheduleGroup {
   modelicaPath: string;
   name: string;
-
+}
 ```
 
 `ScheduleOption`:
