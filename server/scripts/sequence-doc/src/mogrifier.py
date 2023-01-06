@@ -14,6 +14,8 @@ from typing import Dict, List
 logging.getLogger().setLevel(logging.DEBUG)
 
 P_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p'
+BOOKMARK_TAGS = ['{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bookmarkEnd', "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bookmarkStart"]
+SECTION_TAG = ["{http://schemas.openxmlformats.org/wordprocessingml/2006/main}sectPr"]
 TABLE_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tbl'
 ANNOTATION_STYLE = 'Toggle'
 
@@ -22,19 +24,25 @@ TABLE_OP_LIST = ['TABLE', 'ROW', 'COLUMN']
 # Type hints
 Selections = Dict[str, List]
 
-nodes_to_delete = []
+elements_to_delete = []
 
 def initialize_remove_list():
     ''' Resets global remove list to an empty array
     '''
-    global nodes_to_delete
-    nodes_to_delete = []
+    global elements_to_delete
+    elements_to_delete = []
 
 def remove_node(node):
     ''' Controls access to a global list for nodes to be deleted
     '''
-    global nodes_to_delete
-    nodes_to_delete.append(node)
+    global elements_to_delete
+    elements_to_delete.append(node._element)
+
+def remove_element(element):
+    ''' Adds a lxml element to global list for deletion
+    '''
+    global elements_to_delete
+    elements_to_delete.append(element)
 
 def get_heading_level(paragraph):
     ''' Gets heading level of paragraph
@@ -43,6 +51,7 @@ def get_heading_level(paragraph):
     match = re.match(r'Heading (\d+)', style)
 
     if not match:
+        logging.info('Saw unrecognized style: {}'.format(style))
         return 100
     return int(match.group(1))
 
@@ -87,13 +96,20 @@ def remove_section(paragraph: Paragraph, run_op_lookup: Dict):
 
             remove_node(sib_p)
         elif sib_el.tag == TABLE_TAG:
+            # Assume table matches indentation of parent paragraph
+            # so just go ahead and remove
             sib_t = Table(sib_el, paragraph._parent)
             remove_node(sib_t)
             logging.info('Deleted table')
+        elif sib_el.tag in BOOKMARK_TAGS:
+            remove_element(sib_el)
+        elif sib_el.tag in SECTION_TAG:
+            logging.info("Reached a section tag")
+            break
         else:
             logging.error('Saw unrecognized tag "%s"', sib_el.tag)
             print(paragraph.text)
-            
+
     remove_node(paragraph)
 
 def edit_table(table_item):
@@ -500,21 +516,22 @@ def mogrify_doc(doc: Document, name_map: Dict, selections: Selections) -> Docume
     control_structure, run_op_lookup = create_control_structures(doc)
 
     # Remove info and Instruction Boxes - updates remove_list internally
-    remove_info_and_instr_boxes(doc, selections)
+    # remove_info_and_instr_boxes(doc, selections)
 
     # apply all paragraph and table selections
-    apply_selections(control_structure, name_map, run_op_lookup, selections)
+    # apply_selections(control_structure, name_map, run_op_lookup, selections)
 
     # convert units
-    convert_units(control_structure, name_map, selections)
+    # convert_units(control_structure, name_map, selections)
 
     # remove toggle text
-    remove_toggles(doc)
+    # remove_toggles(doc)
 
     # finally remove all nodes flagged for deletion
-    for node in nodes_to_delete:
+    # TODO: don't use docx wrapper elements ('node'), just
+    # store the original element without instantiating the wrapper
+    for el in elements_to_delete:
         try:
-            el = node._element
             el.getparent().remove(el)
         except AttributeError:
             logging.info('Element "%s" was already gone', el)
