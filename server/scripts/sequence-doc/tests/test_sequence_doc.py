@@ -2,6 +2,8 @@
 Basic sequence doc tests
 '''
 from generate_doc import parse_args, extract_input, DEFAULT_DOC_VERSION, generate_doc, generate_name_map
+from docx import Document
+from lxml import etree
 
 ## Test Command Line Args
 def test_command_line_args():
@@ -26,13 +28,19 @@ def test_input_extraction():
         assert selections != None
 
 def test_document_generation():
-    ''' Just checks that nothing throws when running mogrify_doc
+    ''' Just checks that nothing throws when creating the document
     '''
-    with open("tests/static/example_selections.txt") as f:
+
+    with open("tests/static/real_selections.txt") as f:
         selections = extract_input(f)
         version = DEFAULT_DOC_VERSION
 
-        generate_doc(selections, version)
+        doc = generate_doc(selections, version)
+        xmlschema_doc = etree.parse("tests/static/wml.xsd")
+        xmlschema = etree.XMLSchema(xmlschema_doc)
+
+        assert xmlschema.validate(doc)
+
 
 def test_name_map_generation():
     test_mappings = {'SHORTNAME': 'LONGNAME', 'SHORTNAME1': 'VALUENAME'}
