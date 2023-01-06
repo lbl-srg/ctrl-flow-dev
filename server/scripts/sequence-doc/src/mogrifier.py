@@ -516,16 +516,16 @@ def mogrify_doc(doc: Document, name_map: Dict, selections: Selections) -> Docume
     control_structure, run_op_lookup = create_control_structures(doc)
 
     # Remove info and Instruction Boxes - updates remove_list internally
-    # remove_info_and_instr_boxes(doc, selections)
+    remove_info_and_instr_boxes(doc, selections)
 
     # apply all paragraph and table selections
-    # apply_selections(control_structure, name_map, run_op_lookup, selections)
+    apply_selections(control_structure, name_map, run_op_lookup, selections)
 
     # convert units
-    # convert_units(control_structure, name_map, selections)
+    convert_units(control_structure, name_map, selections)
 
     # remove toggle text
-    # remove_toggles(doc)
+    remove_toggles(doc)
 
     # finally remove all nodes flagged for deletion
     # TODO: don't use docx wrapper elements ('node'), just
