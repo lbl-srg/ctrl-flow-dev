@@ -206,12 +206,12 @@ Could be found at `A/Nested/Model/Path.mo` OR `A/Nested/Model.mo` with `Path` de
 
 ### MODELICAPATH
 
-There is an implementation of the `MODELICAPATH` concept in [loader.ts](./loader.ts) to allow searching multiple packages for a type defintion.
+There is an implementation of the `MODELICAPATH` concept in [loader.ts](./loader.ts) to allow searching multiple packages for a type definitions.
 
 ## TODO
 
 ### Modelica Standard Library
-Currently data is NOT being pulled in from the Modelica Standard Library.
+Currently data is NOT being pulled in from the Modelica Standard Library. A simple filter in [loader.ts](./loader.ts) is preventing loading files from the Modelica Standard Library.
 
 ### Modifiers
 It is likely a good idea to try and separate out 'Modifier' like objects that have a modelicaPath vs. those that do not. `redeclare` and `final` only relate to modifiers that have a `modelicaPath`.
