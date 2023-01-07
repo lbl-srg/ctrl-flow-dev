@@ -100,15 +100,12 @@ def remove_section(paragraph: Paragraph, run_op_lookup: Dict):
             # so just go ahead and remove
             sib_t = Table(sib_el, paragraph._parent)
             remove_node(sib_t)
-            logging.info('Deleted table')
         elif sib_el.tag in BOOKMARK_TAGS:
             remove_element(sib_el)
         elif sib_el.tag in SECTION_TAG:
-            logging.info("Reached a section tag")
             break
         else:
             logging.error('Saw unrecognized tag "%s"', sib_el.tag)
-            print(paragraph.text)
 
     remove_node(paragraph)
 
@@ -528,8 +525,6 @@ def mogrify_doc(doc: Document, name_map: Dict, selections: Selections) -> Docume
     remove_toggles(doc)
 
     # finally remove all nodes flagged for deletion
-    # TODO: don't use docx wrapper elements ('node'), just
-    # store the original element without instantiating the wrapper
     for el in elements_to_delete:
         try:
             el.getparent().remove(el)
