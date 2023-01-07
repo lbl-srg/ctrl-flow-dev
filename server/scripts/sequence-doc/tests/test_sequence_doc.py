@@ -3,6 +3,7 @@ Basic sequence doc tests
 '''
 from generate_doc import parse_args, extract_input, DEFAULT_DOC_VERSION, generate_doc, generate_name_map
 from docx import Document
+# from lmxl import etree
 
 ## Test Command Line Args
 def test_command_line_args():
@@ -35,6 +36,17 @@ def test_document_generation():
         version = DEFAULT_DOC_VERSION
 
         doc = generate_doc(selections, version)
+        # TODO: a more robust check could be implemented to by using lxml's XMLSchema validation
+        # I was unable to figure out how to load all the required xsd files (xml schema definitions)
+        # for the docx format. python-docx keeps a copy of these xsd files here:
+        # https://github.com/python-openxml/python-docx/tree/master/ref/xsd
+        # If we can load all of these xsd files (without error) the 'validate' call
+        # will be able to return a boolean if the generated doc is a valid docx
+
+        # xmlschema_doc = etree.parse("tests/static/wml.xsd")
+        # xmlschema = etree.XMLSchema(xmlschema_doc)
+
+        # assert xmlschema.validate(doc)
         assert doc
 
 
