@@ -1,6 +1,7 @@
 import tplData from "./templates.json";
 import RootStore from ".";
 import { buildModifiers, Modifiers } from "../utils/modifier-helpers";
+import { Expression } from "../utils/expression-helpers";
 
 export interface TemplateInterface {
   modelicaPath: string;
@@ -14,7 +15,7 @@ export interface OptionInterface {
   modelicaPath: string;
   type: string;
   name: string;
-  value?: string | boolean | null | number;
+  value?: string | boolean | null | number | Expression;
   group?: string;
   tab?: string;
   visible?: boolean;
