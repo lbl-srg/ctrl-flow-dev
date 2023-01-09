@@ -36,6 +36,25 @@ const zoneConfig = store.configStore.configs.find(
   (c) => c.templatePath === zoneTemplatePath,
 ) as ConfigInterface;
 
+const addNewConfig = (
+  configName: string,
+  template: TemplateInterface,
+  selections: { [key: string]: string },
+) => {
+  store.configStore.add({
+    name: configName,
+    templatePath: template.modelicaPath,
+  });
+
+  const configWithSelections = store.configStore.configs.find(
+    (c) => c.name === configName,
+  ) as ConfigInterface;
+
+  store.configStore.setSelections(configWithSelections.id, selections);
+
+  return configWithSelections;
+};
+
 describe("Path Modifier tests", () => {
   it("Applies a path modifier", () => {
     const pathMods = {
@@ -177,6 +196,30 @@ describe("resolveToValue tests using context and evaluation", () => {
     const expectedVal = "Buildings.Templates.Components.Types.Fan.None";
     const value = resolveToValue("fanSupBlo.typ", context);
     expect(value).toEqual(expectedVal);
+  });
+
+  it("Gets a value that interacts with a modifier redeclare and choice redeclare", () => {
+    const instancePath = "coiHeaPre.val";
+    const selections = {
+      "Buildings.Templates.Components.Interfaces.PartialValve.val-coiHeaPre.val":
+        "Buildings.Templates.Components.Valves.TwoWayModulating",
+    };
+    const config = addNewConfig(
+      "Config to test Choice Modifiers and modifier redeclares",
+      mzTemplate,
+      selections,
+    );
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      config as ConfigInterface,
+      allOptions,
+    );
+
+    // TODO: this is the 'default' value so it is not testing choicemodifiers well
+    const expectedVal =
+      "Buildings.Templates.Components.Valves.TwoWayModulating";
+    const val = context.getValue(instancePath);
+    expect(val).toEqual(expectedVal);
   });
 });
 

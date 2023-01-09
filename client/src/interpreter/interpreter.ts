@@ -9,6 +9,7 @@ import { Modifiers } from "../../src/utils/modifier-helpers";
  * TODO:
  * - [X] Integrate configuration when building modifiers
  * - [X] Integrate context with mod builder! Needed to correctly evaulate expressions in mod builder!
+ * - [ ] integrate choice modifiers with mod builder
  * - [ ] Add a whole lot more tests for expression with context. This is where the bugs are
  * - [ ] integrate scope! what this means: every place we resolve an instance path: pop off the last segment of scope and try again until out of segments
  * - [ ] map option instances to a valid flatoption/flat option group list
@@ -621,7 +622,7 @@ function _getDisplayOptionsHelper(
   // TODO: need to integrate final
   // is that value final? If so set visible to false
   // Format into the correct 'FlatConfigOpiton' format
-  //
+
   // Next: doing the recursive dive into the next option
   // recursive dive into next option:
   // use context value to find the type
