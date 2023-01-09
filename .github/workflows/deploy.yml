@@ -1,8 +1,8 @@
 name: ctrl-flow deployment
 
-on:
-  push:
-    branches: [dk/deploy-gitaction]
+# on:
+#   push:
+#     branches: [dk/deploy-gitaction]
 env:
   LBL_STAGE: staging
   DEBIAN_FRONTEND: noninteractive
