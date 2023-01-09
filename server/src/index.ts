@@ -96,9 +96,9 @@ app.post("/api/sequence", async (req, res) => {
   // Please note that this is a very naive data format.
   // The shape of this object will most likely need to be modified and massaged when we work with real data.
   const sequenceData: SequenceData = req.body;
-  const origin = req.headers.origin;
+  const origin: string = req.headers.origin || '';
   if (allowedOrigins.includes(origin)) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Origin', origin);
   }
 
   try {
