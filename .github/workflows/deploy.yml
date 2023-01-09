@@ -20,7 +20,7 @@ jobs:
       - name: Copy templates.json out of the container
         run: docker cp ${{env.CONTAINER_ID}}:/server/scripts/templates.json ${{env.TEMPLATES_FILE_NAME}}
       - name: Upload templates.json as an artifact
-        uses: actions.upload-artifact@v2
+        uses: actions/upload-artifact@v2
         with:
           name: ${{env.TEMPLATES_FILE_NAME}}
           path: ${env.TEMPLATES_FILE_NAME}}
