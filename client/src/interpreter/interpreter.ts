@@ -7,14 +7,14 @@ import { Modifiers } from "../../src/utils/modifier-helpers";
 
 /**
  * TODO:
+ * - [X] Integrate configuration when building modifiers
+ * - [ ] Integrate context with mod builder! Needed to correctly evaulate expressions in mod builder!
+ * - [ ] Add a whole lot more tests for expression with context. This is where the bugs are
  * - (?) partial resolved expressions must be handled (if something gets returned as an expression). I think
  * the approach could be somsething like, have an unresolved expressions count, re-evaluate again after going
  * through all modifiers, selections, etc., if the count changes, re-evaluate again? This seems to indicate the use of
  * a 'resolved' list....
  * - (?) 'scope' concept will likely need to be integrated since mods are <Type>.paramName and not full.instance.path
- * - Integrate expression evaluation (start without redeclares and selections). Eventually integrate 'context'
- * - [ ? - needs expressions to fully test ] finish instance path to option method
- * - finish symbol resolver method
  * - Integrate redeclare modifier mechanism
  * - Integrate selections
  */
@@ -32,6 +32,9 @@ function isExpression(item: any): boolean {
 
 const allElementsEqual = (arr: any[]) =>
   arr.reduce((a: any, b: any) => (Object.is(a, b) ? a : NaN));
+
+const constructSelectionPath = (optionPath: string, instancePath: string) =>
+  `${optionPath}-${instancePath}`;
 
 ///////////////// Traversal
 
@@ -68,7 +71,7 @@ export function applyPathModifiers(
 }
 
 /**
- * Given an instance path and context, knows how to map to the correct 'option'
+ * Given an instance path and context, knows how to find the original option by
  * applying path modifiers, selections, and modifiers (redeclares)
  *
  * @param instancePath // it is assumed that scope is already applied to this path!
@@ -102,7 +105,7 @@ export const instancePathToOption = (
       Object.entries(context.config.selections).map(([key, value]) => {
         const [optionPath, instancePath] = key.split("-");
         if (instancePath === curInstancePath.join(".")) {
-          option = context.options[optionPath];
+          option = context.options[value];
         }
       });
     }
@@ -136,7 +139,7 @@ export const instancePathToOption = (
 
     const paramName = pathSegments.shift();
     curInstancePath.push(paramName);
-    //  use the options child list to get the correct type - inherited types
+    // use the options child list to get the correct type - inherited types
     // are only correctly referenced through this list
     curPath = option.options?.find(
       (o) => o.split(".").pop() === paramName,
@@ -179,10 +182,14 @@ export const resolveToValue = (
   const _context = context as ConfigContext;
 
   if (typeof operand === "string") {
+    // check if path is already a valid modelcia path
+    let typeOption = _context.options[operand];
+    // if not, assume it is an instance path and attempt to map to an option path and get again
+    typeOption = !typeOption
+      ? _context.options[instancePathToOption(operand, _context)]
+      : typeOption;
     // check if present in options, if not just return the string, if so check if option
     // is a definition
-    let optionPath = instancePathToOption(operand, _context);
-    let typeOption = _context.options[optionPath];
     if (typeOption) {
       if (typeOption.definition) {
         value = typeOption.modelicaPath;
@@ -328,16 +335,57 @@ const addToModObject = (
   });
 };
 
+/**
+ * The type of a replaceable option can be made either by:
+ * - a selection
+ * - a redeclare
+ *
+ * This is a small helper method that checks for either of those instances
+ *
+ * @param instancePath
+ * @param mods
+ * @param config
+ */
+const getReplaceableType = (
+  instancePath: string,
+  option: OptionInterface,
+  mods: { [key: string]: { expression: Expression; final: boolean } },
+  config: ConfigInterface,
+) => {
+  // check if there is a selection for this option, if so use
+  const selectionPath = constructSelectionPath(
+    option.modelicaPath,
+    instancePath,
+  );
+  const selectionType = config.selections
+    ? config.selections[selectionPath]
+    : null;
+  // check if there is a modifier for this option, if so use it:
+  if (selectionType) {
+    return selectionType;
+  }
+
+  const redeclaredType = instancePath in mods ? mods[instancePath] : null;
+  if (redeclaredType) {
+    return evaluate(redeclaredType.expression); // TODO: We need context to correctly evaluate!
+  }
+
+  return option.type;
+};
+
 // recursive helper method that traverses options grabbing modifiers
+// TODO: config selections must be integrated to correctly build this list
 const buildModsHelper = (
   option: OptionInterface,
   baseInstancePath: string,
   mods: { [key: string]: { expression: Expression; final: boolean } },
   options: { [key: string]: OptionInterface },
+  config: ConfigInterface,
 ) => {
   if (option === undefined) {
     return; // TODO: not sure this should be allowed - failing with 'Medium'
   }
+  // always check the config for a selection
   const optionMods = option.modifiers as {
     [key: string]: { expression: Expression; final: boolean };
   };
@@ -358,12 +406,14 @@ const buildModsHelper = (
     if (option.definition) {
       childOptions.map((path) => {
         const childOption = options[path];
-        buildModsHelper(childOption, newBase, mods, options);
+        buildModsHelper(childOption, newBase, mods, options, config);
       });
     } else {
-      // this is a parameter (either replaceable or enum) - grab the type and its modifiers
-      // only use the 'type', not child options to fetch modifiers
-      const typeOption = options[option.type];
+      const typeOptionPath = option.replaceable
+        ? getReplaceableType(newBase, option, mods, config)
+        : option.type;
+
+      const typeOption = options[typeOptionPath as string]; // TODO: remove this cast
       if (typeOption && typeOption.options) {
         // add modifiers from type option
         if (typeOption.modifiers) {
@@ -372,7 +422,7 @@ const buildModsHelper = (
         typeOption.options.map((path) => {
           const childOption = options[path];
 
-          buildModsHelper(childOption, newBase, mods, options);
+          buildModsHelper(childOption, newBase, mods, options, config);
         });
       }
     }
@@ -381,12 +431,13 @@ const buildModsHelper = (
 
 const buildMods = (
   startOption: OptionInterface,
+  config: ConfigInterface,
   options: { [key: string]: OptionInterface },
 ) => {
   const mods: { [key: string]: { expression: Expression; final: boolean } } =
     {};
 
-  buildModsHelper(startOption, "", mods, options);
+  buildModsHelper(startOption, "", mods, options, config);
 
   return mods;
 };
@@ -398,20 +449,6 @@ const _initModCache: { [key: string]: Modifiers } = {};
 
 /**
  * Generating context for a given template and config
- *
- * what is needed:
- * - start option
- * - path modifiers
- * - config
- *
- * Traverse tree:
- * - if a redeclare mod is found for a replaceable, store
- *
- * How to traverse to next branch:
- * - if config selection, use that
- * - if redeclare mod, use that
- * - otherwise: use option value (a replaceable's type)
- *
  */
 
 /**
@@ -435,7 +472,11 @@ export class ConfigContext {
       this.mods = _initModCache[template.modelicaPath];
     } else {
       // calculate intial mods without selections
-      this.mods = buildMods(this.options[template.modelicaPath], this.options);
+      this.mods = buildMods(
+        this.options[template.modelicaPath],
+        this.config,
+        this.options,
+      );
       // stash in cache
     }
 
@@ -448,13 +489,23 @@ export class ConfigContext {
    * A null instance path means the value cannot be resolved
    * @param instancePath
    */
-  getValue(instancePath: string): string | number | boolean | null {
-    const val = null;
-    const modExpression = this.mods[instancePath]?.expression;
+  getValue(instancePath: string): Literal | Expression | null | undefined {
+    let val = null;
+    const optionPath = instancePathToOption(instancePath, this);
+    const selectionPath = constructSelectionPath(optionPath, instancePath);
+    // check selections
+    if (this.config.selections && selectionPath in this.config.selections) {
+      return this.config.selections[selectionPath];
+    }
 
-    // modVal will either be a primitive or something else
+    // check modifiers
+    val = evaluate(this.mods[instancePath]?.expression);
+    if (val) {
+      return val;
+    }
 
-    // do not cache resolve values as dependencies may change
-    return val;
+    val = evaluate(this.options[optionPath].value);
+
+    return evaluate(this.options[optionPath].value);
   }
 }

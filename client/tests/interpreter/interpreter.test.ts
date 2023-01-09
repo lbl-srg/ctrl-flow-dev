@@ -13,14 +13,28 @@ import {
 
 // initialize global test dependencies
 const store = new RootStore();
-store.configStore.add({ name: "test config" });
+const mzTemplatePath = "Buildings.Templates.AirHandlersFans.VAVMultiZone";
+const zoneTemplatePath = "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly";
+store.configStore.add({
+  name: "VAVMultiZone Config",
+  templatePath: mzTemplatePath,
+});
+store.configStore.add({
+  name: "VAV Box Cooling Only",
+  templatePath: zoneTemplatePath,
+});
 const allOptions: { [key: string]: OptionInterface } =
   store.templateStore.getAllOptions();
 const allTemplates: { [key: string]: TemplateInterface } =
   store.templateStore.getAllTemplates();
-const template: TemplateInterface =
-  allTemplates["Buildings.Templates.AirHandlersFans.VAVMultiZone"];
-const [config] = store.configStore.configs;
+const mzTemplate: TemplateInterface = allTemplates[mzTemplatePath];
+const zoneTemplate = allTemplates[zoneTemplatePath];
+const mzConfig = store.configStore.configs.find(
+  (c) => c.templatePath === mzTemplatePath,
+) as ConfigInterface;
+const zoneConfig = store.configStore.configs.find(
+  (c) => c.templatePath === zoneTemplatePath,
+) as ConfigInterface;
 
 describe("Path Modifier tests", () => {
   it("Applies a path modifier", () => {
@@ -47,8 +61,8 @@ describe("Path Modifier tests", () => {
 describe("Basic Context generation without selections", () => {
   it("Is able to construct a context", () => {
     const context = new ConfigContext(
-      template as TemplateInterface,
-      config as ConfigInterface,
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
       allOptions,
     );
   });
@@ -59,8 +73,8 @@ const buildExpression = (operator: OperatorType, operands: any[]) => {
 };
 
 const expressionContext = new ConfigContext(
-  template as TemplateInterface,
-  config as ConfigInterface,
+  mzTemplate as TemplateInterface,
+  mzConfig as ConfigInterface,
   allOptions,
 );
 
@@ -120,11 +134,11 @@ describe("Test set", () => {
   });
 });
 
-describe("Path and value resolution without selections and then with selections", () => {
-  it("Maps an instance path to an option path", () => {
+describe("Path resolution", () => {
+  it("Maps an instance path to the original option path uneffected by selections, redeclares", () => {
     const context = new ConfigContext(
-      template as TemplateInterface,
-      config as ConfigInterface,
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
       allOptions,
     );
 
@@ -134,16 +148,98 @@ describe("Path and value resolution without selections and then with selections"
     );
   });
 
-  it("Maps an instance path to an option path modified by in template redeclares", () => {});
+  it("Maps an instance path to an option path modified by in template redeclares", () => {
+    const context = new ConfigContext(
+      zoneTemplate as TemplateInterface,
+      zoneConfig as ConfigInterface,
+      allOptions,
+    );
+
+    const expectedPath =
+      "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialController.typ";
+    const optionPath = instancePathToOption("ctl.typ", context);
+
+    // TODO: need a better parameter...
+    expect(optionPath).toBe(expectedPath);
+  });
 
   it("Maps an instance path to an option path modified by selections", () => {});
+});
 
+describe("Testing context getValue", () => {
   /**
    * This is a test of the simplist values to get, parameters at
    * the root of a template that are assigned a literal. This also tests
    * symbol resolution
    */
-  it("Context has root literal types assigned", () => {});
+  it("Components that are not replaceables have no value assigned", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
 
-  it("Fetches the correct value for a redeclared type", () => {});
+    // TODO: expected behavior for components that are not replaceables?
+    // Currently returns an empty string
+    const expectedVal = "";
+    const val = context.getValue("TAirCoiCooLvg");
+    expect(val).toEqual(expectedVal);
+  });
+
+  it("Fetches the correct value for a replaceable type without a selection made", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+
+    const expectedVal = "Buildings.Templates.Components.Fans.None";
+    const val = context.getValue("fanSupBlo");
+
+    expect(val).toEqual(expectedVal);
+  });
+
+  it("Fetches the correct value for a replaceable type after a selection is made", () => {
+    const configName = "VAVMultiZone Config with selections";
+    store.configStore.add({
+      name: configName,
+      templatePath: mzTemplatePath,
+    });
+
+    const configWithSelections = store.configStore.configs.find(
+      (c) => c.name === configName,
+    ) as ConfigInterface;
+    const selections = {
+      [`${mzTemplatePath}.fanSupBlo-fanSupBlo`]:
+        "Buildings.Templates.Components.Fans.SingleVariable",
+    };
+
+    store.configStore.setSelections(configWithSelections.id, selections);
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      configWithSelections as ConfigInterface,
+      allOptions,
+    );
+
+    const expectedVal = "Buildings.Templates.Components.Fans.SingleVariable";
+    const val = context.getValue("fanSupBlo");
+
+    expect(val).toEqual(expectedVal);
+
+    // check that nested types are also updated
+    const expectedFanVal =
+      "Buildings.Templates.Components.Types.Fan.SingleVariable";
+    const fanVal = context.getValue("fanSupBlo.typ");
+    expect(fanVal).toEqual(expectedFanVal);
+  });
+
+  it("Gets value on a component swapped by redeclare", () => {
+    const context = new ConfigContext(
+      zoneTemplate as TemplateInterface,
+      zoneConfig as ConfigInterface,
+      allOptions,
+    );
+    const expectedVal = "Buildings.Templates.Components.Coils.None";
+    expect(context.getValue("coiHea")).toBe(expectedVal);
+  });
 });
