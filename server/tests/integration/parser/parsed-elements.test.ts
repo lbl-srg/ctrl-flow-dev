@@ -127,10 +127,20 @@ describe("Expected Inputs are extracted", () => {
     const inputs = component.getInputs({}, false);
     expect(Object.keys(inputs).length).toBe(1);
     const [input] = Object.values(inputs);
-    expect(input.inputs?.length).toBe(2);
-    const [choice1, choice2] = input.inputs as string[];
+    expect(input.inputs?.length).toBe(3);
+    const [choice1, choice2, choice3] = input.inputs as string[];
     expect(choice1).toBe("TestPackage.Component.SecondComponent");
     expect(choice2).toBe("TestPackage.Component.ThirdComponent");
+  
+    // choice Mods:
+    expect(input.choiceModifiers).toBeDefined();
+    if (input.choiceModifiers) {
+      const choiceMods = input.choiceModifiers[choice3];
+      expect(choiceMods).toBeDefined();
+      const [choiceMod] = choiceMods;
+      expect(choiceMod.modelicaPath).toEqual('TestPackage.Component.FourthComponent.replaceable_param');
+      expect(evaluateExpression(choiceMod.value)).toEqual('TestPackage.Component.SecondComponent');
+    }
   });
 
   it("Gets parameter UI info", () => {

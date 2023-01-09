@@ -5,8 +5,10 @@ import { useStores } from "../../data";
 import { ConfigInterface } from "../../data/config";
 import { ProjectDetailInterface } from "../../data/project";
 
+import Spinner from '../Spinner';
+
 const CONTROL_SEQUENCE = "Control Sequence";
-const CONTROL_SEQUENCE_WITH_INFO_TEXT = "Control Sequence with info text"
+const CONTROL_SEQUENCE_WITH_INFO_TEXT = "Control Sequence with Informative Text"
 const DOCX = "docx";
 
 const DOWNLOADABLE_FILE_LIST = [
@@ -26,6 +28,7 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
   // );
 
   const [checked, setChecked] = useState<string[]>([]);
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   const projectConfigs: ConfigInterface[] = configStore.getConfigsForProject();
 
@@ -66,12 +69,11 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
       });
     });
 
-    console.log('seqData: ', seqData);
-
     return seqData;
   }
 
   async function downloadFiles() {
+    setLoading(true);
     if (checked.includes(CONTROL_SEQUENCE)) {
       const response = await fetch(`${process.env.REACT_APP_API}/sequence`, {
         method: "POST",
@@ -102,12 +104,18 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
       placeholderLink.click();
     }
 
+    setLoading(false);
     close();
   }
 
   return (
     <Modal close={close} isOpen={isOpen}>
       <h1>{itl.phrases.selectToDownload}</h1>
+
+      <Spinner
+        loading={isLoading}
+        text="Creating Sequence Document. Please wait... this may take up to one minute."
+      />
 
       <ul className="check-list">
         {DOWNLOADABLE_FILE_LIST.map(({ label, ext }) => (
