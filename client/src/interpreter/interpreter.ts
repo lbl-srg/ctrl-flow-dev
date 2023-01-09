@@ -10,13 +10,14 @@ import { Modifiers } from "../../src/utils/modifier-helpers";
  * - [X] Integrate configuration when building modifiers
  * - [X] Integrate context with mod builder! Needed to correctly evaulate expressions in mod builder!
  * - [ ] Add a whole lot more tests for expression with context. This is where the bugs are
- * - [ ] integrate scope! what this means: every place we resolve an instance path: pop off the previous segment
+ * - [ ] integrate scope! what this means: every place we resolve an instance path: pop off the last segment of scope and try again until out of segments
  * - [ ] map option instances to a valid flatoption/flat option group list
  * in an instance path, e.g. try in this order ["my.fancy.path", "my.path", "path"]
- * - (?) partial resolved expressions must be handled (if something gets returned as an expression). I think
- * the approach could be somsething like, have an unresolved expressions count, re-evaluate again after going
- * through all modifiers, selections, etc., if the count changes, re-evaluate again? This seems to indicate the use of
- * a 'resolved' list....
+ * - (?) partial resolved expressions must be handled (if something gets returned as an expression).
+ * An approach:
+ * - iterate through mod object and attempt to resolve each one. Store in _resolvedMods, keep track of how many are resolved
+ * - getValue: add initial attempt at fetching value from '_resolveMods'
+ * - Re-iterate through
  */
 
 export type Literal = boolean | string | number;

@@ -186,7 +186,7 @@ describe("Testing context getValue", () => {
    * the root of a template that are assigned a literal. This also tests
    * symbol resolution
    */
-  it("Components that are not replaceables have no value assigned", () => {
+  it("Components (parameter that have a typoe of a class/model) that are not replaceables have no value assigned", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
