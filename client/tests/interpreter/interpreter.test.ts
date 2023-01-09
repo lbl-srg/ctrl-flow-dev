@@ -129,7 +129,7 @@ describe("Test set", () => {
     expect(evaluate(buildExpression("!=", [1]))).toBeFalsy();
   });
 
-  it("Handles if/else if/else", () => {
+  it("Handles if/else if/else if/else", () => {
     /** TODO */
   });
 });
@@ -164,6 +164,20 @@ describe("Path resolution", () => {
   });
 
   it("Maps an instance path to an option path modified by selections", () => {});
+});
+
+describe("resolveToValue tests using context and evaluation", () => {
+  it("Handles fanSupBlo.typ", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+
+    const expectedVal = "Buildings.Templates.Components.Types.Fan.None";
+    const value = resolveToValue("fanSupBlo.typ", context);
+    expect(value).toEqual(expectedVal);
+  });
 });
 
 describe("Testing context getValue", () => {
@@ -243,3 +257,59 @@ describe("Testing context getValue", () => {
     expect(context.getValue("coiHea")).toBe(expectedVal);
   });
 });
+
+describe("Display Enable is set as expected", () => {
+  it("Sets enable correctly on simple parameter (no expression)", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+  });
+
+  it("Sets enable correctly on parameter with expression", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+
+    const optionInstance = context.getOptionInstance("fanSupBlo");
+    expect(optionInstance.display).toBeFalsy();
+
+    const configName = "VAVMultiZone Config with fanSupDra selection";
+    store.configStore.add({
+      name: configName,
+      templatePath: mzTemplatePath,
+    });
+
+    const configWithSelections = store.configStore.configs.find(
+      (c) => c.name === configName,
+    ) as ConfigInterface;
+    const selections = {
+      [`${mzTemplatePath}.fanSupDra-fanSupDra`]:
+        "Buildings.Templates.Components.Fans.None",
+    };
+    store.configStore.setSelections(configWithSelections.id, selections);
+
+    // make a new context with a selection changing fanSupDra to 'None'
+    const newContext = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      configWithSelections as ConfigInterface,
+      allOptions,
+    );
+
+    const updatedOptionInstance = newContext.getOptionInstance("fanSupBlo");
+    expect(updatedOptionInstance.display).toBeTruthy();
+  });
+});
+
+// describe("Display Option Generation", () => {
+//   it("Has the expected numer of initial visible options", () => {
+//     const context = new ConfigContext(
+//       mzTemplate as TemplateInterface,
+//       mzConfig as ConfigInterface,
+//       allOptions,
+//     );
+//   });
+// });
