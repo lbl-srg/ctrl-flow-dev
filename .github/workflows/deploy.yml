@@ -10,6 +10,7 @@ env:
 jobs:
   build-template-json:
     runs-on: ubuntu-22.04
+    env: MODELICA_DEPENDENCIES=../dependencies
     defaults:
       run:
         working-directory: server
@@ -27,11 +28,9 @@ jobs:
         run: npm run install-python-deps
       - name: Install NPM packages
         run: npm ci
-      - name: Set Modelica Dependency Location
-        run: export MODELICA_DEPENDENCIES=../dependencies
       - name: Build templates.json
         run: |
-          echo $MODELICA_DEPENDENCIES
+          $(echo $MODELICA_DEPENDENCIES)
           npm run parseTemplateJSON
       - name: Upload templates.json as an artifact
         uses: actions/upload-artifact@v2
