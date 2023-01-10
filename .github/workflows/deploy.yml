@@ -30,9 +30,7 @@ jobs:
       - name: Install NPM packages
         run: npm ci
       - name: Build templates.json
-        run: |
-          $(echo $MODELICA_DEPENDENCIES)
-          npm run parseTemplateJSON
+        run: npm run parseTemplateJSON
       - name: Upload templates.json as an artifact
         uses: actions/upload-artifact@v2
         with:
