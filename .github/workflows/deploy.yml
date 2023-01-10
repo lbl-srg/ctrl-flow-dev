@@ -10,7 +10,8 @@ env:
 jobs:
   build-template-json:
     runs-on: ubuntu-22.04
-    env: MODELICA_DEPENDENCIES=../dependencies
+    env:
+      MODELICA_DEPENDENCIES: ../dependencies
     defaults:
       run:
         working-directory: server
