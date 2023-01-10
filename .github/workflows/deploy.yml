@@ -1,14 +1,15 @@
 name: ctrl-flow deployment
 
-# on:
-#   push:
-#     branches: [dk/deploy-gitaction]
+on:
+  push:
+    branches: [dk/deploy-gitaction]
 env:
   LBL_STAGE: staging
   DEBIAN_FRONTEND: noninteractive
   TEMPLATES_FILE_NAME: templates.json
 jobs:
   build-template-json:
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: server
@@ -45,36 +46,36 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
           cache-dependency-path: client/package-lock.json
-      - name: Configure AWS CLI
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
+      # - name: Configure AWS CLI
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-2
       - name: Install non-node dependencies
         run: apt-get install jq
       - name: install node packages
         run: npm i
-      - name: Synthesize cloud formation template
-        run: npx aws-cdk synth
-      - name: Deploy stack
-        run: npx aws-cdk deploy --require-approval never --outputs-file cdk.out/cdk-outputs.json
-      - name: Set API_ARN, configure longer timeout, and set REACT_APP_API# easily testable step
-        run: |
-          export API_ARN=$(jq -r .LblCdkStack${{env.LBL_STAGE}}.LbLALBArn cdk.out/cdk-outputs.json)
-          aws elbv2 modify-load-balancer-attributes --load-balancer-arn $API_ARN --attributes Key=idle_timeout.timeout_seconds,Value=300
-          export REACT_APP_API=$(jq -r .LblCdkStack${{env.LBL_STAGE}}.LbLApiUrl cdk.out/cdk-outputs.json)/api
+      # - name: Synthesize cloud formation template
+      #   run: npx aws-cdk synth
+      # - name: Deploy stack
+      #   run: npx aws-cdk deploy --require-approval never --outputs-file cdk.out/cdk-outputs.json
+      # - name: Set API_ARN, configure longer timeout, and set REACT_APP_API# easily testable step
+      #   run: |
+      #     export API_ARN=$(jq -r .LblCdkStack${{env.LBL_STAGE}}.LbLALBArn cdk.out/cdk-outputs.json)
+      #     aws elbv2 modify-load-balancer-attributes --load-balancer-arn $API_ARN --attributes Key=idle_timeout.timeout_seconds,Value=300
+      #     export REACT_APP_API=$(jq -r .LblCdkStack${{env.LBL_STAGE}}.LbLApiUrl cdk.out/cdk-outputs.json)/api
       - name: Update template.json
         uses: actions/download-artifact@v2
         with:
           name: ${{env.TEMPLATES_FILE_NAME}}
           path: ../client/src/data
-      - name: Build the client
-        run: |
-          cd ../client
-          npm i
-          npm run buildForS3
-      - name: Deploy the client to S3
-        run: |
-          aws s3 rm s3://lbl-client-${LBL_STAGE}/ --recursive
-          aws s3 sync ./build s3://lbl-client-${LBL_STAGE}/
+      # - name: Build the client
+      #   run: |
+      #     cd ../client
+      #     npm i
+      #     npm run buildForS3
+      # - name: Deploy the client to S3
+      #   run: |
+      #     aws s3 rm s3://lbl-client-${LBL_STAGE}/ --recursive
+      #     aws s3 sync ./build s3://lbl-client-${LBL_STAGE}/
