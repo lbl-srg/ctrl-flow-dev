@@ -9,11 +9,18 @@ env:
   TEMPLATES_FILE_NAME: templates.json
 jobs:
   build-template-json:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: server
     steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
       - name: Build LBL Parser and API Server
         run: docker build -t lbl-api-cdk .
       - name: Create A Container and Assign ID
@@ -30,7 +37,7 @@ jobs:
 
   deploy:
     needs: build-template-json
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: cdk
