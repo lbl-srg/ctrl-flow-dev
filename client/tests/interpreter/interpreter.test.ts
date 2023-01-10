@@ -181,6 +181,7 @@ describe("Path resolution", () => {
     // TODO: need a better parameter...
     expect(optionPath).toBe(expectedPath);
   });
+  it("Uses scope to find the correct option path", () => {});
 
   it("Maps an instance path to an option path modified by selections", () => {});
 });
@@ -258,20 +259,17 @@ describe("Testing context getValue", () => {
 
   it("Fetches the correct value for a replaceable type after a selection is made", () => {
     const configName = "VAVMultiZone Config with selections";
-    store.configStore.add({
-      name: configName,
-      templatePath: mzTemplatePath,
-    });
-
-    const configWithSelections = store.configStore.configs.find(
-      (c) => c.name === configName,
-    ) as ConfigInterface;
     const selections = {
       [`${mzTemplatePath}.fanSupBlo-fanSupBlo`]:
         "Buildings.Templates.Components.Fans.SingleVariable",
     };
 
-    store.configStore.setSelections(configWithSelections.id, selections);
+    const configWithSelections = addNewConfig(
+      configName,
+      mzTemplate,
+      selections,
+    );
+
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
       configWithSelections as ConfigInterface,
@@ -321,19 +319,15 @@ describe("Display Enable is set as expected", () => {
     expect(optionInstance.display).toBeFalsy();
 
     const configName = "VAVMultiZone Config with fanSupDra selection";
-    store.configStore.add({
-      name: configName,
-      templatePath: mzTemplatePath,
-    });
-
-    const configWithSelections = store.configStore.configs.find(
-      (c) => c.name === configName,
-    ) as ConfigInterface;
     const selections = {
       [`${mzTemplatePath}.fanSupDra-fanSupDra`]:
         "Buildings.Templates.Components.Fans.None",
     };
-    store.configStore.setSelections(configWithSelections.id, selections);
+    const configWithSelections = addNewConfig(
+      configName,
+      mzTemplate,
+      selections,
+    );
 
     // make a new context with a selection changing fanSupDra to 'None'
     const newContext = new ConfigContext(
@@ -344,6 +338,23 @@ describe("Display Enable is set as expected", () => {
 
     const updatedOptionInstance = newContext.getOptionInstance("fanSupBlo");
     expect(updatedOptionInstance.display).toBeTruthy();
+  });
+
+  it("Sets ctl.have_CO2Sen param to true", () => {
+    // make a new context with a selection changing fanSupDra to 'None'
+    const newContext = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+
+    // TODO: this test is still failing as it is falling back to the original
+    // option expression in Components.Controls.Interfaces.PartialVAVMultiZone
+    // I believe operands are not being found because 'scope' is not getting passed
+    // into the expression. Getting this expression to work will mean getting
+    // scope integrated. This is a good test case!
+    const optionInstance = newContext.getOptionInstance("ctl.have_CO2Sen");
+    expect(optionInstance.display).toBeTruthy();
   });
 });
 

@@ -38,6 +38,28 @@ const allElementsEqual = (arr: any[]) =>
 const constructSelectionPath = (optionPath: string, instancePath: string) =>
   `${optionPath}-${instancePath}`;
 
+/**
+ * Generates all potential paths given another path and a current scope
+ *
+ * e.g.
+ *
+ * if scope is a.b
+ * and path c.d
+ *
+ * This function generates: ['a.b.c.d', 'a.c.d', 'c.d']
+ *
+ */
+function createPossiblePaths(scope: string, path: string) {
+  const segments = scope.split(".");
+  const paths = [];
+  while (segments.length > 0) {
+    paths.push([segments.join("."), path].filter((p) => p !== "").join("."));
+    segments.pop();
+  }
+
+  return paths;
+}
+
 ///////////////// Traversal
 
 /**
@@ -79,7 +101,7 @@ export function applyPathModifiers(
  * @param instancePath // it is assumed that scope is already applied to this path!
  * @param context
  */
-export const instancePathToOption = (
+const _instancePathToOption = (
   instancePath: string,
   context: ConfigContext,
 ): string => {
@@ -151,6 +173,24 @@ export const instancePathToOption = (
   return curPath;
 };
 
+// Wrapper around instacePathToOption to apply all possible
+// scope paths
+export function instancePathToOption(
+  instancePath: string,
+  context: ConfigContext,
+  scope = "",
+): string {
+  const pathList = createPossiblePaths(scope, instancePath);
+  for (const path of pathList) {
+    const val = _instancePathToOption(path, context);
+    if (val) {
+      return val;
+    }
+  }
+
+  return instancePath;
+}
+
 ///////////////// Expression Evaluation
 type Comparator = ">" | ">=" | "<" | "<=";
 export type OperatorType =
@@ -170,7 +210,7 @@ export type OperatorType =
 export const resolveToValue = (
   operand: Literal | Expression,
   context?: ConfigContext,
-  scope?: string,
+  scope: string = "",
 ): Literal | null | undefined | Expression => {
   let value: any = null;
 
@@ -186,17 +226,23 @@ export const resolveToValue = (
 
   if (typeof operand === "string") {
     // check if an instance path value is already present
-    value = _context.getValue(operand);
+    // TODO: an operand can be an expanded modifier path
+    // e.g. 'Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialController.typ'
+    // get value expects an instance path. We would need to know in this instance to pop
+    // of just .typ
+    // BUT, how do we know we don't have something like ctl.typ. IF we pop off the end that is not good.
+    value = _context.getValue(operand, scope);
     if (value) {
       return value;
     }
 
     // check if path is already a valid modelica path
     let typeOption = _context.options[operand];
-    // if not, assume it is an instance path and attempt to map to an option path and get again
-    typeOption = !typeOption
-      ? _context.options[instancePathToOption(operand, _context)]
-      : typeOption;
+    if (!typeOption) {
+      const typePath = instancePathToOption(operand, _context, scope);
+      typeOption = _context.options[operand];
+    }
+
     // check if present in options, if not just return the string, if so check if option
     // is a definition
     if (typeOption) {
@@ -204,13 +250,13 @@ export const resolveToValue = (
         value = typeOption.modelicaPath;
       } else {
         const potentialExpression = typeOption.value;
-        value = evaluate(potentialExpression, context);
+        value = evaluate(potentialExpression, context, scope);
       }
     } else {
       // treat as instance path. If it does not resolve assume its a string
       // this is a bug as someone could put in param of type string that mirrors a valid instance path
       // and this would break
-      value = instancePathToOption(operand, _context);
+      value = instancePathToOption(operand, _context, scope);
     }
   }
 
@@ -252,7 +298,7 @@ export const evaluate = (
       };
 
       let resolvedOperands = expression.operands.map((o) =>
-        resolveToValue(o, context),
+        resolveToValue(o, context, scope),
       );
       val = comparators[expression.operator](
         resolvedOperands[0],
@@ -270,13 +316,13 @@ export const evaluate = (
       break;
     case "||":
       val = expression.operands.reduce(
-        (acc, cur) => !!(evaluate(cur, context) || acc),
+        (acc, cur) => !!(evaluate(cur, context, scope) || acc),
         false,
       );
       break;
     case "&&":
       val = expression.operands.reduce(
-        (acc, cur) => !!(evaluate(cur, context) && acc),
+        (acc, cur) => !!(evaluate(cur, context, scope) && acc),
         true,
       );
   }
@@ -302,6 +348,9 @@ const addToModObject = (
     // Do not add a key that is already present. The assumption is that
     // the first time an instance path is present is the most up-to-date
     if (!(modKey in mods)) {
+      if (modKey === "ctl.have_CO2Sen") {
+        const a = 1;
+      }
       mods[modKey] = mod;
     }
 
@@ -370,19 +419,24 @@ const buildModsHelper = (
     [key: string]: { expression: Expression; final: boolean };
   };
   const childOptions = option.options;
-
+  if (
+    option.modelicaPath ===
+    "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.ctl"
+  ) {
+    const a = 1;
+  }
+  const name = option.modelicaPath.split(".").pop();
+  const newBase = option.definition
+    ? baseInstancePath
+    : [baseInstancePath, name].filter((p) => p !== "").join(".");
   // grab the current options modifiers
   if (optionMods) {
-    addToModObject(optionMods, baseInstancePath, mods, options);
+    // use updated 'base' path - modifiers are oriented around
+    addToModObject(optionMods, newBase, mods, options);
   }
 
   // if this is a definition - visit all child options and grab modifiers
   if (childOptions) {
-    const name = option.modelicaPath.split(".").pop();
-    const newBase = option.definition
-      ? baseInstancePath
-      : [baseInstancePath, name].filter((p) => p !== "").join(".");
-
     if (option.definition) {
       childOptions.map((path) => {
         const childOption = options[path];
@@ -390,7 +444,7 @@ const buildModsHelper = (
       });
     } else {
       // TODO: use instanceToOption to get replaceable type!
-      // getReplaceableType is redundant
+      // getReplaceableType is redundant (or just getValue)
       const typeOptionPath = option.replaceable
         ? getReplaceableType(newBase, option, mods, config)
         : option.type;
@@ -482,7 +536,7 @@ export class ConfigContext {
     scope = "",
   ): Literal | Expression | null | undefined {
     let val = null;
-    const optionPath = instancePathToOption(instancePath, this);
+    const optionPath = instancePathToOption(instancePath, this, scope);
     const selectionPath = constructSelectionPath(optionPath, instancePath);
     // check selections
     if (this.config.selections && selectionPath in this.config.selections) {
@@ -524,10 +578,28 @@ export class ConfigContext {
     if (final) {
       return optionInstance; // punch-out, we got what we need
     }
-    const optionPath = instancePathToOption(instancePath, this);
+    const optionPath = instancePathToOption(instancePath, this, scope);
     const option = this.options[optionPath];
 
-    const enable = evaluate(option.enable, this, scope);
+    // TODO: I think I'll need to iterate through
+
+    // 'scope' in this case is the current instance path's scope, which
+    // is one level up.
+    // e.g.
+    // You have the following definition
+    // Class A
+    //     param b
+    //        enable = 'c === true'
+    //     param c = true
+    //
+    // To understand the 'enable' expression with a reference to 'c',
+    // found at the instance path 'b', we have to pop 'b' off  'c'
+    // (instead of attemptint to find 'c' in the scope of 'b')
+    const enable = evaluate(
+      option.enable,
+      this,
+      instancePath.split(".").slice(0, -1).join("."),
+    );
     display = !isExpression(enable) ? !!enable : display;
     display = !!(display && option.visible);
 
