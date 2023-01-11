@@ -35,7 +35,7 @@ describe("Parser extracts expected templates", () => {
     const option = options[secOutRelPath];
   });
 
-  it("Sets deadEnd param for TwoWayModulating.val correctl", () => {
+  it("Extracts child options correctly for a deadEnd replaceable param", () => {
     const templates = getTemplates();
     const mzTemplate = templates.find(
       (t) =>
