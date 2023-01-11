@@ -1,7 +1,7 @@
 import { generateDoc } from "../../../src/sequence";
 import fs from "fs";
 
-const EXAMPLE_SELECTIONS = JSON.parse(fs.readFileSync(`../../../scripts/sequence-doc/tests/static/real_selections.txt`, {
+const EXAMPLE_SELECTIONS = JSON.parse(fs.readFileSync(`scripts/sequence-doc/tests/static/selections`, {
   encoding: "utf8",
 }));
 
