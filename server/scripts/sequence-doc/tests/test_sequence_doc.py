@@ -31,7 +31,7 @@ def test_document_generation():
     ''' Just checks that nothing throws when creating the document
     '''
 
-    with open("tests/static/real_selections.txt") as f:
+    with open("tests/static/selections") as f:
         selections = extract_input(f)
         version = DEFAULT_DOC_VERSION
 
