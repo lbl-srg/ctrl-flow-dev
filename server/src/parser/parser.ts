@@ -573,11 +573,9 @@ export class Input extends Element {
     const inputTypes = typeInstance ? typeInstance.getInputs({}, false) : {};
     const visible = this._setInputVisible(inputTypes[this.type]);
 
-    let childInputs =
-      this.enable === false || this.deadEnd
-        ? []
-        : inputTypes[this.type]?.inputs || [];
+    let childInputs = inputTypes[this.type]?.inputs || [];
 
+    // load down stream template inputs
     childInputs.filter((inputType) => {
       const element = typeStore.get(inputType);
       return !element?.deadEnd;
@@ -592,7 +590,7 @@ export class Input extends Element {
       tab: this.tab,
       visible: visible,
       enable: this.deadEnd ? false : this.enable,
-      inputs: childInputs,
+      inputs: this.enable === false || this.deadEnd ? [] : childInputs,
       modifiers: this.mod ? [this.mod as Modification] : [],
       elementType: this.elementType,
     };
@@ -676,8 +674,7 @@ export class ReplaceableInput extends Input {
 
     // if an annotation has been provided, use the choices from that annotation
     // otherwise fallback to using the parameter type (or if a dead end, nothing)
-    let childTypes = this.choices.length ? this.choices : [this.type];
-    childTypes = this.deadEnd ? [] : childTypes;
+    const childTypes = this.choices.length ? this.choices : [this.type];
     const visible = childTypes.length > 1;
 
     inputs[this.modelicaPath] = {
@@ -685,7 +682,7 @@ export class ReplaceableInput extends Input {
       type: this.type,
       value: this.value,
       name: this.description,
-      inputs: childTypes,
+      inputs: this.deadEnd ? [] : childTypes,
       group: this.group,
       tab: this.tab,
       visible: visible,
