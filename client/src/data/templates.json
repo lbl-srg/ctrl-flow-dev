@@ -12545,13 +12545,901 @@
       "replaceable": false
     },
     {
+      "modelicaPath": "Buildings.Templates.Components.Data.Coil.typ",
+      "type": "Buildings.Templates.Components.Types.Coil",
+      "name": "Equipment type",
+      "group": "Configuration",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Coil.typVal",
+      "type": "Buildings.Templates.Components.Types.Valve",
+      "name": "Type of valve",
+      "group": "Configuration",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Coil.have_sou",
+      "type": "Boolean",
+      "name": "Set to true for fluid ports on the source side",
+      "group": "Configuration",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
+      "type": "Modelica.Units.SI.MassFlowRate",
+      "value": "",
+      "name": "Air mass flow rate",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "&&",
+        "operands": [
+          {
+            "operator": "!=",
+            "operands": [
+              "Buildings.Templates.Components.Data.Coil.typ",
+              "Buildings.Templates.Components.Types.Coil.None"
+            ]
+          },
+          {
+            "operator": "!=",
+            "operands": [
+              "Buildings.Templates.Components.Data.Coil.typ",
+              "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage"
+            ]
+          },
+          {
+            "operator": "!=",
+            "operands": [
+              "Buildings.Templates.Components.Data.Coil.typ",
+              "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed"
+            ]
+          }
+        ]
+      },
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Coil.min": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              0
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Coil.start": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "||",
+                    "operands": [
+                      {
+                        "operator": "==",
+                        "operands": [
+                          "Buildings.Templates.Components.Data.Coil.typ",
+                          "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage"
+                        ]
+                      },
+                      {
+                        "operator": "==",
+                        "operands": [
+                          "Buildings.Templates.Components.Data.Coil.typ",
+                          "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      "datCoi.sta[datCoi.nSta].nomVal.m_flow_nominal"
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  {
+                    "operator": "none",
+                    "operands": [
+                      1
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "final": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
+      "type": "Modelica.Units.SI.PressureDifference",
+      "value": "",
+      "name": "Air pressure drop",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "!=",
+        "operands": [
+          "Buildings.Templates.Components.Data.Coil.typ",
+          "Buildings.Templates.Components.Types.Coil.None"
+        ]
+      },
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Coil.min": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              0
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Coil.displayUnit": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Pa"
+            ]
+          },
+          "final": false
+        },
+        "Buildings.Templates.Components.Data.Coil.start": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "Buildings.Templates.Components.Data.Coil.typ",
+                      "Buildings.Templates.Components.Types.Coil.None"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  {
+                    "operator": "none",
+                    "operands": [
+                      100
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "final": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
+      "type": "Modelica.Units.SI.MassFlowRate",
+      "value": "",
+      "name": "Liquid mass flow rate",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": "Buildings.Templates.Components.Data.Coil.have_sou",
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Coil.min": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              0
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Coil.start": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "Buildings.Templates.Components.Data.Coil.typ",
+                      "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      "Q_flow_nominal/4186/10"
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else_if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "Buildings.Templates.Components.Data.Coil.typ",
+                      "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      "-Q_flow_nominal/4186/5"
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  {
+                    "operator": "none",
+                    "operands": [
+                      0
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "final": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Coil.dpWat_nominal",
+      "type": "Modelica.Units.SI.PressureDifference",
+      "value": "",
+      "name": "Liquid pressure drop across coil",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": "Buildings.Templates.Components.Data.Coil.have_sou",
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Coil.min": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              0
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Coil.displayUnit": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Pa"
+            ]
+          },
+          "final": false
+        },
+        "Buildings.Templates.Components.Data.Coil.start": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "Buildings.Templates.Components.Data.Coil.typ",
+                      "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      5000
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else_if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "Buildings.Templates.Components.Data.Coil.typ",
+                      "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      30000
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  {
+                    "operator": "none",
+                    "operands": [
+                      0
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "final": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Coil.dpValve_nominal",
+      "type": "Modelica.Units.SI.PressureDifference",
+      "value": "",
+      "name": "Liquid pressure drop across fully open valve",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "!=",
+        "operands": [
+          "Buildings.Templates.Components.Data.Coil.typVal",
+          "Buildings.Templates.Components.Types.Valve.None"
+        ]
+      },
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Coil.min": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              0
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Coil.displayUnit": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Pa"
+            ]
+          },
+          "final": false
+        },
+        "Buildings.Templates.Components.Data.Coil.start": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "Buildings.Templates.Components.Data.Coil.typVal",
+                      "Buildings.Templates.Components.Types.Valve.None"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  {
+                    "operator": "none",
+                    "operands": [
+                      "dpWat_nominal/2"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "final": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Coil.cap_nominal",
+      "type": "Modelica.Units.SI.HeatFlowRate",
+      "value": "",
+      "name": "Coil capacity",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "&&",
+        "operands": [
+          {
+            "operator": "!=",
+            "operands": [
+              "Buildings.Templates.Components.Data.Coil.typ",
+              "Buildings.Templates.Components.Types.Coil.None"
+            ]
+          },
+          {
+            "operator": "!=",
+            "operands": [
+              "Buildings.Templates.Components.Data.Coil.typ",
+              "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage"
+            ]
+          },
+          {
+            "operator": "!=",
+            "operands": [
+              "Buildings.Templates.Components.Data.Coil.typ",
+              "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed"
+            ]
+          }
+        ]
+      },
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Coil.min": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              0
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Coil.start": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "Buildings.Templates.Components.Data.Coil.typ",
+                      "Buildings.Templates.Components.Types.Coil.None"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else_if",
+                "operands": [
+                  {
+                    "operator": "||",
+                    "operands": [
+                      {
+                        "operator": "==",
+                        "operands": [
+                          "Buildings.Templates.Components.Data.Coil.typ",
+                          "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage"
+                        ]
+                      },
+                      {
+                        "operator": "==",
+                        "operands": [
+                          "Buildings.Templates.Components.Data.Coil.typ",
+                          "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "operator": "function_call",
+                    "operands": [
+                      {
+                        "operator": "abs",
+                        "operands": [
+                          {
+                            "operator": "none",
+                            "operands": [
+                              "abs"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  {
+                    "operator": "none",
+                    "operands": [
+                      10000
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "final": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Coil.Q_flow_nominal",
+      "type": "Modelica.Units.SI.HeatFlowRate",
+      "value": {
+        "operator": "if_elseif",
+        "operands": [
+          {
+            "operator": "if",
+            "operands": [
+              {
+                "operator": "||",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "Buildings.Templates.Components.Data.Coil.typ",
+                      "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+                    ]
+                  },
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "Buildings.Templates.Components.Data.Coil.typ",
+                      "Buildings.Templates.Components.Types.Coil.ElectricHeating"
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "none",
+                "operands": [
+                  "Buildings.Templates.Components.Data.Coil.cap_nominal"
+                ]
+              }
+            ]
+          },
+          {
+            "operator": "else",
+            "operands": [
+              {
+                "operator": "none",
+                "operands": [
+                  "-1*cap_nominal"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "name": "Nominal heat flow rate",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Coil.TWatEnt_nominal",
+      "type": "Modelica.Units.SI.Temperature",
+      "value": "",
+      "name": "Nominal entering liquid temperature",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": "Buildings.Templates.Components.Data.Coil.have_sou",
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Coil.min": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              273.15
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Coil.displayUnit": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "degC"
+            ]
+          },
+          "final": false
+        },
+        "Buildings.Templates.Components.Data.Coil.start": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "Buildings.Templates.Components.Data.Coil.typ",
+                      "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      "50 +273.15"
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else_if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "Buildings.Templates.Components.Data.Coil.typ",
+                      "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      "7 +273.15"
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  {
+                    "operator": "none",
+                    "operands": [
+                      273.15
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "final": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Coil.TAirEnt_nominal",
+      "type": "Modelica.Units.SI.Temperature",
+      "value": "",
+      "name": "Nominal entering air temperature",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": "Buildings.Templates.Components.Data.Coil.have_sou",
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Coil.min": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              273.15
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Coil.displayUnit": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "degC"
+            ]
+          },
+          "final": false
+        },
+        "Buildings.Templates.Components.Data.Coil.start": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "Buildings.Templates.Components.Data.Coil.typ",
+                      "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      "30 +273.15"
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  {
+                    "operator": "none",
+                    "operands": [
+                      273.15
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "final": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Coil.wAirEnt_nominal",
+      "type": "Modelica.Units.SI.MassFraction",
+      "value": "",
+      "name": "Nominal entering air humidity ratio",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "==",
+        "operands": [
+          "Buildings.Templates.Components.Data.Coil.typ",
+          "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
+        ]
+      },
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Coil.min": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              0
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Coil.start": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              0.01
+            ]
+          },
+          "final": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Coil.datCoi",
+      "type": "Buildings.Fluid.HeatExchangers.DXCoils.AirCooled.Data.SingleSpeed.Carrier_Centurion_50PG06",
+      "value": "Buildings.Fluid.HeatExchangers.DXCoils.AirCooled.Data.SingleSpeed.Carrier_Centurion_50PG06",
+      "name": "Performance data record of evaporator coil",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "modifiers": {},
+      "enable": {
+        "operator": "||",
+        "operands": [
+          {
+            "operator": "==",
+            "operands": [
+              "Buildings.Templates.Components.Data.Coil.typ",
+              "Buildings.Templates.Components.Types.HeatExchanger.DXMultiStage"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "Buildings.Templates.Components.Data.Coil.typ",
+              "Buildings.Templates.Components.Types.HeatExchanger.DXVariableSpeed"
+            ]
+          }
+        ]
+      },
+      "choiceModifiers": {},
+      "options": [
+        "Buildings.Fluid.HeatExchangers.DXCoils.AirCooled.Data.SingleSpeed.Carrier_Centurion_50PG06"
+      ],
+      "definition": false,
+      "replaceable": true
+    },
+    {
       "modelicaPath": "Buildings.Templates.Components.Data.Coil",
       "type": "Buildings.Templates.Components.Data.Coil",
       "name": "Record for coil model",
       "value": "Buildings.Templates.Components.Data.Coil",
       "visible": false,
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Data.Coil.typ",
+        "Buildings.Templates.Components.Data.Coil.typVal",
+        "Buildings.Templates.Components.Data.Coil.have_sou",
+        "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
+        "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpWat_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpValve_nominal",
+        "Buildings.Templates.Components.Data.Coil.cap_nominal",
+        "Buildings.Templates.Components.Data.Coil.Q_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.TWatEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.TAirEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.wAirEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.datCoi"
+      ],
       "definition": true,
       "replaceable": false,
       "treeList": [
@@ -12875,9 +13763,7 @@
       },
       "enable": false,
       "choiceModifiers": {},
-      "options": [
-        "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear"
-      ],
+      "options": [],
       "definition": false,
       "replaceable": true
     },
@@ -13293,13 +14179,209 @@
       "replaceable": false
     },
     {
+      "modelicaPath": "Buildings.Templates.Components.Data.Valve.typ",
+      "type": "Buildings.Templates.Components.Types.Valve",
+      "name": "Equipment type",
+      "group": "Configuration",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Valve.m_flow_nominal",
+      "type": "Modelica.Units.SI.MassFlowRate",
+      "value": "",
+      "name": "Nominal mass flow rate of fully open valve",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "!=",
+        "operands": [
+          "Buildings.Templates.Components.Data.Valve.typ",
+          "Buildings.Templates.Components.Types.Valve.None"
+        ]
+      },
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Valve.min": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              0
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Valve.start": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "Buildings.Templates.Components.Data.Valve.typ",
+                      "Buildings.Templates.Components.Types.Valve.None"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  {
+                    "operator": "none",
+                    "operands": [
+                      1
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "final": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Valve.dpValve_nominal",
+      "type": "Modelica.Units.SI.PressureDifference",
+      "value": "",
+      "name": "Nominal pressure drop of fully open valve",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "!=",
+        "operands": [
+          "Buildings.Templates.Components.Data.Valve.typ",
+          "Buildings.Templates.Components.Types.Valve.None"
+        ]
+      },
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Valve.min": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              0
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Valve.displayUnit": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Pa"
+            ]
+          },
+          "final": false
+        },
+        "Buildings.Templates.Components.Data.Valve.start": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              0
+            ]
+          },
+          "final": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Valve.dpFixed_nominal",
+      "type": "Modelica.Units.SI.PressureDifference",
+      "value": {
+        "operator": "none",
+        "operands": [
+          0
+        ]
+      },
+      "name": "Nominal pressure drop of pipes and other equipment in flow leg",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "!=",
+        "operands": [
+          "Buildings.Templates.Components.Data.Valve.typ",
+          "Buildings.Templates.Components.Types.Valve.None"
+        ]
+      },
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Valve.dpFixedByp_nominal",
+      "type": "Modelica.Units.SI.PressureDifference",
+      "value": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Templates.Components.Data.Valve.dpFixed_nominal"
+        ]
+      },
+      "name": "Nominal pressure drop in the bypass line",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "||",
+        "operands": [
+          {
+            "operator": "==",
+            "operands": [
+              "Buildings.Templates.Components.Data.Valve.typ",
+              "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "Buildings.Templates.Components.Data.Valve.typ",
+              "Buildings.Templates.Components.Types.Valve.ThreeWayModulating"
+            ]
+          }
+        ]
+      },
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
       "modelicaPath": "Buildings.Templates.Components.Data.Valve",
       "type": "Buildings.Templates.Components.Data.Valve",
       "name": "Record for valve model",
       "value": "Buildings.Templates.Components.Data.Valve",
       "visible": false,
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Data.Valve.typ",
+        "Buildings.Templates.Components.Data.Valve.m_flow_nominal",
+        "Buildings.Templates.Components.Data.Valve.dpValve_nominal",
+        "Buildings.Templates.Components.Data.Valve.dpFixed_nominal",
+        "Buildings.Templates.Components.Data.Valve.dpFixedByp_nominal"
+      ],
       "definition": true,
       "replaceable": false,
       "treeList": [
@@ -13551,9 +14633,7 @@
       },
       "enable": false,
       "choiceModifiers": {},
-      "options": [
-        "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage"
-      ],
+      "options": [],
       "definition": false,
       "replaceable": true
     },
@@ -13998,9 +15078,7 @@
       },
       "enable": false,
       "choiceModifiers": {},
-      "options": [
-        "Buildings.Fluid.HeatExchangers.DryCoilEffectivenessNTU"
-      ],
+      "options": [],
       "definition": false,
       "replaceable": true
     },
@@ -17366,9 +18444,7 @@
       },
       "enable": false,
       "choiceModifiers": {},
-      "options": [
-        "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU"
-      ],
+      "options": [],
       "definition": false,
       "replaceable": true
     },
@@ -18292,6 +19368,7 @@
       "enable": true,
       "modifiers": {},
       "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_2A",
@@ -18320,6 +19397,7 @@
       "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone",
       "visible": true,
       "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_2A",
@@ -18338,6 +19416,18 @@
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_7",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_8"
       ],
+      "definition": true,
+      "replaceable": false,
+      "treeList": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified",
+      "name": "Not specified",
+      "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone",
+      "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified",
+      "visible": false,
       "definition": true,
       "replaceable": false,
       "treeList": [
@@ -18564,6 +19654,7 @@
       "enable": true,
       "modifiers": {},
       "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_1",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_2",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_3",
@@ -18591,6 +19682,7 @@
       "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone",
       "visible": true,
       "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_1",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_2",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_3",
@@ -18608,6 +19700,18 @@
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_15",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_16"
       ],
+      "definition": true,
+      "replaceable": false,
+      "treeList": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified",
+      "name": "Not specified",
+      "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone",
+      "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified",
+      "visible": false,
       "definition": true,
       "replaceable": false,
       "treeList": [
@@ -19642,12 +20746,6 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.eneStd",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard",
-      "value": {
-        "operator": "none",
-        "operands": [
-          "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1"
-        ]
-      },
       "name": "Energy standard, ASHRAE 90.1 or Title 24",
       "group": "",
       "tab": "",
@@ -19704,12 +20802,6 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.venStd",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard",
-      "value": {
-        "operator": "none",
-        "operands": [
-          "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
-        ]
-      },
       "name": "Ventilation standard, ASHRAE 62.1 or Title 24",
       "group": "",
       "tab": "",
@@ -19766,7 +20858,12 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.ashCliZon",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone",
-      "value": "",
+      "value": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified"
+        ]
+      },
       "name": "ASHRAE climate zone",
       "group": "",
       "tab": "",
@@ -19778,18 +20875,9 @@
           "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1"
         ]
       },
-      "modifiers": {
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.start": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_3A"
-            ]
-          },
-          "final": false
-        }
-      },
+      "modifiers": {},
       "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_2A",
@@ -19814,7 +20902,12 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.tit24CliZon",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone",
-      "value": "",
+      "value": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified"
+        ]
+      },
       "name": "California Title 24 climate zone",
       "group": "",
       "tab": "",
@@ -19826,18 +20919,9 @@
           "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24"
         ]
       },
-      "modifiers": {
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.start": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_3"
-            ]
-          },
-          "final": false
-        }
-      },
+      "modifiers": {},
       "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_1",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_2",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_3",
@@ -29976,12 +31060,6 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.eneStd",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard",
-      "value": {
-        "operator": "none",
-        "operands": [
-          "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1"
-        ]
-      },
       "name": "Energy standard, ASHRAE 90.1 or Title 24",
       "group": "",
       "tab": "",
@@ -30017,7 +31095,12 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.ashCliZon",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone",
-      "value": "",
+      "value": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified"
+        ]
+      },
       "name": "ASHRAE climate zone",
       "group": "",
       "tab": "",
@@ -30029,18 +31112,9 @@
           "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1"
         ]
       },
-      "modifiers": {
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.start": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_3A"
-            ]
-          },
-          "final": false
-        }
-      },
+      "modifiers": {},
       "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_2A",
@@ -30065,7 +31139,12 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.tit24CliZon",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone",
-      "value": "",
+      "value": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified"
+        ]
+      },
       "name": "California Title 24 climate zone",
       "group": "",
       "tab": "",
@@ -30077,18 +31156,9 @@
           "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24"
         ]
       },
-      "modifiers": {
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.start": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_3"
-            ]
-          },
-          "final": false
-        }
-      },
+      "modifiers": {},
       "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_1",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_2",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_3",
@@ -36206,12 +37276,6 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.eneStd",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard",
-      "value": {
-        "operator": "none",
-        "operands": [
-          "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1"
-        ]
-      },
       "name": "Energy standard, ASHRAE 90.1 or Title 24",
       "group": "",
       "tab": "",
@@ -36247,7 +37311,12 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.ashCliZon",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone",
-      "value": "",
+      "value": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified"
+        ]
+      },
       "name": "ASHRAE climate zone",
       "group": "",
       "tab": "",
@@ -36259,18 +37328,9 @@
           "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1"
         ]
       },
-      "modifiers": {
-        "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.start": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_3A"
-            ]
-          },
-          "final": false
-        }
-      },
+      "modifiers": {},
       "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_2A",
@@ -36295,7 +37355,12 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.tit24CliZon",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone",
-      "value": "",
+      "value": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified"
+        ]
+      },
       "name": "California Title 24 climate zone",
       "group": "",
       "tab": "",
@@ -36307,18 +37372,9 @@
           "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24"
         ]
       },
-      "modifiers": {
-        "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.start": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_3"
-            ]
-          },
-          "final": false
-        }
-      },
+      "modifiers": {},
       "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_1",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_2",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_3",
@@ -38890,6 +39946,106 @@
       "replaceable": false
     },
     {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.noAshCli",
+      "type": "Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
+      "value": "",
+      "name": "No ASHRAE climate zone",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Logical.Sources.Constant.k": {
+          "expression": {
+            "operator": "==",
+            "operands": [
+              "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.ashCliZon",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified"
+            ]
+          },
+          "final": true
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.noTit24Cli",
+      "type": "Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
+      "value": "",
+      "name": "No Title 24 climate zone",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Logical.Sources.Constant.k": {
+          "expression": {
+            "operator": "==",
+            "operands": [
+              "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.tit24CliZon",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified"
+            ]
+          },
+          "final": true
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.noCli",
+      "type": "Buildings.Controls.OBC.CDL.Logical.And",
+      "name": "Climate zone is not specified",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.not4",
+      "type": "Buildings.Controls.OBC.CDL.Logical.Not",
+      "name": "Logical not",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.assMes3",
+      "type": "Buildings.Controls.OBC.CDL.Utilities.Assert",
+      "value": "",
+      "name": "Warning when the climate zone is not specified",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Utilities.Assert.message": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Warning: Climate zone is not specified!"
+            ]
+          },
+          "final": true
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits",
       "name": "Specify the economizer high liimits",
@@ -39027,13 +40183,118 @@
         "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.swi17",
         "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.min5",
         "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.swi18",
-        "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.min6"
+        "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.min6",
+        "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.noAshCli",
+        "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.noTit24Cli",
+        "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.noCli",
+        "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.not4",
+        "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.assMes3"
       ],
       "definition": true,
       "replaceable": false,
       "treeList": [
         "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits"
       ]
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.noAshCli",
+      "type": "Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
+      "value": "",
+      "name": "No ASHRAE climate zone",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Logical.Sources.Constant.k": {
+          "expression": {
+            "operator": "==",
+            "operands": [
+              "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.ashCliZon",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified"
+            ]
+          },
+          "final": true
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.noTit24Cli",
+      "type": "Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
+      "value": "",
+      "name": "No Title 24 climate zone",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Logical.Sources.Constant.k": {
+          "expression": {
+            "operator": "==",
+            "operands": [
+              "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.tit24CliZon",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified"
+            ]
+          },
+          "final": true
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.noCli",
+      "type": "Buildings.Controls.OBC.CDL.Logical.And",
+      "name": "Climate zone is not specified",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.not2",
+      "type": "Buildings.Controls.OBC.CDL.Logical.Not",
+      "name": "Logical not",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.assMes2",
+      "type": "Buildings.Controls.OBC.CDL.Utilities.Assert",
+      "value": "",
+      "name": "Warning when the climate zone is not specified",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Utilities.Assert.message": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Warning: Climate zone is not specified!"
+            ]
+          },
+          "final": true
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
     },
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller",
@@ -39105,7 +40366,12 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.enaDis",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.modRet",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.modRel",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.ecoHigLim"
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.ecoHigLim",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.noAshCli",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.noTit24Cli",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.noCli",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.not2",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.assMes2"
       ],
       "definition": true,
       "replaceable": false,
@@ -45976,6 +47242,106 @@
       ]
     },
     {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.noAshCli",
+      "type": "Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
+      "value": "",
+      "name": "No ASHRAE climate zone",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Logical.Sources.Constant.k": {
+          "expression": {
+            "operator": "==",
+            "operands": [
+              "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.ashCliZon",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified"
+            ]
+          },
+          "final": true
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.noTit24Cli",
+      "type": "Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
+      "value": "",
+      "name": "No Title 24 climate zone",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Logical.Sources.Constant.k": {
+          "expression": {
+            "operator": "==",
+            "operands": [
+              "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.tit24CliZon",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified"
+            ]
+          },
+          "final": true
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.noCli",
+      "type": "Buildings.Controls.OBC.CDL.Logical.And",
+      "name": "Climate zone is not specified",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.not2",
+      "type": "Buildings.Controls.OBC.CDL.Logical.Not",
+      "name": "Logical not",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.assMes2",
+      "type": "Buildings.Controls.OBC.CDL.Utilities.Assert",
+      "value": "",
+      "name": "Warning when the climate zone is not specified",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Utilities.Assert.message": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Warning: Climate zone is not specified!"
+            ]
+          },
+          "final": true
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller",
       "name": "Multizone VAV air handling unit controller",
@@ -46149,7 +47515,12 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.addPar",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.gai",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.gai1",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.relFanCon"
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.relFanCon",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.noAshCli",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.noTit24Cli",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.noCli",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.not2",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.assMes2"
       ],
       "definition": true,
       "replaceable": false,
@@ -52514,6 +53885,7 @@
         }
       },
       "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_2A",
@@ -52562,6 +53934,7 @@
         }
       },
       "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_1",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_2",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_3",
@@ -55270,7 +56643,22 @@
           "final": false
         }
       },
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Data.Coil.typ",
+        "Buildings.Templates.Components.Data.Coil.typVal",
+        "Buildings.Templates.Components.Data.Coil.have_sou",
+        "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
+        "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpWat_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpValve_nominal",
+        "Buildings.Templates.Components.Data.Coil.cap_nominal",
+        "Buildings.Templates.Components.Data.Coil.Q_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.TWatEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.TAirEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.wAirEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.datCoi"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -55327,7 +56715,22 @@
           "final": false
         }
       },
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Data.Coil.typ",
+        "Buildings.Templates.Components.Data.Coil.typVal",
+        "Buildings.Templates.Components.Data.Coil.have_sou",
+        "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
+        "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpWat_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpValve_nominal",
+        "Buildings.Templates.Components.Data.Coil.cap_nominal",
+        "Buildings.Templates.Components.Data.Coil.Q_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.TWatEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.TAirEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.wAirEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.datCoi"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -55384,7 +56787,22 @@
           "final": false
         }
       },
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Data.Coil.typ",
+        "Buildings.Templates.Components.Data.Coil.typVal",
+        "Buildings.Templates.Components.Data.Coil.have_sou",
+        "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
+        "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpWat_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpValve_nominal",
+        "Buildings.Templates.Components.Data.Coil.cap_nominal",
+        "Buildings.Templates.Components.Data.Coil.Q_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.TWatEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.TAirEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.wAirEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.datCoi"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -57342,7 +58760,22 @@
           "final": false
         }
       },
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Data.Coil.typ",
+        "Buildings.Templates.Components.Data.Coil.typVal",
+        "Buildings.Templates.Components.Data.Coil.have_sou",
+        "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
+        "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpWat_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpValve_nominal",
+        "Buildings.Templates.Components.Data.Coil.cap_nominal",
+        "Buildings.Templates.Components.Data.Coil.Q_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.TWatEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.TAirEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.wAirEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.datCoi"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -58096,12 +59529,6 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller.venStd",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard",
-      "value": {
-        "operator": "none",
-        "operands": [
-          "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
-        ]
-      },
       "name": "Ventilation standard, ASHRAE 62.1 or Title 24",
       "group": "",
       "tab": "",
@@ -69521,12 +70948,6 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Controller.venStd",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard",
-      "value": {
-        "operator": "none",
-        "operands": [
-          "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
-        ]
-      },
       "name": "Ventilation standard, ASHRAE 62.1 or Title 24",
       "group": "",
       "tab": "",
@@ -77850,6 +79271,10 @@
           "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone",
           "final": false
         },
+        "Buildings.Templates.Data.AllSystems.Not_Specified": {
+          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified",
+          "final": false
+        },
         "Buildings.Templates.Data.AllSystems.Zone_1A": {
           "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A",
           "final": false
@@ -78078,13 +79503,7 @@
           "final": true
         }
       },
-      "options": [
-        "Buildings.Templates.Components.Data.Fan.typ",
-        "Buildings.Templates.Components.Data.Fan.nFan",
-        "Buildings.Templates.Components.Data.Fan.m_flow_nominal",
-        "Buildings.Templates.Components.Data.Fan.dp_nominal",
-        "Buildings.Templates.Components.Data.Fan.per"
-      ],
+      "options": [],
       "definition": false,
       "replaceable": false,
       "groups": []
@@ -78239,22 +79658,7 @@
           "final": true
         }
       },
-      "options": [
-        "Buildings.Templates.Components.Data.Coil.typ",
-        "Buildings.Templates.Components.Data.Coil.typVal",
-        "Buildings.Templates.Components.Data.Coil.have_sou",
-        "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
-        "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
-        "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
-        "Buildings.Templates.Components.Data.Coil.dpWat_nominal",
-        "Buildings.Templates.Components.Data.Coil.dpValve_nominal",
-        "Buildings.Templates.Components.Data.Coil.cap_nominal",
-        "Buildings.Templates.Components.Data.Coil.Q_flow_nominal",
-        "Buildings.Templates.Components.Data.Coil.TWatEnt_nominal",
-        "Buildings.Templates.Components.Data.Coil.TAirEnt_nominal",
-        "Buildings.Templates.Components.Data.Coil.wAirEnt_nominal",
-        "Buildings.Templates.Components.Data.Coil.datCoi"
-      ],
+      "options": [],
       "definition": false,
       "replaceable": false,
       "groups": []
@@ -78279,13 +79683,7 @@
           "final": true
         }
       },
-      "options": [
-        "Buildings.Templates.Components.Data.Valve.typ",
-        "Buildings.Templates.Components.Data.Valve.m_flow_nominal",
-        "Buildings.Templates.Components.Data.Valve.dpValve_nominal",
-        "Buildings.Templates.Components.Data.Valve.dpFixed_nominal",
-        "Buildings.Templates.Components.Data.Valve.dpFixedByp_nominal"
-      ],
+      "options": [],
       "definition": false,
       "replaceable": false,
       "groups": []
@@ -79708,1088 +81106,6 @@
         "Buildings.Templates.Components.Data.Fan.dp_nominal",
         "Buildings.Templates.Components.Data.Fan.per"
       ],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Coil.typ",
-      "type": "Buildings.Templates.Components.Types.Coil",
-      "name": "Equipment type",
-      "group": "Configuration",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {},
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Coil.typVal",
-      "type": "Buildings.Templates.Components.Types.Valve",
-      "name": "Type of valve",
-      "group": "Configuration",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {},
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Coil.have_sou",
-      "type": "Boolean",
-      "name": "Set to true for fluid ports on the source side",
-      "group": "Configuration",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {},
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
-      "type": "Modelica.Units.SI.MassFlowRate",
-      "value": "",
-      "name": "Air mass flow rate",
-      "group": "Nominal condition",
-      "tab": "",
-      "visible": false,
-      "enable": {
-        "operator": "&&",
-        "operands": [
-          {
-            "operator": "!=",
-            "operands": [
-              "Buildings.Templates.Components.Data.Coil.typ",
-              "Buildings.Templates.Components.Types.Coil.None"
-            ]
-          },
-          {
-            "operator": "!=",
-            "operands": [
-              "Buildings.Templates.Components.Data.Coil.typ",
-              "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage"
-            ]
-          },
-          {
-            "operator": "!=",
-            "operands": [
-              "Buildings.Templates.Components.Data.Coil.typ",
-              "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed"
-            ]
-          }
-        ]
-      },
-      "modifiers": {
-        "Buildings.Templates.Components.Data.Coil.min": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              0
-            ]
-          },
-          "final": true
-        },
-        "Buildings.Templates.Components.Data.Coil.start": {
-          "expression": {
-            "operator": "if_elseif",
-            "operands": [
-              {
-                "operator": "if",
-                "operands": [
-                  {
-                    "operator": "||",
-                    "operands": [
-                      {
-                        "operator": "==",
-                        "operands": [
-                          "Buildings.Templates.Components.Data.Coil.typ",
-                          "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage"
-                        ]
-                      },
-                      {
-                        "operator": "==",
-                        "operands": [
-                          "Buildings.Templates.Components.Data.Coil.typ",
-                          "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed"
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "operator": "none",
-                    "operands": [
-                      "datCoi.sta[datCoi.nSta].nomVal.m_flow_nominal"
-                    ]
-                  }
-                ]
-              },
-              {
-                "operator": "else",
-                "operands": [
-                  {
-                    "operator": "none",
-                    "operands": [
-                      1
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "final": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
-      "type": "Modelica.Units.SI.PressureDifference",
-      "value": "",
-      "name": "Air pressure drop",
-      "group": "Nominal condition",
-      "tab": "",
-      "visible": false,
-      "enable": {
-        "operator": "!=",
-        "operands": [
-          "Buildings.Templates.Components.Data.Coil.typ",
-          "Buildings.Templates.Components.Types.Coil.None"
-        ]
-      },
-      "modifiers": {
-        "Buildings.Templates.Components.Data.Coil.min": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              0
-            ]
-          },
-          "final": true
-        },
-        "Buildings.Templates.Components.Data.Coil.displayUnit": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "Pa"
-            ]
-          },
-          "final": false
-        },
-        "Buildings.Templates.Components.Data.Coil.start": {
-          "expression": {
-            "operator": "if_elseif",
-            "operands": [
-              {
-                "operator": "if",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "Buildings.Templates.Components.Data.Coil.typ",
-                      "Buildings.Templates.Components.Types.Coil.None"
-                    ]
-                  },
-                  {
-                    "operator": "none",
-                    "operands": [
-                      0
-                    ]
-                  }
-                ]
-              },
-              {
-                "operator": "else",
-                "operands": [
-                  {
-                    "operator": "none",
-                    "operands": [
-                      100
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "final": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
-      "type": "Modelica.Units.SI.MassFlowRate",
-      "value": "",
-      "name": "Liquid mass flow rate",
-      "group": "Nominal condition",
-      "tab": "",
-      "visible": false,
-      "enable": "Buildings.Templates.Components.Data.Coil.have_sou",
-      "modifiers": {
-        "Buildings.Templates.Components.Data.Coil.min": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              0
-            ]
-          },
-          "final": true
-        },
-        "Buildings.Templates.Components.Data.Coil.start": {
-          "expression": {
-            "operator": "if_elseif",
-            "operands": [
-              {
-                "operator": "if",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "Buildings.Templates.Components.Data.Coil.typ",
-                      "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
-                    ]
-                  },
-                  {
-                    "operator": "none",
-                    "operands": [
-                      "Q_flow_nominal/4186/10"
-                    ]
-                  }
-                ]
-              },
-              {
-                "operator": "else_if",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "Buildings.Templates.Components.Data.Coil.typ",
-                      "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
-                    ]
-                  },
-                  {
-                    "operator": "none",
-                    "operands": [
-                      "-Q_flow_nominal/4186/5"
-                    ]
-                  }
-                ]
-              },
-              {
-                "operator": "else",
-                "operands": [
-                  {
-                    "operator": "none",
-                    "operands": [
-                      0
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "final": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Coil.dpWat_nominal",
-      "type": "Modelica.Units.SI.PressureDifference",
-      "value": "",
-      "name": "Liquid pressure drop across coil",
-      "group": "Nominal condition",
-      "tab": "",
-      "visible": false,
-      "enable": "Buildings.Templates.Components.Data.Coil.have_sou",
-      "modifiers": {
-        "Buildings.Templates.Components.Data.Coil.min": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              0
-            ]
-          },
-          "final": true
-        },
-        "Buildings.Templates.Components.Data.Coil.displayUnit": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "Pa"
-            ]
-          },
-          "final": false
-        },
-        "Buildings.Templates.Components.Data.Coil.start": {
-          "expression": {
-            "operator": "if_elseif",
-            "operands": [
-              {
-                "operator": "if",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "Buildings.Templates.Components.Data.Coil.typ",
-                      "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
-                    ]
-                  },
-                  {
-                    "operator": "none",
-                    "operands": [
-                      5000
-                    ]
-                  }
-                ]
-              },
-              {
-                "operator": "else_if",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "Buildings.Templates.Components.Data.Coil.typ",
-                      "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
-                    ]
-                  },
-                  {
-                    "operator": "none",
-                    "operands": [
-                      30000
-                    ]
-                  }
-                ]
-              },
-              {
-                "operator": "else",
-                "operands": [
-                  {
-                    "operator": "none",
-                    "operands": [
-                      0
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "final": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Coil.dpValve_nominal",
-      "type": "Modelica.Units.SI.PressureDifference",
-      "value": "",
-      "name": "Liquid pressure drop across fully open valve",
-      "group": "Nominal condition",
-      "tab": "",
-      "visible": false,
-      "enable": {
-        "operator": "!=",
-        "operands": [
-          "Buildings.Templates.Components.Data.Coil.typVal",
-          "Buildings.Templates.Components.Types.Valve.None"
-        ]
-      },
-      "modifiers": {
-        "Buildings.Templates.Components.Data.Coil.min": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              0
-            ]
-          },
-          "final": true
-        },
-        "Buildings.Templates.Components.Data.Coil.displayUnit": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "Pa"
-            ]
-          },
-          "final": false
-        },
-        "Buildings.Templates.Components.Data.Coil.start": {
-          "expression": {
-            "operator": "if_elseif",
-            "operands": [
-              {
-                "operator": "if",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "Buildings.Templates.Components.Data.Coil.typVal",
-                      "Buildings.Templates.Components.Types.Valve.None"
-                    ]
-                  },
-                  {
-                    "operator": "none",
-                    "operands": [
-                      0
-                    ]
-                  }
-                ]
-              },
-              {
-                "operator": "else",
-                "operands": [
-                  {
-                    "operator": "none",
-                    "operands": [
-                      "dpWat_nominal/2"
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "final": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Coil.cap_nominal",
-      "type": "Modelica.Units.SI.HeatFlowRate",
-      "value": "",
-      "name": "Coil capacity",
-      "group": "Nominal condition",
-      "tab": "",
-      "visible": false,
-      "enable": {
-        "operator": "&&",
-        "operands": [
-          {
-            "operator": "!=",
-            "operands": [
-              "Buildings.Templates.Components.Data.Coil.typ",
-              "Buildings.Templates.Components.Types.Coil.None"
-            ]
-          },
-          {
-            "operator": "!=",
-            "operands": [
-              "Buildings.Templates.Components.Data.Coil.typ",
-              "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage"
-            ]
-          },
-          {
-            "operator": "!=",
-            "operands": [
-              "Buildings.Templates.Components.Data.Coil.typ",
-              "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed"
-            ]
-          }
-        ]
-      },
-      "modifiers": {
-        "Buildings.Templates.Components.Data.Coil.min": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              0
-            ]
-          },
-          "final": true
-        },
-        "Buildings.Templates.Components.Data.Coil.start": {
-          "expression": {
-            "operator": "if_elseif",
-            "operands": [
-              {
-                "operator": "if",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "Buildings.Templates.Components.Data.Coil.typ",
-                      "Buildings.Templates.Components.Types.Coil.None"
-                    ]
-                  },
-                  {
-                    "operator": "none",
-                    "operands": [
-                      0
-                    ]
-                  }
-                ]
-              },
-              {
-                "operator": "else_if",
-                "operands": [
-                  {
-                    "operator": "||",
-                    "operands": [
-                      {
-                        "operator": "==",
-                        "operands": [
-                          "Buildings.Templates.Components.Data.Coil.typ",
-                          "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage"
-                        ]
-                      },
-                      {
-                        "operator": "==",
-                        "operands": [
-                          "Buildings.Templates.Components.Data.Coil.typ",
-                          "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed"
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "operator": "function_call",
-                    "operands": [
-                      {
-                        "operator": "abs",
-                        "operands": [
-                          {
-                            "operator": "none",
-                            "operands": [
-                              "abs"
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "operator": "else",
-                "operands": [
-                  {
-                    "operator": "none",
-                    "operands": [
-                      10000
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "final": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Coil.Q_flow_nominal",
-      "type": "Modelica.Units.SI.HeatFlowRate",
-      "value": {
-        "operator": "if_elseif",
-        "operands": [
-          {
-            "operator": "if",
-            "operands": [
-              {
-                "operator": "||",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "Buildings.Templates.Components.Data.Coil.typ",
-                      "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "Buildings.Templates.Components.Data.Coil.typ",
-                      "Buildings.Templates.Components.Types.Coil.ElectricHeating"
-                    ]
-                  }
-                ]
-              },
-              {
-                "operator": "none",
-                "operands": [
-                  "Buildings.Templates.Components.Data.Coil.cap_nominal"
-                ]
-              }
-            ]
-          },
-          {
-            "operator": "else",
-            "operands": [
-              {
-                "operator": "none",
-                "operands": [
-                  "-1*cap_nominal"
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      "name": "Nominal heat flow rate",
-      "group": "Nominal condition",
-      "tab": "",
-      "visible": false,
-      "enable": true,
-      "modifiers": {},
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Coil.TWatEnt_nominal",
-      "type": "Modelica.Units.SI.Temperature",
-      "value": "",
-      "name": "Nominal entering liquid temperature",
-      "group": "Nominal condition",
-      "tab": "",
-      "visible": false,
-      "enable": "Buildings.Templates.Components.Data.Coil.have_sou",
-      "modifiers": {
-        "Buildings.Templates.Components.Data.Coil.min": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              273.15
-            ]
-          },
-          "final": true
-        },
-        "Buildings.Templates.Components.Data.Coil.displayUnit": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "degC"
-            ]
-          },
-          "final": false
-        },
-        "Buildings.Templates.Components.Data.Coil.start": {
-          "expression": {
-            "operator": "if_elseif",
-            "operands": [
-              {
-                "operator": "if",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "Buildings.Templates.Components.Data.Coil.typ",
-                      "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
-                    ]
-                  },
-                  {
-                    "operator": "none",
-                    "operands": [
-                      "50 +273.15"
-                    ]
-                  }
-                ]
-              },
-              {
-                "operator": "else_if",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "Buildings.Templates.Components.Data.Coil.typ",
-                      "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
-                    ]
-                  },
-                  {
-                    "operator": "none",
-                    "operands": [
-                      "7 +273.15"
-                    ]
-                  }
-                ]
-              },
-              {
-                "operator": "else",
-                "operands": [
-                  {
-                    "operator": "none",
-                    "operands": [
-                      273.15
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "final": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Coil.TAirEnt_nominal",
-      "type": "Modelica.Units.SI.Temperature",
-      "value": "",
-      "name": "Nominal entering air temperature",
-      "group": "Nominal condition",
-      "tab": "",
-      "visible": false,
-      "enable": "Buildings.Templates.Components.Data.Coil.have_sou",
-      "modifiers": {
-        "Buildings.Templates.Components.Data.Coil.min": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              273.15
-            ]
-          },
-          "final": true
-        },
-        "Buildings.Templates.Components.Data.Coil.displayUnit": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "degC"
-            ]
-          },
-          "final": false
-        },
-        "Buildings.Templates.Components.Data.Coil.start": {
-          "expression": {
-            "operator": "if_elseif",
-            "operands": [
-              {
-                "operator": "if",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "Buildings.Templates.Components.Data.Coil.typ",
-                      "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
-                    ]
-                  },
-                  {
-                    "operator": "none",
-                    "operands": [
-                      "30 +273.15"
-                    ]
-                  }
-                ]
-              },
-              {
-                "operator": "else",
-                "operands": [
-                  {
-                    "operator": "none",
-                    "operands": [
-                      273.15
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "final": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Coil.wAirEnt_nominal",
-      "type": "Modelica.Units.SI.MassFraction",
-      "value": "",
-      "name": "Nominal entering air humidity ratio",
-      "group": "Nominal condition",
-      "tab": "",
-      "visible": false,
-      "enable": {
-        "operator": "==",
-        "operands": [
-          "Buildings.Templates.Components.Data.Coil.typ",
-          "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
-        ]
-      },
-      "modifiers": {
-        "Buildings.Templates.Components.Data.Coil.min": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              0
-            ]
-          },
-          "final": true
-        },
-        "Buildings.Templates.Components.Data.Coil.start": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              0.01
-            ]
-          },
-          "final": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Coil.datCoi",
-      "type": "Buildings.Fluid.HeatExchangers.DXCoils.AirCooled.Data.SingleSpeed.Carrier_Centurion_50PG06",
-      "value": "Buildings.Fluid.HeatExchangers.DXCoils.AirCooled.Data.SingleSpeed.Carrier_Centurion_50PG06",
-      "name": "Performance data record of evaporator coil",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "modifiers": {},
-      "enable": {
-        "operator": "||",
-        "operands": [
-          {
-            "operator": "==",
-            "operands": [
-              "Buildings.Templates.Components.Data.Coil.typ",
-              "Buildings.Templates.Components.Types.HeatExchanger.DXMultiStage"
-            ]
-          },
-          {
-            "operator": "==",
-            "operands": [
-              "Buildings.Templates.Components.Data.Coil.typ",
-              "Buildings.Templates.Components.Types.HeatExchanger.DXVariableSpeed"
-            ]
-          }
-        ]
-      },
-      "choiceModifiers": {},
-      "options": [
-        "Buildings.Fluid.HeatExchangers.DXCoils.AirCooled.Data.SingleSpeed.Carrier_Centurion_50PG06"
-      ],
-      "definition": false,
-      "replaceable": true,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Valve.typ",
-      "type": "Buildings.Templates.Components.Types.Valve",
-      "name": "Equipment type",
-      "group": "Configuration",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {},
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Valve.m_flow_nominal",
-      "type": "Modelica.Units.SI.MassFlowRate",
-      "value": "",
-      "name": "Nominal mass flow rate of fully open valve",
-      "group": "Nominal condition",
-      "tab": "",
-      "visible": false,
-      "enable": {
-        "operator": "!=",
-        "operands": [
-          "Buildings.Templates.Components.Data.Valve.typ",
-          "Buildings.Templates.Components.Types.Valve.None"
-        ]
-      },
-      "modifiers": {
-        "Buildings.Templates.Components.Data.Valve.min": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              0
-            ]
-          },
-          "final": true
-        },
-        "Buildings.Templates.Components.Data.Valve.start": {
-          "expression": {
-            "operator": "if_elseif",
-            "operands": [
-              {
-                "operator": "if",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "Buildings.Templates.Components.Data.Valve.typ",
-                      "Buildings.Templates.Components.Types.Valve.None"
-                    ]
-                  },
-                  {
-                    "operator": "none",
-                    "operands": [
-                      0
-                    ]
-                  }
-                ]
-              },
-              {
-                "operator": "else",
-                "operands": [
-                  {
-                    "operator": "none",
-                    "operands": [
-                      1
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "final": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Valve.dpValve_nominal",
-      "type": "Modelica.Units.SI.PressureDifference",
-      "value": "",
-      "name": "Nominal pressure drop of fully open valve",
-      "group": "Nominal condition",
-      "tab": "",
-      "visible": false,
-      "enable": {
-        "operator": "!=",
-        "operands": [
-          "Buildings.Templates.Components.Data.Valve.typ",
-          "Buildings.Templates.Components.Types.Valve.None"
-        ]
-      },
-      "modifiers": {
-        "Buildings.Templates.Components.Data.Valve.min": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              0
-            ]
-          },
-          "final": true
-        },
-        "Buildings.Templates.Components.Data.Valve.displayUnit": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "Pa"
-            ]
-          },
-          "final": false
-        },
-        "Buildings.Templates.Components.Data.Valve.start": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              0
-            ]
-          },
-          "final": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Valve.dpFixed_nominal",
-      "type": "Modelica.Units.SI.PressureDifference",
-      "value": {
-        "operator": "none",
-        "operands": [
-          0
-        ]
-      },
-      "name": "Nominal pressure drop of pipes and other equipment in flow leg",
-      "group": "Nominal condition",
-      "tab": "",
-      "visible": false,
-      "enable": {
-        "operator": "!=",
-        "operands": [
-          "Buildings.Templates.Components.Data.Valve.typ",
-          "Buildings.Templates.Components.Types.Valve.None"
-        ]
-      },
-      "modifiers": {},
-      "options": [],
-      "definition": false,
-      "replaceable": false,
-      "groups": []
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Valve.dpFixedByp_nominal",
-      "type": "Modelica.Units.SI.PressureDifference",
-      "value": {
-        "operator": "none",
-        "operands": [
-          "Buildings.Templates.Components.Data.Valve.dpFixed_nominal"
-        ]
-      },
-      "name": "Nominal pressure drop in the bypass line",
-      "group": "Nominal condition",
-      "tab": "",
-      "visible": false,
-      "enable": {
-        "operator": "||",
-        "operands": [
-          {
-            "operator": "==",
-            "operands": [
-              "Buildings.Templates.Components.Data.Valve.typ",
-              "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition"
-            ]
-          },
-          {
-            "operator": "==",
-            "operands": [
-              "Buildings.Templates.Components.Data.Valve.typ",
-              "Buildings.Templates.Components.Types.Valve.ThreeWayModulating"
-            ]
-          }
-        ]
-      },
-      "modifiers": {},
-      "options": [],
       "definition": false,
       "replaceable": false,
       "groups": []
