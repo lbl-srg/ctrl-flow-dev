@@ -1,9 +1,9 @@
 import { generateDoc } from "../../../src/sequence";
 import fs from "fs";
 
-const EXAMPLE_SELECTIONS = fs.readFileSync(`../../../scripts/sequence-doc/tests/static/real_selections.txt`, {
+const EXAMPLE_SELECTIONS = JSON.parse(fs.readFileSync(`../../../scripts/sequence-doc/tests/static/real_selections.txt`, {
   encoding: "utf8",
-});
+}));
 
 const TIMEOUT_IN_MILLISECONDS = 60000;
 const tempDirPath = "/tmp/test-linkage-widget";
