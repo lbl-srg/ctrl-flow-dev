@@ -278,7 +278,7 @@ export function getUpdatedModifiers(
     if (values[key] !== null) {
       const selectedType = values[key];
       const modelicaPath = key.split("-")[0];
-      const instancePath = key.split("-")[1].split(".").slice(0, -1).join(".");
+      const instancePath = key.split("-")[1]?.split(".").slice(0, -1).join(".") || '';
       const option = allOptions[modelicaPath] as OptionInterface;
       let choiceModifiers = {};
 
