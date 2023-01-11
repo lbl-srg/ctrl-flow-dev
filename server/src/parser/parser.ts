@@ -675,8 +675,9 @@ export class ReplaceableInput extends Input {
     }
 
     // if an annotation has been provided, use the choices from that annotation
-    // otherwise fallback to using the parameter type
-    const childTypes = this.choices.length ? this.choices : [this.type];
+    // otherwise fallback to using the parameter type (or if a dead end, nothing)
+    let childTypes = this.choices.length ? this.choices : [this.type];
+    childTypes = this.deadEnd ? [] : childTypes;
     const visible = childTypes.length > 1;
 
     inputs[this.modelicaPath] = {
