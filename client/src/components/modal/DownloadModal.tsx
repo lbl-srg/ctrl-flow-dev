@@ -51,7 +51,11 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
     const seqData: {[key: string]: any} = {};
 
     projectConfigs.forEach((config) => {
-      const configData = { ...config.evaluatedValues, ...config.selections };
+      const configData = {
+        ...config.evaluatedValues,
+        ...config.selections,
+        [config.systemPath]: config.templatePath,
+      };
       const configKeys = Object.keys(configData);
 
       configKeys.forEach((key) => {
