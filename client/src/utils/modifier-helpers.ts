@@ -56,6 +56,7 @@ function updateModifiers(
   option: OptionInterface,
   baseInstancePath: string,
   modifiers: Modifiers,
+  selectedType: string,
   options: { [key: string]: OptionInterface },
 ) {
   if (option === undefined) {
@@ -64,28 +65,35 @@ function updateModifiers(
   const optionModifiers = option.modifiers as Modifiers;
   const childOptions = option.options;
 
+  const name = option.modelicaPath.split(".").pop();
+  const newBase = option.definition
+    ? baseInstancePath
+    : [baseInstancePath, name].filter((p) => p !== "").join(".");
+
   // grab the current options modifiers
   if (optionModifiers) {
-    addToModObject(optionModifiers, baseInstancePath, modifiers, options);
+    addToModObject(optionModifiers, newBase, modifiers, options);
   }
 
   // if this is a definition - visit all child options and grab modifiers
   if (childOptions) {
-    const name = option.modelicaPath.split(".").pop();
-    const newBase = option.definition
-      ? baseInstancePath
-      : [baseInstancePath, name].filter((p) => p !== "").join(".");
-
     if (option.definition) {
       childOptions.map((path) => {
         const childOption = options[path] as OptionInterface;
 
-        updateModifiers(childOption, newBase, modifiers, options);
+        updateModifiers(childOption, newBase, modifiers, "", options);
       });
     } else {
       // this is a parameter (either replaceable or enum) - grab the type and its modifiers
       // only use the 'type', not child options to fetch modifiers (default options)
-      const typeOption = options[option.type];
+      let typeOption = undefined;
+
+      if (selectedType) {
+        typeOption = options[selectedType];
+      } else {
+        typeOption = options[option.type];
+      }
+
       if (typeOption && typeOption.options) {
         // add modifiers from type option
         if (typeOption.modifiers) {
@@ -94,7 +102,7 @@ function updateModifiers(
         typeOption.options.map((path) => {
           const childOption = options[path] as OptionInterface;
 
-          updateModifiers(childOption, newBase, modifiers, options);
+          updateModifiers(childOption, newBase, modifiers, "", options);
         });
       }
     }
@@ -105,15 +113,16 @@ export function buildModifiers(
   startOption: OptionInterface,
   baseInstancePath: string,
   baseModifiers: Modifiers,
+  selectedType: string,
   options: { [key: string]: OptionInterface },
   addProjectMods = true,
 ): Modifiers {
   const modifiers: Modifiers = { ...baseModifiers };
   if (addProjectMods) {
     const datAll = options["datAll"]; // project settings
-    updateModifiers(datAll, "", modifiers, options);
+    updateModifiers(datAll, "", modifiers, "", options);
   }
-  updateModifiers(startOption, baseInstancePath, modifiers, options);
+  updateModifiers(startOption, baseInstancePath, modifiers, selectedType, options);
 
   return modifiers;
 }
@@ -128,10 +137,10 @@ export function buildModifiers(
 export function applyPathModifiers(
   scopePath: string,
   pathModifiers: Modifiers,
-): string {
+): string | undefined {
   const splitScopePath = scopePath.split(".");
   let postFix: string | undefined = "";
-  let modifiedPath = scopePath;
+  let modifiedPath = undefined;
 
   while (splitScopePath.length > 0) {
     const testPath = splitScopePath.join(".");
@@ -227,7 +236,7 @@ export function applyVisibilityModifiers(
   pathModifiers: Modifiers,
   allOptions: { [key: string]: OptionInterface },
 ): boolean {
-  const scopePath = applyPathModifiers(scope, pathModifiers);
+  const scopePath = applyPathModifiers(scope, pathModifiers) || scope;
   const modifier: any = modifiers[scopePath];
   let enable: Expression | boolean | undefined = isExpression(option.enable)
     ? deepCopy(option.enable)
@@ -267,7 +276,9 @@ export function getUpdatedModifiers(
 
   optionKeys.forEach((key) => {
     if (values[key] !== null) {
-      const [modelicaPath, instancePath] = key.split("-");
+      const selectedType = values[key];
+      const modelicaPath = key.split("-")[0];
+      const instancePath = key.split("-")[1]?.split(".").slice(0, -1).join(".") || '';
       const option = allOptions[modelicaPath] as OptionInterface;
       let choiceModifiers = {};
 
@@ -282,6 +293,7 @@ export function getUpdatedModifiers(
           option,
           instancePath,
           updatedModifiers,
+          selectedType,
           allOptions,
           false,
         ),

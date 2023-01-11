@@ -35,8 +35,11 @@ def initialize_remove_list():
 def remove_node(node):
     ''' Controls access to a global list for nodes to be deleted
     '''
-    global elements_to_delete
-    elements_to_delete.append(node._element)
+    try:
+       remove_element(node._element)
+    except AttributeError:
+        # node is actually an element, not a Paragraph
+        remove_element(node)
 
 def remove_element(element):
     ''' Adds a lxml element to global list for deletion
@@ -101,7 +104,7 @@ def remove_section(paragraph: Paragraph, run_op_lookup: Dict):
             sib_t = Table(sib_el, paragraph._parent)
             remove_node(sib_t)
         elif sib_el.tag in BOOKMARK_TAGS:
-            remove_element(sib_el)
+            remove_node(sib_el)
         elif sib_el.tag in SECTION_TAG:
             break
         else:
