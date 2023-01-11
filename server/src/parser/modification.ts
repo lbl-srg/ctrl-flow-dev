@@ -250,7 +250,6 @@ function unpackModblock(props: ModificationProps) {
           // correctly unpacking nested modifiers - this is a bug
           // kludge: remove nested modifiers
           mods.forEach((m) => (m.mods = []));
-          console.log(mods);
         }
       }
     } else if ("class_modification" in mod) {
