@@ -32,9 +32,8 @@ jobs:
       - name: create modelica-json
         run: |
           cd ../dependencies
-          node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d template-json
+          node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d ${GITHUB_WORKSPACE}/dependencies/template-json
           cd ../server
-          pwd
       - name: Build templates.json
         run: npm run parseTemplateJSON
       - name: Upload templates.json as an artifact
