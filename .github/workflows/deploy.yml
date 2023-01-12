@@ -11,7 +11,7 @@ jobs:
   build-template-json:
     runs-on: ubuntu-22.04
     env:
-      MODELICA_DEPENDENCIES: dependencies
+      MODELICA_DEPENDENCIES: ${GITHUB_WORKSPACE}/dependencies
     defaults:
       run:
         working-directory: server
@@ -31,16 +31,17 @@ jobs:
         run: npm ci
       - name: create modelica-json
         run: |
-          cd ../dependencies
-          node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d ${GITHUB_WORKSPACE}/dependencies/template-json
-          cd ../server
-      - name: Build templates.json
-        run: npm run parseTemplateJSON
-      - name: Upload templates.json as an artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{env.TEMPLATES_FILE_NAME}}
-          path: scripts/${{env.TEMPLATES_FILE_NAME}}
+          cd ${GITHUB_WORKSPACE}/dependencies
+
+          # node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d ${GITHUB_WORKSPACE}/dependencies/template-json
+          cd ${GITHUB_WORKSPACE}/server
+      # - name: Build templates.json
+      #   run: npm run parseTemplateJSON
+      # - name: Upload templates.json as an artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: ${{env.TEMPLATES_FILE_NAME}}
+      #     path: scripts/${{env.TEMPLATES_FILE_NAME}}
 
   deploy:
     needs: build-template-json
