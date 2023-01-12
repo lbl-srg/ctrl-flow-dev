@@ -22,6 +22,7 @@ export function findPackageEntryPoints(
   const entryPoints: { path: string; json: Object | undefined }[] = [];
   [prefix, ...MODELICAPATH].forEach((dir) => {
     const dirPath = path.resolve(dir, reference);
+    console.log(`********DIR_PATH_FOR_ENTRY_POINT: ${dirPath}`);
     if (fs.existsSync(dirPath)) {
       const cmd = `grep -rl ${dirPath} -e "${TEMPLATE_IDENTIFIER}"`;
       const response = execSync(cmd).toString();
