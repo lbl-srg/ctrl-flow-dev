@@ -34,7 +34,7 @@ jobs:
           cd ../dependencies
           node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d template-json
           cd ../server
-          echo $(pwd)
+          pwd
       - name: Build templates.json
         run: npm run parseTemplateJSON
       - name: Upload templates.json as an artifact
