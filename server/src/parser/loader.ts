@@ -19,6 +19,7 @@ export function findPackageEntryPoints(
   prefix: string,
   reference: string,
 ): { path: string; json: Object | undefined }[] {
+  console.log(`******** __dirname: ${__dirname}`);
   console.log(`********MODELICA_DEPENDENCIES: ${config.MODELICA_DEPENDENCIES}`);
   const entryPoints: { path: string; json: Object | undefined }[] = [];
   [prefix, ...MODELICAPATH].forEach((dir) => {
