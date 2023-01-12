@@ -1,3 +1,4 @@
+import { resolvePath } from "react-router-dom";
 import Config, { ConfigInterface } from "../../src/data/config";
 import Template, {
   TemplateInterface,
@@ -173,22 +174,39 @@ const _instancePathToOption = (
   return curPath;
 };
 
-// Wrapper around instacePathToOption to apply all possible
-// scope paths
-export function instancePathToOption(
-  instancePath: string,
+// This is a hack to determine modelica paths
+// The backend expands all relative paths every 'option' path should begin with 'Modelica'
+// 'Modelica' or 'Buildings' it is a modelica path. Instance paths
+// look like 'ctl.have_CO2Sen'
+function isModelicaPath(path: string) {
+  // pop off each segment of the path from first to last
+  // if the segment is a definition, keep going popping
+  return path.startsWith("Modelica") || path.startsWith("Buildings");
+}
+
+/**
+ * Resolves the provided path using scope to correct
+ * instance path, and the original option definition
+ *
+ * @param path
+ * @param context
+ * @param scope
+ * @returns { optionPath: string | null; instancePath: string }
+ */
+export function resolvePaths(
+  path: string,
   context: ConfigContext,
   scope = "",
-): string {
-  const pathList = createPossiblePaths(scope, instancePath);
+): { optionPath: string | null; instancePath: string } {
+  const pathList = createPossiblePaths(scope, path);
   for (const path of pathList) {
     const val = _instancePathToOption(path, context);
     if (val) {
-      return val;
+      return { optionPath: val, instancePath: path };
     }
   }
 
-  return instancePath;
+  return { optionPath: null, instancePath: path };
 }
 
 ///////////////// Expression Evaluation
@@ -205,7 +223,10 @@ export type OperatorType =
   | Comparator;
 
 /**
- * Resolve something to its value/type
+ * Resolve something to its value/type, dealing with Literals
+ * and expressions
+ *
+ * If there is a string, it will get fed back to 'getValue'
  */
 export const resolveToValue = (
   operand: Literal | Expression,
@@ -225,38 +246,31 @@ export const resolveToValue = (
   const _context = context as ConfigContext;
 
   if (typeof operand === "string") {
-    // check if an instance path value is already present
-    // TODO: an operand can be an expanded modifier path
-    // e.g. 'Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialController.typ'
-    // get value expects an instance path. We would need to know in this instance to pop
-    // of just .typ
-    // BUT, how do we know we don't have something like ctl.typ. IF we pop off the end that is not good.
-    value = _context.getValue(operand, scope);
-    if (value) {
-      return value;
+    if (isModelicaPath(operand)) {
+      const option = _context.options[operand];
+      if (option.definition) {
+        return operand;
+      } else {
+        // Update the operand with just the param name
+        const name = operand.split(".").pop() as string;
+        operand = name;
+      }
     }
+    const { instancePath, optionPath } = resolvePaths(operand, _context, scope);
 
-    // check if path is already a valid modelica path
-    let typeOption = _context.options[operand];
-    if (!typeOption) {
-      const typePath = instancePathToOption(operand, _context, scope);
-      typeOption = _context.options[operand];
-    }
-
-    // check if present in options, if not just return the string, if so check if option
-    // is a definition
-    if (typeOption) {
-      if (typeOption.definition) {
+    // have the actual instance path, check for cached value
+    value = _context._getCachedValue(instancePath);
+    if ((value === undefined || value === null) && optionPath) {
+      const typeOption = _context.options[optionPath];
+      if (typeOption?.definition) {
         value = typeOption.modelicaPath;
       } else {
-        const potentialExpression = typeOption.value;
+        const potentialExpression = typeOption?.value;
         value = evaluate(potentialExpression, context, scope);
       }
     } else {
-      // treat as instance path. If it does not resolve assume its a string
-      // this is a bug as someone could put in param of type string that mirrors a valid instance path
-      // and this would break
-      value = instancePathToOption(operand, _context, scope);
+      // assume operand is just a string - this is a buggy assumption
+      value = operand;
     }
   }
 
@@ -502,6 +516,7 @@ interface OptionInstance {
  */
 export class ConfigContext {
   mods: Modifiers = {};
+  _resolvedValues: { [key: string]: Literal | null } = {};
 
   constructor(
     public template: TemplateInterface,
@@ -524,19 +539,48 @@ export class ConfigContext {
   }
 
   /**
+   *
+   * Attempts to get a string or variable reference to a value
+   *
+   * When given 'a.b' it should get the instance a, and the value
+   * assigned at 'b'
+   *
+   * TODO: handle interaction with resolved value cache as well
+   *
+   * path can be either:
+   *  - a modelica path
+   *  - a modifier path that needs to be combined with scope in
+   *    some way to form an instance path
+   *  - an instance path
    * A value or null is returned when an instance path is provided
    *
    * This value CAN return an expression
    *
    * A null instance path means the value cannot be resolved
-   * @param instancePath
+   * @param path
    */
-  getValue(
-    instancePath: string,
-    scope = "",
-  ): Literal | Expression | null | undefined {
+  getValue(path: string, scope = ""): Literal | Expression | null | undefined {
     let val = null;
-    const optionPath = instancePathToOption(instancePath, this, scope);
+    let optionPath: string | null = "";
+    let instancePath = path;
+
+    if (isModelicaPath(path)) {
+      const option = this.options[path];
+      if (option.definition) {
+        return path;
+      }
+      optionPath = path;
+    } else {
+      // instance path to
+      const paths = resolvePaths(path, this, scope);
+      optionPath = paths.optionPath;
+      instancePath = paths.instancePath;
+    }
+
+    if (!optionPath) {
+      return null; // PUNCH-OUT! TODO:... may not be the correct behavior
+    }
+
     const selectionPath = constructSelectionPath(optionPath, instancePath);
     // check selections
     if (this.config.selections && selectionPath in this.config.selections) {
@@ -545,6 +589,7 @@ export class ConfigContext {
 
     // check modifiers
     // TODO: what if the value is explicitly null? How to distinguish?
+    // instancePath can be a modelicaPath
     val = evaluate(this.mods[instancePath]?.expression, this, scope);
     if (val) {
       return val;
@@ -556,9 +601,19 @@ export class ConfigContext {
     return val;
   }
 
+  /**
+   * This method assumes we have an exact instance path! No path
+   * resolving occurs in this method with scope
+   */
+  _getCachedValue(path: string): Literal | null | undefined {
+    return this._resolvedValues[path];
+  }
+
   // outputs an option with 'instance data' baked into the value along
   // with 'display' logic baked in as well
-  getOptionInstance(instancePath: string, scope = ""): OptionInstance {
+  getOptionInstance(path: string, scope = ""): OptionInstance {
+    const { instancePath, optionPath } = resolvePaths(path, this, scope);
+
     let value = this.getValue(instancePath);
     let display = false;
 
@@ -578,8 +633,7 @@ export class ConfigContext {
     if (final) {
       return optionInstance; // punch-out, we got what we need
     }
-    const optionPath = instancePathToOption(instancePath, this, scope);
-    const option = this.options[optionPath];
+    const option = this.options[optionPath as string]; // TODO: not sure optionPath should ever be null
 
     // TODO: I think I'll need to iterate through
 

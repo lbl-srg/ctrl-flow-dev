@@ -8,7 +8,7 @@ import {
   ConfigContext,
   resolveToValue,
   evaluate,
-  instancePathToOption,
+  resolvePaths,
 } from "../../src/interpreter/interpreter";
 
 // initialize global test dependencies
@@ -161,7 +161,7 @@ describe("Path resolution", () => {
       allOptions,
     );
 
-    const optionPath = instancePathToOption("TAirRet.isDifPreSen", context);
+    const optionPath = resolvePaths("TAirRet.isDifPreSen", context);
     expect(optionPath).toEqual(
       "Buildings.Templates.Components.Interfaces.PartialSensor.isDifPreSen",
     );
@@ -176,7 +176,7 @@ describe("Path resolution", () => {
 
     const expectedPath =
       "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialController.typ";
-    const optionPath = instancePathToOption("ctl.typ", context);
+    const optionPath = resolvePaths("ctl.typ", context);
 
     // TODO: need a better parameter...
     expect(optionPath).toBe(expectedPath);
