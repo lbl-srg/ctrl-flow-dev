@@ -212,11 +212,11 @@ def create_control_structures(doc):
 def remove_info_and_instr_boxes(doc, selections: Selections):
     ''' Removes info and instruction boxes
     '''
-    info_box_style = 'Info. box'
+    info_box_styles = ['Info. box', 'InfoboxList']
     instr_box_style = 'Instr. box'
 
     for para in doc.paragraphs:
-        if utils.reduce_to_boolean(selections['DEL_INFO_BOX']) and para.style.name == info_box_style:
+        if utils.reduce_to_boolean(selections['DEL_INFO_BOX']) and para.style.name in info_box_styles:
             remove_node(para)
         if para.style.name == instr_box_style:
             remove_node(para)
