@@ -13,9 +13,9 @@ export { SystemTypeN as SystemType, Template } from "./template";
 export function loadPackage(packagePath: string): templates.SystemTemplateN[] {
   //
   const parsedPath = path.parse(packagePath);
-  console.log(`Load Package parsed path: ${parsedPath}`);
   parser.setPathPrefix(parsedPath.dir);
   parser.loadPackage(parsedPath.name);
+  console.log(`Load Package parsed path: |${parsedPath.dir}|  |${parsedPath.name}`);
 
   return templates.getTemplates().map((t) => t.getSystemTemplate());
 }
