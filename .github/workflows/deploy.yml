@@ -32,9 +32,7 @@ jobs:
       - name: create modelica-json
         run: |
           cd $GITHUB_WORKSPACE/dependencies
-          echo "Working directory: $(pwd)"
-          echo "JSON Output: $GITHUB_WORKSPACE/dependencies/template-json"
-          # node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d $GITHUB_WORKSPACE/dependencies/template-json
+          node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d $GITHUB_WORKSPACE/server/dependencies/template-json
           cd $GITHUB_WORKSPACE/server
       - name: Build templates.json
         run: npm run parseTemplateJSON
