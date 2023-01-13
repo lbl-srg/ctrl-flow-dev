@@ -38,9 +38,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: $TEMPLATES_FILE_NAME
-          path: ${{env.GITHUB_WORKSPACE}}/${{env.TEMPLATES_FILE_NAME}}
-      - name: Remove the container
-        run: docker rm -v ${{env.CONTAINER_ID}}
+          path: ${{github.workspace}}/${{env.TEMPLATES_FILE_NAME}}
+      # - name: Remove the container
+      #   run: docker rm -v ${{env.CONTAINER_ID}}
 
   deploy:
     needs: build-template-json
