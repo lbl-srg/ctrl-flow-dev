@@ -36,8 +36,13 @@ function isExpression(item: any): boolean {
 const allElementsEqual = (arr: any[]) =>
   !!arr.reduce((a: any, b: any) => (Object.is(a, b) ? a : NaN));
 
-const constructSelectionPath = (optionPath: string, instancePath: string) =>
-  `${optionPath}-${instancePath}`;
+const constructSelectionPath = (optionPath: string, instancePath: string) => {
+  // TODO: datAll params should follow other params in how we write them
+  // but it doesn't
+  return optionPath.includes("Buildings.Templates.Data.AllSystems")
+    ? optionPath
+    : `${optionPath}-${instancePath}`;
+};
 
 /**
  * Generates all potential paths given another path and a current scope
@@ -57,6 +62,7 @@ function createPossiblePaths(scope: string, path: string) {
     paths.push([segments.join("."), path].filter((p) => p !== "").join("."));
     segments.pop();
   }
+  paths.push(path); // original path without scope needs to be added as well.. TODO: this can cause dups
 
   return paths;
 }
@@ -105,20 +111,23 @@ export function applyPathModifiers(
 const _instancePathToOption = (
   instancePath: string,
   context: ConfigContext,
-): string => {
+): { optionPath: string; instancePath: string } => {
   // apply path modifiers
   // when traversing at each node check for a redeclare mod/selection mod
   // selection mod trumps redeclare... it should also never happend
-  const path = applyPathModifiers(instancePath, context.template.pathModifiers);
+  const modifiedPath = applyPathModifiers(
+    instancePath,
+    context.template.pathModifiers,
+  );
 
   // an example path could be a.b.c.
   // the path is split, and each type is swapped in
   // e.g. AType.b, Btype.c <-- note AType and Btype could be dynamically swapped
   // by selections or redeclare mods! We have to check at each map to an option
-  const pathSegments = path.split(".");
+  const pathSegments = modifiedPath.split(".");
 
   let curInstancePath = [pathSegments.shift()]; // keep track of instance path for modifiers
-  let curPath = `${context.template.modelicaPath}.${
+  let curOptionPath = `${context.template.modelicaPath}.${
     curInstancePath[curInstancePath.length - 1]
   }`;
   while (curInstancePath && pathSegments.length > 0) {
@@ -150,11 +159,16 @@ const _instancePathToOption = (
       }
     }
 
+    // special 'datAll' case
+    if (!option && curOptionPath.endsWith("datAll")) {
+      option = context.options["Buildings.Templates.Data.AllSystems"];
+    }
+
     // Otherwise - do the normal thing and attempt to find the instance type
     // by looking in options
     if (!option) {
-      // otherwise just attempt to grab nor
-      const paramOption = context.options[curPath];
+      // otherwise just attempt to grab the opiton
+      const paramOption = context.options[curOptionPath];
       if (!paramOption) {
         break; // PUNCH-OUT!
       } else {
@@ -166,12 +180,12 @@ const _instancePathToOption = (
     curInstancePath.push(paramName);
     // use the options child list to get the correct type - inherited types
     // are only correctly referenced through this list
-    curPath = option.options?.find(
+    curOptionPath = option.options?.find(
       (o) => o.split(".").pop() === paramName,
     ) as string;
   }
 
-  return curPath;
+  return { optionPath: curOptionPath, instancePath: modifiedPath };
 };
 
 // This is a hack to determine modelica paths
@@ -199,10 +213,10 @@ export function resolvePaths(
   scope = "",
 ): { optionPath: string | null; instancePath: string } {
   const pathList = createPossiblePaths(scope, path);
-  for (const path of pathList) {
-    const val = _instancePathToOption(path, context);
-    if (val) {
-      return { optionPath: val, instancePath: path };
+  for (const p of pathList) {
+    const paths = _instancePathToOption(p, context);
+    if (paths.optionPath && paths.instancePath) {
+      return { optionPath: paths.optionPath, instancePath: paths.instancePath };
     }
   }
 
@@ -257,20 +271,23 @@ export const resolveToValue = (
       }
     }
     const { instancePath, optionPath } = resolvePaths(operand, _context, scope);
-
+    const instancePathScope = instancePath.split(".").slice(0, -1).join(".");
     // have the actual instance path, check for cached value
     value = _context._getCachedValue(instancePath);
+    // if no value, check instance path
+    value =
+      value === undefined || value === null
+        ? _context.getValue(instancePath)
+        : value;
+    // fallback to the original option
     if ((value === undefined || value === null) && optionPath) {
       const typeOption = _context.options[optionPath];
       if (typeOption?.definition) {
         value = typeOption.modelicaPath;
       } else {
         const potentialExpression = typeOption?.value;
-        value = evaluate(potentialExpression, context, scope);
+        value = evaluate(potentialExpression, context, instancePathScope);
       }
-    } else {
-      // assume operand is just a string - this is a buggy assumption
-      value = operand;
     }
   }
 
@@ -590,13 +607,18 @@ export class ConfigContext {
     // check modifiers
     // TODO: what if the value is explicitly null? How to distinguish?
     // instancePath can be a modelicaPath
-    val = evaluate(this.mods[instancePath]?.expression, this, scope);
+    const optionScope = instancePath.split(".").slice(0, -1).join(".");
+    val = evaluate(this.mods[instancePath]?.expression, this, optionScope);
     if (val) {
       return val;
     }
 
     // return whatever value is present on the original option definition
-    val = evaluate(this.options[optionPath]?.value, this, scope);
+    // references on the original option have a scope relative to the instance
+    // path, e.g., if we have an instance path of secOutRel.typSecOut, it is
+    // important we pass in the enclosing class as scope ('secOutRel') for any
+    // variable references in expressions on 'secOutRel.typSecOut' to resolve
+    val = evaluate(this.options[optionPath]?.value, this, optionScope);
 
     return val;
   }
