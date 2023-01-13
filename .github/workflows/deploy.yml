@@ -23,12 +23,15 @@ jobs:
           cache-dependency-path: client/package-lock.json
       - name: Build Docker Image for LBL Parser and API Server
         run: docker build -t lbl-api-cdk .
-      - name: Create A Container and Assign ID
-        run: export CONTAINER_ID=$(docker create lbl-api-cdk)
-      - name: Debug Env Vars
-        run: env
-      - name: Copy templates.json out of the container
-        run: docker cp $CONTAINER_ID:/server/scripts/templates.json $TEMPLATES_FILE_NAME
+      - name: Create A Container and copy file
+        run: |
+          CONTAINER_ID=$(docker create lbl-api-cdk)
+          docker cp $CONTAINER_ID:/server/scripts/templates.json $TEMPLATES_FILE_NAME
+          echo "CONTAINER_ID=$CONTAINER_ID" >> $GITHUB_ENV
+      # - name: Debug Env Vars
+      #   run: env
+      # - name: Copy templates.json out of the container
+      #   run: docker cp $CONTAINER_ID:/server/scripts/templates.json $TEMPLATES_FILE_NAME
       - name: Upload templates.json as an artifact
         uses: actions/upload-artifact@v2
         with:
