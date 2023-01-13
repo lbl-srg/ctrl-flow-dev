@@ -26,7 +26,7 @@ jobs:
       - name: Create A Container and copy file
         run: |
           CONTAINER_ID=$(docker create lbl-api-cdk)
-          docker cp $CONTAINER_ID:/server/scripts/templates.json $TEMPLATES_FILE_NAME
+          docker cp $CONTAINER_ID:/server/scripts/templates.json $GITHUB_WORKSPACE/$TEMPLATES_FILE_NAME
           echo "CONTAINER_ID=$CONTAINER_ID" >> $GITHUB_ENV
       # - name: Debug Env Vars
       #   run: env
@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: $TEMPLATES_FILE_NAME
-          path: $TEMPLATES_FILE_NAME
+          path: $GITHUB_WORKSPACE/$TEMPLATES_FILE_NAME
       - name: Remove the container
         run: docker rm -v ${{env.CONTAINER_ID}}
 
