@@ -226,6 +226,8 @@ def evaluate_annotation(op, name_map, selections: Selections):
         Determines the operation and decides if the operation requires us to delete (return True).
         This is a recursive funtion if the operation is an AND or OR.
         Tables use this function as well after their table operation logic is determined.
+        return True means delete
+        return False means keep
 
         Example toggles:
         + `[YES have_CO2Sen]` – Keep this section if a CO2 sensor is present. Otherwise remove.
@@ -243,12 +245,12 @@ def evaluate_annotation(op, name_map, selections: Selections):
         if len(tokens) == 2:
             short_name = tokens[1]
         else:
-            logging.error('Invalid operation: %s', op['text'])
-            return False
+            logging.error('Invalid operation: %s, deleting', op['text'])
+            return True
 
         if short_name not in name_map:
-            logging.error('%s not found', short_name)
-            return False
+            logging.error('%s not found, deleting', short_name)
+            return True
             
         long_name = name_map[short_name]
 
@@ -265,12 +267,12 @@ def evaluate_annotation(op, name_map, selections: Selections):
         if len(tokens) == 2:
             short_name = tokens[1]
         else:
-            logging.error('Invalid operation: %s', op['text'])
-            return False
+            logging.error('Invalid operation: %s, deleting', op['text'])
+            return True
 
         if short_name not in name_map:
-            logging.error('%s not found', short_name)
-            return False
+            logging.error('%s not found, deleting', short_name)
+            return True
             
         long_name = name_map[short_name]
 
@@ -286,16 +288,16 @@ def evaluate_annotation(op, name_map, selections: Selections):
             short_name = tokens[1]
             short_compare = tokens[2]
         else:
-            logging.error('Invalid operation: %s', op['text'])
-            return False
+            logging.error('Invalid operation: %s, deleting', op['text'])
+            return True
         
         if short_name not in name_map:
-            logging.error('%s not found', short_name)
-            return False
+            logging.error('%s not found, deleting', short_name)
+            return True
 
         if short_compare not in name_map:
-            logging.error('%s not found', short_compare)
-            return False
+            logging.error('%s not found, deleting', short_compare)
+            return True
 
         long_name = name_map[short_name]
         long_compare = name_map[short_compare]
@@ -312,23 +314,23 @@ def evaluate_annotation(op, name_map, selections: Selections):
             short_name = tokens[1]
             short_compare = tokens[2]
         else:
-            logging.error('Invalid operation: %s', op['text'])
-            return False
+            logging.error('Invalid operation: %s, deleting', op['text'])
+            return True
         
         if short_name not in name_map:
-            logging.error('%s not found', short_name)
-            return False
+            logging.error('%s not found, deleting', short_name)
+            return True
 
         if short_compare not in name_map:
-            logging.error('%s not found', short_compare)
+            logging.error('%s not found, keeping', short_compare)
             return False
 
         long_name = name_map[short_name]
         long_compare = name_map[short_compare]
                 
         if long_name not in selections:
-            logging.error('Path "%s" not found in store, deleting', long_name)
-            return True
+            logging.error('Path "%s" not found in store, keeping', long_name)
+            return False
         elif long_compare in selections[long_name]:
             return True
             
@@ -338,12 +340,12 @@ def evaluate_annotation(op, name_map, selections: Selections):
             short_name = tokens[1]
             short_compare = tokens[2:]
         else:
-            logging.error('Invalid operation: %s', op['text'])
-            return False
+            logging.error('Invalid operation: %s, deleting', op['text'])
+            return True
 
         if short_name not in name_map:
-            logging.error('%s not found', short_name)
-            return False
+            logging.error('%s not found, deleting', short_name)
+            return True
             
         long_name = name_map[short_name]
         long_compare = map(lambda name: name_map[name], short_compare)
@@ -360,8 +362,8 @@ def evaluate_annotation(op, name_map, selections: Selections):
     if op['op'] == 'AND':
         match = re.match(r'\[AND \[(.+)] \[(.+)]]', op['text'])
         if not match:
-            logging.error('Invalid format for tag:  %s', op['text'])
-            return False
+            logging.error('Invalid format for tag:  %s, deleting', op['text'])
+            return True
 
         condition_one = condition_two = False
         group_one_tokens = re.split(r'\W+', match.group(1))
@@ -373,23 +375,23 @@ def evaluate_annotation(op, name_map, selections: Selections):
             nested_op = {**op, 'text': f'[{match.group(1)}]', 'op': group_one_op}
             condition_one = evaluate_annotation(nested_op, name_map, selections)
         else:
-            logging.error('Unknown operation: %s', group_one_op)
-            return False
+            logging.error('Invalid operation: %s, deleting', group_one_op)
+            return True
 
         if group_two_op in OP_LIST:
             nested_op = {**op, 'text': f'[{match.group(2)}]', 'op': group_two_op}
             condition_two = evaluate_annotation(nested_op, name_map, selections)
         else:
-            logging.error('Unknown operation: %s', group_two_op)
-            return False
+            logging.error('Invalid operation: %s, deleting', group_two_op)
+            return True
 
-        return condition_one and condition_two
+        return condition_one or condition_two
 
     if op['op'] == 'OR':
         match = re.match(r'\[OR \[(.+)] \[(.+)]]', op['text'])
         if not match:
-            logging.error('Invalid format for tag:  %s', op['text'])
-            return False
+            logging.error('Invalid format for tag:  %s, deleting', op['text'])
+            return True
 
         condition_one = condition_two = False
         group_one_tokens = re.split(r'\W+', match.group(1))
@@ -401,17 +403,17 @@ def evaluate_annotation(op, name_map, selections: Selections):
             nested_op = {**op, 'text': f'[{match.group(1)}]', 'op': group_one_op}
             condition_one = evaluate_annotation(nested_op, name_map, selections)
         else:
-            logging.error('Unknown operation: %s', group_one_op)
-            return False
+            logging.error('Invalid operation: %s, deleting', group_one_op)
+            return True
 
         if group_two_op in OP_LIST:
             nested_op = {**op, 'text': f'[{match.group(2)}]', 'op': group_two_op}
             condition_two = evaluate_annotation(nested_op, name_map, selections)
         else:
-            logging.error('Unknown operation: %s', group_two_op)
-            return False
+            logging.error('Invalid operation: %s, deleting', group_two_op)
+            return True
 
-        return condition_one or condition_two
+        return condition_one and condition_two
 
     return False
 
