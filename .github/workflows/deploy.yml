@@ -32,6 +32,7 @@ jobs:
       - name: create modelica-json
         run: |
           cd $GITHUB_WORKSPACE/dependencies
+          mkdir -p $GITHUB_WORKSPACE/server/dependencies/template-json
           node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d $GITHUB_WORKSPACE/server/dependencies/template-json
           cd $GITHUB_WORKSPACE/server
       - name: Build templates.json
