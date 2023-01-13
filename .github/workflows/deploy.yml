@@ -14,29 +14,31 @@ jobs:
       run:
         working-directory: server
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
-          cache-dependency-path: client/package-lock.json
-      - name: Build Docker Image for LBL Parser and API Server
-        run: docker build -t lbl-api-cdk .
-      - name: Create A Container and copy file
-        run: |
-          CONTAINER_ID=$(docker create lbl-api-cdk)
-          docker cp $CONTAINER_ID:/server/scripts/templates.json $GITHUB_WORKSPACE/$TEMPLATES_FILE_NAME
-          echo "CONTAINER_ID=$CONTAINER_ID" >> $GITHUB_ENV
+      # - uses: actions/checkout@v2
+      # - name: Use Node.js ${{ matrix.node-version }}
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: ${{ matrix.node-version }}
+      #     cache: "npm"
+      #     cache-dependency-path: client/package-lock.json
+      # - name: Build Docker Image for LBL Parser and API Server
+      #   run: docker build -t lbl-api-cdk .
+      # - name: Create A Container and copy file
+      #   run: |
+      #     CONTAINER_ID=$(docker create lbl-api-cdk)
+      #     docker cp $CONTAINER_ID:/server/scripts/templates.json $GITHUB_WORKSPACE/$TEMPLATES_FILE_NAME
+      #     echo "CONTAINER_ID=$CONTAINER_ID" >> $GITHUB_ENV
       # - name: Debug Env Vars
       #   run: env
       # - name: Copy templates.json out of the container
       #   run: docker cp $CONTAINER_ID:/server/scripts/templates.json $TEMPLATES_FILE_NAME
+      - name: Create spoof templates.json
+        run: touch $GITHUB_WORKSPACE/$TEMPLATES_FILE_NAME
       - name: Upload templates.json as an artifact
         uses: actions/upload-artifact@v2
         with:
           name: $TEMPLATES_FILE_NAME
-          path: $GITHUB_WORKSPACE/$TEMPLATES_FILE_NAME
+          path: ${{env.GITHUB_WORKSPACE}}/${{env.TEMPLATES_FILE_NAME}}
       - name: Remove the container
         run: docker rm -v ${{env.CONTAINER_ID}}
 
