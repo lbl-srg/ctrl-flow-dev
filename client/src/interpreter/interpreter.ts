@@ -784,13 +784,6 @@ function _formatDisplayOption(
     scope,
   };
 
-  if (type === "Normal") {
-    return {
-      ...flatOptionSetup,
-      choices: option.childOptions,
-    } as FlatConfigOption;
-  }
-
   if (type === "Boolean") {
     return {
       ...flatOptionSetup,
@@ -814,7 +807,7 @@ function _formatDisplayGroup(
 ) {
   return {
     groupName,
-    
+
   }
   // call _formatDisplayOption on each option
   // if there is a selection for the given option, get the optionInstance
