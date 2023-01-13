@@ -24,7 +24,7 @@ jobs:
       - name: Build Docker Image for LBL Parser and API Server
         run: docker build -t lbl-api-cdk .
       - name: Create A Container and Assign ID
-        run: CONTAINER_ID=$(docker create lbl-api-cdk)
+        run: export CONTAINER_ID=$(docker create lbl-api-cdk)
       - name: Debug Env Vars
         run: env
       - name: Copy templates.json out of the container
