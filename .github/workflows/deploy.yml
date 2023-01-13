@@ -21,19 +21,17 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
           cache-dependency-path: client/package-lock.json
-      # - name: Build Docker Image for LBL Parser and API Server
-      #   run: docker build -t lbl-api-cdk .
-      # - name: Create A Container and copy file
-      #   run: |
-      #     CONTAINER_ID=$(docker create lbl-api-cdk)
-      #     docker cp $CONTAINER_ID:/server/scripts/templates.json $GITHUB_WORKSPACE/$TEMPLATES_FILE_NAME
-      #     echo "CONTAINER_ID=$CONTAINER_ID" >> $GITHUB_ENV
-      # - name: Debug Env Vars
-      #   run: env
-      # - name: Copy templates.json out of the container
-      #   run: docker cp $CONTAINER_ID:/server/scripts/templates.json $TEMPLATES_FILE_NAME
-      - name: Create spoof templates.json
-        run: touch $GITHUB_WORKSPACE/$TEMPLATES_FILE_NAME
+      - name: Build Docker Image for LBL Parser and API Server
+        run: docker build -t lbl-api-cdk .
+      - name: Create A Container and copy file
+        run: |
+          CONTAINER_ID=$(docker create lbl-api-cdk)
+          docker cp $CONTAINER_ID:/server/scripts/templates.json $GITHUB_WORKSPACE/$TEMPLATES_FILE_NAME
+          echo "CONTAINER_ID=$CONTAINER_ID" >> $GITHUB_ENV
+      - name: Debug Env Vars
+        run: env
+      - name: Copy templates.json out of the container
+        run: docker cp $CONTAINER_ID:/server/scripts/templates.json $TEMPLATES_FILE_NAME
       - name: Upload templates.json as an artifact
         uses: actions/upload-artifact@v2
         with:
@@ -82,7 +80,7 @@ jobs:
       - name: Update template.json
         uses: actions/download-artifact@v2
         with:
-          name: ${{env.TEMPLATES_FILE_NAME}}
+          name: $TEMPLATES_FILE_NAME
           path: ../client/src/data
       # - name: Build the client
       #   run: |
