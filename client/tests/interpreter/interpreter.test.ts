@@ -1,5 +1,5 @@
 import RootStore from "../../src/data";
-import { ConfigInterface } from "../../src/data/config";
+import Config, { ConfigInterface } from "../../src/data/config";
 import { TemplateInterface, OptionInterface } from "../../src/data/template";
 
 import {
@@ -13,28 +13,23 @@ import {
 
 // initialize global test dependencies
 const store = new RootStore();
+const projectSelections = {
+  "Buildings.Templates.Data.AllSystems.stdEne":
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
+  "Buildings.Templates.Data.AllSystems.stdVen":
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
+  "Buildings.Templates.Data.AllSystems.ashCliZon":
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
+};
+
 const mzTemplatePath = "Buildings.Templates.AirHandlersFans.VAVMultiZone";
 const zoneTemplatePath = "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly";
-store.configStore.add({
-  name: "VAVMultiZone Config",
-  templatePath: mzTemplatePath,
-});
-store.configStore.add({
-  name: "VAV Box Cooling Only",
-  templatePath: zoneTemplatePath,
-});
 const allOptions: { [key: string]: OptionInterface } =
   store.templateStore.getAllOptions();
 const allTemplates: { [key: string]: TemplateInterface } =
   store.templateStore.getAllTemplates();
 const mzTemplate: TemplateInterface = allTemplates[mzTemplatePath];
 const zoneTemplate = allTemplates[zoneTemplatePath];
-const mzConfig = store.configStore.configs.find(
-  (c) => c.templatePath === mzTemplatePath,
-) as ConfigInterface;
-const zoneConfig = store.configStore.configs.find(
-  (c) => c.templatePath === zoneTemplatePath,
-) as ConfigInterface;
 
 const addNewConfig = (
   configName: string,
@@ -50,10 +45,21 @@ const addNewConfig = (
     (c) => c.name === configName,
   ) as ConfigInterface;
 
-  store.configStore.setSelections(configWithSelections.id, selections);
+  const selectionsWithProjectSelections = {
+    ...projectSelections,
+    ...selections,
+  };
+
+  store.configStore.setSelections(
+    configWithSelections.id,
+    selectionsWithProjectSelections,
+  );
 
   return configWithSelections;
 };
+
+const mzConfig = addNewConfig("VAVMultiZone Config", mzTemplate, {});
+const zoneConfig = addNewConfig("VAV Box Cooling Only", zoneTemplate, {});
 
 describe("Path Modifier tests", () => {
   it("Applies a path modifier", () => {
@@ -161,7 +167,7 @@ describe("Path resolution", () => {
       allOptions,
     );
 
-    const optionPath = resolvePaths("TAirRet.isDifPreSen", context);
+    const { optionPath } = resolvePaths("TAirRet.isDifPreSen", context);
     expect(optionPath).toEqual(
       "Buildings.Templates.Components.Interfaces.PartialSensor.isDifPreSen",
     );
@@ -176,7 +182,7 @@ describe("Path resolution", () => {
 
     const expectedPath =
       "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialController.typ";
-    const optionPath = resolvePaths("ctl.typ", context);
+    const { optionPath } = resolvePaths("ctl.typ", context);
 
     // TODO: need a better parameter...
     expect(optionPath).toBe(expectedPath);
@@ -184,6 +190,8 @@ describe("Path resolution", () => {
   it("Uses scope to find the correct option path", () => {});
 
   it("Maps an instance path to an option path modified by selections", () => {});
+
+  it("Handles a 'datAll' path correctly", () => {});
 });
 
 describe("resolveToValue tests using context and evaluation", () => {
@@ -216,7 +224,7 @@ describe("resolveToValue tests using context and evaluation", () => {
       allOptions,
     );
 
-    // TODO: this is the 'default' value so it is not testing choicemodifiers well
+    // TODO: this is the 'default' value so it is not testing choice modifiers well
     const expectedVal =
       "Buildings.Templates.Components.Valves.TwoWayModulating";
     const val = context.getValue(instancePath);
@@ -299,14 +307,155 @@ describe("Testing context getValue", () => {
   });
 });
 
-describe("Display Enable is set as expected", () => {
-  it("Sets enable correctly on simple parameter (no expression)", () => {
+describe("ctl.have_CO2Sen enable expression", () => {
+  /**
+   * This is a test of the ctl.haveCO2Sen enable expression
+   *
+   * The expression is broken into its separate tests for each operand as
+   * well as components of each operand
+   */
+  it("First operand", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
     );
+
+    const ctlTypeValue = context.getValue("typ", "ctl");
+    expect(ctlTypeValue).toEqual(
+      "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone",
+    );
+
+    const firstOperand = {
+      operator: "==",
+      operands: [
+        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialController.typ",
+        "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone",
+      ],
+    };
+
+    const firstVal = evaluate(firstOperand, context, "ctl");
+    expect(firstVal).toBeTruthy();
   });
+
+  it("typSecOut in ctl - a modifier updated by a selection", () => {
+    const secOutValue =
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersAirflow";
+
+    const selections = {
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut-secOutRel.secOut":
+        secOutValue,
+    };
+    const configWithSecOut = addNewConfig(
+      "Another Config With secOut selected",
+      mzTemplate,
+      selections,
+    );
+
+    const newContext = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      configWithSecOut,
+      allOptions,
+    );
+
+    const secOutTyp = newContext.getValue("secOut.typ", "secOutRel");
+    expect(secOutTyp).toBeDefined();
+    // To get this value, the following links are followed:
+    // ctl.typSecOut -> secOutRel.typSecOut -> secOutRel.secOut.typ -> <secOut selection>.typ
+    const typSecOut = newContext.getValue("typSecOut", "ctl"); // secOutRel.typSecOut -> secOut.typ
+    expect(typSecOut).toEqual(
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow",
+    );
+  });
+
+  it("Second operand", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+
+    const secondOperand = {
+      operator: "==",
+      operands: [
+        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typSecOut",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure",
+      ],
+    };
+    let secOutRelTypSecOut = context.getValue("secOutRel.typSecOut", "ctl");
+    let typSecOut = context.getValue("typSecOut", "ctl"); // ctl.typSecOut = secOutRel.typSecout
+    expect(typSecOut).toEqual(
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper",
+    );
+
+    let secondEvaluation = evaluate(secondOperand, context, "ctl");
+    expect(secondEvaluation).toBeFalsy();
+
+    // make a context after selection for DedicatedDampersPressure for secOut
+    const selections = {
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut-secOutRel.secOut":
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersAirflow",
+    };
+
+    const configWithSecOut = addNewConfig(
+      "Config With secOut selected",
+      mzTemplate,
+      selections,
+    );
+
+    const newContext = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      configWithSecOut,
+      allOptions,
+    );
+
+    secOutRelTypSecOut = newContext.getValue("secOutRel.typSecOut", "ctl");
+    typSecOut = newContext.getValue("typSecOut", "ctl"); // ctl.typSecOut = secOutRel.typSecout
+    expect(typSecOut).toEqual(
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow",
+    );
+
+    secondEvaluation = evaluate(secondOperand, newContext, "ctl");
+    expect(secondEvaluation).toBeFalsy();
+  });
+
+  it("Third Operand - includes a datAll param", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+
+    const stdVenValue =
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24";
+
+    const thirdOperand = {
+      operator: "==",
+      operands: [
+        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.stdVen",
+        stdVenValue,
+      ],
+    };
+
+    const stdVen = context.getValue("ctl.stdVen");
+    expect(stdVen).toEqual(
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
+    );
+
+    const thirdEvaluation = evaluate(thirdOperand, context);
+    expect(thirdEvaluation).toBeTruthy();
+  });
+});
+
+describe("Display Enable is set as expected", () => {
+  // it("Sets enable correctly on simple parameter (no expression)", () => {
+  //   const context = new ConfigContext(
+  //     mzTemplate as TemplateInterface,
+  //     mzConfig as ConfigInterface,
+  //     allOptions,
+  //   );
+  //   // TODO... find a simple parameter?
+  // });
 
   it("Sets enable correctly on parameter with expression", () => {
     const context = new ConfigContext(
@@ -342,17 +491,24 @@ describe("Display Enable is set as expected", () => {
 
   it("Sets ctl.have_CO2Sen param to true", () => {
     // make a new context with a selection changing fanSupDra to 'None'
+    // make a context after selection for DedicatedDampersPressure for secOut
+    const selections = {
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut-secOutRel.secOut":
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure",
+    };
+
+    const configWithSecOut = addNewConfig(
+      "Config With secOut selected",
+      mzTemplate,
+      selections,
+    );
+
     const newContext = new ConfigContext(
       mzTemplate as TemplateInterface,
-      mzConfig as ConfigInterface,
+      configWithSecOut,
       allOptions,
     );
 
-    // TODO: this test is still failing as it is falling back to the original
-    // option expression in Components.Controls.Interfaces.PartialVAVMultiZone
-    // I believe operands are not being found because 'scope' is not getting passed
-    // into the expression. Getting this expression to work will mean getting
-    // scope integrated. This is a good test case!
     const optionInstance = newContext.getOptionInstance("ctl.have_CO2Sen");
     expect(optionInstance.display).toBeTruthy();
   });

@@ -10,9 +10,10 @@ import { Modifiers } from "../../src/utils/modifier-helpers";
  * TODO:
  * - [X] Integrate configuration when building modifiers
  * - [X] Integrate context with mod builder! Needed to correctly evaulate expressions in mod builder!
- * - [ ] integrate choice modifiers with mod builder
- * - [ ] Add a whole lot more tests for expression with context. This is where the bugs are
- * - [ ] integrate scope! what this means: every place we resolve an instance path: pop off the last segment of scope and try again until out of segments
+ * - [x] integrate choice modifiers with mod builder
+ * - [x] Add a whole lot more tests for expression with context. This is where the bugs are
+ * - [x] integrate scope! what this means: every place we resolve an instance path: pop off the last segment of scope and try again until out of segments
+ * - [ ] pass in context to modBuilders! Replace 'getReplaceableType'
  * - [ ] map option instances to a valid flatoption/flat option group list
  * in an instance path, e.g. try in this order ["my.fancy.path", "my.path", "path"]
  * - (?) partial resolved expressions must be handled (if something gets returned as an expression).
@@ -401,6 +402,8 @@ const addToModObject = (
  * - a redeclare
  *
  * This is a small helper method that checks for either of those instances
+ * TODO: this should be replaced by use of instaceToOption method and the
+ * use of context
  *
  * @param instancePath
  * @param mods
@@ -427,7 +430,7 @@ const getReplaceableType = (
 
   const redeclaredType = instancePath in mods ? mods[instancePath] : null;
   if (redeclaredType) {
-    return evaluate(redeclaredType.expression); // TODO: We need context to correctly evaluate!
+    return evaluate(redeclaredType.expression);
   }
 
   return option.type;
@@ -517,6 +520,7 @@ const _initModCache: { [key: string]: Modifiers } = {};
 interface OptionInstance {
   value: Literal | null | undefined; // NOT an expression
   display: boolean;
+  option: OptionInterface;
 }
 /**
  * Generating context for a given template and config
@@ -604,8 +608,10 @@ export class ConfigContext {
       return this.config.selections[selectionPath];
     }
 
-    // check modifiers
-    // TODO: what if the value is explicitly null? How to distinguish?
+    // references on the original option have a scope relative to the instance
+    // path, e.g., if we have an instance path of secOutRel.typSecOut, it is
+    // important we pass in the enclosing class as scope ('secOutRel') for any
+    // variable references in expressions on 'secOutRel.typSecOut' to resolve
     // instancePath can be a modelicaPath
     const optionScope = instancePath.split(".").slice(0, -1).join(".");
     val = evaluate(this.mods[instancePath]?.expression, this, optionScope);
@@ -614,11 +620,11 @@ export class ConfigContext {
     }
 
     // return whatever value is present on the original option definition
-    // references on the original option have a scope relative to the instance
-    // path, e.g., if we have an instance path of secOutRel.typSecOut, it is
-    // important we pass in the enclosing class as scope ('secOutRel') for any
-    // variable references in expressions on 'secOutRel.typSecOut' to resolve
     val = evaluate(this.options[optionPath]?.value, this, optionScope);
+
+    if (isExpression(val) && val !== undefined && val !== null) {
+      this._resolvedValues[path] = val as Literal;
+    }
 
     return val;
   }
@@ -633,8 +639,12 @@ export class ConfigContext {
 
   // outputs an option with 'instance data' baked into the value along
   // with 'display' logic baked in as well
-  getOptionInstance(path: string, scope = ""): OptionInstance {
+  getOptionInstance(path: string, scope = ""): OptionInstance | undefined {
     const { instancePath, optionPath } = resolvePaths(path, this, scope);
+
+    if (!optionPath) {
+      return;
+    }
 
     let value = this.getValue(instancePath);
     let display = false;
@@ -648,6 +658,7 @@ export class ConfigContext {
     const optionInstance = {
       value: castValue,
       display,
+      option: this.options[optionPath as string],
     };
 
     const mod = this.mods[instancePath];
@@ -657,20 +668,20 @@ export class ConfigContext {
     }
     const option = this.options[optionPath as string]; // TODO: not sure optionPath should ever be null
 
-    // TODO: I think I'll need to iterate through
-
     // 'scope' in this case is the current instance path's scope, which
     // is one level up.
     // e.g.
     // You have the following definition
+    // param c = false;
     // Class A
     //     param b
-    //        enable = 'c === true'
+    //        enable = c === true // 'c' is a reference to a local param c, not the global 'c'
     //     param c = true
     //
-    // To understand the 'enable' expression with a reference to 'c',
-    // found at the instance path 'b', we have to pop 'b' off  'c'
-    // (instead of attemptint to find 'c' in the scope of 'b')
+    // e = new A()
+
+    // The scope of the expression 'enable = c === true' must be able to first reference
+    // what is found inside the scope of e, an instance of class A
     const enable = evaluate(
       option.enable,
       this,
@@ -682,6 +693,7 @@ export class ConfigContext {
     return {
       value: castValue,
       display,
+      option,
     };
   }
 
@@ -749,6 +761,107 @@ function isOptionVisible(
   return enable;
 }
 
+/**
+ * Maps a display option - handles booleans and dropdowns
+ * @param optionInstance
+ * @param parentModelicaPath
+ * @param scope
+ */
+function _formatDisplayOption(
+  optionInstance: OptionInstance,
+  parentModelicaPath: string,
+  scope: string,
+): FlatConfigOption | FlatConfigOptionGroup {
+  const option = optionInstance.option;
+  const type = optionInstance.option.type === "Boolean" ? "Boolean" : "Normal";
+
+  let flatOptionSetup: Partial<FlatConfigOption> = {
+    parentModelicaPath,
+    modelicaPath: option.modelicaPath,
+    name: option.name,
+    value: optionInstance.value?.toString(),
+    selectionType: type,
+    scope,
+  };
+
+  if (type === "Normal") {
+    return {
+      ...flatOptionSetup,
+      choices: option.childOptions,
+    } as FlatConfigOption;
+  }
+
+  if (type === "Boolean") {
+    return {
+      ...flatOptionSetup,
+      booleanChoices: ["true", "false"],
+    } as FlatConfigOption;
+  } else {
+    // assume 'Normal'' format
+    return {
+      ...flatOptionSetup,
+      choices: option.childOptions,
+    } as FlatConfigOption;
+  }
+}
+
+function _formatDisplayGroup(
+  groupName: string,
+  typeInstance: OptionInterface,
+  parentModelicaPath: string,
+  scope: string,
+  context: ConfigContext
+) {
+  return {
+    groupName,
+    
+  }
+  // call _formatDisplayOption on each option
+  // if there is a selection for the given option, get the optionInstance
+  // for that selection and attempt to render that as well
+}
+
+function _formatDisplay(
+  optionInstance: OptionInstance,
+  parentModelicaPath: string,
+  scope: string,
+  context: ConfigContext
+) {
+  // picks if we are rendering a single instance
+  // or a group
+  const option = optionInstance.option;
+
+  if (optionInstance.display) {
+    _formatDisplayOption(optionInstance, parentModelicaPath, scope)
+    // check if there is a selection, if so render it
+    if (option.replaceable && optionInstance.value !== undefined) {
+      const redeclaredOptionInstance = context.getOptionInstance(optionInstance.value as string);
+      if (redeclaredOptionInstance) {
+        const newScope = [scope, option.modelicaPath.split('.').pop()].filter(p => p !== "").join('.');
+        _formatDisplayGroup(option.name, redeclaredOptionInstance, redeclaredOptionInstance?.option.modelicaPath as string, newScope, context);
+      }
+
+    }
+  } else {
+    const type = (option.replaceable) ? optionInstance.value : option.type;
+    const typeOption = context.options[type as string];
+    if (typeOption.definition && typeOption.childOptions?.length) {
+      _formatDisplayGroup(option.name, typeOption, typeOption.modelicaPath, scope, context)
+    }
+  }
+
+
+
+  // check if group
+  // not visible, is a definition, and has children
+  if (optionInstance.display === false && option.definition && option.childOptions?.length) {
+    // its a group
+    return {
+      groupName: 
+    }
+  }
+}
+
 function _getDisplayOptionsHelper(
   option: OptionInterface,
   scope: string,
@@ -760,12 +873,18 @@ function _getDisplayOptionsHelper(
     .filter((p) => p !== "")
     .join(".");
 
-  const { value, final } = context.getValueAndFinal(instancePath);
+  const optionInstance = context.getOptionInstance(instancePath);
 
   // 'dat' params should be separated but just in case, drop out here
   if (option.modelicaPath.includes(`.dat`)) {
     return;
   }
+
+  if (optionInstance?.display) {
+    // format for display
+  }
+
+  // check if option is visible
   // if so use that as the value value
   // TODO: need to integrate final
   // is that value final? If so set visible to false
@@ -777,6 +896,11 @@ function _getDisplayOptionsHelper(
   // Perhaps do something to make the group? Maybe a separate method?
   // go through each option: option.options.map(o => _getDisplayOptionsHelper(o, scope + param, context, param description)
 }
+
+function _getDisplayOption(
+  rootOption: OptionInterface,
+  context: ConfigContext,
+) {}
 
 // Maps a current context into a list of displayable options
 export function getDisplayOptions(context: ConfigContext) {
