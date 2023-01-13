@@ -68,8 +68,8 @@ jobs:
       #   run: apt-get install jq
       - name: install node packages
         run: npm i
-      # - name: Synthesize cloud formation template
-      #   run: npx aws-cdk synth
+      - name: Synthesize cloud formation template
+        run: npx aws-cdk synth
       # - name: Deploy stack
       #   run: npx aws-cdk deploy --require-approval never --outputs-file cdk.out/cdk-outputs.json
       # - name: Set API_ARN, configure longer timeout, and set REACT_APP_API# easily testable step
