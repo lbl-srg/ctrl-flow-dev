@@ -521,6 +521,7 @@ interface OptionInstance {
   value: Literal | null | undefined; // NOT an expression
   display: boolean;
   option: OptionInterface;
+  instancePath: string;
 }
 /**
  * Generating context for a given template and config
@@ -637,8 +638,12 @@ export class ConfigContext {
     return this._resolvedValues[path];
   }
 
-  // outputs an option with 'instance data' baked into the value along
-  // with 'display' logic baked in as well
+  /**
+   * Instance Path
+   * @param path
+   * @param scope
+   * @returns
+   */
   getOptionInstance(path: string, scope = ""): OptionInstance | undefined {
     const { instancePath, optionPath } = resolvePaths(path, this, scope);
 
@@ -659,6 +664,7 @@ export class ConfigContext {
       value: castValue,
       display,
       option: this.options[optionPath as string],
+      instancePath,
     };
 
     const mod = this.mods[instancePath];
@@ -694,6 +700,7 @@ export class ConfigContext {
       value: castValue,
       display,
       option,
+      instancePath,
     };
   }
 
@@ -762,7 +769,7 @@ function isOptionVisible(
 }
 
 /**
- * Maps a display option - handles booleans and dropdowns
+ * Maps an OptionInstance to a a display option - handles booleans and dropdowns
  * @param optionInstance
  * @param parentModelicaPath
  * @param scope
@@ -770,7 +777,6 @@ function isOptionVisible(
 function _formatDisplayOption(
   optionInstance: OptionInstance,
   parentModelicaPath: string,
-  scope: string,
 ): FlatConfigOption | FlatConfigOptionGroup {
   const option = optionInstance.option;
   const type = optionInstance.option.type === "Boolean" ? "Boolean" : "Normal";
@@ -781,7 +787,7 @@ function _formatDisplayOption(
     name: option.name,
     value: optionInstance.value?.toString(),
     selectionType: type,
-    scope,
+    scope: optionInstance.instancePath,
   };
 
   if (type === "Boolean") {
@@ -800,58 +806,86 @@ function _formatDisplayOption(
 
 function _formatDisplayGroup(
   groupName: string,
-  typeInstance: OptionInterface,
-  parentModelicaPath: string,
-  scope: string,
-  context: ConfigContext
+  option: OptionInterface,
+  paramInstance: OptionInstance,
+  context: ConfigContext,
 ) {
+  // TODO: optionInstance for definitions? Not sure what happens here
+  // this 'path' should never be used. It does need to be a unique ID though. Previous instance
+  // path + group?
+  const instancePath = `${paramInstance.instancePath}.__group`;
+  const selectionPath = constructSelectionPath(
+    instancePath,
+    option.modelicaPath,
+  );
+  const mappedItems = option.childOptions
+    ?.map((o) => {
+      const oInstance = context.getOptionInstance(o.modelicaPath);
+      return oInstance
+        ? _formatDisplay(oInstance, option.modelicaPath, context)
+        : null;
+    })
+    .filter((displayOption) => displayOption !== null);
+
   return {
     groupName,
-
-  }
-  // call _formatDisplayOption on each option
-  // if there is a selection for the given option, get the optionInstance
-  // for that selection and attempt to render that as well
+    selectionPath,
+    items: mappedItems,
+  };
 }
 
+/**
+ * Recursive method that handles traversal of OptionInstances to generate
+ * the nested list of DisplayOptions
+ * @param optionInstance
+ * @param parentModelicaPath
+ * @param context
+ * @returns
+ */
 function _formatDisplay(
   optionInstance: OptionInstance,
   parentModelicaPath: string,
-  scope: string,
-  context: ConfigContext
+  context: ConfigContext,
 ) {
   // picks if we are rendering a single instance
   // or a group
   const option = optionInstance.option;
 
   if (optionInstance.display) {
-    _formatDisplayOption(optionInstance, parentModelicaPath, scope)
+    _formatDisplayOption(optionInstance, parentModelicaPath);
     // check if there is a selection, if so render it
     if (option.replaceable && optionInstance.value !== undefined) {
-      const redeclaredOptionInstance = context.getOptionInstance(optionInstance.value as string);
+      const redeclaredOption = context.options[optionInstance.value as string];
+      const redeclaredOptionInstance = context.getOptionInstance(
+        optionInstance.value as string,
+      );
+      // format selected group
       if (redeclaredOptionInstance) {
-        const newScope = [scope, option.modelicaPath.split('.').pop()].filter(p => p !== "").join('.');
-        _formatDisplayGroup(option.name, redeclaredOptionInstance, redeclaredOptionInstance?.option.modelicaPath as string, newScope, context);
+        _formatDisplayGroup(
+          option.name,
+          redeclaredOption,
+          optionInstance,
+          context,
+        );
       }
-
     }
   } else {
-    const type = (option.replaceable) ? optionInstance.value : option.type;
+    // just check if we need to render the options type definition
+    const type = option.type;
     const typeOption = context.options[type as string];
     if (typeOption.definition && typeOption.childOptions?.length) {
-      _formatDisplayGroup(option.name, typeOption, typeOption.modelicaPath, scope, context)
+      _formatDisplayGroup(option.name, option, optionInstance, context);
     }
   }
 
-
-
   // check if group
   // not visible, is a definition, and has children
-  if (optionInstance.display === false && option.definition && option.childOptions?.length) {
-    // its a group
-    return {
-      groupName: 
-    }
+  if (
+    optionInstance.display === false &&
+    option.definition &&
+    option.childOptions?.length
+  ) {
+    // iterate through children
   }
 }
 
