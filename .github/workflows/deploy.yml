@@ -82,10 +82,11 @@ jobs:
           path: ../client/src/data
       - name: Build the client
         run: |
-          cd ../client
+          cd $GITHUB_WORKSPACE/client
           npm i
           npm run buildForS3
       - name: Deploy the client to S3
         run: |
+          cd $GITHUB_WORKSPACE/client
           aws s3 rm s3://lbl-client-${LBL_STAGE}/ --recursive
-          aws s3 sync ./build s3://lbl-client-${LBL_STAGE}/
+          aws s3 sync build s3://lbl-client-${LBL_STAGE}/
