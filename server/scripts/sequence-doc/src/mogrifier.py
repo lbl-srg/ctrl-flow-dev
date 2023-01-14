@@ -86,7 +86,7 @@ def remove_section(paragraph: Paragraph, run_op_lookup: Dict):
     style = paragraph.style.name
     level = get_heading_level(paragraph)
     
-    if style in ('Info. box', 'InfoboxList'):
+    if style in ('Info. box', 'InfoboxList', 'InfoTableTitle'):
         return remove_info_box(paragraph, run_op_lookup)
 
     for sib_el in paragraph._element.itersiblings():
@@ -212,7 +212,7 @@ def create_control_structures(doc):
 def remove_info_and_instr_boxes(doc, selections: Selections):
     ''' Removes info and instruction boxes
     '''
-    info_box_styles = ['Info. box', 'InfoboxList']
+    info_box_styles = ['Info. box', 'InfoboxList', 'InfoTableTitle']
     instr_box_style = 'Instr. box'
 
     for para in doc.paragraphs:
