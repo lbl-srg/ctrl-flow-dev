@@ -15,7 +15,6 @@ export function loadPackage(packagePath: string): templates.SystemTemplateN[] {
   const parsedPath = path.parse(packagePath);
   parser.setPathPrefix(parsedPath.dir);
   parser.loadPackage(parsedPath.name);
-  console.log(`Load Package parsed path: |${parsedPath.dir}|  |${parsedPath.name}`);
 
   return templates.getTemplates().map((t) => t.getSystemTemplate());
 }

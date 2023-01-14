@@ -19,12 +19,9 @@ export function findPackageEntryPoints(
   prefix: string,
   reference: string,
 ): { path: string; json: Object | undefined }[] {
-  console.log(`******** __dirname: ${__dirname}`);
-  console.log(`********MODELICA_DEPENDENCIES: ${config.MODELICA_DEPENDENCIES}`);
   const entryPoints: { path: string; json: Object | undefined }[] = [];
   [prefix, ...MODELICAPATH].forEach((dir) => {
     const dirPath = path.resolve(dir, reference);
-    console.log(`********DIR_PATH_FOR_ENTRY_POINT: ${dir} ${reference} ${dirPath}`);
     if (fs.existsSync(dirPath)) {
       const cmd = `grep -rl ${dirPath} -e "${TEMPLATE_IDENTIFIER}"`;
       const response = execSync(cmd).toString();
