@@ -99,11 +99,13 @@ export function applyPathModifiers(
   while (splitScopePath.length > 0) {
     const testPath = splitScopePath.join(".");
     if (pathModifiers[testPath]) {
-      modifiedPath = `${pathModifiers[testPath]}.${postFix}`;
+      modifiedPath = [pathModifiers[testPath], postFix]
+        .filter((p) => p === "")
+        .join(".");
       break;
     }
     postFix = postFix
-      ? `${postFix}.${splitScopePath.pop()}`
+      ? [postFix, splitScopePath.pop()].filter((p) => p === "").join(".")
       : splitScopePath.pop();
   }
 
@@ -131,7 +133,7 @@ const _instancePathToOption = (
   // apply path modifiers
   // when traversing at each node check for a redeclare mod/selection mod
   // selection mod trumps redeclare... it should also never happend
-  let modifiedPath = applyPathModifiers(
+  const modifiedPath = applyPathModifiers(
     instancePath,
     context.template.pathModifiers,
   );
@@ -142,7 +144,7 @@ const _instancePathToOption = (
   // by selections or redeclare mods! We have to check at each map to an option
   const pathSegments = modifiedPath.split(".");
 
-  let curInstancePathList = [pathSegments.shift()]; // keep track of instance path for modifiers
+  const curInstancePathList = [pathSegments.shift()]; // keep track of instance path for modifiers
   let curOptionPath: string | null = `${context.template.modelicaPath}.${
     curInstancePathList[curInstancePathList.length - 1]
   }`;
@@ -277,7 +279,7 @@ export type OperatorType =
 export const resolveToValue = (
   operand: Literal | Expression,
   context?: ConfigContext,
-  scope: string = "",
+  scope = "",
 ): Literal | null | undefined | Expression => {
   let value: any = null;
   if (["number", "boolean"].includes(typeof operand)) {
@@ -346,7 +348,7 @@ export const resolveToValue = (
 export const evaluateModifier = (
   mod: Modifier,
   context: ConfigContext,
-  instancePath: string = "",
+  instancePath = "",
 ) => {
   const sliceAmount = mod?.fromClassDefinition ? -1 : -2;
   const expressionScope = instancePath
@@ -355,6 +357,8 @@ export const evaluateModifier = (
     .join(".");
   return evaluate(mod?.expression, context, expressionScope);
 };
+
+type Comparators = { [key: string]: (x: any, y: any) => any };
 
 /**
  * For a given expression, attempts to return the value
@@ -382,15 +386,15 @@ export const evaluate = (
     case "<":
     case "<=":
     case ">":
-    case ">=":
-      const comparators: { [key: string]: (x: any, y: any) => any } = {
+    case ">=": {
+      const comparators = {
         "<": (x: any, y: any) => x < y,
         "<=": (x: any, y: any) => x <= y,
         ">": (x: any, y: any) => x > y,
         ">=": (x: any, y: any) => x >= y,
       };
 
-      let resolvedOperands = expression.operands.map((o) =>
+      const resolvedOperands = expression.operands.map((o) =>
         resolveToValue(o, context, scope),
       );
       val = comparators[expression.operator](
@@ -399,26 +403,30 @@ export const evaluate = (
       ) as Literal;
 
       break;
+    }
     case "==":
-    case "!=":
-      resolvedOperands = expression.operands.map((o) =>
+    case "!=": {
+      const resolvedOperands = expression.operands.map((o) =>
         resolveToValue(o, context, scope),
       );
       const isEqual = allElementsEqual(resolvedOperands);
       val = expression.operator.includes("!") ? !isEqual : isEqual;
       break;
-    case "||":
+    }
+    case "||": {
       val = expression.operands.reduce(
         (acc, cur) => !!(evaluate(cur, context, scope) || acc),
         false,
       );
       break;
-    case "&&":
+    }
+    case "&&": {
       val = expression.operands.reduce(
         (acc, cur) => !!(evaluate(cur, context, scope) && acc),
         true,
       );
       break;
+    }
   }
 
   return val;
@@ -454,20 +462,20 @@ const addToModObject = (
       };
     }
 
-    if (false) {
-      // grab modifiers from original definition
-      const modOption = options[k];
-      if (modOption?.modifiers) {
-        addToModObject(
-          newMods,
-          baseInstancePath,
-          fromClassDefinition,
-          mods,
-          options,
-          false,
-        );
-      }
-    }
+    // if (false) {
+    //   // grab modifiers from original definition
+    //   const modOption = options[k];
+    //   if (modOption?.modifiers) {
+    //     addToModObject(
+    //       newMods,
+    //       baseInstancePath,
+    //       fromClassDefinition,
+    //       mods,
+    //       options,
+    //       false,
+    //     );
+    //   }
+    // }
   });
 };
 
