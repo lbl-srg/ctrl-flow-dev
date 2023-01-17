@@ -634,10 +634,7 @@ export class ConfigContext {
         selections,
         this.options,
       );
-      // stash in cache
     }
-
-    // update modifier tree with selections
   }
 
   /**

@@ -16,6 +16,7 @@ import {
   evaluate,
   resolvePaths,
   OptionInstance,
+  evaluateModifier,
 } from "../../src/interpreter/interpreter";
 
 import {
@@ -107,6 +108,38 @@ describe("Basic Context generation without selections", () => {
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
+    );
+  });
+});
+
+describe("Modifiers", () => {
+  it("Sets the correct value for a redeclared type", () => {
+    const context = new ConfigContext(
+      zoneTemplate as TemplateInterface,
+      zoneConfig as ConfigInterface,
+      allOptions,
+      createSelections(),
+    );
+
+    const path = "coiHea";
+    const mod = context.mods[path];
+    expect(evaluateModifier(mod, context)).toEqual(
+      "Buildings.Templates.Components.Coils.None",
+    );
+  });
+
+  it("Sets the correct value for a choiceModifier value", () => {
+    const context = new ConfigContext(
+      zoneTemplate as TemplateInterface,
+      zoneConfig as ConfigInterface,
+      allOptions,
+      createSelections(),
+    );
+
+    const path = "typ";
+    const mod = context.mods[path];
+    expect(evaluateModifier(mod, context)).toEqual(
+      "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxCoolingOnly",
     );
   });
 });
@@ -807,8 +840,29 @@ describe("Display Option and Display Group Generation", () => {
       {},
     );
 
-    const displayOption = mapToDisplayOptions(context);
-    expect(displayOption).toBeDefined();
+    const displayOptions = mapToDisplayOptions(context);
+    expect(displayOptions).toBeDefined();
+  });
+
+  it("Generates a display group and display options for VAVBox Cooling Only Template", () => {
+    const context = new ConfigContext(
+      zoneTemplate as TemplateInterface,
+      zoneConfig as ConfigInterface,
+      allOptions,
+      createSelections(),
+    );
+
+    const coiHea = context.getOptionInstance("coiHea") as OptionInstance;
+    expect(coiHea.display).toBeFalsy();
+    const ctl = context.getOptionInstance("ctl") as OptionInstance;
+    const ctlDisplayOptions = _formatDisplayItem(
+      ctl,
+      zoneTemplate.modelicaPath,
+      context,
+    );
+
+    const displayOptions = mapToDisplayOptions(context);
+    expect(displayOptions.length).toBeGreaterThan(0);
   });
 });
 // describe("Display Option Generation", () => {

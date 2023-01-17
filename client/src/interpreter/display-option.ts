@@ -182,23 +182,6 @@ export function _formatDisplayItem(
     displayList.push(
       _formatDisplayOption(optionInstance, parentModelicaPath, context),
     );
-    // check if there is a selection, if so render it
-    // if (option.replaceable && optionInstance.value !== undefined) {
-    //   const redeclaredType = context.options[optionInstance.value as string];
-
-    //   // format redeclared/selected group
-    //   if (redeclaredType) {
-    //     const displayGroup = _formatDisplayGroup(
-    //       redeclaredType,
-    //       optionInstance,
-    //       context,
-    //     );
-    //     if (displayGroup) {
-    //       // 2. Add the result of a redeclare
-    //       displayList.push(displayGroup);
-    //     }
-    //   }
-    // }
   }
   // check if we render type
   const type =
