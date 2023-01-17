@@ -11,7 +11,6 @@
 import * as parser from "./parser";
 import { evaluateExpression, Expression, Literal } from "./expression";
 import { Modification } from "./modification";
-import { accessSync } from "fs";
 
 const templateStore = new Map<string, Template>();
 const systemTypeStore = new Map<string, SystemTypeN>();
@@ -169,53 +168,6 @@ function _mapInputToOption(input: parser.TemplateInput): Option {
   return option;
 }
 
-function _extractScheduleOptionHelper(
-  scheduleOptions: { [key: string]: ScheduleOption },
-  inputs: { [key: string]: parser.TemplateInput },
-  inputPath: string,
-  groups: string[] = [],
-) {
-  const input = inputs[inputPath];
-  // get the type. If the 'type' is a record do record things if not, treat as a param
-  const inputType = inputs[input.type];
-
-  // TODO: fix issues with building group list:
-  // 1. param description and Record description: we only need one of these
-  // 2. Root record description doesn't need to be added
-
-  // `Modelica.Icons.Record` is often the class being extended
-  // and this class does not generate an option
-  if (inputType && inputType.elementType === "record") {
-    const groupList = [...groups, input.modelicaPath];
-    input.inputs?.map((i) =>
-      _extractScheduleOptionHelper(scheduleOptions, inputs, i, groupList),
-    );
-  }
-
-  scheduleOptions[input.modelicaPath] = {
-    ..._mapInputToOption(input),
-    groups,
-  };
-}
-
-/**
- * Attempts to find the 'dat' element, then follows the tree
- * of options connected to that 'dat'
- *
- * TODO: change this to generic dat split - when a 'dat' is found
- * pass in the path and let it split things out
- */
-function _extractScheduleOptions(
-  dat: parser.TemplateInput,
-  inputs: { [key: string]: parser.TemplateInput },
-) {
-  const scheduleOptions: ScheduleOptions = {};
-  dat.inputs?.map((i) => {
-    _extractScheduleOptionHelper(scheduleOptions, inputs, i);
-  });
-  return scheduleOptions;
-}
-
 export interface SystemTypeN {
   description: string;
   modelicaPath: string;
@@ -319,40 +271,12 @@ export class Template {
     const datEntryPoints = Object.values(inputs).filter((i) => {
       return i.modelicaPath.endsWith(".dat");
     });
-    let scheduleOptions: ScheduleOptions = {};
-    datEntryPoints.map((dat) => {
-      scheduleOptions[dat.modelicaPath] = {
-        ..._mapInputToOption(dat),
-        ...{ groups: [] },
-      };
-    });
 
     this.scheduleOptionPaths = datEntryPoints.map((i) => i.modelicaPath);
-
-    datEntryPoints.map((i) => {
-      scheduleOptions = {
-        ...scheduleOptions,
-        ..._extractScheduleOptions(i, inputs),
-      };
-    });
-
-    this.scheduleOptions = scheduleOptions;
-    const scheduleKeys = [
-      ...Object.keys(this.scheduleOptions),
-      ...datEntryPoints.map((i) => i.modelicaPath),
-    ];
-
-    scheduleKeys.map((k) => {
-      delete inputs[k];
-    });
 
     this.options = {};
     Object.entries(inputs).map(([key, input]) => {
       this.options[key] = _mapInputToOption(input);
-      // remove any option references that have been split out as schedule option
-      this.options[key].options = this.options[key].options?.filter(
-        (o) => !scheduleKeys.includes(o),
-      );
     });
 
     // kludge: 'Modelica.Icons.Record' is useful for schematics but
@@ -423,7 +347,7 @@ export class Template {
   }
 
   getOptions() {
-    return { options: this.options, scheduleOptions: this.scheduleOptions };
+    return { options: this.options, scheduleOptions: {} };
   }
 
   getSystemTypes() {
