@@ -236,7 +236,7 @@ export interface TemplateInput {
   value?: any;
   enable?: any;
   modifiers?: Modification[];
-  choiceModifiers?: {[key: string]: Modification[]};
+  choiceModifiers?: { [key: string]: Modification[] };
   elementType: string;
 }
 
@@ -606,7 +606,7 @@ export class Input extends Element {
 
 export class ReplaceableInput extends Input {
   choices: string[] = [];
-  choiceMods: {[key: string]: Modification[]} = {};
+  choiceMods: { [key: string]: Modification[] } = {};
   constraint: Element | undefined;
   mods: Modification[] = [];
   mod: Modification | undefined;
@@ -688,7 +688,7 @@ export class ReplaceableInput extends Input {
       modifiers: this.mods,
       elementType: this.elementType,
       enable: this.enable,
-      choiceModifiers: this.choiceMods
+      choiceModifiers: this.choiceMods,
     };
 
     if (recursive) {
