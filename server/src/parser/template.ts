@@ -94,7 +94,13 @@ export interface Mods {
  */
 export function flattenModifiers(
   modList: (Modification | undefined | null)[] | undefined,
-  mods: { [key: string]: { expression: Expression; final: boolean } } = {},
+  mods: {
+    [key: string]: {
+      expression: Expression;
+      final: boolean;
+      redeclare: boolean;
+    };
+  } = {},
 ) {
   if (!modList) {
     return mods; // PUNCH-OUT!
@@ -104,7 +110,11 @@ export function flattenModifiers(
     .filter((m) => m !== undefined || m !== null)
     .map((mod) => {
       if (mod?.value) {
-        mods[mod.modelicaPath] = { expression: mod.value, final: mod.final };
+        mods[mod.modelicaPath] = {
+          expression: mod.value,
+          final: mod.final,
+          redeclare: mod.redeclare,
+        };
       }
 
       if (mod?.mods) {
