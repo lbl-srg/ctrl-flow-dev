@@ -34,6 +34,19 @@ export interface FlatConfigOptionChoice {
   name: string;
 }
 
+export const MODELICA_LITERALS_TO_NOT_DISPLAY = ["String", "Real", "Integer"];
+
+const displayOptionFilter = (
+  optionInstance: OptionInstance,
+  optionType: string,
+) => {
+  return (
+    optionType.startsWith("Modelica") ||
+    MODELICA_LITERALS_TO_NOT_DISPLAY.includes(optionType) ||
+    optionInstance.instancePath.endsWith("dat")
+  );
+};
+
 /**
  * Maps an OptionInstance to a a display option - handles booleans and dropdowns
  * @param optionInstance
@@ -160,10 +173,7 @@ export function _formatDisplayItem(
       ? optionInstance.value
       : option.type;
 
-  if (
-    context.template.scheduleOptionPaths.find((p) => p === option.modelicaPath)
-  ) {
-    // this is a 'dat' entry point. Don't grab anything from these nodes
+  if (displayOptionFilter(optionInstance, optionType as string)) {
     return [];
   }
 
@@ -208,15 +218,6 @@ export function _formatDisplayItem(
       displayList.push(displayGroup);
     }
   }
-
-  // check if group
-  // if (option.options?.length) {
-  //   const displayGroup = _formatDisplayGroup(option, optionInstance, context);
-  //   // iterate through children
-  //   if (displayGroup) {
-  //     displayList.push(displayGroup);
-  //   }
-  // }
 
   return displayList;
 }
