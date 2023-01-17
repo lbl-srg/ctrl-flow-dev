@@ -4,7 +4,8 @@ import Template, {
   TemplateInterface,
   OptionInterface,
 } from "../../src/data/template";
-import { Modifiers, ConfigValues } from "../../src/utils/modifier-helpers";
+import { ConfigValues } from "../../src/utils/modifier-helpers";
+import { removeEmpty } from "../../src/utils/utils";
 
 /**
  * TODO:
@@ -14,7 +15,7 @@ import { Modifiers, ConfigValues } from "../../src/utils/modifier-helpers";
  * - [x] Add a whole lot more tests for expression with context. This is where the bugs are
  * - [x] integrate scope!
  * - [x] map option instances to a valid flatoption/flat option group list
- * - [ ] integrate with slideout component
+ * - [x] integrate with slideout component
  * in an instance path, e.g. try in this order ["my.fancy.path", "my.path", "path"]
  * - (?) partial resolved expressions must be handled (if something gets returned as an expression).
  * An approach:
@@ -656,7 +657,9 @@ export interface OptionInstance {
  */
 export class ConfigContext {
   mods: { [key: string]: Modifier } = {};
-  _resolvedValues: { [key: string]: Literal | null } = {};
+  _resolvedValues: {
+    [key: string]: { value: Literal | null; optionPath: string };
+  } = {};
 
   constructor(
     public template: TemplateInterface,
@@ -735,7 +738,7 @@ export class ConfigContext {
     val = evaluate(this.options[optionPath]?.value, this, optionScope);
 
     if (!isExpression(val) && val !== undefined && val !== null) {
-      this._resolvedValues[path] = val as Literal;
+      this._resolvedValues[path] = { value: val as Literal, optionPath };
     }
 
     return val;
@@ -746,7 +749,7 @@ export class ConfigContext {
    * resolving occurs in this method with scope
    */
   _getCachedValue(path: string): Literal | null | undefined {
-    return this._resolvedValues[path];
+    return this._resolvedValues[path]?.value;
   }
 
   getRootOption() {
@@ -837,5 +840,21 @@ export class ConfigContext {
       instancePath: "",
       isOuter: false,
     };
+  }
+
+  /**
+   * Maps the cache of values to the selection format
+   */
+  getEvaluatedValues() {
+    const evaluatedValues: { [key: string]: Literal | null | undefined } = {};
+    const resolvedValues = removeEmpty(this._resolvedValues) as {
+      [key: string]: { value: Literal | null | undefined; optionPath: string };
+    };
+    Object.entries(resolvedValues).map(([key, val]) => {
+      const { optionPath, value } = val;
+      const selectionPath = constructSelectionPath(optionPath, key);
+      evaluatedValues[selectionPath] = value;
+    });
+    return evaluatedValues;
   }
 }

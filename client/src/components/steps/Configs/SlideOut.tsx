@@ -117,14 +117,12 @@ const SlideOut = ({
     });
   }
 
-  // TODO: I think the context cache can work for this
-  const evaluatedValues = {};
-
   function saveConfigOptions(event: FormEvent) {
     event.preventDefault();
     event.stopPropagation();
 
     // configStore.update(config.id, { name: configName });
+    const evaluatedValues = context.getEvaluatedValues();
     configStore.setSelections(config.id, selectedValues);
     configStore.setEvaluatedValues(config.id, removeEmpty(evaluatedValues));
 
