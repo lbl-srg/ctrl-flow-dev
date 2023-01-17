@@ -48,7 +48,7 @@ export function _formatDisplayOption(
   const option = optionInstance.option;
   const type = optionInstance.option.type === "Boolean" ? "Boolean" : "Normal";
 
-  let flatOptionSetup: Partial<FlatConfigOption> = {
+  const flatOptionSetup: Partial<FlatConfigOption> = {
     parentModelicaPath,
     modelicaPath: option.modelicaPath,
     name: option.name,
@@ -110,10 +110,9 @@ export function _formatDisplayGroup(
         return _formatDisplayGroup(childOption, paramInstance, context);
       } else {
         const paramName = o.split(".").pop();
-        const childInstancePath = `${paramInstance.instancePath}.${paramName}`;
-        if (childInstancePath === "secOutRel.secOut.SingleDamper") {
-          console.log("stop");
-        }
+        const childInstancePath = [paramInstance.instancePath, paramName]
+          .filter((p) => p !== "")
+          .join(".");
         const oInstance = context.getOptionInstance(childInstancePath);
         const oOptions = oInstance
           ? _formatDisplayItem(oInstance, option.modelicaPath, context)
@@ -151,9 +150,12 @@ export function _formatDisplayItem(
   // picks if we are rendering a single instance
   // or a group
   const option = optionInstance.option;
+  if (!option) {
+    console.log(`Null option: ${optionInstance.instancePath}`);
+  }
   const displayList: DisplayItem[] = [];
   const optionType =
-    option.replaceable && optionInstance.value !== undefined
+    option && option["replaceable"] && optionInstance.value !== undefined
       ? optionInstance.value
       : option.type;
 

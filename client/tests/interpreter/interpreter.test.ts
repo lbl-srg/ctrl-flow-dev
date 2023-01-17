@@ -226,6 +226,23 @@ describe("Path resolution", () => {
   });
 
   /**
+   * 'typ' has a modifier assigned
+   */
+  it("Gets typ", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+
+    const path = "typ";
+    const { optionPath } = resolvePaths(path, context);
+    expect(optionPath).toEqual(
+      "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.typ",
+    );
+  });
+
+  /**
    * Gracefully handles a null reference
    *
    * fanRet has no link to 'dat' as it is marked as
@@ -361,6 +378,17 @@ describe("Testing context getValue", () => {
     );
     const expectedVal = "Buildings.Templates.Components.Coils.None";
     expect(context.getValue("coiHea")).toBe(expectedVal);
+  });
+
+  it("Gets ctl.typFanSup", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+
+    const path = "ctl.typFanSup";
+    const optionInstance = context.getOptionInstance(path);
   });
 });
 
@@ -755,12 +783,14 @@ describe("Display Option and Display Group Generation", () => {
     expect(displayGroup?.items.length).toBeGreaterThan(0);
   });
 
-  it("Generates a display group and display options using _displayItem", () => {
+  it("Generates a display group and display options for Multizone Template", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
     );
+
+    const displayOption = mapToDisplayOptions(context);
   });
 });
 // describe("Display Option Generation", () => {
