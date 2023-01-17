@@ -1,5 +1,5 @@
 import RootStore from "../../src/data";
-import Config, { ConfigInterface } from "../../src/data/config";
+import { ConfigInterface } from "../../src/data/config";
 import { ConfigValues } from "../../src/utils/modifier-helpers";
 import { TemplateInterface, OptionInterface } from "../../src/data/template";
 import { extractSimpleDisplayList } from "../../src/utils/utils";
@@ -235,6 +235,28 @@ describe("Path resolution", () => {
     expect(optionPath).toBe(expectedPath);
   });
 
+  it("Returns the outerOptionPath if present", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+      createSelections(),
+    );
+
+    const { optionPath, instancePath, outerOptionPath } = resolvePaths(
+      "ctl.coiCoo",
+      context,
+    );
+    expect(optionPath).toBe(
+      "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo",
+    );
+    expect(outerOptionPath).toBe(
+      "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.coiCoo",
+    );
+
+    expect(instancePath).toBe("coiCoo");
+  });
+
   it("Resolves secOutRel.secOut.dat.damOut.m_flow_nominal", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
@@ -291,10 +313,6 @@ describe("Path resolution", () => {
       allOptions,
     );
 
-    // end up at secOutRel.secRel.fanRet
-    // modelicaPath of: 'Buildings.Templates.Components.Fans.SingleVariable'
-    // 'dat' should be at : Buildings.Templates.Components.Interfaces.PartialFan
-    // this does not have a 'dat'? linkage enable is false on this parameter
     const { optionPath } = resolvePaths(
       "secOutRel.secRel.fanRet.dat.nFan",
       context,
@@ -705,6 +723,20 @@ describe("Display Enable is set as expected", () => {
     const optionInstance = newContext.getOptionInstance("ctl.have_CO2Sen");
     expect(optionInstance?.display).toBeTruthy();
   });
+
+  it("ctl.have_winSen returns an enabled control", () => {
+    const context = new ConfigContext(
+      zoneTemplate as TemplateInterface,
+      zoneConfig as ConfigInterface,
+      allOptions,
+      createSelections(),
+    );
+
+    const haveWinSen = context.getOptionInstance(
+      "ctl.have_winSen",
+    ) as OptionInstance;
+    expect(haveWinSen.display).toBeTruthy();
+  });
 });
 
 describe("Display Option and Display Group Generation", () => {
@@ -844,6 +876,22 @@ describe("Display Option and Display Group Generation", () => {
     expect(displayOptions).toBeDefined();
   });
 
+  // TODO: may need linkage annotation for this
+  it("Hides params with outer designation", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+      createSelections(),
+    );
+
+    const coiCoo = context.getOptionInstance("ctl.coiCoo") as OptionInstance;
+    expect(coiCoo.display).toBeFalsy();
+    const { optionPath } = resolvePaths("ctl", context);
+    const items = _formatDisplayItem(coiCoo, optionPath as string, context);
+    expect(items.length).toEqual(0);
+  });
+
   it("Generates a display group and display options for VAVBox Cooling Only Template", () => {
     const context = new ConfigContext(
       zoneTemplate as TemplateInterface,
@@ -854,12 +902,15 @@ describe("Display Option and Display Group Generation", () => {
 
     const coiHea = context.getOptionInstance("coiHea") as OptionInstance;
     expect(coiHea.display).toBeFalsy();
+
     const ctl = context.getOptionInstance("ctl") as OptionInstance;
     const ctlDisplayOptions = _formatDisplayItem(
       ctl,
       zoneTemplate.modelicaPath,
       context,
     );
+
+    expect(ctlDisplayOptions.length).toBeGreaterThan(0);
 
     const displayOptions = mapToDisplayOptions(context);
     expect(displayOptions.length).toBeGreaterThan(0);

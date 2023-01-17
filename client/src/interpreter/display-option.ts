@@ -164,7 +164,6 @@ export function _formatDisplayItem(
   // or a group
   const option = optionInstance.option;
   if (!option) {
-    console.log(`Null option: ${optionInstance.instancePath}`);
     return [];
   }
   const displayList: DisplayItem[] = [];
@@ -190,8 +189,12 @@ export function _formatDisplayItem(
   if (typeOption === undefined) {
     return displayList;
   }
-  // typeOption should always be a definition
-  if (typeOption.definition && typeOption.options?.length) {
+
+  if (
+    !optionInstance.isOuter &&
+    typeOption.definition &&
+    typeOption.options?.length
+  ) {
     const displayGroup = _formatDisplayGroup(
       typeOption,
       optionInstance,
@@ -208,5 +211,9 @@ export function _formatDisplayItem(
 // Maps a current context into a list of displayable options
 export function mapToDisplayOptions(context: ConfigContext) {
   const rootInstance = context.getRootInstance();
+  // run twice to get a few more values resolved
+  // only way to be sure is to count the number of resolved values
+  // and keep running until that number doesn't change
+  _formatDisplayItem(rootInstance, "", context);
   return _formatDisplayItem(rootInstance, "", context);
 }

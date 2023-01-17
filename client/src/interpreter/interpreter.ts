@@ -51,6 +51,7 @@ interface Modifier {
   expression: Expression;
   final: boolean;
   fromClassDefinition: boolean;
+  redeclare: boolean;
 }
 
 /**
@@ -100,7 +101,7 @@ export function applyPathModifiers(
     const testPath = splitScopePath.join(".");
     if (pathModifiers[testPath]) {
       modifiedPath = [pathModifiers[testPath], postFix]
-        .filter((p) => p === "")
+        .filter((p) => p !== "")
         .join(".");
       break;
     }
@@ -120,24 +121,35 @@ export function applyPathModifiers(
  *
  * Keep all traversal logic in here
  *
+ * Messy brain method that needs to be refactored
+ *
  * @param instancePath // it is assumed that scope is already applied to this path!
  * @param context
  */
 const _instancePathToOption = (
   instancePath: string,
   context: ConfigContext,
-): { optionPath: string | null; instancePath: string } => {
-  const modifiedPath = applyPathModifiers(
-    instancePath,
-    context.template.pathModifiers,
-  );
+  applyPathMods = true,
+): {
+  optionPath: string | null | undefined;
+  instancePath: string;
+  outerOptionPath: string | null | undefined;
+} => {
+  const modifiedPath = applyPathMods
+    ? applyPathModifiers(instancePath, context.template.pathModifiers)
+    : instancePath;
+  let outerOptionPath = null;
+  if (modifiedPath !== instancePath) {
+    const outerPaths = _instancePathToOption(instancePath, context, false);
+    outerOptionPath = outerPaths?.optionPath;
+  }
 
   const pathSegments = modifiedPath.split(".");
   const curInstancePathList = [pathSegments.shift()]; // keep track of instance path for modifiers
-  let curOptionPath: string | null = `${context.template.modelicaPath}.${
-    curInstancePathList[curInstancePathList.length - 1]
-  }`;
-  if (curInstancePathList.length === 1) {
+  let curOptionPath: string | null | undefined = `${
+    context.template.modelicaPath
+  }.${curInstancePathList[curInstancePathList.length - 1]}`;
+  if (pathSegments.length === 0) {
     // special case: original type definition should be defined
     const rootOption = context.getRootOption();
     const foundOption = rootOption.options?.find((childPath) =>
@@ -146,7 +158,7 @@ const _instancePathToOption = (
     curOptionPath = foundOption ? foundOption : curOptionPath;
   }
 
-  while (curInstancePathList) {
+  while (curInstancePathList && pathSegments.length > 0) {
     let option: OptionInterface | null = null;
     // Option swap #1: selections
     // check if there is a selected path that specifies that option at
@@ -160,7 +172,9 @@ const _instancePathToOption = (
       });
     }
 
-    // Option swap #2: redeclare modifiers
+    // get the original option for reference
+
+    // Option swap #2: redeclare modifiers - NOT WORKING
     // check if there is a modifier for the current instance path
     if (!option) {
       const curInstancePath = curInstancePathList.join(".");
@@ -172,22 +186,28 @@ const _instancePathToOption = (
           context,
           curInstancePath,
         );
-        if (typeof resolvedValue === "string") {
+        if (typeof resolvedValue === "string" && instanceMod.redeclare) {
           const potentialOption = context.options[resolvedValue as string];
-          option = potentialOption?.replaceable ? potentialOption : option;
+          option = potentialOption ? potentialOption : option;
+          // the potential option I need to swap
+          // option = potentialOption ? potentialOption : option;
         }
       }
     }
 
     // special 'datAll' case
 
-    if (!option && curOptionPath.endsWith("datAll")) {
+    if (
+      curOptionPath !== undefined &&
+      !option &&
+      curOptionPath.endsWith("datAll")
+    ) {
       option = context.options["Buildings.Templates.Data.AllSystems"];
     }
 
     // Otherwise - do the normal thing and attempt to find the instance type
     // by looking in options
-    if (!option) {
+    if (!option && curOptionPath) {
       // otherwise just attempt to grab the option
       const paramOption = context.options[curOptionPath];
       if (!paramOption) {
@@ -195,7 +215,7 @@ const _instancePathToOption = (
       } else {
         option = context.options[paramOption.type];
         if (option === undefined) {
-          console.log(`param type undefined: ${paramOption.type}`);
+          // console.log(`param type undefined: ${paramOption.type}`);
           curOptionPath = null;
           break;
         }
@@ -211,17 +231,24 @@ const _instancePathToOption = (
     // use the options child list to get the correct type - inherited types
     // are only correctly referenced through this list
 
-    curOptionPath = option.options?.find(
+    curOptionPath = option?.options?.find(
       (o) => o.split(".").pop() === paramName,
     ) as string;
 
-    if (!curOptionPath) {
-      curOptionPath = pathSegments.length === 0 ? option.modelicaPath : null;
+    if (pathSegments.length === 0) {
+      // bottoming out - set a default path
+      if (!curOptionPath) {
+        curOptionPath = pathSegments.length === 0 ? option?.modelicaPath : null;
+      }
       break;
     }
   }
 
-  return { optionPath: curOptionPath, instancePath: modifiedPath };
+  return {
+    optionPath: curOptionPath,
+    instancePath: modifiedPath,
+    outerOptionPath,
+  };
 };
 
 // This is a hack to determine modelica paths
@@ -244,16 +271,24 @@ export function resolvePaths(
   path: string,
   context: ConfigContext,
   scope = "",
-): { optionPath: string | null; instancePath: string } {
+): {
+  optionPath: string | null;
+  instancePath: string;
+  outerOptionPath: string | null | undefined;
+} {
   const pathList = createPossiblePaths(scope, path);
   for (const p of pathList) {
     const paths = _instancePathToOption(p, context);
     if (paths.optionPath && paths.instancePath) {
-      return { optionPath: paths.optionPath, instancePath: paths.instancePath };
+      return {
+        optionPath: paths.optionPath,
+        instancePath: paths.instancePath,
+        outerOptionPath: paths.outerOptionPath,
+      };
     }
   }
 
-  return { optionPath: null, instancePath: path };
+  return { optionPath: null, instancePath: path, outerOptionPath: null };
 }
 
 ///////////////// Expression Evaluation
@@ -435,7 +470,11 @@ export const evaluate = (
 
 const addToModObject = (
   newMods: {
-    [key: string]: { expression: Expression; final: boolean };
+    [key: string]: {
+      expression: Expression;
+      final: boolean;
+      redeclare: boolean;
+    };
   },
   baseInstancePath: string,
   fromClassDefinition: boolean,
@@ -533,7 +572,7 @@ const buildModsHelper = (
   }
   // always check the config for a selection
   const optionMods = option.modifiers as {
-    [key: string]: { expression: Expression; final: boolean };
+    [key: string]: Modifier;
   };
   const childOptions = option.options;
   const name = option.modelicaPath.split(".").pop();
@@ -542,7 +581,6 @@ const buildModsHelper = (
     : [baseInstancePath, name].filter((p) => p !== "").join(".");
   // grab the current options modifiers
   if (optionMods) {
-    // use updated 'base' path - modifiers are oriented around
     addToModObject(optionMods, newBase, option.definition, mods, options);
   }
 
@@ -605,6 +643,7 @@ export interface OptionInstance {
   display: boolean;
   option: OptionInterface;
   instancePath: string;
+  isOuter: boolean;
 }
 /**
  * Generating context for a given template and config
@@ -721,11 +760,17 @@ export class ConfigContext {
    * @returns
    */
   getOptionInstance(path: string, scope = ""): OptionInstance | undefined {
-    const { instancePath, optionPath } = resolvePaths(path, this, scope);
+    const { instancePath, optionPath, outerOptionPath } = resolvePaths(
+      path,
+      this,
+      scope,
+    );
 
     if (!optionPath || optionPath.startsWith("Modelica")) {
       return;
     }
+
+    const outerOption = outerOptionPath ? this.options[outerOptionPath] : null;
 
     let value = this.getValue(instancePath);
     let display = false;
@@ -741,6 +786,7 @@ export class ConfigContext {
       display,
       option: this.options[optionPath as string],
       instancePath,
+      isOuter: !!outerOption,
     };
 
     const mod = this.mods[instancePath];
@@ -776,14 +822,11 @@ export class ConfigContext {
           )
         : false;
     display = !isExpression(enable) ? !!enable : display;
-    display = !!(display && option.visible);
+    display = outerOption
+      ? !!(display && outerOption.visible)
+      : !!(display && option.visible);
 
-    return {
-      value: castValue,
-      display,
-      option,
-      instancePath,
-    };
+    return { ...optionInstance, display };
   }
 
   getRootInstance() {
@@ -792,6 +835,7 @@ export class ConfigContext {
       display: false,
       value: this.template.modelicaPath,
       instancePath: "",
+      isOuter: false,
     };
   }
 }
