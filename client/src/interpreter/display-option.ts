@@ -152,6 +152,7 @@ export function _formatDisplayItem(
   const option = optionInstance.option;
   if (!option) {
     console.log(`Null option: ${optionInstance.instancePath}`);
+    return [];
   }
   const displayList: DisplayItem[] = [];
   const optionType =

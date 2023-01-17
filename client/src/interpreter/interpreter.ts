@@ -4,7 +4,7 @@ import Template, {
   TemplateInterface,
   OptionInterface,
 } from "../../src/data/template";
-import { Modifiers } from "../../src/utils/modifier-helpers";
+import { Modifiers, ConfigValues } from "../../src/utils/modifier-helpers";
 
 /**
  * TODO:
@@ -154,7 +154,7 @@ const _instancePathToOption = (
     // check if there is a selected path that specifies that option at
     // this instance path
     if (context.config?.selections) {
-      Object.entries(context.config.selections).map(([key, value]) => {
+      Object.entries(context.selections).map(([key, value]) => {
         const [optionPath, instancePath] = key.split("-");
         if (instancePath === curInstancePathList.join(".")) {
           option = context.options[value];
@@ -496,16 +496,14 @@ const getReplaceableType = (
   instancePath: string,
   option: OptionInterface,
   mods: { [key: string]: { expression: Expression; final: boolean } },
-  config: ConfigInterface,
+  selections: ConfigValues,
 ) => {
   // check if there is a selection for this option, if so use
   const selectionPath = constructSelectionPath(
     option.modelicaPath,
     instancePath,
   );
-  const selectionType = config.selections
-    ? config.selections[selectionPath]
-    : null;
+  const selectionType = selections ? selections[selectionPath] : null;
 
   if (selectionType) {
     return selectionType;
@@ -530,7 +528,7 @@ const buildModsHelper = (
   baseInstancePath: string,
   mods: { [key: string]: Modifier },
   options: { [key: string]: OptionInterface },
-  config: ConfigInterface,
+  selections: ConfigValues,
 ) => {
   if (option === undefined) {
     return; // TODO: not sure this should be allowed - failing with 'Medium'
@@ -555,13 +553,13 @@ const buildModsHelper = (
     if (option.definition) {
       childOptions.map((path) => {
         const childOption = options[path];
-        buildModsHelper(childOption, newBase, mods, options, config);
+        buildModsHelper(childOption, newBase, mods, options, selections);
       });
     } else {
       // TODO: use instanceToOption to get replaceable type!
       // getReplaceableType is redundant (or just getValue)
       const typeOptionPath = option.replaceable
-        ? getReplaceableType(newBase, option, mods, config)
+        ? getReplaceableType(newBase, option, mods, selections)
         : option.type;
 
       const typeOption = options[typeOptionPath as string]; // TODO: remove this cast
@@ -579,7 +577,7 @@ const buildModsHelper = (
         typeOption.options.map((path) => {
           const childOption = options[path];
 
-          buildModsHelper(childOption, newBase, mods, options, config);
+          buildModsHelper(childOption, newBase, mods, options, selections);
         });
       }
     }
@@ -588,12 +586,12 @@ const buildModsHelper = (
 
 const buildMods = (
   startOption: OptionInterface,
-  config: ConfigInterface,
+  selections: ConfigValues,
   options: { [key: string]: OptionInterface },
 ) => {
   const mods: { [key: string]: Modifier } = {};
 
-  buildModsHelper(startOption, "", mods, options, config);
+  buildModsHelper(startOption, "", mods, options, selections);
 
   return mods;
 };
@@ -627,6 +625,7 @@ export class ConfigContext {
     public template: TemplateInterface,
     public config: ConfigInterface,
     public options: { [key: string]: OptionInterface },
+    public selections: ConfigValues,
   ) {
     if (template.modelicaPath in _initModCache) {
       // this.mods = _initModCache[template.modelicaPath];
@@ -634,7 +633,7 @@ export class ConfigContext {
       // calculate intial mods without selections
       this.mods = buildMods(
         this.options[template.modelicaPath],
-        this.config,
+        selections,
         this.options,
       );
       // stash in cache
@@ -684,8 +683,8 @@ export class ConfigContext {
 
     const selectionPath = constructSelectionPath(optionPath, instancePath);
     // check selections
-    if (this.config.selections && selectionPath in this.config.selections) {
-      return this.config.selections[selectionPath];
+    if (this.selections && selectionPath in this.selections) {
+      return this.selections[selectionPath];
     }
 
     // Check if a value is on a modifier
@@ -725,7 +724,7 @@ export class ConfigContext {
   getOptionInstance(path: string, scope = ""): OptionInstance | undefined {
     const { instancePath, optionPath } = resolvePaths(path, this, scope);
 
-    if (!optionPath) {
+    if (!optionPath || optionPath.startsWith("Modelica")) {
       return;
     }
 
@@ -752,6 +751,9 @@ export class ConfigContext {
     }
     const option = this.options[optionPath as string]; // TODO: not sure optionPath should ever be null
 
+    if (!option) {
+      console.log(instancePath);
+    }
     // 'scope' in this case is the current instance path's scope, which
     // is one level up from the parameter.
     // e.g.
@@ -766,13 +768,10 @@ export class ConfigContext {
 
     // The scope of the expression 'enable = c === true' must be able to first reference
     // what is found inside the scope of e, an instance of class A
-    if (option === undefined) {
-      console.log("hey");
-    }
     const enable =
-      "enable" in option
+      option && "enable" in option
         ? evaluate(
-            option.enable,
+            option?.enable,
             this,
             instancePath.split(".").slice(0, -1).join("."),
           )
