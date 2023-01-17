@@ -12,15 +12,14 @@ import { Modifiers } from "../../src/utils/modifier-helpers";
  * - [X] Integrate context with mod builder! Needed to correctly evaulate expressions in mod builder!
  * - [x] integrate choice modifiers with mod builder
  * - [x] Add a whole lot more tests for expression with context. This is where the bugs are
- * - [x] integrate scope! what this means: every place we resolve an instance path: pop off the last segment of scope and try again until out of segments
- * - [ ] pass in context to modBuilders! Replace 'getReplaceableType'
- * - [ ] map option instances to a valid flatoption/flat option group list
+ * - [x] integrate scope!
+ * - [x] map option instances to a valid flatoption/flat option group list
+ * - [ ] integrate with slideout component
  * in an instance path, e.g. try in this order ["my.fancy.path", "my.path", "path"]
  * - (?) partial resolved expressions must be handled (if something gets returned as an expression).
  * An approach:
  * - iterate through mod object and attempt to resolve each one. Store in _resolvedMods, keep track of how many are resolved
  * - getValue: add initial attempt at fetching value from '_resolveMods'
- * - Re-iterate through
  */
 
 export type Literal = boolean | string | number;
@@ -37,13 +36,22 @@ function isExpression(item: any): boolean {
 const allElementsEqual = (arr: any[]) =>
   !!arr.reduce((a: any, b: any) => (Object.is(a, b) ? a : NaN));
 
-const constructSelectionPath = (optionPath: string, instancePath: string) => {
+export const constructSelectionPath = (
+  optionPath: string,
+  instancePath: string,
+) => {
   // TODO: datAll params should follow other params in how we write them
   // but it doesn't
   return optionPath.includes("Buildings.Templates.Data.AllSystems")
     ? optionPath
     : `${optionPath}-${instancePath}`;
 };
+
+interface Modifier {
+  expression: Expression;
+  final: boolean;
+  fromClassDefinition: boolean;
+}
 
 /**
  * Generates all potential paths given another path and a current scope
@@ -103,8 +111,12 @@ export function applyPathModifiers(
 }
 
 /**
+ *
+ *
  * Given an instance path and context, knows how to find the original option by
  * applying path modifiers, selections, and modifiers (redeclares)
+ *
+ * Keep all traversal logic in here
  *
  * @param instancePath // it is assumed that scope is already applied to this path!
  * @param context
@@ -112,11 +124,14 @@ export function applyPathModifiers(
 const _instancePathToOption = (
   instancePath: string,
   context: ConfigContext,
-): { optionPath: string; instancePath: string } => {
+): { optionPath: string | null; instancePath: string } => {
+  if (instancePath === "secOutRel.secOut.dat.damOut.m_flow_nominal") {
+    console.log("Stop");
+  }
   // apply path modifiers
   // when traversing at each node check for a redeclare mod/selection mod
   // selection mod trumps redeclare... it should also never happend
-  const modifiedPath = applyPathModifiers(
+  let modifiedPath = applyPathModifiers(
     instancePath,
     context.template.pathModifiers,
   );
@@ -127,11 +142,11 @@ const _instancePathToOption = (
   // by selections or redeclare mods! We have to check at each map to an option
   const pathSegments = modifiedPath.split(".");
 
-  let curInstancePath = [pathSegments.shift()]; // keep track of instance path for modifiers
-  let curOptionPath = `${context.template.modelicaPath}.${
-    curInstancePath[curInstancePath.length - 1]
+  let curInstancePathList = [pathSegments.shift()]; // keep track of instance path for modifiers
+  let curOptionPath: string | null = `${context.template.modelicaPath}.${
+    curInstancePathList[curInstancePathList.length - 1]
   }`;
-  while (curInstancePath && pathSegments.length > 0) {
+  while (curInstancePathList && pathSegments.length > 0) {
     let option: OptionInterface | null = null;
     // Option swap #1: selections
     // check if there is a selected path that specifies that option at
@@ -139,7 +154,7 @@ const _instancePathToOption = (
     if (context.config?.selections) {
       Object.entries(context.config.selections).map(([key, value]) => {
         const [optionPath, instancePath] = key.split("-");
-        if (instancePath === curInstancePath.join(".")) {
+        if (instancePath === curInstancePathList.join(".")) {
           option = context.options[value];
         }
       });
@@ -148,10 +163,15 @@ const _instancePathToOption = (
     // Option swap #2: redeclare modifiers
     // check if there is a modifier for the current instance path
     if (!option) {
-      const instanceMod = context.mods[curInstancePath.join(".")];
+      const curInstancePath = curInstancePathList.join(".");
+      const instanceMod = context.mods[curInstancePath];
       // resolve mod if present
       if (instanceMod) {
-        const resolvedValue = evaluate(instanceMod.expression, context);
+        const resolvedValue = evaluateModifier(
+          instanceMod,
+          context,
+          curInstancePath,
+        );
         // resolveValue should always be a 'string', but just go ahead and check
         option =
           typeof resolvedValue === "string"
@@ -161,6 +181,7 @@ const _instancePathToOption = (
     }
 
     // special 'datAll' case
+
     if (!option && curOptionPath.endsWith("datAll")) {
       option = context.options["Buildings.Templates.Data.AllSystems"];
     }
@@ -174,16 +195,27 @@ const _instancePathToOption = (
         break; // PUNCH-OUT!
       } else {
         option = context.options[paramOption.type];
+        if (option === undefined) {
+          console.log(`param type undefined: ${paramOption.type}`);
+          curOptionPath = null;
+          break;
+        }
       }
     }
 
     const paramName = pathSegments.shift();
-    curInstancePath.push(paramName);
+    curInstancePathList.push(paramName);
     // use the options child list to get the correct type - inherited types
     // are only correctly referenced through this list
+
     curOptionPath = option.options?.find(
       (o) => o.split(".").pop() === paramName,
     ) as string;
+
+    if (!curOptionPath) {
+      curOptionPath = pathSegments.length === 0 ? option.modelicaPath : null;
+      break;
+    }
   }
 
   return { optionPath: curOptionPath, instancePath: modifiedPath };
@@ -192,7 +224,6 @@ const _instancePathToOption = (
 // This is a hack to determine modelica paths
 // The backend expands all relative paths every 'option' path should begin with 'Modelica'
 // 'Modelica' or 'Buildings' it is a modelica path. Instance paths
-// look like 'ctl.have_CO2Sen'
 function isModelicaPath(path: string) {
   // pop off each segment of the path from first to last
   // if the segment is a definition, keep going popping
@@ -249,7 +280,6 @@ export const resolveToValue = (
   scope: string = "",
 ): Literal | null | undefined | Expression => {
   let value: any = null;
-
   if (["number", "boolean"].includes(typeof operand)) {
     return evaluate(operand);
   }
@@ -260,39 +290,70 @@ export const resolveToValue = (
 
   const _context = context as ConfigContext;
 
-  if (typeof operand === "string") {
-    if (isModelicaPath(operand)) {
-      const option = _context.options[operand];
-      if (option.definition) {
-        return operand;
-      } else {
-        // Update the operand with just the param name
-        const name = operand.split(".").pop() as string;
-        operand = name;
-      }
+  if (typeof operand !== "string") return;
+
+  if (isModelicaPath(operand)) {
+    const option = _context.options[operand];
+    if (option === undefined) {
+      console.log(`undefined path: ${operand}`);
+      // TODO: these are modelica paths that should
+      // be extracted!
+      return operand;
     }
-    const { instancePath, optionPath } = resolvePaths(operand, _context, scope);
-    const instancePathScope = instancePath.split(".").slice(0, -1).join(".");
-    // have the actual instance path, check for cached value
-    value = _context._getCachedValue(instancePath);
-    // if no value, check instance path
-    value =
-      value === undefined || value === null
-        ? _context.getValue(instancePath)
-        : value;
-    // fallback to the original option
-    if ((value === undefined || value === null) && optionPath) {
-      const typeOption = _context.options[optionPath];
-      if (typeOption?.definition) {
-        value = typeOption.modelicaPath;
-      } else {
-        const potentialExpression = typeOption?.value;
-        value = evaluate(potentialExpression, context, instancePathScope);
-      }
+    if (option?.definition) {
+      return operand;
+    } else {
+      // Update the operand with just the param name
+      const name = operand.split(".").pop() as string;
+      operand = name;
     }
   }
 
+  const { instancePath, optionPath } = resolvePaths(operand, _context, scope);
+  const instancePathScope = instancePath.split(".").slice(0, -1).join(".");
+  // have the actual instance path, check for cached value
+  value = _context._getCachedValue(instancePath);
+  // if no value, check instance path now that scope should be properly applied
+  value =
+    value === undefined || value === null
+      ? _context.getValue(instancePath)
+      : value;
+  // fallback to the original option
+  if ((value === undefined || value === null) && optionPath) {
+    const typeOption = _context.options[optionPath];
+    if (typeOption?.definition) {
+      value = typeOption.modelicaPath;
+    } else if (typeOption && "value" in typeOption) {
+      const potentialExpression = typeOption?.value; // enums
+      value = evaluate(potentialExpression, context, instancePathScope);
+    }
+    // } else {
+    //   // assume we just want the type of the parameter
+    //   value = typeOption.type;
+    // }
+  }
+
   return value;
+};
+
+/**
+ * Inspects the modifier to make sure the appropriate scope
+ * is used
+ *
+ * If the modifier came from a param, scope has to be kicked back
+ * by 2, if it was defined on a class, by 1
+ */
+export const evaluateModifier = (
+  mod: Modifier,
+  context: ConfigContext,
+  instancePath: string = "",
+) => {
+  const sliceAmount = mod?.fromClassDefinition ? -1 : -2;
+  const expressionScope = instancePath
+    .split(".")
+    .slice(0, sliceAmount)
+    .join(".");
+  return evaluate(mod?.expression, context, expressionScope);
 };
 
 /**
@@ -357,6 +418,7 @@ export const evaluate = (
         (acc, cur) => !!(evaluate(cur, context, scope) && acc),
         true,
       );
+      break;
   }
 
   return val;
@@ -365,9 +427,14 @@ export const evaluate = (
 ///////////////// Modifier helpers
 
 const addToModObject = (
-  newMods: { [key: string]: { expression: Expression; final: boolean } },
+  newMods: {
+    [key: string]: { expression: Expression; final: boolean };
+  },
   baseInstancePath: string,
-  mods: { [key: string]: { expression: Expression; final: boolean } },
+  fromClassDefinition: boolean,
+  mods: {
+    [key: string]: Modifier;
+  },
   options: { [key: string]: OptionInterface },
   recursive = true,
 ) => {
@@ -380,17 +447,25 @@ const addToModObject = (
     // Do not add a key that is already present. The assumption is that
     // the first time an instance path is present is the most up-to-date
     if (!(modKey in mods)) {
-      if (modKey === "ctl.have_CO2Sen") {
-        const a = 1;
-      }
-      mods[modKey] = mod;
+      // only through taversal of the template do we get correct scope
+      mods[modKey] = {
+        ...mod,
+        ...{ ["fromClassDefinition"]: fromClassDefinition },
+      };
     }
 
-    if (recursive) {
+    if (false) {
       // grab modifiers from original definition
       const modOption = options[k];
       if (modOption?.modifiers) {
-        addToModObject(newMods, baseInstancePath, mods, options, false);
+        addToModObject(
+          newMods,
+          baseInstancePath,
+          fromClassDefinition,
+          mods,
+          options,
+          false,
+        );
       }
     }
   });
@@ -402,7 +477,7 @@ const addToModObject = (
  * - a redeclare
  *
  * This is a small helper method that checks for either of those instances
- * TODO: this should be replaced by use of instaceToOption method and the
+ * TODO: this maybe should be replaced by use of instaceToOption method and the
  * use of context
  *
  * @param instancePath
@@ -423,16 +498,20 @@ const getReplaceableType = (
   const selectionType = config.selections
     ? config.selections[selectionPath]
     : null;
-  // check if there is a modifier for this option, if so use it:
+
   if (selectionType) {
     return selectionType;
   }
 
+  // Check if there is a modifier for this option, if so use it:
   const redeclaredType = instancePath in mods ? mods[instancePath] : null;
   if (redeclaredType) {
+    // not using 'evaluateModifier' as that relies on context
+    // This evaluation COULD mess up if operand anything but 'none'
     return evaluate(redeclaredType.expression);
   }
 
+  // Otherwise just definition type
   return option.type;
 };
 
@@ -441,7 +520,7 @@ const getReplaceableType = (
 const buildModsHelper = (
   option: OptionInterface,
   baseInstancePath: string,
-  mods: { [key: string]: { expression: Expression; final: boolean } },
+  mods: { [key: string]: Modifier },
   options: { [key: string]: OptionInterface },
   config: ConfigInterface,
 ) => {
@@ -453,12 +532,6 @@ const buildModsHelper = (
     [key: string]: { expression: Expression; final: boolean };
   };
   const childOptions = option.options;
-  if (
-    option.modelicaPath ===
-    "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.ctl"
-  ) {
-    const a = 1;
-  }
   const name = option.modelicaPath.split(".").pop();
   const newBase = option.definition
     ? baseInstancePath
@@ -466,7 +539,7 @@ const buildModsHelper = (
   // grab the current options modifiers
   if (optionMods) {
     // use updated 'base' path - modifiers are oriented around
-    addToModObject(optionMods, newBase, mods, options);
+    addToModObject(optionMods, newBase, option.definition, mods, options);
   }
 
   // if this is a definition - visit all child options and grab modifiers
@@ -487,7 +560,13 @@ const buildModsHelper = (
       if (typeOption && typeOption.options) {
         // add modifiers from type option
         if (typeOption.modifiers) {
-          addToModObject(typeOption.modifiers, newBase, mods, options);
+          addToModObject(
+            typeOption.modifiers,
+            newBase,
+            typeOption.definition,
+            mods,
+            options,
+          );
         }
         typeOption.options.map((path) => {
           const childOption = options[path];
@@ -504,8 +583,7 @@ const buildMods = (
   config: ConfigInterface,
   options: { [key: string]: OptionInterface },
 ) => {
-  const mods: { [key: string]: { expression: Expression; final: boolean } } =
-    {};
+  const mods: { [key: string]: Modifier } = {};
 
   buildModsHelper(startOption, "", mods, options, config);
 
@@ -513,11 +591,12 @@ const buildMods = (
 };
 
 // Cache for initial template values
-const _initModCache: { [key: string]: Modifiers } = {};
+const _initModCache: { [key: string]: Modifier } = {};
 
 ///////////////// Context Manager
-// Format convenient for displaying
-interface OptionInstance {
+// Option and Instance data baked into the same object in a format
+// convenient for mapping to different UI Shapes
+export interface OptionInstance {
   value: Literal | null | undefined; // NOT an expression
   display: boolean;
   option: OptionInterface;
@@ -529,15 +608,11 @@ interface OptionInstance {
 
 /**
  * This generates a context that can be queried for values using
- * an instance path
- *
- * When generating the display option list, we need to be able to resolve:
- * - displayed option's initial value
- * - is the option enabled
- * - is the option visible
+ * an instance path, taking into account selections and the exsiting
+ * definitions and modifiers for a given template
  */
 export class ConfigContext {
-  mods: Modifiers = {};
+  mods: { [key: string]: Modifier } = {};
   _resolvedValues: { [key: string]: Literal | null } = {};
 
   constructor(
@@ -546,7 +621,7 @@ export class ConfigContext {
     public options: { [key: string]: OptionInterface },
   ) {
     if (template.modelicaPath in _initModCache) {
-      this.mods = _initModCache[template.modelicaPath];
+      // this.mods = _initModCache[template.modelicaPath];
     } else {
       // calculate intial mods without selections
       this.mods = buildMods(
@@ -564,21 +639,15 @@ export class ConfigContext {
    *
    * Attempts to get a string or variable reference to a value
    *
-   * When given 'a.b' it should get the instance a, and the value
-   * assigned at 'b'
-   *
-   * TODO: handle interaction with resolved value cache as well
-   *
-   * path can be either:
+   * Path can be either:
    *  - a modelica path
    *  - a modifier path that needs to be combined with scope in
    *    some way to form an instance path
    *  - an instance path
    * A value or null is returned when an instance path is provided
    *
-   * This value CAN return an expression
-   *
-   * A null instance path means the value cannot be resolved
+   * This method CAN return an expression
+   * A null return means the value cannot be resolved
    * @param path
    */
   getValue(path: string, scope = ""): Literal | Expression | null | undefined {
@@ -593,14 +662,16 @@ export class ConfigContext {
       }
       optionPath = path;
     } else {
-      // instance path to
+      // instance path to original option
       const paths = resolvePaths(path, this, scope);
       optionPath = paths.optionPath;
       instancePath = paths.instancePath;
     }
 
     if (!optionPath) {
-      return null; // PUNCH-OUT! TODO:... may not be the correct behavior
+      // Unable to resolve value - likely a param link explicitly broken using
+      // the annotation __Linkage(enable=false)
+      return null; // PUNCH-OUT! Unable to resolve value
     }
 
     const selectionPath = constructSelectionPath(optionPath, instancePath);
@@ -609,18 +680,17 @@ export class ConfigContext {
       return this.config.selections[selectionPath];
     }
 
-    // references on the original option have a scope relative to the instance
-    // path, e.g., if we have an instance path of secOutRel.typSecOut, it is
-    // important we pass in the enclosing class as scope ('secOutRel') for any
-    // variable references in expressions on 'secOutRel.typSecOut' to resolve
-    // instancePath can be a modelicaPath
-    const optionScope = instancePath.split(".").slice(0, -1).join(".");
-    val = evaluate(this.mods[instancePath]?.expression, this, optionScope);
-    if (val) {
-      return val;
+    // Check if a value is on a modifier
+    const mod = this.mods[instancePath];
+    if (mod) {
+      val = evaluateModifier(this.mods[instancePath], this, instancePath);
+      if (val) {
+        return val;
+      }
     }
 
     // return whatever value is present on the original option definition
+    const optionScope = instancePath.split(".").slice(0, -1).join(".");
     val = evaluate(this.options[optionPath]?.value, this, optionScope);
 
     if (isExpression(val) && val !== undefined && val !== null) {
@@ -675,7 +745,7 @@ export class ConfigContext {
     const option = this.options[optionPath as string]; // TODO: not sure optionPath should ever be null
 
     // 'scope' in this case is the current instance path's scope, which
-    // is one level up.
+    // is one level up from the parameter.
     // e.g.
     // You have the following definition
     // param c = false;
@@ -688,11 +758,17 @@ export class ConfigContext {
 
     // The scope of the expression 'enable = c === true' must be able to first reference
     // what is found inside the scope of e, an instance of class A
-    const enable = evaluate(
-      option.enable,
-      this,
-      instancePath.split(".").slice(0, -1).join("."),
-    );
+    if (option === undefined) {
+      console.log("hey");
+    }
+    const enable =
+      "enable" in option
+        ? evaluate(
+            option.enable,
+            this,
+            instancePath.split(".").slice(0, -1).join("."),
+          )
+        : false;
     display = !isExpression(enable) ? !!enable : display;
     display = !!(display && option.visible);
 
@@ -704,237 +780,12 @@ export class ConfigContext {
     };
   }
 
-  getOptionFinal(instancePath: string, scope = "") {
-    // TODO: integrate scope popping!
-    const { final } = this.mods[instancePath];
-    return final;
-  }
-
-  /**
-   * Gets the instance path value and 'final' (is it like a const)
-   *
-   * This method does NOT return an expression for values, just undefined
-   * if unresolved
-   * @param instancePath
-   */
-  getValueAndFinal(instancePath: string): {
-    value: Literal | null | undefined;
-    final: boolean;
-  } {
-    let value = this.getValue(instancePath);
-    if (isExpression(value)) {
-      value = undefined;
-    }
-    const castValue = value as Literal | null | undefined;
-    // TODO: check resolved values here
-    const { final } = this.mods[instancePath];
-    return { value: castValue, final };
-  }
-
-  getRootOption() {
-    return this.options[this.template.modelicaPath];
-  }
-}
-
-///////////////// Display Option List Mapper
-export interface FlatConfigOptionGroup {
-  groupName: string;
-  selectionPath: string;
-  items: (FlatConfigOptionGroup | FlatConfigOption)[];
-}
-
-export interface FlatConfigOption {
-  parentModelicaPath: string;
-  modelicaPath: string;
-  name: string;
-  choices?: OptionInterface[];
-  booleanChoices?: string[];
-  value: any;
-  scope: string;
-  selectionType: string;
-}
-
-export interface FlatConfigOptionChoice {
-  modelicaPath: string;
-  name: string;
-}
-
-function isOptionVisible(
-  option: OptionInterface,
-  scope: string,
-  context: ConfigContext,
-) {
-  const enable = evaluate(option.enable, context);
-  return enable;
-}
-
-/**
- * Maps an OptionInstance to a a display option - handles booleans and dropdowns
- * @param optionInstance
- * @param parentModelicaPath
- * @param scope
- */
-function _formatDisplayOption(
-  optionInstance: OptionInstance,
-  parentModelicaPath: string,
-): FlatConfigOption | FlatConfigOptionGroup {
-  const option = optionInstance.option;
-  const type = optionInstance.option.type === "Boolean" ? "Boolean" : "Normal";
-
-  let flatOptionSetup: Partial<FlatConfigOption> = {
-    parentModelicaPath,
-    modelicaPath: option.modelicaPath,
-    name: option.name,
-    value: optionInstance.value?.toString(),
-    selectionType: type,
-    scope: optionInstance.instancePath,
-  };
-
-  if (type === "Boolean") {
+  getRootInstance() {
     return {
-      ...flatOptionSetup,
-      booleanChoices: ["true", "false"],
-    } as FlatConfigOption;
-  } else {
-    // assume 'Normal'' format
-    return {
-      ...flatOptionSetup,
-      choices: option.childOptions,
-    } as FlatConfigOption;
+      option: this.options[this.template.modelicaPath],
+      display: false,
+      value: this.template.modelicaPath,
+      instancePath: "",
+    };
   }
-}
-
-function _formatDisplayGroup(
-  groupName: string,
-  option: OptionInterface,
-  paramInstance: OptionInstance,
-  context: ConfigContext,
-) {
-  // TODO: optionInstance for definitions? Not sure what happens here
-  // this 'path' should never be used. It does need to be a unique ID though. Previous instance
-  // path + group?
-  const instancePath = `${paramInstance.instancePath}.__group`;
-  const selectionPath = constructSelectionPath(
-    instancePath,
-    option.modelicaPath,
-  );
-  const mappedItems = option.childOptions
-    ?.map((o) => {
-      const oInstance = context.getOptionInstance(o.modelicaPath);
-      return oInstance
-        ? _formatDisplay(oInstance, option.modelicaPath, context)
-        : null;
-    })
-    .filter((displayOption) => displayOption !== null);
-
-  return {
-    groupName,
-    selectionPath,
-    items: mappedItems,
-  };
-}
-
-/**
- * Recursive method that handles traversal of OptionInstances to generate
- * the nested list of DisplayOptions
- * @param optionInstance
- * @param parentModelicaPath
- * @param context
- * @returns
- */
-function _formatDisplay(
-  optionInstance: OptionInstance,
-  parentModelicaPath: string,
-  context: ConfigContext,
-) {
-  // picks if we are rendering a single instance
-  // or a group
-  const option = optionInstance.option;
-
-  if (optionInstance.display) {
-    _formatDisplayOption(optionInstance, parentModelicaPath);
-    // check if there is a selection, if so render it
-    if (option.replaceable && optionInstance.value !== undefined) {
-      const redeclaredOption = context.options[optionInstance.value as string];
-      const redeclaredOptionInstance = context.getOptionInstance(
-        optionInstance.value as string,
-      );
-      // format selected group
-      if (redeclaredOptionInstance) {
-        _formatDisplayGroup(
-          option.name,
-          redeclaredOption,
-          optionInstance,
-          context,
-        );
-      }
-    }
-  } else {
-    // just check if we need to render the options type definition
-    const type = option.type;
-    const typeOption = context.options[type as string];
-    if (typeOption.definition && typeOption.childOptions?.length) {
-      _formatDisplayGroup(option.name, option, optionInstance, context);
-    }
-  }
-
-  // check if group
-  // not visible, is a definition, and has children
-  if (
-    optionInstance.display === false &&
-    option.definition &&
-    option.childOptions?.length
-  ) {
-    // iterate through children
-  }
-}
-
-function _getDisplayOptionsHelper(
-  option: OptionInterface,
-  scope: string,
-  context: ConfigContext,
-  groupName: string = "",
-): FlatConfigOptionGroup | FlatConfigOption | undefined {
-  // does the context have a value for the current instance path?
-  const instancePath = [scope, option.modelicaPath.split(".").pop()]
-    .filter((p) => p !== "")
-    .join(".");
-
-  const optionInstance = context.getOptionInstance(instancePath);
-
-  // 'dat' params should be separated but just in case, drop out here
-  if (option.modelicaPath.includes(`.dat`)) {
-    return;
-  }
-
-  if (optionInstance?.display) {
-    // format for display
-  }
-
-  // check if option is visible
-  // if so use that as the value value
-  // TODO: need to integrate final
-  // is that value final? If so set visible to false
-  // Format into the correct 'FlatConfigOpiton' format
-
-  // Next: doing the recursive dive into the next option
-  // recursive dive into next option:
-  // use context value to find the type
-  // Perhaps do something to make the group? Maybe a separate method?
-  // go through each option: option.options.map(o => _getDisplayOptionsHelper(o, scope + param, context, param description)
-}
-
-function _getDisplayOption(
-  rootOption: OptionInterface,
-  context: ConfigContext,
-) {}
-
-// Maps a current context into a list of displayable options
-export function getDisplayOptions(context: ConfigContext) {
-  let displayOptions: (FlatConfigOptionGroup | FlatConfigOption)[] = [];
-  const scope = ""; // keeps track of current scope location
-
-  const rootOption = context.getRootOption();
-
-  return displayOptions;
 }

@@ -1,6 +1,11 @@
 import RootStore from "../../src/data";
 import Config, { ConfigInterface } from "../../src/data/config";
 import { TemplateInterface, OptionInterface } from "../../src/data/template";
+import { extractSimpleDisplayList } from "../../src/utils/utils";
+import {
+  FlatConfigOption,
+  FlatConfigOptionGroup,
+} from "../../src/interpreter/display-option";
 
 import {
   applyPathModifiers,
@@ -9,7 +14,15 @@ import {
   resolveToValue,
   evaluate,
   resolvePaths,
+  OptionInstance,
 } from "../../src/interpreter/interpreter";
+
+import {
+  mapToDisplayOptions,
+  _formatDisplayOption,
+  _formatDisplayGroup,
+  _formatDisplayItem,
+} from "../../src/interpreter/display-option";
 
 // initialize global test dependencies
 const store = new RootStore();
@@ -187,9 +200,53 @@ describe("Path resolution", () => {
     // TODO: need a better parameter...
     expect(optionPath).toBe(expectedPath);
   });
-  it("Uses scope to find the correct option path", () => {});
 
-  it("Maps an instance path to an option path modified by selections", () => {});
+  it("Resolves secOutRel.secOut.dat.damOut.m_flow_nominal", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+
+    const expression = buildExpression("none", [
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.dat",
+    ]);
+    evaluate(expression);
+
+    const { optionPath } = resolvePaths(
+      "secOutRel.secOut.dat.damOut.m_flow_nominal",
+      context,
+    );
+
+    // the problem: when I get to 'dat' and call evaluate, context is '' when it
+    // should be 'secOutRel.secOut'. This then resolves to VAVMultiZone.dat which
+    // is wrong
+
+    expect(optionPath).toBeDefined();
+  });
+
+  /**
+   * Gracefully handles a null reference
+   *
+   * fanRet has no link to 'dat' as it is marked as
+   * linkage enable === false
+   */
+  it("Gracefully handle secOutRel.secRel.fanRet.dat.nFan resolving as null", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+
+    // end up at secOutRel.secRel.fanRet
+    // modelicaPath of: 'Buildings.Templates.Components.Fans.SingleVariable'
+    // 'dat' should be at : Buildings.Templates.Components.Interfaces.PartialFan
+    // this does not have a 'dat'? linkage enable is false on this parameter
+    const { optionPath } = resolvePaths(
+      "secOutRel.secRel.fanRet.dat.nFan",
+      context,
+    );
+  });
 
   it("Handles a 'datAll' path correctly", () => {});
 });
@@ -238,7 +295,7 @@ describe("Testing context getValue", () => {
    * the root of a template that are assigned a literal. This also tests
    * symbol resolution
    */
-  it("Components (parameter that have a typoe of a class/model) that are not replaceables have no value assigned", () => {
+  it("Components (parameter that have a type of a class/model) that are not replaceables have no value assigned", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
@@ -447,6 +504,67 @@ describe("ctl.have_CO2Sen enable expression", () => {
   });
 });
 
+describe("Scope tests", () => {
+  it("Gets value for ctl.typSecOut", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+
+    // falls back to original
+    let typSecOut = context.getValue("ctl.typSecOut"); // ctl.typSecOut = secOutRel.typSecOut
+    expect(typSecOut).toEqual(
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper",
+    );
+  });
+
+  it("Evaluates the expression at mod secOutRel.secOut.dat", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+    const path = "secOutRel.secOut.dat"; // secOut.dat = dat
+    const val = evaluate(context.mods[path]?.expression, context, "secOutRel");
+    expect(val).toEqual("");
+  });
+
+  /**
+   * 'secOutRel.secOut.dat' is a particular problem point
+   *
+   * secOutRel
+   *
+   * A bad application of scope causes an infinite loop because a modifier
+   * ends up pointing right back at the same parameter
+   */
+  it("Able to resolve secOutRel.secOut.dat", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+    const path = "secOutRel.secOut.dat";
+    const expectedVal =
+      "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection";
+    // test path resolution of original secOutRel.secOut.dat
+    const { optionPath, instancePath } = resolvePaths(path, context, "");
+    const originalParamDefinition =
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.Interfaces.PartialOutdoorSection.dat";
+    expect(optionPath).toEqual(originalParamDefinition);
+    expect(path).toEqual(instancePath); // instance path should not change
+    // test modifier value
+    // modifier points to the correct parameter definition (secOutRel.dat location)
+    expect(context.mods["secOutRel.secOut.dat"].expression.operands[0]).toEqual(
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.dat",
+    );
+
+    // scope is wrong when we attempt to get value
+    // we get a modifier that has a scope baked in. Do we need to know where the modifier is from to evaluate it?
+    const val = context.getValue("secOutRel.secOut.dat");
+  });
+});
+
 describe("Display Enable is set as expected", () => {
   // it("Sets enable correctly on simple parameter (no expression)", () => {
   //   const context = new ConfigContext(
@@ -465,7 +583,7 @@ describe("Display Enable is set as expected", () => {
     );
 
     const optionInstance = context.getOptionInstance("fanSupBlo");
-    expect(optionInstance.display).toBeFalsy();
+    expect(optionInstance?.display).toBeFalsy();
 
     const configName = "VAVMultiZone Config with fanSupDra selection";
     const selections = {
@@ -486,7 +604,7 @@ describe("Display Enable is set as expected", () => {
     );
 
     const updatedOptionInstance = newContext.getOptionInstance("fanSupBlo");
-    expect(updatedOptionInstance.display).toBeTruthy();
+    expect(updatedOptionInstance?.display).toBeTruthy();
   });
 
   it("Sets ctl.have_CO2Sen param to true", () => {
@@ -510,10 +628,141 @@ describe("Display Enable is set as expected", () => {
     );
 
     const optionInstance = newContext.getOptionInstance("ctl.have_CO2Sen");
-    expect(optionInstance.display).toBeTruthy();
+    expect(optionInstance?.display).toBeTruthy();
   });
 });
 
+describe("Display Option and Display Group Generation", () => {
+  it("Generates Boolean DisplayOption for ctl.have_perZonRehBox", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+
+    const have_perZonRehBoxPath = "ctl.have_perZonRehBox";
+    const optionInstance = context.getOptionInstance(have_perZonRehBoxPath);
+
+    expect(optionInstance?.display).toBeTruthy();
+    expect(optionInstance?.instancePath).toBe(have_perZonRehBoxPath);
+    const parent = context.getOptionInstance("ctl");
+    const displayOption = _formatDisplayOption(
+      optionInstance as OptionInstance,
+      parent?.option.modelicaPath as string,
+      context,
+    );
+
+    expect(displayOption).toBeDefined();
+    expect(displayOption.selectionType).toEqual("Boolean");
+    expect(displayOption.modelicaPath).toEqual(
+      optionInstance?.option?.modelicaPath,
+    );
+    expect(displayOption.value).toEqual(false.toString());
+  });
+
+  it("Generates a normal DisplayOption", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+    const optionInstance = context.getOptionInstance("secOutRel.secOut");
+    const parentInstance = context.getOptionInstance("secOutRel");
+
+    const displayOption = _formatDisplayOption(
+      optionInstance as OptionInstance,
+      parentInstance?.option.modelicaPath as string,
+      context,
+    );
+
+    expect(displayOption.name).toEqual(optionInstance?.option.name);
+    expect(displayOption.value).toEqual(
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper",
+    );
+
+    const expectedChoicePaths = {
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper":
+        null,
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersAirflow":
+        null,
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure":
+        null,
+    };
+
+    displayOption.choices?.map((c) =>
+      expect(c.modelicaPath in expectedChoicePaths).toBeTruthy(),
+    );
+  });
+
+  it("Generates the correct type for an enum when using _displayItem", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+
+    const enumInstance = context.getOptionInstance(
+      "secOutRel.secOut.typ",
+    ) as OptionInstance;
+    expect(enumInstance?.value).toEqual(
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper",
+    );
+    const parentInstance = context.getOptionInstance("secOutRel.secOut");
+    const displayItems = _formatDisplayItem(
+      enumInstance as OptionInstance,
+      parentInstance?.option.modelicaPath as string,
+      context,
+    );
+
+    expect(displayItems.length).toEqual(0);
+
+    enumInstance.display = true; // for testing, forcing this to true
+
+    const updatedDisplayItems = _formatDisplayItem(
+      enumInstance as OptionInstance,
+      parentInstance?.option.modelicaPath as string,
+      context,
+    );
+
+    expect(updatedDisplayItems.length).toEqual(1);
+  });
+
+  it("Generates a display group", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+    // get secOutRel type
+    const secOutRel = context.getOptionInstance("secOutRel");
+    const secOutRelType = secOutRel?.option.type as string;
+    const secOutRelTypeOption = context.options[secOutRelType];
+
+    const displayGroup = _formatDisplayGroup(
+      secOutRelTypeOption,
+      secOutRel as OptionInstance,
+      context,
+    );
+
+    const items = displayGroup?.items as (
+      | FlatConfigOptionGroup
+      | FlatConfigOption
+    )[];
+
+    const simpleDisplay = extractSimpleDisplayList(items, true);
+
+    expect(displayGroup?.groupName).toBe(secOutRel?.option.name);
+    expect(displayGroup?.items.length).toBeGreaterThan(0);
+  });
+
+  it("Generates a display group and display options using _displayItem", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+    );
+  });
+});
 // describe("Display Option Generation", () => {
 //   it("Has the expected numer of initial visible options", () => {
 //     const context = new ConfigContext(
