@@ -1,5 +1,6 @@
 import RootStore from "../../src/data";
 import Config, { ConfigInterface } from "../../src/data/config";
+import { ConfigValues } from "../../src/utils/modifier-helpers";
 import { TemplateInterface, OptionInterface } from "../../src/data/template";
 import { extractSimpleDisplayList } from "../../src/utils/utils";
 import {
@@ -44,6 +45,13 @@ const allTemplates: { [key: string]: TemplateInterface } =
 const mzTemplate: TemplateInterface = allTemplates[mzTemplatePath];
 const zoneTemplate = allTemplates[zoneTemplatePath];
 
+const createSelections = (selections: ConfigValues = {}) => {
+  return {
+    ...projectSelections,
+    ...selections,
+  };
+};
+
 const addNewConfig = (
   configName: string,
   template: TemplateInterface,
@@ -58,10 +66,7 @@ const addNewConfig = (
     (c) => c.name === configName,
   ) as ConfigInterface;
 
-  const selectionsWithProjectSelections = {
-    ...projectSelections,
-    ...selections,
-  };
+  const selectionsWithProjectSelections = createSelections(selections);
 
   store.configStore.setSelections(
     configWithSelections.id,
@@ -109,12 +114,6 @@ describe("Basic Context generation without selections", () => {
 const buildExpression = (operator: OperatorType, operands: any[]) => {
   return { operator, operands };
 };
-
-const expressionContext = new ConfigContext(
-  mzTemplate as TemplateInterface,
-  mzConfig as ConfigInterface,
-  allOptions,
-);
 
 describe("Simple resolveToValue tests (no type resolving/evaluation)", () => {
   it("Handles numbers", () => {
@@ -178,6 +177,7 @@ describe("Path resolution", () => {
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
+      createSelections(),
     );
 
     const { optionPath } = resolvePaths("TAirRet.isDifPreSen", context);
@@ -191,6 +191,7 @@ describe("Path resolution", () => {
       zoneTemplate as TemplateInterface,
       zoneConfig as ConfigInterface,
       allOptions,
+      createSelections(),
     );
 
     const expectedPath =
@@ -206,6 +207,7 @@ describe("Path resolution", () => {
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
+      createSelections(),
     );
 
     const expression = buildExpression("none", [
@@ -233,6 +235,7 @@ describe("Path resolution", () => {
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
+      createSelections(),
     );
 
     const path = "typ";
@@ -290,7 +293,7 @@ describe("resolveToValue tests using context and evaluation", () => {
     const config = addNewConfig(
       "Config to test Choice Modifiers and modifier redeclares",
       mzTemplate,
-      selections,
+      createSelections(selections),
     );
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
@@ -356,6 +359,7 @@ describe("Testing context getValue", () => {
       mzTemplate as TemplateInterface,
       configWithSelections as ConfigInterface,
       allOptions,
+      selections,
     );
 
     const expectedVal = "Buildings.Templates.Components.Fans.SingleVariable";
@@ -441,6 +445,7 @@ describe("ctl.have_CO2Sen enable expression", () => {
       mzTemplate as TemplateInterface,
       configWithSecOut,
       allOptions,
+      createSelections(selections),
     );
 
     const secOutTyp = newContext.getValue("secOut.typ", "secOutRel");
@@ -458,6 +463,7 @@ describe("ctl.have_CO2Sen enable expression", () => {
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
+      createSelections(),
     );
 
     const secondOperand = {
@@ -492,6 +498,7 @@ describe("ctl.have_CO2Sen enable expression", () => {
       mzTemplate as TemplateInterface,
       configWithSecOut,
       allOptions,
+      createSelections(selections),
     );
 
     secOutRelTypSecOut = newContext.getValue("secOutRel.typSecOut", "ctl");
@@ -509,6 +516,7 @@ describe("ctl.have_CO2Sen enable expression", () => {
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
+      createSelections(),
     );
 
     const stdVenValue =
@@ -538,6 +546,7 @@ describe("Scope tests", () => {
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
+      createSelections(),
     );
 
     // falls back to original
@@ -552,6 +561,7 @@ describe("Scope tests", () => {
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
+      createSelections(),
     );
     const path = "secOutRel.secOut.dat"; // secOut.dat = dat
     const val = evaluate(context.mods[path]?.expression, context, "secOutRel");
@@ -571,6 +581,7 @@ describe("Scope tests", () => {
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
+      createSelections(),
     );
     const path = "secOutRel.secOut.dat";
     const expectedVal =
@@ -608,6 +619,7 @@ describe("Display Enable is set as expected", () => {
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
+      createSelections(),
     );
 
     const optionInstance = context.getOptionInstance("fanSupBlo");
@@ -629,6 +641,7 @@ describe("Display Enable is set as expected", () => {
       mzTemplate as TemplateInterface,
       configWithSelections as ConfigInterface,
       allOptions,
+      createSelections(selections),
     );
 
     const updatedOptionInstance = newContext.getOptionInstance("fanSupBlo");
@@ -653,6 +666,7 @@ describe("Display Enable is set as expected", () => {
       mzTemplate as TemplateInterface,
       configWithSecOut,
       allOptions,
+      createSelections(selections),
     );
 
     const optionInstance = newContext.getOptionInstance("ctl.have_CO2Sen");
@@ -666,6 +680,7 @@ describe("Display Option and Display Group Generation", () => {
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
+      createSelections(),
     );
 
     const have_perZonRehBoxPath = "ctl.have_perZonRehBox";
@@ -760,6 +775,7 @@ describe("Display Option and Display Group Generation", () => {
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
+      createSelections(),
     );
     // get secOutRel type
     const secOutRel = context.getOptionInstance("secOutRel");
@@ -788,6 +804,7 @@ describe("Display Option and Display Group Generation", () => {
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
+      {},
     );
 
     const displayOption = mapToDisplayOptions(context);

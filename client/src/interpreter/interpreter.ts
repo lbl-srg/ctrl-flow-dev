@@ -625,7 +625,7 @@ export class ConfigContext {
     public template: TemplateInterface,
     public config: ConfigInterface,
     public options: { [key: string]: OptionInterface },
-    public selections: ConfigValues,
+    public selections: ConfigValues = {},
   ) {
     if (template.modelicaPath in _initModCache) {
       // this.mods = _initModCache[template.modelicaPath];
