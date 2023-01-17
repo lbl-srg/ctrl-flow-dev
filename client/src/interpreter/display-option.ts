@@ -168,7 +168,7 @@ export function _formatDisplayItem(
   }
   const displayList: DisplayItem[] = [];
   const optionType =
-    option && option["replaceable"] && optionInstance.value !== undefined
+    option && option["replaceable"] && !optionInstance.value
       ? optionInstance.value
       : option.type;
 
@@ -184,7 +184,9 @@ export function _formatDisplayItem(
   }
   // check if we render type
   const type =
-    optionInstance.value !== undefined ? optionInstance.value : option.type;
+    optionInstance.value !== undefined && optionInstance.value !== null
+      ? optionInstance.value
+      : option.type;
   const typeOption = context.options[type as string];
   if (typeOption === undefined) {
     return displayList;

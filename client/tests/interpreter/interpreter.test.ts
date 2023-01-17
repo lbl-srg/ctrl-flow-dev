@@ -17,6 +17,7 @@ import {
   resolvePaths,
   OptionInstance,
   evaluateModifier,
+  constructSelectionPath,
 } from "../../src/interpreter/interpreter";
 
 import {
@@ -39,12 +40,14 @@ const projectSelections = {
 
 const mzTemplatePath = "Buildings.Templates.AirHandlersFans.VAVMultiZone";
 const zoneTemplatePath = "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly";
+const zoneReheatTemplatePath = "Buildings.Templates.ZoneEquipment.VAVBoxReheat";
 const allOptions: { [key: string]: OptionInterface } =
   store.templateStore.getAllOptions();
 const allTemplates: { [key: string]: TemplateInterface } =
   store.templateStore.getAllTemplates();
 const mzTemplate: TemplateInterface = allTemplates[mzTemplatePath];
 const zoneTemplate = allTemplates[zoneTemplatePath];
+const zoneReheatTemplate = allTemplates[zoneReheatTemplatePath];
 
 const createSelections = (selections: ConfigValues = {}) => {
   return {
@@ -79,6 +82,7 @@ const addNewConfig = (
 
 const mzConfig = addNewConfig("VAVMultiZone Config", mzTemplate, {});
 const zoneConfig = addNewConfig("VAV Box Cooling Only", zoneTemplate, {});
+const zoneReheatConfig = addNewConfig("VAV Box Reheat", zoneReheatTemplate, {});
 
 describe("Path Modifier tests", () => {
   it("Applies a path modifier", () => {
@@ -444,6 +448,17 @@ describe("Testing context getValue", () => {
 
     const path = "ctl.typFanSup";
     const optionInstance = context.getOptionInstance(path);
+  });
+
+  it("Evaluates the expression at mod secOutRel.secOut.dat", () => {
+    const context = new ConfigContext(
+      zoneTemplate as TemplateInterface,
+      zoneConfig as ConfigInterface,
+      allOptions,
+      createSelections(),
+    );
+    const evaluatedValues = context.getEvaluatedValues();
+    expect("coiHea" in evaluatedValues);
   });
 });
 
@@ -925,3 +940,55 @@ describe("Display Option and Display Group Generation", () => {
 //     );
 //   });
 // });
+
+// 'secOutRel.secOut.damOut'
+describe("Selections are formated as expected", () => {
+  it("Visits coiHea", () => {
+    const context = new ConfigContext(
+      zoneReheatTemplate as TemplateInterface,
+      zoneReheatConfig as ConfigInterface,
+      allOptions,
+      {},
+    );
+
+    const instancePath = "coiHea";
+    const evaluatedValues = context.getEvaluatedValues();
+    const optionInstance = context.getOptionInstance(instancePath);
+    const selectionPath = constructSelectionPath(
+      optionInstance?.option.modelicaPath as string,
+      instancePath,
+    );
+    expect(selectionPath in evaluatedValues).toBeTruthy();
+  });
+
+  it("Able to make mzConfig evaluated values", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+      {},
+    );
+  });
+
+  it("Assigns null to secOutRel.secOut.damOut", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+      {},
+    );
+
+    const path = "secOutRel.secOut.damOut";
+    // fill in cache by generating display options
+    const displayOptions = mapToDisplayOptions(context);
+    const { value } = context._resolvedValues[path];
+    expect(value).toEqual("");
+    const optionInstance = context.getOptionInstance(path);
+    const evaluatedValues = context.getEvaluatedValues();
+    const selectionPath = constructSelectionPath(
+      optionInstance?.option.modelicaPath as string,
+      path,
+    );
+    expect(path in evaluatedValues).toBeFalsy();
+  });
+});

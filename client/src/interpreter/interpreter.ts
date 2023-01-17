@@ -548,15 +548,16 @@ const getReplaceableType = (
   }
 
   // Check if there is a modifier for this option, if so use it:
+  let newType = null;
   const redeclaredType = instancePath in mods ? mods[instancePath] : null;
   if (redeclaredType) {
     // not using 'evaluateModifier' as that relies on context
     // This evaluation COULD mess up if operand anything but 'none'
-    return evaluate(redeclaredType.expression);
+    newType = evaluate(redeclaredType.expression);
   }
 
   // Otherwise just definition type
-  return option.type;
+  return newType ? newType : option.type;
 };
 
 // recursive helper method that traverses options grabbing modifiers
@@ -645,6 +646,7 @@ export interface OptionInstance {
   option: OptionInterface;
   instancePath: string;
   isOuter: boolean;
+  type: string;
 }
 /**
  * Generating context for a given template and config
@@ -660,6 +662,7 @@ export class ConfigContext {
   _resolvedValues: {
     [key: string]: { value: Literal | null; optionPath: string };
   } = {};
+  _previousInstancePath: string | null = null;
 
   constructor(
     public template: TemplateInterface,
@@ -679,6 +682,12 @@ export class ConfigContext {
     }
   }
 
+  addToCache(path: string, optionPath: string, val: any) {
+    if (!isExpression(val) && val !== undefined && val !== null) {
+      this._resolvedValues[path] = { value: val as Literal, optionPath };
+    }
+  }
+
   /**
    *
    * Attempts to get a string or variable reference to a value
@@ -695,6 +704,12 @@ export class ConfigContext {
    * @param path
    */
   getValue(path: string, scope = ""): Literal | Expression | null | undefined {
+    if (this._previousInstancePath === path) {
+      console.log(`Cycling on path: ${path}`);
+      return null; // prevent cycle
+    } else {
+      this._previousInstancePath = path;
+    }
     let val = null;
     let optionPath: string | null = "";
     let instancePath = path;
@@ -702,6 +717,8 @@ export class ConfigContext {
     if (isModelicaPath(path)) {
       const option = this.options[path];
       if (option.definition) {
+        this._previousInstancePath = null;
+        this.addToCache(path, optionPath, path);
         return path;
       }
       optionPath = path;
@@ -721,6 +738,8 @@ export class ConfigContext {
     const selectionPath = constructSelectionPath(optionPath, instancePath);
     // check selections
     if (this.selections && selectionPath in this.selections) {
+      this._previousInstancePath = null;
+      this.addToCache(path, optionPath, this.selections[selectionPath]);
       return this.selections[selectionPath];
     }
 
@@ -729,6 +748,8 @@ export class ConfigContext {
     if (mod) {
       val = evaluateModifier(this.mods[instancePath], this, instancePath);
       if (val) {
+        this._previousInstancePath = null;
+        this.addToCache(path, optionPath, val);
         return val;
       }
     }
@@ -736,14 +757,44 @@ export class ConfigContext {
     // return whatever value is present on the original option definition
     const optionScope = instancePath.split(".").slice(0, -1).join(".");
     val = evaluate(this.options[optionPath]?.value, this, optionScope);
-
-    if (!isExpression(val) && val !== undefined && val !== null) {
-      this._resolvedValues[path] = { value: val as Literal, optionPath };
-    }
-
+    this.addToCache(path, optionPath, val);
+    this._previousInstancePath = null;
     return val;
   }
 
+  _visitChildNodes(instancePath: string, depth: number | null) {
+    const instanceOption = this.getOptionInstance(instancePath);
+    const option = instanceOption?.option;
+    const isOuter = instanceOption?.isOuter ? instanceOption.isOuter : false;
+    const typePath = instanceOption?.type || option?.type;
+    const typeOption = this.options[typePath as string] || null;
+    const okDepth = depth !== null ? depth > 0 : true;
+    if (typeOption && !isOuter && okDepth) {
+      typeOption.options?.map((o) => {
+        const paramName = o.split(".").pop();
+        const childInstancePath = [instancePath, paramName]
+          .filter((p) => p !== "")
+          .join(".");
+        const newDepth = depth !== null ? depth - 1 : null;
+        if (childInstancePath !== o) {
+          this._visitChildNodes(childInstancePath, newDepth);
+        }
+      });
+    }
+  }
+  /**
+   * Visits each available option and attempts to resolve value
+   */
+  visitTemplateNodes(depth: number | null = null) {
+    const rootOption = this.getRootOption();
+
+    rootOption.options?.map((o) => {
+      const paramName = o.split(".").pop();
+      if (paramName) {
+        this._visitChildNodes(paramName, depth);
+      }
+    });
+  }
   /**
    * This method assumes we have an exact instance path! No path
    * resolving occurs in this method with scope
@@ -782,14 +833,17 @@ export class ConfigContext {
     if (isExpression(value)) {
       value = undefined;
     }
-
+    const option = this.options[optionPath as string];
+    const type =
+      option && "replaceable" in option ? (value as string) : option?.type;
     const castValue = value as Literal | null | undefined;
     const optionInstance = {
       value: castValue,
       display,
-      option: this.options[optionPath as string],
+      option: option,
       instancePath,
       isOuter: !!outerOption,
+      type,
     };
 
     const mod = this.mods[instancePath];
@@ -797,7 +851,6 @@ export class ConfigContext {
     if (final) {
       return optionInstance; // punch-out, we got what we need
     }
-    const option = this.options[optionPath as string]; // TODO: not sure optionPath should ever be null
 
     if (!option) {
       console.log(instancePath);
@@ -839,6 +892,7 @@ export class ConfigContext {
       value: this.template.modelicaPath,
       instancePath: "",
       isOuter: false,
+      type: this.template.modelicaPath,
     };
   }
 
@@ -847,13 +901,22 @@ export class ConfigContext {
    */
   getEvaluatedValues() {
     const evaluatedValues: { [key: string]: Literal | null | undefined } = {};
+    // We may potentially need this to grab more evaluations needed by
+    // the document
+    // this.visitTemplateNodes();
     const resolvedValues = removeEmpty(this._resolvedValues) as {
       [key: string]: { value: Literal | null | undefined; optionPath: string };
     };
     Object.entries(resolvedValues).map(([key, val]) => {
       const { optionPath, value } = val;
-      const selectionPath = constructSelectionPath(optionPath, key);
-      evaluatedValues[selectionPath] = value;
+      const option = this.options[optionPath];
+      const addToResolvedValues =
+        value !== "" || (value === "" && option.type === "String");
+
+      if (addToResolvedValues) {
+        const selectionPath = constructSelectionPath(optionPath, key);
+        evaluatedValues[selectionPath] = value;
+      }
     });
     return evaluatedValues;
   }
