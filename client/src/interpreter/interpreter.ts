@@ -127,28 +127,26 @@ const _instancePathToOption = (
   instancePath: string,
   context: ConfigContext,
 ): { optionPath: string | null; instancePath: string } => {
-  if (instancePath === "secOutRel.secOut.dat.damOut.m_flow_nominal") {
-    console.log("Stop");
-  }
-  // apply path modifiers
-  // when traversing at each node check for a redeclare mod/selection mod
-  // selection mod trumps redeclare... it should also never happend
   const modifiedPath = applyPathModifiers(
     instancePath,
     context.template.pathModifiers,
   );
 
-  // an example path could be a.b.c.
-  // the path is split, and each type is swapped in
-  // e.g. AType.b, Btype.c <-- note AType and Btype could be dynamically swapped
-  // by selections or redeclare mods! We have to check at each map to an option
   const pathSegments = modifiedPath.split(".");
-
   const curInstancePathList = [pathSegments.shift()]; // keep track of instance path for modifiers
   let curOptionPath: string | null = `${context.template.modelicaPath}.${
     curInstancePathList[curInstancePathList.length - 1]
   }`;
-  while (curInstancePathList && pathSegments.length > 0) {
+  if (curInstancePathList.length === 1) {
+    // special case: original type definition should be defined
+    const rootOption = context.getRootOption();
+    const foundOption = rootOption.options?.find((childPath) =>
+      childPath.endsWith(modifiedPath),
+    );
+    curOptionPath = foundOption ? foundOption : curOptionPath;
+  }
+
+  while (curInstancePathList) {
     let option: OptionInterface | null = null;
     // Option swap #1: selections
     // check if there is a selected path that specifies that option at
@@ -174,11 +172,10 @@ const _instancePathToOption = (
           context,
           curInstancePath,
         );
-        // resolveValue should always be a 'string', but just go ahead and check
-        option =
-          typeof resolvedValue === "string"
-            ? context.options[resolvedValue]
-            : option;
+        if (typeof resolvedValue === "string") {
+          const potentialOption = context.options[resolvedValue as string];
+          option = potentialOption?.replaceable ? potentialOption : option;
+        }
       }
     }
 
@@ -191,7 +188,7 @@ const _instancePathToOption = (
     // Otherwise - do the normal thing and attempt to find the instance type
     // by looking in options
     if (!option) {
-      // otherwise just attempt to grab the opiton
+      // otherwise just attempt to grab the option
       const paramOption = context.options[curOptionPath];
       if (!paramOption) {
         break; // PUNCH-OUT!
@@ -203,6 +200,10 @@ const _instancePathToOption = (
           break;
         }
       }
+    }
+
+    if (pathSegments.length === 0) {
+      break;
     }
 
     const paramName = pathSegments.shift();
@@ -225,10 +226,8 @@ const _instancePathToOption = (
 
 // This is a hack to determine modelica paths
 // The backend expands all relative paths every 'option' path should begin with 'Modelica'
-// 'Modelica' or 'Buildings' it is a modelica path. Instance paths
+// 'Modelica' or 'Buildings' it is a modelica path
 function isModelicaPath(path: string) {
-  // pop off each segment of the path from first to last
-  // if the segment is a definition, keep going popping
   return path.startsWith("Modelica") || path.startsWith("Buildings");
 }
 
@@ -455,7 +454,6 @@ const addToModObject = (
     // Do not add a key that is already present. The assumption is that
     // the first time an instance path is present is the most up-to-date
     if (!(modKey in mods)) {
-      // only through taversal of the template do we get correct scope
       mods[modKey] = {
         ...mod,
         ...{ ["fromClassDefinition"]: fromClassDefinition },
@@ -700,7 +698,7 @@ export class ConfigContext {
     const optionScope = instancePath.split(".").slice(0, -1).join(".");
     val = evaluate(this.options[optionPath]?.value, this, optionScope);
 
-    if (isExpression(val) && val !== undefined && val !== null) {
+    if (!isExpression(val) && val !== undefined && val !== null) {
       this._resolvedValues[path] = val as Literal;
     }
 
@@ -713,6 +711,10 @@ export class ConfigContext {
    */
   _getCachedValue(path: string): Literal | null | undefined {
     return this._resolvedValues[path];
+  }
+
+  getRootOption() {
+    return this.options[this.template.modelicaPath];
   }
 
   /**

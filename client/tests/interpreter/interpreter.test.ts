@@ -808,6 +808,7 @@ describe("Display Option and Display Group Generation", () => {
     );
 
     const displayOption = mapToDisplayOptions(context);
+    expect(displayOption).toBeDefined();
   });
 });
 // describe("Display Option Generation", () => {
