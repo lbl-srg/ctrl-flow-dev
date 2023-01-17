@@ -5,6 +5,8 @@ import { useStores } from "../../../data";
 import { OptionInterface } from "../../../data/template";
 import Modal from "../../modal/Modal";
 import OptionSelect from "./OptionSelect";
+import { mapToDisplayOptions as mapConfigContextToDisplayOptions } from "../../../interpreter/display-option";
+import { ConfigContext } from "../../../interpreter/interpreter";
 import { useDebouncedCallback } from "use-debounce";
 
 import {
@@ -76,252 +78,16 @@ const SlideOut = ({
   });
   const [configName, setConfigName] = useState<string>(config.name);
 
-  // template defaults + selections
-  let configModifiers: Modifiers = getUpdatedModifiers(
+  const context = new ConfigContext(
+    template,
+    config,
+    allOptions,
     selectedValues,
-    templateModifiers,
-    templateStore._options,
   );
-  const evaluatedValues: ConfigValues = {
-    ...getEvaluatedValues(templateOptions, "", false),
-    ...projectEvaluatedValues,
-  };
-
-  configModifiers = getUpdatedModifiers(
-    {
-      ...evaluatedValues,
-      ...selectedValues,
-    },
-    configModifiers,
-    templateStore._options,
-  );
-
-  const displayedOptions: (FlatConfigOptionGroup | FlatConfigOption)[] =
-    getDisplayOptions(
-      templateOptions,
-      "root",
-      "",
-      false,
-      templateOptions[0].name,
-    );
 
   useEffect(() => {
     stopLoading();
   }, []);
-
-  function getEvaluatedValues(
-    options: OptionInterface[],
-    scope: string,
-    changeScope: boolean,
-  ): ConfigValues {
-    let evaluatedValues: ConfigValues = {};
-    let currentScope = scope;
-
-    options.forEach((option) => {
-      if (option.modelicaPath.includes(`.dat`)) {
-        return;
-      }
-
-      // update local scope if changeScope is true
-      if (changeScope) {
-        const instance = option.modelicaPath.split(".").pop() || "";
-        currentScope = scope ? `${scope}.${instance}` : instance;
-      }
-
-      if (option.replaceable) {
-        option = applyOptionModifier(
-          option,
-          currentScope,
-          selectedValues,
-          configModifiers,
-          template.pathModifiers,
-          allOptions
-        );
-      }
-
-      // build selection path
-      const selectionPath = `${option.modelicaPath}-${currentScope}`;
-
-      evaluatedValues = {
-        ...evaluatedValues,
-        [selectionPath]: applyValueModifiers(
-          option?.value,
-          currentScope,
-          selectionPath,
-          selectedValues,
-          configModifiers,
-          template.pathModifiers,
-          allOptions,
-        ),
-      };
-
-      if (option.childOptions?.length) {
-        evaluatedValues = {
-          ...evaluatedValues,
-          ...getEvaluatedValues(
-            option.childOptions,
-            currentScope,
-            option.definition,
-          ),
-        };
-      }
-    });
-
-    return evaluatedValues;
-  }
-
-  function getDisplayOptions(
-    options: OptionInterface[],
-    parentModelicaPath: string,
-    scope: string,
-    changeScope: boolean,
-    groupName: string,
-  ): (FlatConfigOptionGroup | FlatConfigOption)[] {
-    let displayOptions: (FlatConfigOptionGroup | FlatConfigOption)[] = [];
-    let currentScope = scope;
-
-    options.forEach((option) => {
-      if (option.modelicaPath.includes(`.dat`)) {
-        return;
-      }
-
-      if (changeScope) {
-        const instance = option.modelicaPath.split(".").pop() || "";
-        currentScope = scope ? `${scope}.${instance}` : instance;
-      }
-
-      if (option.replaceable) {
-        option = applyOptionModifier(
-          option,
-          currentScope,
-          selectedValues,
-          configModifiers,
-          template.pathModifiers,
-          allOptions
-        );
-      }
-
-      const selectionPath = `${option.modelicaPath}-${currentScope}`;
-      const isVisible = applyVisibilityModifiers(
-        option,
-        currentScope,
-        selectedValues,
-        configModifiers,
-        template.pathModifiers,
-        allOptions,
-      );
-
-      if (isVisible) {
-        const value =
-          selectedValues[selectionPath] || evaluatedValues[selectionPath];
-        if (option.childOptions?.length) {
-          displayOptions = [
-            ...displayOptions,
-            {
-              parentModelicaPath,
-              modelicaPath: option.modelicaPath,
-              name: option.name,
-              choices: option.childOptions,
-              value,
-              scope: currentScope,
-              selectionType: "Normal",
-            },
-          ];
-        } else if (option.type === "Boolean") {
-          displayOptions = [
-            ...displayOptions,
-            {
-              parentModelicaPath,
-              modelicaPath: option.modelicaPath,
-              name: option.name,
-              booleanChoices: ["true", "false"],
-              value: value?.toString(),
-              scope: currentScope,
-              selectionType: "Boolean",
-            },
-          ];
-        }
-
-        if (
-          typeof selectedValues[selectionPath] === "string" &&
-          selectedValues[selectionPath]
-        ) {
-          const selectedOption = allOptions[
-            selectedValues[selectionPath]
-          ] as OptionInterface;
-
-          if (selectedOption) {
-            displayOptions = [
-              ...displayOptions,
-              ...getDisplayOptions(
-                [selectedOption],
-                option.modelicaPath,
-                currentScope,
-                option.definition,
-                option.name,
-              ),
-            ];
-          }
-        } else if (
-          typeof evaluatedValues[selectionPath] === "string" &&
-          evaluatedValues[selectionPath]
-        ) {
-          const evaluatedOption = allOptions[
-            evaluatedValues[selectionPath]
-          ] as OptionInterface;
-
-          if (evaluatedOption) {
-            displayOptions = [
-              ...displayOptions,
-              ...getDisplayOptions(
-                [evaluatedOption],
-                option.modelicaPath,
-                currentScope,
-                option.definition,
-                option.name,
-              ),
-            ];
-          }
-        }
-      } else if (option.definition && option.childOptions?.length) {
-        displayOptions = [
-          ...displayOptions,
-          {
-            groupName: groupName,
-            selectionPath,
-            items: getDisplayOptions(
-              option.childOptions,
-              option.modelicaPath,
-              currentScope,
-              option.definition,
-              groupName,
-            ),
-          },
-        ];
-        if ("groupName" in displayOptions[displayOptions.length - 1]) {
-          const optionGroup = displayOptions[
-            displayOptions.length - 1
-          ] as FlatConfigOptionGroup;
-          if (!optionGroup.items.length) {
-            displayOptions.pop();
-          }
-        }
-      } else if (option.childOptions?.length) {
-        displayOptions = [
-          ...displayOptions,
-          ...getDisplayOptions(
-            option.childOptions,
-            option.modelicaPath,
-            currentScope,
-            option.definition,
-            option.name,
-          ),
-        ];
-      }
-    });
-
-    return displayOptions;
-  }
 
   // const updateConfigName = useDebouncedCallback(
   //   (event: ChangeEvent<HTMLInputElement>) => {
@@ -351,6 +117,9 @@ const SlideOut = ({
     });
   }
 
+  // TODO: I think the context cache can work for this
+  const evaluatedValues = {};
+
   function saveConfigOptions(event: FormEvent) {
     event.preventDefault();
     event.stopPropagation();
@@ -361,6 +130,8 @@ const SlideOut = ({
 
     close();
   }
+
+  const displayedOptions = mapConfigContextToDisplayOptions(context);
 
   function renderDisplayOptions(
     items: (FlatConfigOptionGroup | FlatConfigOption)[],
@@ -398,7 +169,9 @@ const SlideOut = ({
     <Modal isOpen close={close} className="config-slide-out">
       <h3>{template?.name}</h3>
       <form onSubmit={saveConfigOptions}>
-        <label className="config-name-label">Configuration Name: {configName}</label>
+        <label className="config-name-label">
+          Configuration Name: {configName}
+        </label>
         {/* TODO: Fix how updating configuration name on submit is not working. */}
         {/*<input
           type="text"
