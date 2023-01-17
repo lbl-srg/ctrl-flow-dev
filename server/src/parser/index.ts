@@ -13,7 +13,6 @@ export { SystemTypeN as SystemType, Template } from "./template";
 export function loadPackage(packagePath: string): templates.SystemTemplateN[] {
   //
   const parsedPath = path.parse(packagePath);
-
   parser.setPathPrefix(parsedPath.dir);
   parser.loadPackage(parsedPath.name);
 

@@ -1,0 +1,712 @@
+{
+    "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea-coiHea": [
+        "Buildings.Templates.Components.Coils.WaterBasedHeating"
+    ],
+    "Buildings.Templates.Components.Coils.WaterBasedHeating.val-coiHea.val": [
+        "Buildings.Templates.Components.Valves.TwoWayModulating"
+    ],
+    "Buildings.Templates.Components.Valves.ThreeWayModulating.val-coiHea.val.val": [
+        "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear"
+    ],
+    "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear.R-coiHea.val.val.R": [
+        50
+    ],
+    "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear.delta0-coiHea.val.val.delta0": [
+        0.01
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.homotopyInitialization-coiHea.val.val.homotopyInitialization": [
+        true
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.fraK-coiHea.val.val.fraK": [
+        0.7
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.deltaM-coiHea.val.val.deltaM": [
+        0.02
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.tau-coiHea.val.val.tau": [
+        10
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.from_dp-coiHea.val.val.from_dp": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.verifyFlowReversal-coiHea.val.val.verifyFlowReversal": [
+        false
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res1-coiHea.val.val.res1": [
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiHea.val.val.res1.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiHea.val.val.res1.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res2-coiHea.val.val.res2": [
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiHea.val.val.res2.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiHea.val.val.res2.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res3-coiHea.val.val.res3": [
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiHea.val.val.res3.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiHea.val.val.res3.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac-coiHea.val.val.mSenFac": [
+        1
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialValve.typ-coiHea.val.typ": [
+        "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+    ],
+    "Buildings.Templates.Components.Types.Valve.None-coiHea.val.typ": [
+        "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+    ],
+    "Buildings.Templates.Components.Types.Valve.PumpedCoilThreeWay-coiHea.val.typ": [
+        "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+    ],
+    "Buildings.Templates.Components.Types.Valve.PumpedCoilTwoWay-coiHea.val.typ": [
+        "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+    ],
+    "Buildings.Templates.Components.Types.Valve.ThreeWayModulating-coiHea.val.typ": [
+        "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+    ],
+    "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition-coiHea.val.typ": [
+        "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+    ],
+    "Buildings.Templates.Components.Types.Valve.TwoWayTwoPosition-coiHea.val.typ": [
+        "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialValve.text_rotation-coiHea.val.text_rotation": [
+        0
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialValve.text_flip-coiHea.val.text_flip": [
+        false
+    ],
+    "Buildings.Templates.Components.Valves.TwoWayModulating.val-coiHea.val.val": [
+        "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage"
+    ],
+    "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage.R-coiHea.val.val.R": [
+        50
+    ],
+    "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage.delta0-coiHea.val.val.delta0": [
+        0.01
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve.dpFixed_nominal-coiHea.val.val.dpFixed_nominal": [
+        0
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve.l-coiHea.val.val.l": [
+        0.0001
+    ],
+    "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization-coiHea.val.val.homotopyInitialization": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialResistance.from_dp-coiHea.val.val.from_dp": [
+        false
+    ],
+    "Buildings.Fluid.BaseClasses.PartialResistance.linearized-coiHea.val.val.linearized": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiHea.val.val.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiHea.val.val.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialCoil.typ-coiHea.typ": [
+        "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+    ],
+    "Buildings.Templates.Components.Types.Coil.ElectricHeating-coiHea.typ": [
+        "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+    ],
+    "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage-coiHea.typ": [
+        "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+    ],
+    "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed-coiHea.typ": [
+        "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+    ],
+    "Buildings.Templates.Components.Types.Coil.None-coiHea.typ": [
+        "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+    ],
+    "Buildings.Templates.Components.Types.Coil.WaterBasedCooling-coiHea.typ": [
+        "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+    ],
+    "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.damVAV-damVAV": [
+        "Buildings.Templates.Components.Dampers.Modulating"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialDamper.typ-damVAV.typ": [
+        "Buildings.Templates.Components.Types.Damper.Modulating"
+    ],
+    "Buildings.Templates.Components.Types.Damper.NoPath-damVAV.typ": [
+        "Buildings.Templates.Components.Types.Damper.Modulating"
+    ],
+    "Buildings.Templates.Components.Types.Damper.Barometric-damVAV.typ": [
+        "Buildings.Templates.Components.Types.Damper.Modulating"
+    ],
+    "Buildings.Templates.Components.Types.Damper.None-damVAV.typ": [
+        "Buildings.Templates.Components.Types.Damper.Modulating"
+    ],
+    "Buildings.Templates.Components.Types.Damper.PressureIndependent-damVAV.typ": [
+        "Buildings.Templates.Components.Types.Damper.Modulating"
+    ],
+    "Buildings.Templates.Components.Types.Damper.TwoPosition-damVAV.typ": [
+        "Buildings.Templates.Components.Types.Damper.Modulating"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialDamper.typBla-damVAV.typBla": [
+        "Buildings.Templates.Components.Types.DamperBlades.Parallel"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialDamper.text_rotation-damVAV.text_rotation": [
+        0
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialDamper.text_flip-damVAV.text_flip": [
+        false
+    ],
+    "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.have_preIndDam-ctl.have_preIndDam": [
+        false
+    ],
+    "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.have_occSen-ctl.have_occSen": [
+        false
+    ],
+    "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.have_winSen-ctl.have_winSen": [
+        false
+    ],
+    "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.have_hotWatCoi-ctl.have_hotWatCoi": [
+        true
+    ],
+    "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.have_typTerUni-ctl.have_typTerUni": [
+        false
+    ],
+    "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.have_parFanPowUni-ctl.have_parFanPowUni": [
+        false
+    ],
+    "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.have_SZVAV-ctl.have_SZVAV": [
+        false
+    ],
+    "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.permit_occStandby-ctl.permit_occStandby": [
+        true
+    ],
+    "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.have_locAdj-ctl.have_locAdj": [
+        true
+    ],
+    "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.sepAdj-ctl.sepAdj": [
+        true
+    ],
+    "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.ignDemLim-ctl.ignDemLim": [
+        true
+    ],
+    "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialVAVBoxController.have_CO2Sen-ctl.have_CO2Sen": [
+        false
+    ],
+    "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialVAVBoxController.damVAV-ctl.damVAV": [
+        "Buildings.Templates.Components.Dampers.Modulating"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialDamper.typ-ctl.damVAV.typ": [
+        "Buildings.Templates.Components.Types.Damper.Modulating"
+    ],
+    "Buildings.Templates.Components.Types.Damper.NoPath-ctl.damVAV.typ": [
+        "Buildings.Templates.Components.Types.Damper.Modulating"
+    ],
+    "Buildings.Templates.Components.Types.Damper.Barometric-ctl.damVAV.typ": [
+        "Buildings.Templates.Components.Types.Damper.Modulating"
+    ],
+    "Buildings.Templates.Components.Types.Damper.None-ctl.damVAV.typ": [
+        "Buildings.Templates.Components.Types.Damper.Modulating"
+    ],
+    "Buildings.Templates.Components.Types.Damper.PressureIndependent-ctl.damVAV.typ": [
+        "Buildings.Templates.Components.Types.Damper.Modulating"
+    ],
+    "Buildings.Templates.Components.Types.Damper.TwoPosition-ctl.damVAV.typ": [
+        "Buildings.Templates.Components.Types.Damper.Modulating"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialDamper.typBla-ctl.damVAV.typBla": [
+        "Buildings.Templates.Components.Types.DamperBlades.Parallel"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialDamper.text_rotation-ctl.damVAV.text_rotation": [
+        0
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialDamper.text_flip-ctl.damVAV.text_flip": [
+        false
+    ],
+    "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialVAVBoxController.coiHea-ctl.coiHea": [
+        "Buildings.Templates.Components.Coils.None"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialCoil.typ-ctl.coiHea.typ": [
+        "Buildings.Templates.Components.Types.Coil.None"
+    ],
+    "Buildings.Templates.Components.Types.Coil.ElectricHeating-ctl.coiHea.typ": [
+        "Buildings.Templates.Components.Types.Coil.None"
+    ],
+    "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage-ctl.coiHea.typ": [
+        "Buildings.Templates.Components.Types.Coil.None"
+    ],
+    "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed-ctl.coiHea.typ": [
+        "Buildings.Templates.Components.Types.Coil.None"
+    ],
+    "Buildings.Templates.Components.Types.Coil.WaterBasedCooling-ctl.coiHea.typ": [
+        "Buildings.Templates.Components.Types.Coil.None"
+    ],
+    "Buildings.Templates.Components.Types.Coil.WaterBasedHeating-ctl.coiHea.typ": [
+        "Buildings.Templates.Components.Types.Coil.None"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialCoil.typVal-ctl.coiHea.typVal": [
+        "Buildings.Templates.Components.Types.Valve.None"
+    ],
+    "Buildings.Templates.Components.Types.Valve.PumpedCoilThreeWay-ctl.coiHea.typVal": [
+        "Buildings.Templates.Components.Types.Valve.None"
+    ],
+    "Buildings.Templates.Components.Types.Valve.PumpedCoilTwoWay-ctl.coiHea.typVal": [
+        "Buildings.Templates.Components.Types.Valve.None"
+    ],
+    "Buildings.Templates.Components.Types.Valve.ThreeWayModulating-ctl.coiHea.typVal": [
+        "Buildings.Templates.Components.Types.Valve.None"
+    ],
+    "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition-ctl.coiHea.typVal": [
+        "Buildings.Templates.Components.Types.Valve.None"
+    ],
+    "Buildings.Templates.Components.Types.Valve.TwoWayModulating-ctl.coiHea.typVal": [
+        "Buildings.Templates.Components.Types.Valve.None"
+    ],
+    "Buildings.Templates.Components.Types.Valve.TwoWayTwoPosition-ctl.coiHea.typVal": [
+        "Buildings.Templates.Components.Types.Valve.None"
+    ],
+    "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialController.typ-ctl.typ": [
+        "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat"
+    ],
+    "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly-ctl.typ": [
+        "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat"
+    ],
+    "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat-ctl.typ": [
+        "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat"
+    ],
+    "Buildings.Templates.ZoneEquipment.Types.Controller.OpenLoop-ctl.typ": [
+        "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat"
+    ],
+    "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.typ-typ": [
+        "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat"
+    ],
+    "Buildings.Templates.ZoneEquipment.Types.Configuration.DualDuct-typ": [
+        "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat"
+    ],
+    "Buildings.Templates.ZoneEquipment.Types.Configuration.FanPowered-typ": [
+        "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat"
+    ],
+    "Buildings.Templates.ZoneEquipment.Types.Configuration.Induction-typ": [
+        "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat"
+    ],
+    "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxCoolingOnly-typ": [
+        "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat"
+    ],
+    "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souChiWat-have_souChiWat": [
+        true
+    ],
+    "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souHeaWat-have_souHeaWat": [
+        true
+    ],
+    "datAll": [
+        "Buildings.Templates.Data.AllSystems"
+    ],
+    "Buildings.Templates.Data.AllSystems.sysUni": [
+        "Buildings.Templates.Types.Units.SI"
+    ],
+    "Buildings.Templates.Data.AllSystems.stdEne": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1"
+    ],
+    "Buildings.Templates.Data.AllSystems.stdVen": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
+    ],
+    "Buildings.Templates.Data.AllSystems.ashCliZon": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B"
+    ],
+    "Buildings.Templates.ZoneEquipment": [
+        "Buildings.Templates.ZoneEquipment.VAVBoxReheat",
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly"
+    ],
+    "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel-secOutRel": [
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper"
+    ],
+    "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut-secOutRel.secOut": [
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper"
+    ],
+    "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel-secOutRel.secRel": [
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan"
+    ],
+    "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.fanRet-secOutRel.secRel.fanRet": [
+        "Buildings.Templates.Components.Fans.SingleVariable"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialFan.typSin-secOutRel.secRel.fanRet.typSin": [
+        "Buildings.Templates.Components.Types.FanSingle.Housed"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialFan.text_rotation-secOutRel.secRel.fanRet.text_rotation": [
+        0
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialFan.text_flip-secOutRel.secRel.fanRet.text_flip": [
+        false
+    ],
+    "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel-secOutRel.secRel.fanRel": [
+        "Buildings.Templates.Components.Fans.SingleVariable"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialFan.typSin-secOutRel.secRel.fanRel.typSin": [
+        "Buildings.Templates.Components.Types.FanSingle.Housed"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialFan.text_rotation-secOutRel.secRel.fanRel.text_rotation": [
+        0
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialFan.text_flip-secOutRel.secRel.fanRel.text_flip": [
+        false
+    ],
+    "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.have_recHea-secOutRel.have_recHea": [
+        false
+    ],
+    "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.typCtlFanRet-secOutRel.typCtlFanRet": [
+        "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowMeasured"
+    ],
+    "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.typCtlEco-secOutRel.typCtlEco": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulb"
+    ],
+    "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupBlo-fanSupBlo": [
+        "Buildings.Templates.Components.Fans.None"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialFan.typSin-fanSupBlo.typSin": [
+        "Buildings.Templates.Components.Types.FanSingle.Housed"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialFan.text_rotation-fanSupBlo.text_rotation": [
+        0
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialFan.text_flip-fanSupBlo.text_flip": [
+        false
+    ],
+    "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupDra-fanSupDra": [
+        "Buildings.Templates.Components.Fans.SingleVariable"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialFan.typSin-fanSupDra.typSin": [
+        "Buildings.Templates.Components.Types.FanSingle.Housed"
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialFan.text_rotation-fanSupDra.text_rotation": [
+        0
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialFan.text_flip-fanSupDra.text_flip": [
+        false
+    ],
+    "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaPre-coiHeaPre": [
+        "Buildings.Templates.Components.Coils.WaterBasedHeating"
+    ],
+    "Buildings.Templates.Components.Coils.WaterBasedHeating.val-coiHeaPre.val": [
+        "Buildings.Templates.Components.Valves.TwoWayModulating"
+    ],
+    "Buildings.Templates.Components.Valves.ThreeWayModulating.val-coiHeaPre.val.val": [
+        "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear"
+    ],
+    "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear.R-coiHeaPre.val.val.R": [
+        50
+    ],
+    "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear.delta0-coiHeaPre.val.val.delta0": [
+        0.01
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.homotopyInitialization-coiHeaPre.val.val.homotopyInitialization": [
+        true
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.fraK-coiHeaPre.val.val.fraK": [
+        0.7
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.deltaM-coiHeaPre.val.val.deltaM": [
+        0.02
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.tau-coiHeaPre.val.val.tau": [
+        10
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.from_dp-coiHeaPre.val.val.from_dp": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.verifyFlowReversal-coiHeaPre.val.val.verifyFlowReversal": [
+        false
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res1-coiHeaPre.val.val.res1": [
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiHeaPre.val.val.res1.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiHeaPre.val.val.res1.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res2-coiHeaPre.val.val.res2": [
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiHeaPre.val.val.res2.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiHeaPre.val.val.res2.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res3-coiHeaPre.val.val.res3": [
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiHeaPre.val.val.res3.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiHeaPre.val.val.res3.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac-coiHeaPre.val.val.mSenFac": [
+        1
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialValve.text_rotation-coiHeaPre.val.text_rotation": [
+        0
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialValve.text_flip-coiHeaPre.val.text_flip": [
+        false
+    ],
+    "Buildings.Templates.Components.Valves.TwoWayModulating.val-coiHeaPre.val.val": [
+        "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage"
+    ],
+    "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage.R-coiHeaPre.val.val.R": [
+        50
+    ],
+    "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage.delta0-coiHeaPre.val.val.delta0": [
+        0.01
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve.dpFixed_nominal-coiHeaPre.val.val.dpFixed_nominal": [
+        0
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve.l-coiHeaPre.val.val.l": [
+        0.0001
+    ],
+    "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization-coiHeaPre.val.val.homotopyInitialization": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialResistance.from_dp-coiHeaPre.val.val.from_dp": [
+        false
+    ],
+    "Buildings.Fluid.BaseClasses.PartialResistance.linearized-coiHeaPre.val.val.linearized": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiHeaPre.val.val.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiHeaPre.val.val.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo": [
+        "Buildings.Templates.Components.Coils.WaterBasedCooling"
+    ],
+    "Buildings.Templates.Components.Coils.WaterBasedCooling.val-coiCoo.val": [
+        "Buildings.Templates.Components.Valves.TwoWayModulating"
+    ],
+    "Buildings.Templates.Components.Valves.ThreeWayModulating.val-coiCoo.val.val": [
+        "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear"
+    ],
+    "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear.R-coiCoo.val.val.R": [
+        50
+    ],
+    "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear.delta0-coiCoo.val.val.delta0": [
+        0.01
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.homotopyInitialization-coiCoo.val.val.homotopyInitialization": [
+        true
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.fraK-coiCoo.val.val.fraK": [
+        0.7
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.deltaM-coiCoo.val.val.deltaM": [
+        0.02
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.tau-coiCoo.val.val.tau": [
+        10
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.from_dp-coiCoo.val.val.from_dp": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.verifyFlowReversal-coiCoo.val.val.verifyFlowReversal": [
+        false
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res1-coiCoo.val.val.res1": [
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiCoo.val.val.res1.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiCoo.val.val.res1.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res2-coiCoo.val.val.res2": [
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiCoo.val.val.res2.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiCoo.val.val.res2.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res3-coiCoo.val.val.res3": [
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiCoo.val.val.res3.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiCoo.val.val.res3.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac-coiCoo.val.val.mSenFac": [
+        1
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialValve.text_rotation-coiCoo.val.text_rotation": [
+        0
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialValve.text_flip-coiCoo.val.text_flip": [
+        false
+    ],
+    "Buildings.Templates.Components.Valves.TwoWayModulating.val-coiCoo.val.val": [
+        "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage"
+    ],
+    "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage.R-coiCoo.val.val.R": [
+        50
+    ],
+    "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage.delta0-coiCoo.val.val.delta0": [
+        0.01
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve.dpFixed_nominal-coiCoo.val.val.dpFixed_nominal": [
+        0
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve.l-coiCoo.val.val.l": [
+        0.0001
+    ],
+    "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization-coiCoo.val.val.homotopyInitialization": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialResistance.from_dp-coiCoo.val.val.from_dp": [
+        false
+    ],
+    "Buildings.Fluid.BaseClasses.PartialResistance.linearized-coiCoo.val.val.linearized": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiCoo.val.val.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiCoo.val.val.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaReh-coiHeaReh": [
+        "Buildings.Templates.Components.Coils.None"
+    ],
+    "Buildings.Templates.Components.Coils.WaterBasedHeating.val-coiHeaReh.val": [
+        "Buildings.Templates.Components.Valves.TwoWayModulating"
+    ],
+    "Buildings.Templates.Components.Valves.ThreeWayModulating.val-coiHeaReh.val.val": [
+        "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear"
+    ],
+    "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear.R-coiHeaReh.val.val.R": [
+        50
+    ],
+    "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear.delta0-coiHeaReh.val.val.delta0": [
+        0.01
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.homotopyInitialization-coiHeaReh.val.val.homotopyInitialization": [
+        true
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.fraK-coiHeaReh.val.val.fraK": [
+        0.7
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.deltaM-coiHeaReh.val.val.deltaM": [
+        0.02
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.tau-coiHeaReh.val.val.tau": [
+        10
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.from_dp-coiHeaReh.val.val.from_dp": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.verifyFlowReversal-coiHeaReh.val.val.verifyFlowReversal": [
+        false
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res1-coiHeaReh.val.val.res1": [
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiHeaReh.val.val.res1.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiHeaReh.val.val.res1.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res2-coiHeaReh.val.val.res2": [
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiHeaReh.val.val.res2.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiHeaReh.val.val.res2.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res3-coiHeaReh.val.val.res3": [
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiHeaReh.val.val.res3.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiHeaReh.val.val.res3.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac-coiHeaReh.val.val.mSenFac": [
+        1
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialValve.text_rotation-coiHeaReh.val.text_rotation": [
+        0
+    ],
+    "Buildings.Templates.Components.Interfaces.PartialValve.text_flip-coiHeaReh.val.text_flip": [
+        false
+    ],
+    "Buildings.Templates.Components.Valves.TwoWayModulating.val-coiHeaReh.val.val": [
+        "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage"
+    ],
+    "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage.R-coiHeaReh.val.val.R": [
+        50
+    ],
+    "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage.delta0-coiHeaReh.val.val.delta0": [
+        0.01
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve.dpFixed_nominal-coiHeaReh.val.val.dpFixed_nominal": [
+        0
+    ],
+    "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve.l-coiHeaReh.val.val.l": [
+        0.0001
+    ],
+    "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization-coiHeaReh.val.val.homotopyInitialization": [
+        true
+    ],
+    "Buildings.Fluid.BaseClasses.PartialResistance.from_dp-coiHeaReh.val.val.from_dp": [
+        false
+    ],
+    "Buildings.Fluid.BaseClasses.PartialResistance.linearized-coiHeaReh.val.val.linearized": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T-coiHeaReh.val.val.show_T": [
+        false
+    ],
+    "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal-coiHeaReh.val.val.allowFlowReversal": [
+        true
+    ],
+    "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.typ-typ": [
+        "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat"
+    ],
+    "Buildings.Templates.AirHandlersFans.Types.Configuration.SupplyOnly-typ": [
+        "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat"
+    ],
+    "Buildings.Templates.AirHandlersFans.Types.Configuration.ExhaustOnly-typ": [
+        "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat"
+    ],
+    "Buildings.Templates.AirHandlersFans.Types.Configuration.DualDuct-typ": [
+        "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat"
+    ],
+    "Buildings.Templates.AirHandlersFans.Types.Configuration.SingleDuct-typ": [
+        "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat"
+    ],
+    "Buildings.Templates.AirHandlersFans": [
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone"
+    ],
+    "DEL_INFO_BOX": [true]
+}

@@ -20,17 +20,40 @@ export function resolveValue(
   allOptions: { [key: string]: OptionInterface },
 ): any {
   let selectionValue = undefined;
+  let scopeModifier = undefined;
+  let newScope = undefined;
 
   if (selectionPath) {
-    selectionValue = selections[selectionPath];
-  }
+    // We have a selectionPath that means value is not coming from inside an expression
 
-  if (typeof value === 'string') {
+    // This section checks if we have a selection to resolveValue
+    // So we just check if we have the selection by using the selectionPath
+    selectionValue = selections[selectionPath];
+
+    // If we have a selection we just need to return the selection
+    if (selectionValue !== undefined) return selectionValue;
+
+    // If value is a boolean or number we are just a value and need to return
+    if (typeof value === "boolean" || typeof value === "number") return value;
+
+    // This section checks if we have a modifier based on currentScope
+    scopeModifier = modifiers[scope];
+
+    // We adjust scope to evaluate an expression if needed
+    // Set scope relative to class definition by popping off what is assumed to be a param name
+    newScope = scope.split(".").slice(0, -1).join(".");
+  } else if (typeof value === 'string') {
+    // Since we don't have a selectionPath that means value is coming from inside an expression,
+    // So if value is a string we need to do the following logic
+
+    // This section checks if we have a selection to resolveValue
+    // We need to determine if value is a modelicaPath or an instancePath,
+    // Below tests if a selection exists based on if value is a modelicaPath
     const splitScopePath = scope.split('.');
 
     while(splitScopePath.length > 0) {
       const testPath = splitScopePath.join(".");
-      const valueSelectionPath: any = `${value}-${testPath}`;
+      const valueSelectionPath: any = testPath ? `${value}-${testPath}` : value;
 
       if (valueSelectionPath in selections) {
         selectionValue = selections[valueSelectionPath];
@@ -39,28 +62,44 @@ export function resolveValue(
       splitScopePath.pop();
     }
 
-    if (selectionValue == undefined) {
-      selectionValue = selections[value];
+    // Below tests if a selection exists based on if value is an instancePath
+    if (selectionValue === undefined) {
+      const selectionKeys: string[] = Object.keys(selections);
+
+      selectionKeys.every((key) => {
+        if (key.includes(`-${value}`)) {
+          selectionValue = selections[key];
+          return false;
+        }
+        return true;
+      });
     }
+
+    // If we have a selection we just need to return the selection
+    if (selectionValue !== undefined) return selectionValue;
+
+    // This section checks if we have a pathModifier based on currentScope and value (value would be an instancePath)
+    const modifiedPath = applyPathModifiers(`${scope}.${value}`, pathModifiers);
+
+    // This section checks if we have a modifier using the modifiedPath or value or scope,
+    // then we adjust scope to evaluate an expression if needed
+    if (modifiedPath) {
+      scopeModifier = modifiers[modifiedPath];
+      // Set scope relative to class definition by popping off what is assumed to be a param name
+      newScope = modifiedPath.split(".").slice(0, -1).join(".");
+    } else {
+      scopeModifier = modifiers[value];
+      // Set scope relative to class definition by popping off what is assumed to be a param name
+      newScope = value.split(".").slice(0, -1).join(".");
+    }
+  } else {
+    // The value is a boolean or number so we just return it
+    return value;
   }
 
-  // if we have a selection we just need to return the selection (I don't think we need to test the selection)
-  if (selectionValue !== undefined) return selectionValue;
-
-  // if value is a boolean or number we are just a value and need to return
-  if (typeof value === "boolean" || typeof value === "number") return value;
-
-  // update path based on modifiers
-  const scopePath = applyPathModifiers(`${scope}.${value}`, pathModifiers);
-  // is there a modifier for the provided path
-  const scopeModifier = modifiers[scopePath];
-  // set scope relative to class definition by popping off what is assumed to
-  // be a param name
-  const newScope = scopePath.split(".").slice(0, -1).join(".");
   let evaluatedValue: any = undefined;
 
-  // there is a modifier for the given instance path, attempt to resolve
-  // its value
+  // This section attempts to resolve the value by using a found modifier with an instancePath
   if (scopeModifier) {
     const scopeModExpression = deepCopy(scopeModifier.expression);
     evaluatedValue = evaluateExpression(
@@ -76,7 +115,7 @@ export function resolveValue(
     if (!isExpression(evaluatedValue)) return evaluatedValue;
   }
 
-  // if we couldn't resolve a modifier get default value from option (using the modelica path 'value')
+  // If we couldn't resolve a modifier get default value from option (using the modelica path 'value')
   const originalOption = allOptions[value];
 
   if (originalOption) {
@@ -96,7 +135,7 @@ export function resolveValue(
 
   if (evaluatedValue && !isExpression(evaluatedValue)) return evaluatedValue;
 
-  // if the value can't be resolved we need to return this flag so we can return the whole expression that the value came from
+  // If the value can't be resolved we need to return this flag so we can return the whole expression that the value came from
   return "no_value";
 }
 

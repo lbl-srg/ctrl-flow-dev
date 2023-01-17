@@ -43,24 +43,24 @@
 ,T24 CZ 14,CA14,,,Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_14,
 ,T24 CZ 15,CA15,,,Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_15,
 ,T24 CZ 16,CA16,,,Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_16,
-,Pre-heating:,PREHEAT,Y,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.coiHeaPre-ctl.coiHeaPre,Buildings.Templates.Components.Types.Coil,
-,None,NO_PH,,,Buildings.Templates.Components.Types.Coil.None,
-,HW Preheat,HW,,,Buildings.Templates.Components.Types.Coil.WaterBasedHeating,
-,Electric Heating Coil Preheat,ELEC,,,Buildings.Templates.Components.Types.Coil.ElectricHeating,
-,Reheating:,REHEAT,Y,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.coiHeaReh-ctl.coiHeaReh,Buildings.Templates.Components.Types.Coil,
-,None,NO_RH,,,Buildings.Templates.Components.Types.Coil.None,
-,HW Reheat,,,,Buildings.Templates.Components.Types.Coil.WaterBasedHeating,Implemented in Templates. NOT covered by G36.
-,Electric Heating Coil Reheat,,,,Buildings.Templates.Components.Types.Coil.ElectricHeating,Implemented in Templates. NOT covered by G36.
+,Pre-heating:,PREHEAT,Y,Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaPre-coiHeaPre,Buildings.Templates.Components.Coils,
+,None,NO_PH,,,Buildings.Templates.Components.Coils.None,
+,HW Preheat,HW,,,Buildings.Templates.Components.Coils.WaterBasedHeating,
+,Electric Heating Coil Preheat,ELEC,,,Buildings.Templates.Components.Coils.ElectricHeating,
+,Reheating:,REHEAT,Y,Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaReh-coiHeaReh,Buildings.Templates.Components.Coils,
+,None,NO_RH,,,Buildings.Templates.Components.Coils.None,
+,HW Reheat,,,,Buildings.Templates.Components.Coils.WaterBasedHeating,Implemented in Templates. NOT covered by G36.
+,Electric Heating Coil Reheat,,,,Buildings.Templates.Components.Coils.ElectricHeating,Implemented in Templates. NOT covered by G36.
 ,Dual Fan Dual Duct Heating Unit:,,Y,,,
 ,HW heat,,,,,NOT implemented in Templates. Covered by G36.
 ,Electric Heating Coil heat,,,,,NOT implemented in Templates. Covered by G36.
 ,Gas heat,,,,,NOT implemented in Templates. Covered by G36.
-,Cooling:,COOL,Y,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.coiCoo-ctl.coiCoo,Buildings.Templates.Components.Types.Coil,
-,None,NO_CL,,,Buildings.Templates.Components.Types.Coil.None,
-,CHW,CHW,,,Buildings.Templates.Components.Types.Coil.WaterBasedCooling,
-,DX/Evaporator coil w/ variable speed compressor (future),DX_VFD,,,Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed,Implemented in Templates. NOT covered by G36.
-,DX/Evaporator coil w/ multi-stage compressor (future),DX_STGD,,,Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage,Implemented in Templates. NOT covered by G36.
-,Economizer:,ECON,Y,secOutRel.have_eco,Boolean,"This refers to the economizer FUNCTION, see https://github.com/lbl-srg/modelica-buildings/pull/3140#issue-1434648178"
+,Cooling:,COOL,Y,Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo,Buildings.Templates.Components.Types.Coil,
+,None,NO_CL,,,Buildings.Templates.Components.Coils.None,
+,CHW,CHW,,,Buildings.Templates.Components.Coils.WaterBasedCooling,
+,DX/Evaporator coil w/ variable speed compressor (future),DX_VFD,,,Buildings.Templates.Components.Coils.EvaporatorVariableSpeed,Implemented in Templates. NOT covered by G36.
+,DX/Evaporator coil w/ multi-stage compressor (future),DX_STGD,,,Buildings.Templates.Components.Coils.EvaporatorMultiStage,Implemented in Templates. NOT covered by G36.
+,Economizer:,ECON,Y,Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.have_eco-secOutRel.have_eco,Boolean,"This refers to the economizer FUNCTION, see https://github.com/lbl-srg/modelica-buildings/pull/3140#issue-1434648178"
 ,None,,,,false,NOT implemented in Templates. Not covered by G36.
 ,Yes,,,,true,
 ,Economizer High Limit Type:,ECON_HL,Y,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typCtlEco-ctl.typCtlEco,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer,
@@ -69,12 +69,12 @@
 ,Fixed DB + Differential DB,FXDIFFDB,,,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulbWithDifferentialDryBulb,
 ,Fixed enthalpy + Fixed DB,ENTH,,,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedEnthalpyWithFixedDryBulb,
 ,Differential Enthalpy + Fixed DB,DIFFENTH,,,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.DifferentialEnthalpyWithFixedDryBulb,The constraint related to the energy standard is not implemented yet.
-,Air Handling System:,AHU,N,typ,Buildings.Templates.AirHandlersFans.Types.Configuration,"Currently only MZVAV is implemented.
+,Air Handling System:,AHU,N,Buildings.Templates.AirHandlersFans,Buildings.Templates.AirHandlersFans.Types.Configuration,"Currently only MZVAV is implemented.
 The list of options should be revised in the template."
-,MZVAV,MZVAV,,,,
+,MZVAV,MZVAV,,Buildings.Templates.AirHandlersFans.VAVMultiZone,,
 ,SZVAV,SZVAV,,,,NOT implemented in Templates. Covered by G36.
 ,DFDD,DFDD,,,,NOT implemented in Templates. Covered by G36.
-,Pressure Control:,BSP,Y,ctl.buiPreCon,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes,
+,Pressure Control:,BSP,Y,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.buiPreCon-ctl.buiPreCon,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes,
 ,Barometric relief (no fan),BARO,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.BarometricRelief,NOT implemented in Templates. Covered by G36.
 ,Actuated relief damper (no fan),DMPR,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefDamper,
 ,Barometric damper with relief fan,RELIEF,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
@@ -83,11 +83,11 @@ The list of options should be revised in the template."
 ,Return fan - AF tracking (Calculated),,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanCalculatedAir,Removed from Templates. Not properly described in G36.
 ,Return fan - Direct Building Pressure Control (DP),RETURNDP,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanDp,
 ,Return fan - Speed tracking (SZVAV),RETURNSPD,,,,"Option for SZVAV, not implemented in Templates. Covered by G36."
-,OA Damper Configuration and Measurement:,OA,Y,ctl.typSecOut,Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection,
+,OA Damper Configuration and Measurement:,OA,Y,Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut-secOutRel.secOut,Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection,
 ,100% OA,100OA,,,Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.NoEconomizer,NOT implemented in Templates. NOT covered by G36.
-,Single Common OA Damper with AFMS,SINGLE,,,Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper,
-,Dedicated minimum OA damper with AFMS,SEP_AFMS,,,Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow,
-,Dedicated minimum OA damper DPT,SEP_DP,,,Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure,
+,Single Common OA Damper with AFMS,SINGLE,,,Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper,
+,Dedicated minimum OA damper with AFMS,SEP_AFMS,,,Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersAirflow,
+,Dedicated minimum OA damper DPT,SEP_DP,,,Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure,
 ,Damper mapping (SZVAV-only),MAPSPD,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,Multiple Relief Fans:,,N,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,Yes,,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
@@ -113,9 +113,9 @@ The list of options should be revised in the template."
 ,Yes,,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,No,,,,,
 ,,,,,,
-,Terminal Unit:,VAV,N,typ,Buildings.Templates.ZoneEquipment.Types.Configuration,
-,Cooling-Only VAV,CO,,,Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxCoolingOnly,
-,VAV with Reheat,RH,,,Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat,
+,Terminal Unit:,VAV,N,Buildings.Templates.ZoneEquipment,Buildings.Templates.ZoneEquipment.Types.Configuration,
+,Cooling-Only VAV,CO,,Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly,Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxCoolingOnly,
+,VAV with Reheat,RH,,Buildings.Templates.ZoneEquipment.VAVBoxReheat,Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat,
 ,"Parallel Fan-Powered, Constant Volume",PFBCV,,,,NOT implemented in Templates. Covered by G36.
 ,"Parallel Fan-Powered, Variable Volume",PFBVAV,,,,NOT implemented in Templates. Covered by G36.
 ,"Series Fan-Powered, Constant Volume",SFBCV,,,,NOT implemented in Templates. Covered by G36.
@@ -131,9 +131,9 @@ The list of options should be revised in the template."
 ,Window Switch:,WIN,N,Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.have_winSen-ctl.have_winSen,Boolean,Missing modelica path for window switches
 ,Yes,,,,true,"DEPT:  if any terminals have a window switch, this applies"
 ,No,,,,false,
-,CO2 Sensor:,CO2,N,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.have_CO2Sen-ctl.have_CO2Sen,Boolean,
+,CO2 Sensor:,CO2,N,Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialVAVBoxController.have_CO2Sen-ctl.have_CO2Sen,Boolean,
 ,Yes,,,,true,"DEPT:  if any terminals have a CO2 sensor, this applies"
 ,No,,,,false,
-,Terminal Heat Source:,TERM_HT,N,Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialVAVBoxController.coiHea-ctl.coiHea,Buildings.Templates.Components.Coils,
-,Hot Water Coil,,,,Buildings.Templates.Components.Coils.WaterBasedHeating,"DEPT:  if any terminals have a hot water coil, this applies"
-,Modulating Electric Heating Coil,,,,Buildings.Templates.Components.Coils.ElectricHeating,
+,Terminal Heat Source:,TERM_HT,N,Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea-coiHea,Buildings.Templates.Components.Coils,
+,Hot Water Coil,,,,Buildings.Templates.Components.Coils.WaterBasedHeating,"DEPT:  if any terminals have a hot water coil, this applies, No short id since the short id is the same as above for VAVMultiZone"
+,Modulating Electric Heating Coil,,,,Buildings.Templates.Components.Coils.ElectricHeating,No short id since the short id is the same as above for VAVMultiZone
