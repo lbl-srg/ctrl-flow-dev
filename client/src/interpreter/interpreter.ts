@@ -554,21 +554,28 @@ const buildModsHelper = (
   selections: ConfigValues,
 ) => {
   if (option === undefined) {
-    return; // TODO: not sure this should be allowed - failing with 'Medium'
+    return; // PUNCH-OUT! references to 'Medium' fail here
   }
-  // always check the config for a selection
-  const optionMods = option.modifiers as {
-    [key: string]: Modifier;
-  };
-  const childOptions = option.options;
+
+  // fetch all modifiers from up the inheritance hierarchy
   const name = option.modelicaPath.split(".").pop();
   const newBase = option.definition
     ? baseInstancePath
     : [baseInstancePath, name].filter((p) => p !== "").join(".");
-  // grab the current options modifiers
-  if (optionMods) {
-    addToModObject(optionMods, newBase, option.definition, mods, options);
-  }
+  const optionMods: { [key: string]: Modifier } = {};
+  const childOptions = option.options;
+
+  const optionsWithModsList: string[] =
+    "treeList" in option && option.treeList.length > 0
+      ? option.treeList
+      : [option.modelicaPath];
+  optionsWithModsList.reverse().map((oPath) => {
+    const o = options[oPath];
+    const oMods = o.modifiers;
+    if (oMods) {
+      addToModObject(oMods, newBase, option.definition, mods, options);
+    }
+  });
 
   // if this is a definition - visit all child options and grab modifiers
   if (childOptions) {
@@ -606,7 +613,7 @@ const buildModsHelper = (
   }
 };
 
-const buildMods = (
+export const buildMods = (
   startOption: OptionInterface,
   selections: ConfigValues,
   options: { [key: string]: OptionInterface },

@@ -10,6 +10,7 @@ import {
 
 import {
   applyPathModifiers,
+  buildMods,
   OperatorType,
   ConfigContext,
   resolveToValue,
@@ -145,6 +146,17 @@ describe("Modifiers", () => {
     expect(evaluateModifier(mod, context)).toEqual(
       "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxCoolingOnly",
     );
+  });
+
+  it("Handles modifier redeclares", () => {
+    const boxReheat = "Buildings.Templates.ZoneEquipment.VAVBoxReheat";
+    const testPath = "have_souChiWat";
+    const zoneOption = allOptions[boxReheat];
+    const mods = buildMods(zoneOption, {}, allOptions);
+
+    const mod = mods[testPath];
+    expect(mod).toBeDefined();
+    expect(mod?.final).toBeTruthy();
   });
 });
 
@@ -974,7 +986,7 @@ describe("Display Option and Display Group Generation", () => {
 // });
 
 // 'secOutRel.secOut.damOut'
-describe("Selections are formated as expected", () => {
+describe("Specific parameter debugging", () => {
   it("Visits coiHea", () => {
     const context = new ConfigContext(
       zoneReheatTemplate as TemplateInterface,
@@ -1022,5 +1034,31 @@ describe("Selections are formated as expected", () => {
       path,
     );
     expect(path in evaluatedValues).toBeFalsy();
+  });
+
+  // "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souChiWat-have_souChiWat"
+  // "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souHeaWat-have_souHeaWat"
+  it("have_souChiWat and have_souHeaWat should NOT show on zone controllers", () => {
+    const context = new ConfigContext(
+      zoneReheatTemplate as TemplateInterface,
+      zoneReheatConfig as ConfigInterface,
+      allOptions,
+      {},
+    );
+
+    const optionInstance = context.getOptionInstance("have_souChiWat");
+    expect(optionInstance?.display).toBeFalsy();
+  });
+
+  it("have_souChiWat and have_souHeaWat should NOT show on zone controllers", () => {
+    const context = new ConfigContext(
+      zoneReheatTemplate as TemplateInterface,
+      zoneReheatConfig as ConfigInterface,
+      allOptions,
+      {},
+    );
+
+    const optionInstance = context.getOptionInstance("have_souChiWat");
+    expect(optionInstance?.display).toBeFalsy();
   });
 });
