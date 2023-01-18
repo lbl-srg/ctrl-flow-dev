@@ -446,6 +446,26 @@ export const evaluate = (
       );
       break;
     }
+    // Currently only have a single case of if_array and the
+    // operands length is 1 so we can treat it as if_elseif
+    case "if_array":
+    case "if_elseif": {
+      val = expression.operands
+        .map((o) => evaluate(o, context, scope))
+        .filter(val => val !== null)[0];
+      break;
+    }
+    case "if":
+    case "else_if": {
+      val = evaluate(expression.operands[0], context, scope)
+        ? evaluate(expression.operands[1], context, scope)
+        : null;
+      break;
+    }
+    case "else": {
+      val = evaluate(expression.operands[0], context, scope);
+      break;
+    }
   }
 
   return val;

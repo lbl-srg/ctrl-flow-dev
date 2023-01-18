@@ -232,37 +232,90 @@ describe("Test set", () => {
   it("Handles if expression", () => {
     const expressionTrue = buildExpression("==", [1, 1]);
     const expressionFalse = buildExpression("==", [1, 2]);
-    const correct = "Correct value returned";
-    const incorrect = "Incorrect value returned";
+    const ifValue = "if value returned";
+    const elseIfValue = "elseif value returned";
+    const elseValue = "else value returned"
 
-    const ifExpression = {
+    const AllTrueExpression = {
       operator: "if_elseif",
       operands: [
         {
           operator: "if",
-          operands: [expressionTrue, correct],
+          operands: [expressionTrue, ifValue],
         },
         {
           operator: "else_if",
-          operands: [expressionTrue, incorrect],
+          operands: [expressionTrue, elseIfValue],
         },
+        {
+          operator: "else",
+          operands: [elseValue]
+        }
       ],
     };
 
-    const ifExpressionUndefined = {
+    const IfTrueExpression = {
       operator: "if_elseif",
       operands: [
         {
           operator: "if",
-          operands: [expressionTrue, incorrect],
+          operands: [expressionTrue, ifValue],
         },
+        {
+          operator: "else_if",
+          operands: [expressionFalse, elseIfValue],
+        },
+        {
+          operator: "else",
+          operands: [elseValue]
+        }
       ],
     };
 
-    const undefinedValue = evaluate(ifExpressionUndefined);
-    expect(undefinedValue).toBeUndefined();
-    const value = evaluate(ifExpression);
-    expect(value).toBeDefined();
+    const ElseIfTrueExpression = {
+      operator: "if_elseif",
+      operands: [
+        {
+          operator: "if",
+          operands: [expressionFalse, ifValue],
+        },
+        {
+          operator: "else_if",
+          operands: [expressionTrue, elseIfValue],
+        },
+        {
+          operator: "else",
+          operands: [elseValue]
+        }
+      ],
+    };
+
+    const ElseTrueExpression = {
+      operator: "if_elseif",
+      operands: [
+        {
+          operator: "if",
+          operands: [expressionFalse, ifValue],
+        },
+        {
+          operator: "else_if",
+          operands: [expressionFalse, elseIfValue],
+        },
+        {
+          operator: "else",
+          operands: [elseValue]
+        }
+      ],
+    };
+
+    const evaluatedAllTrueValue = evaluate(AllTrueExpression);
+    expect(evaluatedAllTrueValue).toEqual(ifValue);
+    const evaluatedIfTrueValue = evaluate(IfTrueExpression);
+    expect(evaluatedIfTrueValue).toEqual(ifValue);
+    const evaluatedElseIfTrueValue = evaluate(ElseIfTrueExpression);
+    expect(evaluatedElseIfTrueValue).toEqual(elseIfValue);
+    const evaluatedElseTrueValue = evaluate(ElseTrueExpression);
+    expect(evaluatedElseTrueValue).toEqual(elseValue);
   });
 });
 
