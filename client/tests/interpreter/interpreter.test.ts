@@ -158,6 +158,20 @@ describe("Modifiers", () => {
     expect(mod).toBeDefined();
     expect(mod?.final).toBeTruthy();
   });
+
+  it("Adds coiCoo.val to modifiers", () => {
+    const mzOption = allOptions[mzTemplatePath];
+    const selections = {
+      "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo":
+        "Buildings.Templates.Components.Coils.WaterBasedCooling",
+    };
+    const mods = buildMods(mzOption, selections, allOptions);
+    const coiCooPath = "coiCoo.val";
+
+    expect(coiCooPath in mods).toBeTruthy();
+    const coiCooMod = mods[coiCooPath];
+    expect(coiCooMod.final).toBeTruthy();
+  });
 });
 
 const buildExpression = (operator: OperatorType, operands: any[]) => {
@@ -1060,5 +1074,48 @@ describe("Specific parameter debugging", () => {
 
     const optionInstance = context.getOptionInstance("have_souChiWat");
     expect(optionInstance?.display).toBeFalsy();
+  });
+
+  it("coiCoo.val should NOT show for any selection of coiCoo", () => {
+    const selections = {
+      "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo":
+        "Buildings.Templates.Components.Coils.WaterBasedCooling",
+    };
+    const coiCooConfig = addNewConfig(
+      "MZ Template with coiCoo Selected",
+      mzTemplate,
+      selections,
+    );
+
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      coiCooConfig as ConfigInterface,
+      allOptions,
+      {},
+    );
+
+    const contextWithSelection = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      coiCooConfig,
+      allOptions,
+      selections,
+    );
+
+    const optionInstance = context.getOptionInstance("coiCoo.val");
+    expect(optionInstance?.display).toBeFalsy();
+
+    const otherOptionInstance =
+      contextWithSelection.getOptionInstance("coiCoo.val");
+    expect(otherOptionInstance?.display).toBeFalsy();
+
+    const displayOptions = mapToDisplayOptions(context);
+    const coiCooDisplayOption = displayOptions.find(
+      (o) =>
+        "groupName" in o &&
+        o.groupName ===
+          "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo.__group",
+    ) as FlatConfigOptionGroup;
+
+    expect(coiCooDisplayOption).toBeUndefined();
   });
 });

@@ -159,7 +159,7 @@ const _instancePathToOption = (
 
     // get the original option for reference
 
-    // Option swap #2: redeclare modifiers - NOT WORKING
+    // Option swap #2: redeclare modifiers
     // check if there is a modifier for the current instance path
     if (!option) {
       const curInstancePath = curInstancePathList.join(".");
@@ -545,13 +545,13 @@ const getReplaceableType = (
 };
 
 // recursive helper method that traverses options grabbing modifiers
-// TODO: config selections must be integrated to correctly build this list
 const buildModsHelper = (
   option: OptionInterface,
   baseInstancePath: string,
   mods: { [key: string]: Modifier },
   options: { [key: string]: OptionInterface },
   selections: ConfigValues,
+  selectionModelicaPathsCache: { [key: string]: null }, // cache of just selection Modelica path keys
 ) => {
   if (option === undefined) {
     return; // PUNCH-OUT! references to 'Medium' fail here
@@ -562,14 +562,14 @@ const buildModsHelper = (
   const newBase = option.definition
     ? baseInstancePath
     : [baseInstancePath, name].filter((p) => p !== "").join(".");
-  const optionMods: { [key: string]: Modifier } = {};
   const childOptions = option.options;
 
   const optionsWithModsList: string[] =
     "treeList" in option && option.treeList.length > 0
       ? option.treeList
       : [option.modelicaPath];
-  optionsWithModsList.reverse().map((oPath) => {
+
+  optionsWithModsList.map((oPath) => {
     const o = options[oPath];
     const oMods = o.modifiers;
     if (oMods) {
@@ -577,12 +577,50 @@ const buildModsHelper = (
     }
   });
 
+  if (option.replaceable) {
+    let choice = option.value as string | null | undefined;
+    if (option.modelicaPath in selectionModelicaPathsCache) {
+      const selectionPath = constructSelectionPath(
+        option.modelicaPath,
+        newBase,
+      );
+      choice = selections[selectionPath];
+    }
+
+    if (option.choiceModifiers && choice) {
+      const choiceMods = option.choiceModifiers[choice];
+      if (choiceMods) {
+        addToModObject(choiceMods, newBase, option.definition, mods, options);
+      }
+    }
+  }
+
+  // check if there is a selection and that selection has choice modifiers
+  if (option.modelicaPath in selectionModelicaPathsCache) {
+    const selectionPath = constructSelectionPath(option.modelicaPath, newBase);
+    const selection = selections[selectionPath];
+    if (selection && option.choiceModifiers) {
+      // check for choice modifiers
+      const choiceMods = option.choiceModifiers[selection];
+      if (choiceMods) {
+        addToModObject(choiceMods, newBase, option.definition, mods, options);
+      }
+    }
+  }
+
   // if this is a definition - visit all child options and grab modifiers
   if (childOptions) {
     if (option.definition) {
       childOptions.map((path) => {
         const childOption = options[path];
-        buildModsHelper(childOption, newBase, mods, options, selections);
+        buildModsHelper(
+          childOption,
+          newBase,
+          mods,
+          options,
+          selections,
+          selectionModelicaPathsCache,
+        );
       });
     } else {
       // TODO: use instanceToOption to get replaceable type!
@@ -606,7 +644,14 @@ const buildModsHelper = (
         typeOption.options.map((path) => {
           const childOption = options[path];
 
-          buildModsHelper(childOption, newBase, mods, options, selections);
+          buildModsHelper(
+            childOption,
+            newBase,
+            mods,
+            options,
+            selections,
+            selectionModelicaPathsCache,
+          );
         });
       }
     }
@@ -619,8 +664,20 @@ export const buildMods = (
   options: { [key: string]: OptionInterface },
 ) => {
   const mods: { [key: string]: Modifier } = {};
+  const selectionModelicaPaths: { [key: string]: null } = {}; // Object.keys(selections)
+  Object.keys(selections).map((s) => {
+    const [modelicaPath, instancePath] = s.split("-");
+    selectionModelicaPaths[modelicaPath] = null;
+  });
 
-  buildModsHelper(startOption, "", mods, options, selections);
+  buildModsHelper(
+    startOption,
+    "",
+    mods,
+    options,
+    selections,
+    selectionModelicaPaths,
+  );
 
   return mods;
 };
