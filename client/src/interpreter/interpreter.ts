@@ -332,7 +332,7 @@ export const resolveToValue = (
   if (isModelicaPath(operand)) {
     const option = _context.options[operand];
     if (option === undefined) {
-      console.log(`undefined path: ${operand}`);
+      // console.log(`undefined path: ${operand}`);
       // TODO: these are modelica paths that should
       // be extracted!
       return operand;
@@ -705,7 +705,7 @@ export class ConfigContext {
    */
   getValue(path: string, scope = ""): Literal | Expression | null | undefined {
     if (this._previousInstancePath === path) {
-      console.log(`Cycling on path: ${path}`);
+      // console.log(`Cycling on path: ${path}`);
       return null; // prevent cycle
     } else {
       this._previousInstancePath = path;
@@ -852,9 +852,9 @@ export class ConfigContext {
       return optionInstance; // punch-out, we got what we need
     }
 
-    if (!option) {
-      console.log(instancePath);
-    }
+    // if (!option) {
+    //   console.log(instancePath);
+    // }
     // 'scope' in this case is the current instance path's scope, which
     // is one level up from the parameter.
     // e.g.
