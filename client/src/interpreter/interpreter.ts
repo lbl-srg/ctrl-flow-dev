@@ -452,7 +452,7 @@ export const evaluate = (
     case "if_elseif": {
       val = expression.operands
         .map((o) => evaluate(o, context, scope))
-        .filter(val => val !== null)[0];
+        .filter((val) => val !== null)[0];
       break;
     }
     case "if":
@@ -873,6 +873,17 @@ export class ConfigContext {
 
   getRootOption() {
     return this.options[this.template.modelicaPath];
+  }
+
+  isValidSelection(selectionPath: string) {
+    const paths = selectionPath.split("-");
+    if (paths.length == 2) {
+      const [modelicaPath, instancePath] = paths;
+      const instance = this.getOptionInstance(instancePath);
+      return !!instance?.display;
+    } else {
+      return true; // AllSystem settings don't have a dash
+    }
   }
 
   /**

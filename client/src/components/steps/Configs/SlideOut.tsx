@@ -122,9 +122,17 @@ const SlideOut = ({
     event.stopPropagation();
 
     // configStore.update(config.id, { name: configName });
+    const validSelections: ConfigValues = {};
+    Object.entries(selectedValues).map(([key, value]) => {
+      if (context.isValidSelection(key)) {
+        validSelections[key] = value;
+      }
+    });
     const evaluatedValues = context.getEvaluatedValues();
-    configStore.setSelections(config.id, selectedValues);
+    configStore.setSelections(config.id, validSelections);
     configStore.setEvaluatedValues(config.id, removeEmpty(evaluatedValues));
+    // prune existing selections based on what is visible
+    const selections = configStore.getConfigSelections(config.id);
 
     close();
   }

@@ -234,7 +234,7 @@ describe("Test set", () => {
     const expressionFalse = buildExpression("==", [1, 2]);
     const ifValue = "if value returned";
     const elseIfValue = "elseif value returned";
-    const elseValue = "else value returned"
+    const elseValue = "else value returned";
 
     const AllTrueExpression = {
       operator: "if_elseif",
@@ -249,8 +249,8 @@ describe("Test set", () => {
         },
         {
           operator: "else",
-          operands: [elseValue]
-        }
+          operands: [elseValue],
+        },
       ],
     };
 
@@ -267,8 +267,8 @@ describe("Test set", () => {
         },
         {
           operator: "else",
-          operands: [elseValue]
-        }
+          operands: [elseValue],
+        },
       ],
     };
 
@@ -285,8 +285,8 @@ describe("Test set", () => {
         },
         {
           operator: "else",
-          operands: [elseValue]
-        }
+          operands: [elseValue],
+        },
       ],
     };
 
@@ -303,8 +303,8 @@ describe("Test set", () => {
         },
         {
           operator: "else",
-          operands: [elseValue]
-        }
+          operands: [elseValue],
+        },
       ],
     };
 
@@ -782,15 +782,6 @@ describe("Scope tests", () => {
 });
 
 describe("Display Enable is set as expected", () => {
-  // it("Sets enable correctly on simple parameter (no expression)", () => {
-  //   const context = new ConfigContext(
-  //     mzTemplate as TemplateInterface,
-  //     mzConfig as ConfigInterface,
-  //     allOptions,
-  //   );
-  //   // TODO... find a simple parameter?
-  // });
-
   it("Sets enable correctly on parameter with expression", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
@@ -862,6 +853,72 @@ describe("Display Enable is set as expected", () => {
       "ctl.have_winSen",
     ) as OptionInstance;
     expect(haveWinSen.display).toBeTruthy();
+  });
+});
+
+describe("Valid selection", () => {
+  it("Returns an invalid selection", () => {
+    // you should NOT be able to select secOutRel.secRel.fanRel if a ReliefDamper is specified for secOutRel.secRel
+    const selections = {
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel-secOutRel.secRel":
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefDamper",
+      "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel-secOutRel.secRel.fanRel":
+        "Buildings.Templates.Components.Fans.ArrayVariable",
+    };
+
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+      createSelections(selections),
+    );
+
+    expect(
+      context.isValidSelection(
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel-secOutRel.secRel.fanRel",
+      ),
+    ).toEqual(false);
+  });
+
+  it("Returns an valid selection", () => {
+    // you SHOULD be able to select secOutRel.secRel.fanRel if a ReliefDamper is specified for secOutRel.secRel
+    const selections = {
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel-secOutRel.secRel":
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan",
+      "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel-secOutRel.secRel.fanRel":
+        "Buildings.Templates.Components.Fans.ArrayVariable",
+    };
+
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+      createSelections(selections),
+    );
+
+    expect(
+      context.isValidSelection(
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel-secOutRel.secRel.fanRel",
+      ),
+    ).toEqual(true);
+  });
+
+  it("Handles AllSystem paths", () => {
+    const selections = {
+      "Buildings.Templates.Data.AllSystems.ashCliZon":
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A",
+    };
+
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+      createSelections(selections),
+    );
+
+    expect(
+      context.isValidSelection("Buildings.Templates.Data.AllSystems.ashCliZon"),
+    ).toEqual(true);
   });
 });
 
