@@ -1009,6 +1009,8 @@ describe("Specific parameter debugging", () => {
       {},
     );
 
+    // load display options resolve values
+    const displayOptions = mapToDisplayOptions(context);
     const instancePath = "coiHea";
     const evaluatedValues = context.getEvaluatedValues();
     const optionInstance = context.getOptionInstance(instancePath);
