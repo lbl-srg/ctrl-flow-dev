@@ -203,8 +203,40 @@ describe("Test set", () => {
     expect(evaluate(buildExpression("!=", [1]))).toBeFalsy();
   });
 
-  it("Handles if/else if/else if/else", () => {
-    /** TODO */
+  it("Handles if expression", () => {
+    const expressionTrue = buildExpression("==", [1, 1]);
+    const expressionFalse = buildExpression("==", [1, 2]);
+    const correct = "Correct value returned";
+    const incorrect = "Incorrect value returned";
+
+    const ifExpression = {
+      operator: "if_elseif",
+      operands: [
+        {
+          operator: "if",
+          operands: [expressionTrue, correct],
+        },
+        {
+          operator: "else_if",
+          operands: [expressionTrue, incorrect],
+        },
+      ],
+    };
+
+    const ifExpressionUndefined = {
+      operator: "if_elseif",
+      operands: [
+        {
+          operator: "if",
+          operands: [expressionTrue, incorrect],
+        },
+      ],
+    };
+
+    const undefinedValue = evaluate(ifExpressionUndefined);
+    expect(undefinedValue).toBeUndefined();
+    const value = evaluate(ifExpression);
+    expect(value).toBeDefined();
   });
 });
 

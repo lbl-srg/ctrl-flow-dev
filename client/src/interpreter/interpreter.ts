@@ -7,22 +7,6 @@ import Template, {
 import { ConfigValues } from "../../src/utils/modifier-helpers";
 import { removeEmpty } from "../../src/utils/utils";
 
-/**
- * TODO:
- * - [X] Integrate configuration when building modifiers
- * - [X] Integrate context with mod builder! Needed to correctly evaulate expressions in mod builder!
- * - [x] integrate choice modifiers with mod builder
- * - [x] Add a whole lot more tests for expression with context. This is where the bugs are
- * - [x] integrate scope!
- * - [x] map option instances to a valid flatoption/flat option group list
- * - [x] integrate with slideout component
- * in an instance path, e.g. try in this order ["my.fancy.path", "my.path", "path"]
- * - (?) partial resolved expressions must be handled (if something gets returned as an expression).
- * An approach:
- * - iterate through mod object and attempt to resolve each one. Store in _resolvedMods, keep track of how many are resolved
- * - getValue: add initial attempt at fetching value from '_resolveMods'
- */
-
 export type Literal = boolean | string | number;
 
 export type Expression = {
