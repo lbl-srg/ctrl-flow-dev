@@ -194,7 +194,6 @@ function assertType(type: string) {
 
 export function getProject() {
   const inputs = createProjectInputs();
-
   return inputs[PROJECT_INSTANCE_PATH];
 }
 
@@ -222,6 +221,27 @@ export function createProjectInputs(): { [key: string]: TemplateInput } {
     elementType: "component_clause",
   };
 
+  const optionPatchPaths = [
+    "Buildings.Templates.Data.AllSystems.ashCliZon",
+    "Buildings.Templates.Data.AllSystems.tit24CliZon",
+  ];
+
+  optionPatchPaths.map((p) => {
+    const option = projectInputs[p];
+    if (option) {
+      const prefix = "Buildings.Templates.Data.AllSystems";
+      // patch enable expression with full path so project evaluation
+      // continues to work
+      const enableExpr = option.enable;
+      const oldOperand = enableExpr.operands[0];
+      if (!oldOperand.startsWith(prefix)) {
+        const newOperand = `${prefix}.${enableExpr.operands[0]}`;
+        enableExpr.operands[0] = newOperand;
+        option.enable = enableExpr;
+        projectInputs[p] = option;
+      }
+    }
+  });
   return { [PROJECT_INSTANCE_PATH]: spoofedDatAllInstance, ...projectInputs };
 }
 
