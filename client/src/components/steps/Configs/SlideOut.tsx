@@ -120,8 +120,6 @@ const SlideOut = ({
   function saveConfigOptions(event: FormEvent) {
     event.preventDefault();
     event.stopPropagation();
-
-    // configStore.update(config.id, { name: configName });
     const validSelections: ConfigValues = {};
     Object.entries(selectedValues).map(([key, value]) => {
       if (context.isValidSelection(key)) {
@@ -131,8 +129,6 @@ const SlideOut = ({
     const evaluatedValues = context.getEvaluatedValues();
     configStore.setSelections(config.id, validSelections);
     configStore.setEvaluatedValues(config.id, removeEmpty(evaluatedValues));
-    // prune existing selections based on what is visible
-    const selections = configStore.getConfigSelections(config.id);
 
     close();
   }
