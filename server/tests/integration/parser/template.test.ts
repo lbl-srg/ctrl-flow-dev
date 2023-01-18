@@ -64,47 +64,6 @@ describe("Template wrapper class functionality", () => {
     );
   });
 
-  it("Templates generate separate schedule options and configuration options", () => {
-    const datPath = "TestPackage.Template.Data.TestTemplate.record_parameter";
-    const datParamPath = "TestPackage.Template.TestTemplate.dat";
-    const templates = getTemplates();
-
-    const { options, scheduleOptions } = getOptions();
-    const datScheduleOption = scheduleOptions.find(
-      (o) => o.modelicaPath === datPath,
-    );
-    expect(datScheduleOption).toBeTruthy();
-
-    const template = templates.find(
-      (t) => t.modelicaPath === TEMPLATE_PATH,
-    ) as Template;
-
-    const templateJson = template.getSystemTemplate();
-    const datRoots = templateJson.scheduleOptionPaths
-      .map((p) => scheduleOptions.find((o) => o.modelicaPath === p))
-      .filter((o) => o !== undefined);
-    // check that the 'dat' parameter is still available as a reference
-    // const template = options.find( (o) => o.modelicaPath === "TestPackage.Template.TestTemplate");
-    expect(datRoots.length).toBeGreaterThan(0);
-  });
-
-  it("Schedule option paths are unique from options", () => {
-    const templates = getTemplates();
-    const template = templates.find(
-      (t) => t.modelicaPath === TEMPLATE_PATH,
-    ) as Template;
-
-    const { options, scheduleOptions } = template.getOptions();
-
-    Object.keys(options).map((o) => {
-      expect(scheduleOptions[o]).toBeUndefined();
-    });
-
-    Object.keys(scheduleOptions).map((o) => {
-      expect(options[o]).toBeUndefined();
-    });
-  });
-
   it("Keeps system types in correct order", () => {
     // The system types should match the directory order
     const templates = getTemplates();

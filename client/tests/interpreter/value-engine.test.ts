@@ -21,7 +21,7 @@ const addToModObject = (
   newMods: { [key: string]: Expression },
   baseInstancePath: string,
   mods: { [key: string]: Expression },
-  options: OptionInterface[],
+  options: { [key: string]: OptionInterface },
   recursive = true,
 ) => {
   Object.entries(newMods).forEach(([k, expression]) => {
@@ -38,9 +38,7 @@ const addToModObject = (
 
     if (recursive) {
       // grab modifiers from original definition
-      const modOption = options.find(
-        (o) => o.modelicaPath === k,
-      ) as OptionInterface;
+      const modOption = options[k];
       if (modOption?.modifiers) {
         addToModObject(newMods, baseInstancePath, mods, options, false);
       }
@@ -48,12 +46,12 @@ const addToModObject = (
   });
 };
 
-// recursive helper method
+// recursive helper method that traverses options grabbing modifiers
 const buildModsHelper = (
   option: OptionInterface,
   baseInstancePath: string,
   mods: { [key: string]: Expression },
-  options: OptionInterface[],
+  options: { [key: string]: OptionInterface },
 ) => {
   if (option === undefined) {
     return; // TODO: not sure this should be allowed - failing with 'Medium'
@@ -73,31 +71,24 @@ const buildModsHelper = (
       ? baseInstancePath
       : [baseInstancePath, name].filter((p) => p !== "").join(".");
 
-    if (newBase === "secOutRel.secOut.damOut") {
-      console.log("break");
-    }
-
     if (option.definition) {
       childOptions.map((path) => {
-        const childOption = options.find(
-          (o) => o.modelicaPath === path,
-        ) as OptionInterface;
+        const childOption = options[path];
 
+        // recursive call
         buildModsHelper(childOption, newBase, mods, options);
       });
     } else {
       // this is a parameter (either replaceable or enum) - grab the type and its modifiers
-      // only use the 'type', not child options to fetch modifiers (default options)
-      const typeOption = options.find((o) => o.modelicaPath === option.type);
+      // only use the 'type', not child options to fetch modifiers
+      const typeOption = options[option.type];
       if (typeOption && typeOption.options) {
         // add modifiers from type option
         if (typeOption.modifiers) {
           addToModObject(typeOption.modifiers, newBase, mods, options);
         }
         typeOption.options.map((path) => {
-          const childOption = options.find(
-            (o) => o.modelicaPath === path,
-          ) as OptionInterface;
+          const childOption = options[path];
 
           buildModsHelper(childOption, newBase, mods, options);
         });
@@ -108,7 +99,7 @@ const buildModsHelper = (
 
 const buildMods = (
   startOption: OptionInterface,
-  options: OptionInterface[],
+  options: { [key: string]: OptionInterface },
 ) => {
   const mods: { [key: string]: Expression } = {};
 
