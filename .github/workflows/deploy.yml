@@ -62,29 +62,25 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
+      - name: Update template.json
+        uses: actions/download-artifact@v2
+        with:
+          name: $TEMPLATES_FILE_NAME
+          path: ../client/src/data
       - name: install node packages
         run: npm i
       - name: Synthesize cloud formation template
         run: npx aws-cdk synth
       - name: Deploy stack
         run: npx aws-cdk deploy --require-approval never --outputs-file cdk.out/cdk-outputs.json
-      - name: Set API_ARN, configure longer timeout, and set REACT_APP_API# easily testable step
+      - name: Set environment variables and deploy to s3
         run: |
           export API_ARN=$(jq -r .LblCdkStack${{env.LBL_STAGE}}.LbLALBArn cdk.out/cdk-outputs.json)
           aws elbv2 modify-load-balancer-attributes --load-balancer-arn $API_ARN --attributes Key=idle_timeout.timeout_seconds,Value=300
           export REACT_APP_API=$(jq -r .LblCdkStack${{env.LBL_STAGE}}.LbLApiUrl cdk.out/cdk-outputs.json)/api
-      - name: Update template.json
-        uses: actions/download-artifact@v2
-        with:
-          name: $TEMPLATES_FILE_NAME
-          path: ../client/src/data
-      - name: Build the client
-        run: |
           cd $GITHUB_WORKSPACE/client
           npm i
           npm run buildForS3
-      - name: Deploy the client to S3
-        run: |
           cd $GITHUB_WORKSPACE/client
           aws s3 rm s3://lbl-client-${LBL_STAGE}/ --recursive
           aws s3 sync build s3://lbl-client-${LBL_STAGE}/
