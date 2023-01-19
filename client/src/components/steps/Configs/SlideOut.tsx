@@ -6,18 +6,7 @@ import { OptionInterface } from "../../../data/template";
 import Modal from "../../modal/Modal";
 import OptionSelect from "./OptionSelect";
 import { mapToDisplayOptions as mapConfigContextToDisplayOptions } from "../../../interpreter/display-option";
-import { ConfigContext } from "../../../interpreter/interpreter";
-import { useDebouncedCallback } from "use-debounce";
-
-import {
-  applyOptionModifier,
-  applyValueModifiers,
-  applyVisibilityModifiers,
-  Modifiers,
-  getUpdatedModifiers,
-  ConfigValues,
-} from "../../../utils/modifier-helpers";
-
+import { ConfigContext, ConfigValues } from "../../../interpreter/interpreter";
 import { removeEmpty } from "../../../utils/utils";
 
 import "../../../styles/components/config-slide-out.scss";
@@ -46,32 +35,23 @@ export interface FlatConfigOptionChoice {
 
 export interface ConfigSlideOutProps {
   config: any;
-  projectSelections: ConfigValues;
-  projectEvaluatedValues: ConfigValues;
   template: any;
-  templateOptions: OptionInterface[];
-  templateModifiers: Modifiers;
   selections: ConfigValues;
   allOptions: { [key: string]: OptionInterface };
-  // startLoading: () => void;
   stopLoading: () => void;
   close: () => void;
 }
 
 const SlideOut = ({
   config,
-  projectSelections,
-  projectEvaluatedValues,
   template,
-  templateOptions,
-  templateModifiers,
   selections,
   allOptions,
-  // startLoading,
   stopLoading,
   close,
 }: ConfigSlideOutProps) => {
-  const { configStore, templateStore } = useStores();
+  const { configStore, projectStore } = useStores();
+  const projectSelections: ConfigValues = projectStore.getProjectSelections();
   const [selectedValues, setSelectedValues] = useState<ConfigValues>({
     ...selections,
     ...projectSelections,
