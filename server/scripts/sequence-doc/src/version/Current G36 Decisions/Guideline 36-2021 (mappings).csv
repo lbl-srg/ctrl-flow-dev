@@ -106,8 +106,8 @@ The list of options should be revised in the template."
 ,No,,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,Freezestat:,FRZST,N,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typFreSta-ctl.typFreSta,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat,
 ,No Freezestat,NO_FRZST,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.No_freeze_stat,
-,Freezestat hardwired directly to the equipment,WIRED,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_equipment,
-,"Freezestat connected to BAS, normally open",,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NO,Why does polarity matter here but nowhere else?
+,Freezestat hardwired directly to the equipment,WIRED_EQ,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_equipment,
+,"Freezestat connected to BAS, normally open",WIRED_BAS,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NO,Why does polarity matter here but nowhere else?
 ,"Freezestat connected to BAS, normally closed",,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NC,To be discussed with Jianjun.
 ,AFDD:,,N,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,Yes,,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
