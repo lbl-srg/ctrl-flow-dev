@@ -7,22 +7,6 @@ import Template, {
 import { ConfigValues } from "../../src/utils/modifier-helpers";
 import { removeEmpty } from "../../src/utils/utils";
 
-/**
- * TODO:
- * - [X] Integrate configuration when building modifiers
- * - [X] Integrate context with mod builder! Needed to correctly evaulate expressions in mod builder!
- * - [x] integrate choice modifiers with mod builder
- * - [x] Add a whole lot more tests for expression with context. This is where the bugs are
- * - [x] integrate scope!
- * - [x] map option instances to a valid flatoption/flat option group list
- * - [x] integrate with slideout component
- * in an instance path, e.g. try in this order ["my.fancy.path", "my.path", "path"]
- * - (?) partial resolved expressions must be handled (if something gets returned as an expression).
- * An approach:
- * - iterate through mod object and attempt to resolve each one. Store in _resolvedMods, keep track of how many are resolved
- * - getValue: add initial attempt at fetching value from '_resolveMods'
- */
-
 export type Literal = boolean | string | number;
 
 export type Expression = {
@@ -175,7 +159,7 @@ const _instancePathToOption = (
 
     // get the original option for reference
 
-    // Option swap #2: redeclare modifiers - NOT WORKING
+    // Option swap #2: redeclare modifiers
     // check if there is a modifier for the current instance path
     if (!option) {
       const curInstancePath = curInstancePathList.join(".");
@@ -462,6 +446,26 @@ export const evaluate = (
       );
       break;
     }
+    // Currently only have a single case of if_array and the
+    // operands length is 1 so we can treat it as if_elseif
+    case "if_array":
+    case "if_elseif": {
+      val = expression.operands
+        .map((o) => evaluate(o, context, scope))
+        .filter((val) => val !== null)[0];
+      break;
+    }
+    case "if":
+    case "else_if": {
+      val = evaluate(expression.operands[0], context, scope)
+        ? evaluate(expression.operands[1], context, scope)
+        : null;
+      break;
+    }
+    case "else": {
+      val = evaluate(expression.operands[0], context, scope);
+      break;
+    }
   }
 
   return val;
@@ -561,29 +565,67 @@ const getReplaceableType = (
 };
 
 // recursive helper method that traverses options grabbing modifiers
-// TODO: config selections must be integrated to correctly build this list
 const buildModsHelper = (
   option: OptionInterface,
   baseInstancePath: string,
   mods: { [key: string]: Modifier },
   options: { [key: string]: OptionInterface },
   selections: ConfigValues,
+  selectionModelicaPathsCache: { [key: string]: null }, // cache of just selection Modelica path keys
 ) => {
   if (option === undefined) {
-    return; // TODO: not sure this should be allowed - failing with 'Medium'
+    return; // PUNCH-OUT! references to 'Medium' fail here
   }
-  // always check the config for a selection
-  const optionMods = option.modifiers as {
-    [key: string]: Modifier;
-  };
-  const childOptions = option.options;
+
+  // fetch all modifiers from up the inheritance hierarchy
   const name = option.modelicaPath.split(".").pop();
   const newBase = option.definition
     ? baseInstancePath
     : [baseInstancePath, name].filter((p) => p !== "").join(".");
-  // grab the current options modifiers
-  if (optionMods) {
-    addToModObject(optionMods, newBase, option.definition, mods, options);
+  const childOptions = option.options;
+
+  const optionsWithModsList: string[] =
+    "treeList" in option && option.treeList.length > 0
+      ? option.treeList
+      : [option.modelicaPath];
+
+  optionsWithModsList.map((oPath) => {
+    const o = options[oPath];
+    const oMods = o.modifiers;
+    if (oMods) {
+      addToModObject(oMods, newBase, option.definition, mods, options);
+    }
+  });
+
+  if (option.replaceable) {
+    let choice = option.value as string | null | undefined;
+    if (option.modelicaPath in selectionModelicaPathsCache) {
+      const selectionPath = constructSelectionPath(
+        option.modelicaPath,
+        newBase,
+      );
+      choice = selections[selectionPath];
+    }
+
+    if (option.choiceModifiers && choice) {
+      const choiceMods = option.choiceModifiers[choice];
+      if (choiceMods) {
+        addToModObject(choiceMods, newBase, option.definition, mods, options);
+      }
+    }
+  }
+
+  // check if there is a selection and that selection has choice modifiers
+  if (option.modelicaPath in selectionModelicaPathsCache) {
+    const selectionPath = constructSelectionPath(option.modelicaPath, newBase);
+    const selection = selections[selectionPath];
+    if (selection && option.choiceModifiers) {
+      // check for choice modifiers
+      const choiceMods = option.choiceModifiers[selection];
+      if (choiceMods) {
+        addToModObject(choiceMods, newBase, option.definition, mods, options);
+      }
+    }
   }
 
   // if this is a definition - visit all child options and grab modifiers
@@ -591,7 +633,14 @@ const buildModsHelper = (
     if (option.definition) {
       childOptions.map((path) => {
         const childOption = options[path];
-        buildModsHelper(childOption, newBase, mods, options, selections);
+        buildModsHelper(
+          childOption,
+          newBase,
+          mods,
+          options,
+          selections,
+          selectionModelicaPathsCache,
+        );
       });
     } else {
       // TODO: use instanceToOption to get replaceable type!
@@ -615,21 +664,40 @@ const buildModsHelper = (
         typeOption.options.map((path) => {
           const childOption = options[path];
 
-          buildModsHelper(childOption, newBase, mods, options, selections);
+          buildModsHelper(
+            childOption,
+            newBase,
+            mods,
+            options,
+            selections,
+            selectionModelicaPathsCache,
+          );
         });
       }
     }
   }
 };
 
-const buildMods = (
+export const buildMods = (
   startOption: OptionInterface,
   selections: ConfigValues,
   options: { [key: string]: OptionInterface },
 ) => {
   const mods: { [key: string]: Modifier } = {};
+  const selectionModelicaPaths: { [key: string]: null } = {}; // Object.keys(selections)
+  Object.keys(selections).map((s) => {
+    const [modelicaPath, instancePath] = s.split("-");
+    selectionModelicaPaths[modelicaPath] = null;
+  });
 
-  buildModsHelper(startOption, "", mods, options, selections);
+  buildModsHelper(
+    startOption,
+    "",
+    mods,
+    options,
+    selections,
+    selectionModelicaPaths,
+  );
 
   return mods;
 };
@@ -805,6 +873,17 @@ export class ConfigContext {
 
   getRootOption() {
     return this.options[this.template.modelicaPath];
+  }
+
+  isValidSelection(selectionPath: string) {
+    const paths = selectionPath.split("-");
+    if (paths.length == 2) {
+      const [modelicaPath, instancePath] = paths;
+      const instance = this.getOptionInstance(instancePath);
+      return !!instance?.display;
+    } else {
+      return true; // AllSystem settings don't have a dash
+    }
   }
 
   /**
