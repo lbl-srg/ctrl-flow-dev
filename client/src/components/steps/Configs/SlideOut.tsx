@@ -120,6 +120,7 @@ const SlideOut = ({
   function saveConfigOptions(event: FormEvent) {
     event.preventDefault();
     event.stopPropagation();
+    
     const validSelections: ConfigValues = {};
     Object.entries(selectedValues).map(([key, value]) => {
       if (context.isValidSelection(key)) {

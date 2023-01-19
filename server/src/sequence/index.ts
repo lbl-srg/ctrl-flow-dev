@@ -7,9 +7,8 @@ import _ from "underscore";
 // Enables the use of async/await keywords when executing external processes.
 const execPromise = util.promisify(exec);
 
-const SEQUENCE_PATH = path.resolve(__dirname).replace(process.cwd(), ".");
+const SEQUENCE_PATH = path.resolve('/tmp');
 const SEQUENCE_OUTPUT_PATH = `${SEQUENCE_PATH}`;
-const STYLE_REFERENCE_DOCUMENT = `${SEQUENCE_PATH}/source-styles.docx`;
 
 export type Selections = {
   [key: string]: any;
@@ -55,7 +54,8 @@ export async function writeControlSequenceDocument(selections: SequenceData) {
   const filePath = `${SEQUENCE_OUTPUT_PATH}/${fileName}.docx`;
 
   const { stdout, stderr } = await generateDoc(selections, filePath);
+  const file = await getDocument(filePath);
   // console.log(stdout);
   // console.log(stderr);
-  return getDocument(filePath);
+  return { file, filePath };
 }
