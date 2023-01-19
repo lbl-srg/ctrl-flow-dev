@@ -220,7 +220,6 @@ describe("Test set", () => {
   });
 
   it("Handles == and !=", () => {
-    // TODO: fix casting issues with comparator stuff...
     expect(evaluate(buildExpression("==", [1, 1, 1, 1]))).toBeTruthy();
     expect(evaluate(buildExpression("==", [3]))).toBeTruthy();
     expect(evaluate(buildExpression("==", ["a", "a", "a"]))).toBeTruthy();
