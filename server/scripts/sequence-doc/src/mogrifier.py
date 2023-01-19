@@ -214,12 +214,23 @@ def remove_info_and_instr_boxes(doc, selections: Selections):
     '''
     info_box_styles = ['Info. box', 'InfoboxList', 'InfoTableTitle']
     instr_box_style = 'Instr. box'
-
+ 
     for para in doc.paragraphs:
         if utils.reduce_to_boolean(selections['DEL_INFO_BOX']) and para.style.name in info_box_styles:
             remove_node(para)
         if para.style.name == instr_box_style:
             remove_node(para)
+ 
+    for table in doc.tables:
+        if utils.reduce_to_boolean(selections['DEL_INFO_BOX']):
+            # grab the upper left cell - cells are required to have at least
+            # one paragraph
+            try:
+                test_cell_style = table._cells[0].paragraphs[0].style.name
+                if test_cell_style in info_box_styles:
+                    remove_node(table)
+            except:
+                pass
 
 def evaluate_annotation(op, name_map, selections: Selections):
     '''
