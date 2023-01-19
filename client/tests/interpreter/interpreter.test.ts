@@ -158,6 +158,20 @@ describe("Modifiers", () => {
     expect(mod).toBeDefined();
     expect(mod?.final).toBeTruthy();
   });
+
+  it("Adds coiCoo.val to modifiers", () => {
+    const mzOption = allOptions[mzTemplatePath];
+    const selections = {
+      "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo":
+        "Buildings.Templates.Components.Coils.WaterBasedCooling",
+    };
+    const mods = buildMods(mzOption, selections, allOptions);
+    const coiCooPath = "coiCoo.val";
+
+    expect(coiCooPath in mods).toBeTruthy();
+    const coiCooMod = mods[coiCooPath];
+    expect(coiCooMod.final).toBeTruthy();
+  });
 });
 
 const buildExpression = (operator: OperatorType, operands: any[]) => {
@@ -220,7 +234,7 @@ describe("Test set", () => {
     const expressionFalse = buildExpression("==", [1, 2]);
     const ifValue = "if value returned";
     const elseIfValue = "elseif value returned";
-    const elseValue = "else value returned"
+    const elseValue = "else value returned";
 
     const AllTrueExpression = {
       operator: "if_elseif",
@@ -235,8 +249,8 @@ describe("Test set", () => {
         },
         {
           operator: "else",
-          operands: [elseValue]
-        }
+          operands: [elseValue],
+        },
       ],
     };
 
@@ -253,8 +267,8 @@ describe("Test set", () => {
         },
         {
           operator: "else",
-          operands: [elseValue]
-        }
+          operands: [elseValue],
+        },
       ],
     };
 
@@ -271,8 +285,8 @@ describe("Test set", () => {
         },
         {
           operator: "else",
-          operands: [elseValue]
-        }
+          operands: [elseValue],
+        },
       ],
     };
 
@@ -289,8 +303,8 @@ describe("Test set", () => {
         },
         {
           operator: "else",
-          operands: [elseValue]
-        }
+          operands: [elseValue],
+        },
       ],
     };
 
@@ -768,15 +782,6 @@ describe("Scope tests", () => {
 });
 
 describe("Display Enable is set as expected", () => {
-  // it("Sets enable correctly on simple parameter (no expression)", () => {
-  //   const context = new ConfigContext(
-  //     mzTemplate as TemplateInterface,
-  //     mzConfig as ConfigInterface,
-  //     allOptions,
-  //   );
-  //   // TODO... find a simple parameter?
-  // });
-
   it("Sets enable correctly on parameter with expression", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
@@ -848,6 +853,72 @@ describe("Display Enable is set as expected", () => {
       "ctl.have_winSen",
     ) as OptionInstance;
     expect(haveWinSen.display).toBeTruthy();
+  });
+});
+
+describe("Valid selection", () => {
+  it("Returns an invalid selection", () => {
+    // you should NOT be able to select secOutRel.secRel.fanRel if a ReliefDamper is specified for secOutRel.secRel
+    const selections = {
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel-secOutRel.secRel":
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefDamper",
+      "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel-secOutRel.secRel.fanRel":
+        "Buildings.Templates.Components.Fans.ArrayVariable",
+    };
+
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+      createSelections(selections),
+    );
+
+    expect(
+      context.isValidSelection(
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel-secOutRel.secRel.fanRel",
+      ),
+    ).toEqual(false);
+  });
+
+  it("Returns an valid selection", () => {
+    // you SHOULD be able to select secOutRel.secRel.fanRel if a ReliefDamper is specified for secOutRel.secRel
+    const selections = {
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel-secOutRel.secRel":
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan",
+      "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel-secOutRel.secRel.fanRel":
+        "Buildings.Templates.Components.Fans.ArrayVariable",
+    };
+
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+      createSelections(selections),
+    );
+
+    expect(
+      context.isValidSelection(
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel-secOutRel.secRel.fanRel",
+      ),
+    ).toEqual(true);
+  });
+
+  it("Handles AllSystem paths", () => {
+    const selections = {
+      "Buildings.Templates.Data.AllSystems.ashCliZon":
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A",
+    };
+
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+      createSelections(selections),
+    );
+
+    expect(
+      context.isValidSelection("Buildings.Templates.Data.AllSystems.ashCliZon"),
+    ).toEqual(true);
   });
 });
 
@@ -1048,6 +1119,8 @@ describe("Specific parameter debugging", () => {
       {},
     );
 
+    // load display options resolve values
+    const displayOptions = mapToDisplayOptions(context);
     const instancePath = "coiHea";
     const evaluatedValues = context.getEvaluatedValues();
     const optionInstance = context.getOptionInstance(instancePath);
@@ -1113,5 +1186,48 @@ describe("Specific parameter debugging", () => {
 
     const optionInstance = context.getOptionInstance("have_souChiWat");
     expect(optionInstance?.display).toBeFalsy();
+  });
+
+  it("coiCoo.val should NOT show for any selection of coiCoo", () => {
+    const selections = {
+      "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo":
+        "Buildings.Templates.Components.Coils.WaterBasedCooling",
+    };
+    const coiCooConfig = addNewConfig(
+      "MZ Template with coiCoo Selected",
+      mzTemplate,
+      selections,
+    );
+
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      coiCooConfig as ConfigInterface,
+      allOptions,
+      {},
+    );
+
+    const contextWithSelection = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      coiCooConfig,
+      allOptions,
+      selections,
+    );
+
+    const optionInstance = context.getOptionInstance("coiCoo.val");
+    expect(optionInstance?.display).toBeFalsy();
+
+    const otherOptionInstance =
+      contextWithSelection.getOptionInstance("coiCoo.val");
+    expect(otherOptionInstance?.display).toBeFalsy();
+
+    const displayOptions = mapToDisplayOptions(context);
+    const coiCooDisplayOption = displayOptions.find(
+      (o) =>
+        "groupName" in o &&
+        o.groupName ===
+          "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo.__group",
+    ) as FlatConfigOptionGroup;
+
+    expect(coiCooDisplayOption).toBeUndefined();
   });
 });
