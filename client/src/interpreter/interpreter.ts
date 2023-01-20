@@ -56,7 +56,9 @@ function createPossiblePaths(scope: string, path: string) {
     paths.push([segments.join("."), path].filter((p) => p !== "").join("."));
     segments.pop();
   }
-  paths.push(path); // original path without scope needs to be added as well.. TODO: this can cause dups
+
+  // TODO: this can cause duplicates if scope is '' - a check can probably be done before the while loop
+  paths.push(path);
 
   return paths;
 }
@@ -413,7 +415,7 @@ export const evaluate = (
         resolveToValue(o, context, scope),
       );
       val = comparators[expression.operator](
-        resolvedOperands[0], // TODO: force to number?
+        resolvedOperands[0],
         resolvedOperands[1],
       ) as Literal;
 
@@ -506,7 +508,6 @@ const addToModObject = (
  * - a redeclare
  *
  * This is a small helper method that checks for either of those instances
- * TODO: this could potentially be replaced by injecting config context
  */
 const getReplaceableType = (
   instancePath: string,
@@ -588,20 +589,6 @@ const buildModsHelper = (
 
     if (option.choiceModifiers && choice) {
       const choiceMods = option.choiceModifiers[choice];
-      if (choiceMods) {
-        addToModObject(choiceMods, newBase, option.definition, mods);
-      }
-    }
-  }
-
-  // TODO: remove this - it is a duplicate block of logic
-  // grab any choice modifiers based on either a selection or the default value
-  // is this a duplicate?
-  if (option.modelicaPath in selectionModelicaPathsCache) {
-    const selectionPath = constructSelectionPath(option.modelicaPath, newBase);
-    const selection = selections[selectionPath];
-    if (selection && option.choiceModifiers) {
-      const choiceMods = option.choiceModifiers[selection];
       if (choiceMods) {
         addToModObject(choiceMods, newBase, option.definition, mods);
       }
