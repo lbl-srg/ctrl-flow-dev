@@ -118,8 +118,12 @@ def edit_table(table_item):
     if table_item['op'] == 'COLUMN':
         for cell in table_item['column'].cells:
             remove_node(cell)
-    else:
-        remove_node(table_item)
+
+    if table_item['op'] == 'ROW':
+        remove_node(table_item['row'])
+
+    if table_item['op'] == 'TABLE':
+        remove_node(table_item['table'])
 
 def get_column(table: Table, table_cell):
     ''' Determins the column of a cell within a table
