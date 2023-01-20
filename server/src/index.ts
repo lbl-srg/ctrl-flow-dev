@@ -102,8 +102,11 @@ app.post("/api/sequence", async (req, res) => {
   }
 
   try {
-    const file = await writeControlSequenceDocument(sequenceData);
+    const { file, filePath } = await writeControlSequenceDocument(sequenceData);
     res.send(file);
+    res.on('finish', () => {
+      fs.unlinkSync(filePath);
+    });
   } catch (error) {
     console.error(error);
     res.send(error);

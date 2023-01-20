@@ -283,6 +283,7 @@ export type OperatorType =
   | "=="
   | "!="
   | "&&"
+  | "if_array"
   | "if_elseif"
   | "if"
   | "else_if"
