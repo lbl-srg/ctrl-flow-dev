@@ -70,6 +70,7 @@ export interface Option {
   tab?: string;
   value?: any;
   enable?: any;
+  treeList?: string[];
   modifiers: { [key: string]: { expression: Expression; final: boolean } };
   choiceModifiers?: { [key: string]: Mods };
   replaceable: boolean;
@@ -115,6 +116,21 @@ export function flattenModifiers(
   return mods;
 }
 
+function _getTreeList(option: Option) {
+  const treeList: string[] = [option.type];
+
+  option.options?.map((o) => {
+    // remove the last '.' path
+    const basePath = o.split(".").slice(0, -1).join(".");
+
+    if (!treeList.includes(basePath)) {
+      treeList.push(basePath);
+    }
+  });
+
+  return treeList;
+}
+
 /**
  * Maps an input to the expected 'option' shape for the front end
  */
@@ -145,6 +161,10 @@ function _mapInputToOption(input: parser.TemplateInput): Option {
   option.options = options;
   option.definition = parser.isDefinition(input.elementType);
   option.replaceable = input.elementType === "replaceable";
+
+  if (option.definition) {
+    option.treeList = _getTreeList(option);
+  }
 
   return option;
 }
