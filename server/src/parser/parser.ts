@@ -567,8 +567,7 @@ export class Input extends Element {
     let isVisible = !(
       this.outer ||
       this.final ||
-      this.connectorSizing === true ||
-      this.enable === false
+      this.connectorSizing === true
     );
 
     const isLiteral = MODELICA_LITERALS.includes(this.type);
