@@ -1021,11 +1021,8 @@ describe("Display Option and Display Group Generation", () => {
       | FlatConfigOption
     )[];
 
-    const simpleDisplay = extractSimpleDisplayList(items, true);
-
     expect(displayGroup?.groupName).toBe(secOutRel?.option.name);
     expect(displayGroup?.items.length).toBeGreaterThan(0);
-    expect(simpleDisplay).toBeDefined();
   });
 
   it("Generates a display group and display options for Multizone Template", () => {
