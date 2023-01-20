@@ -479,19 +479,26 @@ def convert_units(control_structure, name_map, selections: Selections):
         logging.error('%s not found', ip_short_name)
         return
 
+    long_name = name_map[short_name]
+    si_long_name = name_map[si_short_name]
+    ip_long_name = name_map[ip_short_name]
+
+    if long_name not in selections:
+        logging.error('Path "%s" not found in store', long_name)
+        return
+
     for op in control_structure:
         if op['op'] == short_name:
             match = re.match(r'\[UNITS \[(.+)] \[(.+)]]', op['text'])
             if not match:
                 logging.error('Invalid format for tag:  %s', op['text'])
                 continue
-            long_name = name_map[short_name]
             unit_selection = selections[long_name][0]
-            if unit_selection == name_map[si_short_name]:
+            if unit_selection == si_long_name:
                 # TODO: use this as an approach for 'writes' to the docx 
                 op['runs'][0].text = match.group(1)
                 op['runs'][0].style = None
-            elif unit_selection == name_map[ip_short_name]:
+            elif unit_selection == ip_long_name:
                 op['runs'][0].text = match.group(2)
                 op['runs'][0].style = None
             else:
