@@ -883,7 +883,12 @@
       "group": "",
       "tab": "Advanced",
       "visible": false,
-      "enable": "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.verifyFlowReversal",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.verifyFlowReversal"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -2875,8 +2880,13 @@
       "name": "Text rotation angle in icon layer",
       "group": "",
       "tab": "Graphics",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -2894,8 +2904,13 @@
       "name": "True to flip text horizontally in icon layer",
       "group": "",
       "tab": "Graphics",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -2938,10 +2953,23 @@
       "name": "Equipment type",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Valve.None",
+        "Buildings.Templates.Components.Types.Valve.PumpedCoilThreeWay",
+        "Buildings.Templates.Components.Types.Valve.PumpedCoilTwoWay",
+        "Buildings.Templates.Components.Types.Valve.ThreeWayModulating",
+        "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition",
+        "Buildings.Templates.Components.Types.Valve.TwoWayModulating",
+        "Buildings.Templates.Components.Types.Valve.TwoWayTwoPosition"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -4661,7 +4689,12 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": false,
-      "enable": "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.use_Q_flow_nominal",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.use_Q_flow_nominal"
+        ]
+      },
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.fixed": {
           "expression": {
@@ -4686,7 +4719,12 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": false,
-      "enable": "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.use_Q_flow_nominal",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.use_Q_flow_nominal"
+        ]
+      },
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.fixed": {
           "expression": {
@@ -4711,7 +4749,12 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": false,
-      "enable": "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.use_Q_flow_nominal",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.use_Q_flow_nominal"
+        ]
+      },
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.fixed": {
           "expression": {
@@ -4736,7 +4779,12 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": true,
-      "enable": "not use_Q_flow_nominal",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not use_Q_flow_nominal"
+        ]
+      },
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.fixed": {
           "expression": {
@@ -6569,7 +6617,12 @@
       "group": "Transition to laminar",
       "tab": "",
       "visible": true,
-      "enable": "not linearized",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not linearized"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -7025,10 +7078,22 @@
       "name": "Equipment type",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Coil.ElectricHeating",
+        "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage",
+        "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed",
+        "Buildings.Templates.Components.Types.Coil.None",
+        "Buildings.Templates.Components.Types.Coil.WaterBasedCooling",
+        "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -7038,10 +7103,23 @@
       "name": "Type of valve",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Valve.None",
+        "Buildings.Templates.Components.Types.Valve.PumpedCoilThreeWay",
+        "Buildings.Templates.Components.Types.Valve.PumpedCoilTwoWay",
+        "Buildings.Templates.Components.Types.Valve.ThreeWayModulating",
+        "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition",
+        "Buildings.Templates.Components.Types.Valve.TwoWayModulating",
+        "Buildings.Templates.Components.Types.Valve.TwoWayTwoPosition"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -7051,8 +7129,13 @@
       "name": "Set to true for fluid ports on the source side",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -7245,7 +7328,12 @@
       "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": "Buildings.Templates.Components.Data.Coil.have_sou",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Templates.Components.Data.Coil.have_sou"
+        ]
+      },
       "modifiers": {
         "Buildings.Templates.Components.Data.Coil.min": {
           "expression": {
@@ -7326,7 +7414,12 @@
       "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": "Buildings.Templates.Components.Data.Coil.have_sou",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Templates.Components.Data.Coil.have_sou"
+        ]
+      },
       "modifiers": {
         "Buildings.Templates.Components.Data.Coil.min": {
           "expression": {
@@ -7683,7 +7776,12 @@
       "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": "Buildings.Templates.Components.Data.Coil.have_sou",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Templates.Components.Data.Coil.have_sou"
+        ]
+      },
       "modifiers": {
         "Buildings.Templates.Components.Data.Coil.min": {
           "expression": {
@@ -7774,7 +7872,12 @@
       "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": "Buildings.Templates.Components.Data.Coil.have_sou",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Templates.Components.Data.Coil.have_sou"
+        ]
+      },
       "modifiers": {
         "Buildings.Templates.Components.Data.Coil.min": {
           "expression": {
@@ -8680,7 +8783,12 @@
       "group": "Transition to laminar",
       "tab": "",
       "visible": true,
-      "enable": "not linearized",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not linearized"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -9112,7 +9220,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential.use_deltaM",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential.use_deltaM"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -9169,7 +9282,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "not use_deltaM",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not use_deltaM"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -9188,7 +9306,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "not use_deltaM",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not use_deltaM"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -9711,10 +9834,19 @@
       "name": "Type of blades",
       "group": "",
       "tab": "Graphics",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.DamperBlades.Opposed",
+        "Buildings.Templates.Components.Types.DamperBlades.Parallel",
+        "Buildings.Templates.Components.Types.DamperBlades.VAV"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -9783,8 +9915,13 @@
       "name": "Text rotation angle in icon layer",
       "group": "",
       "tab": "Graphics",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -9802,8 +9939,13 @@
       "name": "True to flip text horizontally in icon layer",
       "group": "",
       "tab": "Graphics",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -9845,10 +9987,22 @@
       "name": "Equipment type",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Damper.NoPath",
+        "Buildings.Templates.Components.Types.Damper.Barometric",
+        "Buildings.Templates.Components.Types.Damper.Modulating",
+        "Buildings.Templates.Components.Types.Damper.None",
+        "Buildings.Templates.Components.Types.Damper.PressureIndependent",
+        "Buildings.Templates.Components.Types.Damper.TwoPosition"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -10031,7 +10185,12 @@
       "group": "Mechanical",
       "tab": "",
       "visible": false,
-      "enable": false,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -10542,10 +10701,19 @@
       "name": "Type of controller",
       "group": "Buildings.Templates.ZoneEquipment.Types.Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly",
+        "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat",
+        "Buildings.Templates.ZoneEquipment.Types.Controller.OpenLoop"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -11543,10 +11711,19 @@
       "name": "Type of temperature sensor",
       "group": "",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.SensorTemperature.Standard",
+        "Buildings.Templates.Components.Types.SensorTemperature.Averaging",
+        "Buildings.Templates.Components.Types.SensorTemperature.InWell"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -11744,7 +11921,12 @@
       "group": "Heat transfer",
       "tab": "",
       "visible": false,
-      "enable": "Buildings.Fluid.Sensors.TemperatureTwoPort.transferHeat",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Fluid.Sensors.TemperatureTwoPort.transferHeat"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -11763,7 +11945,12 @@
       "group": "Heat transfer",
       "tab": "",
       "visible": false,
-      "enable": "Buildings.Fluid.Sensors.TemperatureTwoPort.transferHeat",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Fluid.Sensors.TemperatureTwoPort.transferHeat"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -11990,8 +12177,13 @@
       "name": "Text rotation angle in icon layer",
       "group": "",
       "tab": "Graphics",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -12009,8 +12201,13 @@
       "name": "True to flip text horizontally in icon layer",
       "group": "",
       "tab": "Graphics",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -12168,10 +12365,19 @@
       "name": "Type of volume flow rate sensor",
       "group": "",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.SensorVolumeFlowRate.AFMS",
+        "Buildings.Templates.Components.Types.SensorVolumeFlowRate.FlowCross",
+        "Buildings.Templates.Components.Types.SensorVolumeFlowRate.FlowMeter"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -12640,10 +12846,21 @@
       "name": "Type of system",
       "group": "Buildings.Templates.ZoneEquipment.Types.Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.ZoneEquipment.Types.Configuration.DualDuct",
+        "Buildings.Templates.ZoneEquipment.Types.Configuration.FanPowered",
+        "Buildings.Templates.ZoneEquipment.Types.Configuration.Induction",
+        "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxCoolingOnly",
+        "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -12653,8 +12870,13 @@
       "name": "Set to true if system uses CHW",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -12666,8 +12888,13 @@
       "name": "Set to true if system uses HHW",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -12679,10 +12906,19 @@
       "name": "Type of controller",
       "group": "Buildings.Templates.ZoneEquipment.Types.Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly",
+        "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat",
+        "Buildings.Templates.ZoneEquipment.Types.Controller.OpenLoop"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -12731,7 +12967,12 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.have_souChiWat",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.have_souChiWat"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -12750,7 +12991,12 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.have_souHeaWat",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.have_souHeaWat"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -13471,10 +13717,18 @@
       "name": "Ventilation standard",
       "group": "Energy and ventilation standards",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -13705,7 +13959,12 @@
       "group": "Temperature",
       "tab": "",
       "visible": false,
-      "enable": "([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -13724,7 +13983,12 @@
       "group": "Temperature",
       "tab": "",
       "visible": false,
-      "enable": "([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -13743,7 +14007,12 @@
       "group": "Temperature",
       "tab": "",
       "visible": false,
-      "enable": "([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -13762,7 +14031,12 @@
       "group": "Temperature",
       "tab": "",
       "visible": false,
-      "enable": "([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -13871,7 +14145,12 @@
       "group": "Airflow",
       "tab": "",
       "visible": false,
-      "enable": "([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object])"
+        ]
+      },
       "modifiers": {
         "Buildings.Templates.ZoneEquipment.Components.Data.VAVBoxController.min": {
           "expression": {
@@ -13962,10 +14241,22 @@
       "name": "Type of VAV damper",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Damper.NoPath",
+        "Buildings.Templates.Components.Types.Damper.Barometric",
+        "Buildings.Templates.Components.Types.Damper.Modulating",
+        "Buildings.Templates.Components.Types.Damper.None",
+        "Buildings.Templates.Components.Types.Damper.PressureIndependent",
+        "Buildings.Templates.Components.Types.Damper.TwoPosition"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -13975,10 +14266,22 @@
       "name": "Type of heating coil",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Coil.ElectricHeating",
+        "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage",
+        "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed",
+        "Buildings.Templates.Components.Types.Coil.None",
+        "Buildings.Templates.Components.Types.Coil.WaterBasedCooling",
+        "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -13988,10 +14291,23 @@
       "name": "Type of valve for heating coil",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Valve.None",
+        "Buildings.Templates.Components.Types.Valve.PumpedCoilThreeWay",
+        "Buildings.Templates.Components.Types.Valve.PumpedCoilTwoWay",
+        "Buildings.Templates.Components.Types.Valve.ThreeWayModulating",
+        "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition",
+        "Buildings.Templates.Components.Types.Valve.TwoWayModulating",
+        "Buildings.Templates.Components.Types.Valve.TwoWayTwoPosition"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -14001,10 +14317,18 @@
       "name": "Ventilation standard",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -15393,7 +15717,12 @@
       "group": "Damper",
       "tab": "Damper and valve control",
       "visible": true,
-      "enable": "not have_preIndDam",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not have_preIndDam"
+        ]
+      },
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.CDL.Types.SimpleController.P",
@@ -15417,7 +15746,12 @@
       "group": "Damper",
       "tab": "Damper and valve control",
       "visible": true,
-      "enable": "not have_preIndDam",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not have_preIndDam"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -15436,7 +15770,12 @@
       "group": "Damper",
       "tab": "Damper and valve control",
       "visible": true,
-      "enable": "not have_preIndDam and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not have_preIndDam and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -15455,7 +15794,12 @@
       "group": "Damper",
       "tab": "Damper and valve control",
       "visible": true,
-      "enable": "not have_preIndDam and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not have_preIndDam and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -15512,7 +15856,12 @@
       "group": "",
       "tab": "System requests",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller.have_hotWatCoi",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller.have_hotWatCoi"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -15531,7 +15880,12 @@
       "group": "",
       "tab": "System requests",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller.have_hotWatCoi",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller.have_hotWatCoi"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -15588,7 +15942,12 @@
       "group": "Duration time",
       "tab": "System requests",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller.have_hotWatCoi",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller.have_hotWatCoi"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -15626,7 +15985,12 @@
       "group": "",
       "tab": "Alarms",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller.have_hotWatCoi",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller.have_hotWatCoi"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -15664,7 +16028,12 @@
       "group": "",
       "tab": "Alarms",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller.have_hotWatCoi",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller.have_hotWatCoi"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -17491,7 +17860,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.SystemRequests.have_hotWatCoi",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.SystemRequests.have_hotWatCoi"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -17510,7 +17884,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.SystemRequests.have_hotWatCoi",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.SystemRequests.have_hotWatCoi"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -17567,7 +17946,12 @@
       "group": "Duration times",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.SystemRequests.have_hotWatCoi",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.SystemRequests.have_hotWatCoi"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -17586,7 +17970,12 @@
       "group": "",
       "tab": "Advanced",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.SystemRequests.have_hotWatCoi",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.SystemRequests.have_hotWatCoi"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -17685,7 +18074,12 @@
       "group": "",
       "tab": "Advanced",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.SystemRequests.have_hotWatCoi",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.SystemRequests.have_hotWatCoi"
+        ]
+      },
       "modifiers": {
         "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.SystemRequests.unit": {
           "expression": {
@@ -18880,7 +19274,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.Alarms.have_hotWatCoi",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.Alarms.have_hotWatCoi"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -18953,7 +19352,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.Alarms.have_hotWatCoi",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.Alarms.have_hotWatCoi"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -19048,7 +19452,12 @@
       "group": "",
       "tab": "Advanced",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.Alarms.have_hotWatCoi",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Subsequences.Alarms.have_hotWatCoi"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -23346,7 +23755,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "have_CO2Sen and (not have_SZVAV and not have_parFanPowUni)",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_CO2Sen and (not have_SZVAV and not have_parFanPowUni)"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -23365,7 +23779,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "have_CO2Sen and (not have_SZVAV and not have_typTerUni)",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_CO2Sen and (not have_SZVAV and not have_typTerUni)"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -23384,7 +23803,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "have_CO2Sen and (not have_parFanPowUni and not have_typTerUni)",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_CO2Sen and (not have_parFanPowUni and not have_typTerUni)"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -23403,7 +23827,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.have_occSen",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.have_occSen"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -23487,7 +23916,12 @@
       "group": "Design conditions",
       "tab": "",
       "visible": true,
-      "enable": "not have_SZVAV",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not have_SZVAV"
+        ]
+      },
       "modifiers": {
         "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.quantity": {
           "expression": {
@@ -23527,7 +23961,12 @@
       "group": "Design conditions",
       "tab": "",
       "visible": true,
-      "enable": "have_CO2Sen and not have_SZVAV",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_CO2Sen and not have_SZVAV"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -24411,7 +24850,12 @@
       "group": "Damper",
       "tab": "",
       "visible": true,
-      "enable": "not have_preIndDam",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not have_preIndDam"
+        ]
+      },
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.CDL.Types.SimpleController.P",
@@ -24435,7 +24879,12 @@
       "group": "Damper",
       "tab": "",
       "visible": true,
-      "enable": "not have_preIndDam",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not have_preIndDam"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -24454,7 +24903,12 @@
       "group": "Damper",
       "tab": "",
       "visible": true,
-      "enable": "not have_preIndDam and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not have_preIndDam and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -24473,7 +24927,12 @@
       "group": "Damper",
       "tab": "",
       "visible": true,
-      "enable": "not have_preIndDam and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not have_preIndDam and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -28451,7 +28910,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "have_CO2Sen and not (have_SZVAV or have_parFanPowUni)",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_CO2Sen and not (have_SZVAV or have_parFanPowUni)"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -28470,7 +28934,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "have_CO2Sen and not (have_SZVAV or have_typTerUni)",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_CO2Sen and not (have_SZVAV or have_typTerUni)"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -28489,7 +28958,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "have_CO2Sen and not (have_parFanPowUni or have_typTerUni)",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_CO2Sen and not (have_parFanPowUni or have_typTerUni)"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -28553,7 +29027,12 @@
       "group": "Design conditions",
       "tab": "",
       "visible": true,
-      "enable": "not (have_CO2Sen and have_SZVAV)",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not (have_CO2Sen and have_SZVAV)"
+        ]
+      },
       "modifiers": {
         "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints.unit": {
           "expression": {
@@ -28583,7 +29062,12 @@
       "group": "Design conditions",
       "tab": "",
       "visible": true,
-      "enable": "have_CO2Sen and (have_parFanPowUni or have_typTerUni)",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_CO2Sen and (have_parFanPowUni or have_typTerUni)"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -29530,7 +30014,12 @@
       "group": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Controller",
       "tab": "Damper control",
       "visible": true,
-      "enable": "not have_preIndDam",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not have_preIndDam"
+        ]
+      },
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.CDL.Types.SimpleController.P",
@@ -29554,7 +30043,12 @@
       "group": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Controller",
       "tab": "Damper control",
       "visible": true,
-      "enable": "not have_preIndDam",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not have_preIndDam"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -29573,7 +30067,12 @@
       "group": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Controller",
       "tab": "Damper control",
       "visible": true,
-      "enable": "not have_preIndDam and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not have_preIndDam and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -29592,7 +30091,12 @@
       "group": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Controller",
       "tab": "Damper control",
       "visible": true,
-      "enable": "not have_preIndDam and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not have_preIndDam and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -33472,7 +33976,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "not have_preIndDam",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not have_preIndDam"
+        ]
+      },
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.CDL.Types.SimpleController.P",
@@ -33496,7 +34005,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "not have_preIndDam",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not have_preIndDam"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -33515,7 +34029,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "([object Object]) and not have_preIndDam",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object]) and not have_preIndDam"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -33534,7 +34053,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "([object Object]) and not have_preIndDam",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object]) and not have_preIndDam"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -35703,7 +36227,12 @@
       "group": "Setpoint adjustable setting",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.have_locAdj",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.have_locAdj"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -35817,7 +36346,12 @@
       "group": "Setpoints limits setting",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.have_winSen",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.have_winSen"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -35836,7 +36370,12 @@
       "group": "Setpoints limits setting",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.have_winSen",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.have_winSen"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -35855,7 +36394,12 @@
       "group": "Setpoint adjustment",
       "tab": "Demand control",
       "visible": true,
-      "enable": "not ignDemLim",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not ignDemLim"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -35874,7 +36418,12 @@
       "group": "Setpoint adjustment",
       "tab": "Demand control",
       "visible": true,
-      "enable": "not ignDemLim",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not ignDemLim"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -35893,7 +36442,12 @@
       "group": "Setpoint adjustment",
       "tab": "Demand control",
       "visible": true,
-      "enable": "not ignDemLim",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not ignDemLim"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -35912,7 +36466,12 @@
       "group": "Setpoint adjustment",
       "tab": "Demand control",
       "visible": true,
-      "enable": "not ignDemLim",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not ignDemLim"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -35931,7 +36490,12 @@
       "group": "Setpoint adjustment",
       "tab": "Demand control",
       "visible": true,
-      "enable": "not ignDemLim",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not ignDemLim"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -35950,7 +36514,12 @@
       "group": "Setpoint adjustment",
       "tab": "Demand control",
       "visible": true,
-      "enable": "not ignDemLim",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not ignDemLim"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -39225,10 +39794,22 @@
       "name": "Outdoor air damper type",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Damper.NoPath",
+        "Buildings.Templates.Components.Types.Damper.Barometric",
+        "Buildings.Templates.Components.Types.Damper.Modulating",
+        "Buildings.Templates.Components.Types.Damper.None",
+        "Buildings.Templates.Components.Types.Damper.PressureIndependent",
+        "Buildings.Templates.Components.Types.Damper.TwoPosition"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -39238,10 +39819,22 @@
       "name": "Minimum outdoor air damper type",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Damper.NoPath",
+        "Buildings.Templates.Components.Types.Damper.Barometric",
+        "Buildings.Templates.Components.Types.Damper.Modulating",
+        "Buildings.Templates.Components.Types.Damper.None",
+        "Buildings.Templates.Components.Types.Damper.PressureIndependent",
+        "Buildings.Templates.Components.Types.Damper.TwoPosition"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -39251,10 +39844,22 @@
       "name": "Relief damper type",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Damper.NoPath",
+        "Buildings.Templates.Components.Types.Damper.Barometric",
+        "Buildings.Templates.Components.Types.Damper.Modulating",
+        "Buildings.Templates.Components.Types.Damper.None",
+        "Buildings.Templates.Components.Types.Damper.PressureIndependent",
+        "Buildings.Templates.Components.Types.Damper.TwoPosition"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -39264,10 +39869,22 @@
       "name": "Return damper type",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Damper.NoPath",
+        "Buildings.Templates.Components.Types.Damper.Barometric",
+        "Buildings.Templates.Components.Types.Damper.Modulating",
+        "Buildings.Templates.Components.Types.Damper.None",
+        "Buildings.Templates.Components.Types.Damper.PressureIndependent",
+        "Buildings.Templates.Components.Types.Damper.TwoPosition"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -39277,10 +39894,20 @@
       "name": "Type of relief fan",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Fan.None",
+        "Buildings.Templates.Components.Types.Fan.SingleConstant",
+        "Buildings.Templates.Components.Types.Fan.SingleVariable",
+        "Buildings.Templates.Components.Types.Fan.ArrayVariable"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -39356,10 +39983,20 @@
       "name": "Type of return fan",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Fan.None",
+        "Buildings.Templates.Components.Types.Fan.SingleConstant",
+        "Buildings.Templates.Components.Types.Fan.SingleVariable",
+        "Buildings.Templates.Components.Types.Fan.ArrayVariable"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -39591,10 +40228,20 @@
       "name": "Equipment type",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Fan.None",
+        "Buildings.Templates.Components.Types.Fan.SingleConstant",
+        "Buildings.Templates.Components.Types.Fan.SingleVariable",
+        "Buildings.Templates.Components.Types.Fan.ArrayVariable"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -39952,7 +40599,12 @@
       "group": "Power computation",
       "tab": "",
       "visible": false,
-      "enable": "not use_powerCharacteristic",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not use_powerCharacteristic"
+        ]
+      },
       "modifiers": {
         "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters.V_flow": {
           "expression": {
@@ -40057,7 +40709,12 @@
       "group": "Power computation",
       "tab": "",
       "visible": false,
-      "enable": "not use_powerCharacteristic",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not use_powerCharacteristic"
+        ]
+      },
       "modifiers": {
         "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters.V_flow": {
           "expression": {
@@ -40095,7 +40752,12 @@
       "group": "Power computation",
       "tab": "",
       "visible": false,
-      "enable": "Buildings.Fluid.Movers.Data.Generic.use_powerCharacteristic",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Fluid.Movers.Data.Generic.use_powerCharacteristic"
+        ]
+      },
       "modifiers": {
         "Buildings.Fluid.Movers.BaseClasses.Characteristics.powerParameters.V_flow": {
           "expression": {
@@ -42117,7 +42779,12 @@
       "group": "Filtered speed",
       "tab": "Dynamics",
       "visible": true,
-      "enable": "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.use_inputFilter",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.use_inputFilter"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -42393,7 +43060,12 @@
       "group": "Filtered speed",
       "tab": "Dynamics",
       "visible": false,
-      "enable": "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.use_inputFilter",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.use_inputFilter"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -42412,7 +43084,12 @@
       "group": "Filtered speed",
       "tab": "Dynamics",
       "visible": false,
-      "enable": "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.use_inputFilter",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.use_inputFilter"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -42940,10 +43617,19 @@
       "name": "Type of single fan",
       "group": "",
       "tab": "Graphics",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.FanSingle.Housed",
+        "Buildings.Templates.Components.Types.FanSingle.Plug",
+        "Buildings.Templates.Components.Types.FanSingle.Propeller"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -43012,8 +43698,13 @@
       "name": "Text rotation angle in icon layer",
       "group": "",
       "tab": "Graphics",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -43031,8 +43722,13 @@
       "name": "True to flip text horizontally in icon layer",
       "group": "",
       "tab": "Graphics",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -45400,7 +46096,12 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.have_eco",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.have_eco"
+        ]
+      },
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulb",
@@ -46968,7 +47669,12 @@
       "group": "Fixed inputs",
       "tab": "",
       "visible": false,
-      "enable": "not use_p_in",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not use_p_in"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -47006,7 +47712,12 @@
       "group": "Fixed inputs",
       "tab": "",
       "visible": false,
-      "enable": "not use_T_in",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not use_T_in"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -47811,7 +48522,12 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": false,
-      "enable": "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.use_Q_flow_nominal",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.use_Q_flow_nominal"
+        ]
+      },
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.fixed": {
           "expression": {
@@ -47836,7 +48552,12 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": false,
-      "enable": "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.use_Q_flow_nominal",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.use_Q_flow_nominal"
+        ]
+      },
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.fixed": {
           "expression": {
@@ -47861,7 +48582,12 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": false,
-      "enable": "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.use_Q_flow_nominal",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.use_Q_flow_nominal"
+        ]
+      },
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.fixed": {
           "expression": {
@@ -47886,7 +48612,12 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": false,
-      "enable": "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.use_Q_flow_nominal",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.use_Q_flow_nominal"
+        ]
+      },
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.start": {
           "expression": {
@@ -47921,7 +48652,12 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": false,
-      "enable": "not use_Q_flow_nominal",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "not use_Q_flow_nominal"
+        ]
+      },
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.fixed": {
           "expression": {
@@ -49670,7 +50406,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.No_freeze_stat",
@@ -50868,7 +51609,12 @@
       "group": "Limits, separated with AFMS",
       "tab": "Economizer",
       "visible": true,
-      "enable": "([object Object]) and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object]) and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -50887,7 +51633,12 @@
       "group": "Limits, separated with AFMS",
       "tab": "Economizer",
       "visible": true,
-      "enable": "([object Object]) and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object]) and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -50906,7 +51657,12 @@
       "group": "Limits, separated with DP",
       "tab": "Economizer",
       "visible": true,
-      "enable": "([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -50925,7 +51681,12 @@
       "group": "Limits, separated with DP",
       "tab": "Economizer",
       "visible": true,
-      "enable": "([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51024,7 +51785,12 @@
       "group": "Limits, separated with DP",
       "tab": "Economizer",
       "visible": true,
-      "enable": "([object Object]) and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object]) and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51043,7 +51809,12 @@
       "group": "Limits, separated with DP",
       "tab": "Economizer",
       "visible": true,
-      "enable": "([object Object]) and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object]) and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51345,7 +52116,12 @@
       "group": "",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51364,7 +52140,12 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.CDL.Types.SimpleController.P",
@@ -51388,7 +52169,12 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51407,7 +52193,12 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": "have_frePro and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_frePro and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51426,7 +52217,12 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": "have_frePro and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_frePro and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51445,7 +52241,12 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51464,7 +52265,12 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51656,7 +52462,12 @@
       "group": "Return fan",
       "tab": "Pressure control",
       "visible": true,
-      "enable": "([object Object]) and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object]) and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51675,7 +52486,12 @@
       "group": "Return fan",
       "tab": "Pressure control",
       "visible": true,
-      "enable": "([object Object]) and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object]) and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51694,7 +52510,12 @@
       "group": "Return fan",
       "tab": "Pressure control",
       "visible": false,
-      "enable": "([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51713,7 +52534,12 @@
       "group": "Return fan",
       "tab": "Pressure control",
       "visible": true,
-      "enable": "([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -53842,7 +54668,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.BarometricRelief",
@@ -53867,7 +54698,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow",
@@ -53890,7 +54726,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.No_freeze_stat",
@@ -53913,7 +54754,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -53932,7 +54778,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "have_hotWatCoi and have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_hotWatCoi and have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -53951,7 +54802,12 @@
       "group": "Heating coil controller",
       "tab": "",
       "visible": true,
-      "enable": "have_hotWatCoi and have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_hotWatCoi and have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.CDL.Types.SimpleController.P",
@@ -53975,7 +54831,12 @@
       "group": "Heating coil controller",
       "tab": "",
       "visible": true,
-      "enable": "have_hotWatCoi and have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_hotWatCoi and have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -53994,7 +54855,12 @@
       "group": "Heating coil controller",
       "tab": "",
       "visible": true,
-      "enable": "have_hotWatCoi and have_frePro and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_hotWatCoi and have_frePro and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -54013,7 +54879,12 @@
       "group": "Heating coil controller",
       "tab": "",
       "visible": true,
-      "enable": "have_hotWatCoi and have_frePro and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_hotWatCoi and have_frePro and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -54032,7 +54903,12 @@
       "group": "Heating coil controller",
       "tab": "",
       "visible": true,
-      "enable": "have_hotWatCoi and have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_hotWatCoi and have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -54051,7 +54927,12 @@
       "group": "Heating coil controller",
       "tab": "",
       "visible": true,
-      "enable": "have_hotWatCoi and have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "have_hotWatCoi and have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -54070,7 +54951,12 @@
       "group": "",
       "tab": "Advanced",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -58473,7 +59359,12 @@
       "group": "With AFMS",
       "tab": "Limits",
       "visible": true,
-      "enable": "([object Object]) and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object]) and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -58492,7 +59383,12 @@
       "group": "With AFMS",
       "tab": "Limits",
       "visible": true,
-      "enable": "([object Object]) and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object]) and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -58539,7 +59435,12 @@
       "group": "With DP",
       "tab": "Limits",
       "visible": true,
-      "enable": "([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -58558,7 +59459,12 @@
       "group": "With DP",
       "tab": "Limits",
       "visible": true,
-      "enable": "([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -58657,7 +59563,12 @@
       "group": "With DP",
       "tab": "Limits",
       "visible": true,
-      "enable": "([object Object]) and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object]) and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -58676,7 +59587,12 @@
       "group": "With DP",
       "tab": "Limits",
       "visible": true,
-      "enable": "([object Object]) and ([object Object])",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "([object Object]) and ([object Object])"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -62459,7 +63375,12 @@
       "group": "Hysteresis",
       "tab": "Advanced",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Enable.use_enthalpy",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Enable.use_enthalpy"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -79695,7 +80616,12 @@
       "group": "Economizer",
       "tab": "",
       "visible": true,
-      "enable": "secOutRel.have_eco",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "secOutRel.have_eco"
+        ]
+      },
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulb",
@@ -79804,7 +80730,12 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.have_frePro",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.have_frePro"
+        ]
+      },
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.No_freeze_stat",
@@ -80224,10 +81155,18 @@
       "name": "Type of controller",
       "group": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone",
+        "Buildings.Templates.AirHandlersFans.Types.Controller.OpenLoop"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -80237,10 +81176,20 @@
       "name": "Type of supply fan",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Fan.None",
+        "Buildings.Templates.Components.Types.Fan.SingleConstant",
+        "Buildings.Templates.Components.Types.Fan.SingleVariable",
+        "Buildings.Templates.Components.Types.Fan.ArrayVariable"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -80250,10 +81199,20 @@
       "name": "Type of relief fan",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Fan.None",
+        "Buildings.Templates.Components.Types.Fan.SingleConstant",
+        "Buildings.Templates.Components.Types.Fan.SingleVariable",
+        "Buildings.Templates.Components.Types.Fan.ArrayVariable"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -80263,10 +81222,20 @@
       "name": "Type of return fan",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Fan.None",
+        "Buildings.Templates.Components.Types.Fan.SingleConstant",
+        "Buildings.Templates.Components.Types.Fan.SingleVariable",
+        "Buildings.Templates.Components.Types.Fan.ArrayVariable"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -80655,10 +81624,20 @@
       "name": "Type of system",
       "group": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.AirHandlersFans.Types.Configuration.SupplyOnly",
+        "Buildings.Templates.AirHandlersFans.Types.Configuration.ExhaustOnly",
+        "Buildings.Templates.AirHandlersFans.Types.Configuration.DualDuct",
+        "Buildings.Templates.AirHandlersFans.Types.Configuration.SingleDuct"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -80668,10 +81647,20 @@
       "name": "Type of supply fan",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Fan.None",
+        "Buildings.Templates.Components.Types.Fan.SingleConstant",
+        "Buildings.Templates.Components.Types.Fan.SingleVariable",
+        "Buildings.Templates.Components.Types.Fan.ArrayVariable"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -80681,10 +81670,20 @@
       "name": "Type of return fan",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Fan.None",
+        "Buildings.Templates.Components.Types.Fan.SingleConstant",
+        "Buildings.Templates.Components.Types.Fan.SingleVariable",
+        "Buildings.Templates.Components.Types.Fan.ArrayVariable"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -80694,10 +81693,20 @@
       "name": "Type of relief fan",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Fan.None",
+        "Buildings.Templates.Components.Types.Fan.SingleConstant",
+        "Buildings.Templates.Components.Types.Fan.SingleVariable",
+        "Buildings.Templates.Components.Types.Fan.ArrayVariable"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -80707,8 +81716,13 @@
       "name": "Set to true if cooling coil requires fluid ports on the source side",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -80720,8 +81734,13 @@
       "name": "Set to true if heating coil requires fluid ports on the source side",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -80733,10 +81752,18 @@
       "name": "Type of controller",
       "group": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone",
+        "Buildings.Templates.AirHandlersFans.Types.Controller.OpenLoop"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -80766,7 +81793,12 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.have_souChiWat",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.have_souChiWat"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -80785,7 +81817,12 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.have_souHeaWat",
+      "enable": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.have_souHeaWat"
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -80906,8 +81943,13 @@
       "name": "Set to true for relief (exhaust) fluid port",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -82128,10 +83170,19 @@
       "name": "Type of outdoor air section",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -82141,10 +83192,21 @@
       "name": "Type of building pressure control system",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.BarometricRelief",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefDamper",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefFan",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanMeasuredAir",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanDp"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -82154,10 +83216,18 @@
       "name": "Ventilation standard",
       "group": "Energy and ventilation standards",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -82901,10 +83971,22 @@
       "name": "Type of heating coil in preheat position",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Coil.ElectricHeating",
+        "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage",
+        "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed",
+        "Buildings.Templates.Components.Types.Coil.None",
+        "Buildings.Templates.Components.Types.Coil.WaterBasedCooling",
+        "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -82914,10 +83996,22 @@
       "name": "Type of cooling coil",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Coil.ElectricHeating",
+        "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage",
+        "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed",
+        "Buildings.Templates.Components.Types.Coil.None",
+        "Buildings.Templates.Components.Types.Coil.WaterBasedCooling",
+        "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -82927,10 +84021,22 @@
       "name": "Type of heating coil in reheat position",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Coil.ElectricHeating",
+        "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage",
+        "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed",
+        "Buildings.Templates.Components.Types.Coil.None",
+        "Buildings.Templates.Components.Types.Coil.WaterBasedCooling",
+        "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -82940,10 +84046,23 @@
       "name": "Type of valve for heating coil in preheat position",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Valve.None",
+        "Buildings.Templates.Components.Types.Valve.PumpedCoilThreeWay",
+        "Buildings.Templates.Components.Types.Valve.PumpedCoilTwoWay",
+        "Buildings.Templates.Components.Types.Valve.ThreeWayModulating",
+        "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition",
+        "Buildings.Templates.Components.Types.Valve.TwoWayModulating",
+        "Buildings.Templates.Components.Types.Valve.TwoWayTwoPosition"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -82953,10 +84072,23 @@
       "name": "Type of valve for cooling coil",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Valve.None",
+        "Buildings.Templates.Components.Types.Valve.PumpedCoilThreeWay",
+        "Buildings.Templates.Components.Types.Valve.PumpedCoilTwoWay",
+        "Buildings.Templates.Components.Types.Valve.ThreeWayModulating",
+        "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition",
+        "Buildings.Templates.Components.Types.Valve.TwoWayModulating",
+        "Buildings.Templates.Components.Types.Valve.TwoWayTwoPosition"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -82966,10 +84098,23 @@
       "name": "Type of valve for heating coil in reheat position",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Templates.Components.Types.Valve.None",
+        "Buildings.Templates.Components.Types.Valve.PumpedCoilThreeWay",
+        "Buildings.Templates.Components.Types.Valve.PumpedCoilTwoWay",
+        "Buildings.Templates.Components.Types.Valve.ThreeWayModulating",
+        "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition",
+        "Buildings.Templates.Components.Types.Valve.TwoWayModulating",
+        "Buildings.Templates.Components.Types.Valve.TwoWayTwoPosition"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -82979,10 +84124,19 @@
       "name": "Type of outdoor air section",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -82992,10 +84146,21 @@
       "name": "Type of building pressure control system",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.BarometricRelief",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefDamper",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefFan",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanMeasuredAir",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanDp"
+      ],
       "definition": false,
       "replaceable": false
     },
@@ -83005,10 +84170,18 @@
       "name": "Ventilation standard",
       "group": "Energy and ventilation standards",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
       "modifiers": {},
-      "options": [],
+      "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
+      ],
       "definition": false,
       "replaceable": false
     },
