@@ -550,9 +550,9 @@ export class Input extends Element {
       this.tab = tab ? evaluateExpression(tab) : "";
 
       if (isInputGroupType && !isReplaceable) {
-        this.enable = enable ? evaluateExpression(enable) : false;
+        this.enable = enable ? enable : false;
       } else {
-        this.enable = enable ? evaluateExpression(enable) : true;
+        this.enable = enable ? enable : true;
       }
 
       this.connectorSizing = connectorSizing
