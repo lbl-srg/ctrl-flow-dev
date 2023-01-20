@@ -220,7 +220,6 @@ describe("Test set", () => {
   });
 
   it("Handles == and !=", () => {
-    // TODO: fix casting issues with comparator stuff...
     expect(evaluate(buildExpression("==", [1, 1, 1, 1]))).toBeTruthy();
     expect(evaluate(buildExpression("==", [3]))).toBeTruthy();
     expect(evaluate(buildExpression("==", ["a", "a", "a"]))).toBeTruthy();
@@ -390,15 +389,11 @@ describe("Path resolution", () => {
       context,
     );
 
-    // the problem: when I get to 'dat' and call evaluate, context is '' when it
-    // should be 'secOutRel.secOut'. This then resolves to VAVMultiZone.dat which
-    // is wrong
-
     expect(optionPath).toBeDefined();
   });
 
   /**
-   * 'typ' has a modifier assigned
+   * 'typ' has a redeclare modifier assigned
    */
   it("Gets typ", () => {
     const context = new ConfigContext(
@@ -476,11 +471,6 @@ describe("resolveToValue tests using context and evaluation", () => {
 });
 
 describe("Testing context getValue", () => {
-  /**
-   * This is a test of the simplist values to get, parameters at
-   * the root of a template that are assigned a literal. This also tests
-   * symbol resolution
-   */
   it("Components (parameter that have a type of a class/model) that are not replaceables have no value assigned", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
@@ -573,13 +563,13 @@ describe("Testing context getValue", () => {
   });
 });
 
+/**
+ * This is a test of the ctl.haveCO2Sen enable expression
+ *
+ * The expression is broken into its separate tests for each operand as
+ * well as components of each operand
+ */
 describe("ctl.have_CO2Sen enable expression", () => {
-  /**
-   * This is a test of the ctl.haveCO2Sen enable expression
-   *
-   * The expression is broken into its separate tests for each operand as
-   * well as components of each operand
-   */
   it("First operand", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
@@ -745,15 +735,7 @@ describe("Scope tests", () => {
     expect(val).toEqual("");
   });
 
-  /**
-   * 'secOutRel.secOut.dat' is a particular problem point
-   *
-   * secOutRel
-   *
-   * A bad application of scope causes an infinite loop because a modifier
-   * ends up pointing right back at the same parameter
-   */
-  it("Able to resolve secOutRel.secOut.dat", () => {
+  it("Able to resolve secOutRel.secOut.dat without going into an infinite loop due to bad scope", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
@@ -817,8 +799,6 @@ describe("Display Enable is set as expected", () => {
   });
 
   it("Sets ctl.have_CO2Sen param to true", () => {
-    // make a new context with a selection changing fanSupDra to 'None'
-    // make a context after selection for DedicatedDampersPressure for secOut
     const selections = {
       "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut-secOutRel.secOut":
         "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure",
@@ -1041,8 +1021,6 @@ describe("Display Option and Display Group Generation", () => {
       | FlatConfigOption
     )[];
 
-    const simpleDisplay = extractSimpleDisplayList(items, true);
-
     expect(displayGroup?.groupName).toBe(secOutRel?.option.name);
     expect(displayGroup?.items.length).toBeGreaterThan(0);
   });
@@ -1099,17 +1077,7 @@ describe("Display Option and Display Group Generation", () => {
     expect(displayOptions.length).toBeGreaterThan(0);
   });
 });
-// describe("Display Option Generation", () => {
-//   it("Has the expected numer of initial visible options", () => {
-//     const context = new ConfigContext(
-//       mzTemplate as TemplateInterface,
-//       mzConfig as ConfigInterface,
-//       allOptions,
-//     );
-//   });
-// });
 
-// 'secOutRel.secOut.damOut'
 describe("Specific parameter debugging", () => {
   it("Visits coiHea", () => {
     const context = new ConfigContext(

@@ -7,11 +7,9 @@ import { ConfigValues } from "../../../utils/modifier-helpers";
 
 export interface SystemProps {
   systemPath: string;
-  projectSelections: ConfigValues;
-  projectEvaluatedValues: ConfigValues;
 }
 
-const System = observer(({ systemPath, projectSelections, projectEvaluatedValues }: SystemProps) => {
+const System = observer(({ systemPath }: SystemProps) => {
   const { templateStore } = useStores();
 
   const { system, templates, icon } = {
@@ -34,8 +32,6 @@ const System = observer(({ systemPath, projectSelections, projectEvaluatedValues
           key={template.modelicaPath}
           systemPath={systemPath}
           templatePath={template.modelicaPath}
-          projectSelections={projectSelections}
-          projectEvaluatedValues={projectEvaluatedValues}
         />
       ))}
     </div>

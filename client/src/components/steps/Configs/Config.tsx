@@ -9,15 +9,13 @@ import { useStores } from "../../../data";
 import { OptionInterface, TemplateInterface } from "../../../data/template";
 import { Modifiers, ConfigValues } from "../../../utils/modifier-helpers";
 import { ConfigInterface } from "../../../data/config";
-import Spinner from '../../Spinner';
+import Spinner from "../../Spinner";
 
 export interface ConfigProps {
   configId: string | undefined;
-  projectSelections: ConfigValues;
-  projectEvaluatedValues: ConfigValues;
 }
 
-const Config = observer(({ configId, projectSelections, projectEvaluatedValues }: ConfigProps) => {
+const Config = observer(({ configId }: ConfigProps) => {
   const { configStore, templateStore, uiStore } = useStores();
   const config = configStore.getById(configId) as ConfigInterface;
   const template = templateStore.getTemplateByPath(
@@ -60,10 +58,7 @@ const Config = observer(({ configId, projectSelections, projectEvaluatedValues }
 
   return (
     <Fragment>
-      <Spinner
-        loading={isLoading}
-        text="Please wait..."
-      />
+      <Spinner loading={isLoading} text="Please wait..." />
       <div className="config" id={`config-${configId}`} data-spy="config">
         <div className="input-container">
           <input
@@ -95,14 +90,9 @@ const Config = observer(({ configId, projectSelections, projectEvaluatedValues }
       {openedModal && (
         <SlideOut
           config={config}
-          projectSelections={projectSelections}
-          projectEvaluatedValues={projectEvaluatedValues}
           template={template}
-          templateOptions={templateOptions} 
-          templateModifiers={templateModifiers}
           selections={selections}
           allOptions={allOptions}
-          // startLoading={() => setLoading(true)}
           stopLoading={() => setLoading(false)}
           close={() => setOpenedModal(false)}
         />
