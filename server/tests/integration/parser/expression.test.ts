@@ -1,7 +1,6 @@
 import { createTestModelicaJson, fullTempDirPath } from "./utils";
 import { ModifiersN, getTemplates } from "../../../src/parser/template";
 import { loadPackage, getSystemTypes, Template } from "../../../src/parser/";
-import { evaluateExpression } from "../../../src/expression";
 import { initializeTestModelicaJson } from "./utils";
 import * as parser from "../../../src/parser/parser";
 const testModelicaFile = "TestPackage.Template.TestTemplate";
