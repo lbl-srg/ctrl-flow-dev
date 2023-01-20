@@ -1,7 +1,7 @@
 export default [
   {
     title: "Welcome to ctrl-flow, the High Performance Controls Design Tool",
-    copy: "Writing a detailed and accurate control sequence is hard to do! This tool makes it easy to design high performance control sequences following ASHRAE Guideline 36 and best practices. After inputting project details, the tool will produce a detailed sequence of operations document. You will have the option to download this document with or without the instructional text.",
+    copy: "Writing a detailed and accurate control sequence is hard to do! This tool makes it easy to design high performance control sequences following ASHRAE Guideline 36 and best practices. After inputting project details, the tool will produce a detailed sequence of operations document.",
     points: [],
   },
 

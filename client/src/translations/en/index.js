@@ -8,9 +8,11 @@ export default {
   phrases: {
     addConfig: "Add Config",
     addConfigs: "Add Configurations For The System Types You Selected",
-    allDownloads: "All Downloads",
+    // allDownloads: "All Downloads",
+    allDownloads: "Download",
     allProjects: "All Projects",
-    downloadSelected: "Download selected",
+    // downloadSelected: "Download selected",
+    downloadSelected: "Download",
     energyStandard: "Energy Standard",
     ventilationStandard: "Ventilation Standard",
     ashraeZone: "ASHRAE Climate Zone",
@@ -20,6 +22,7 @@ export default {
     projectName: "Project Name",
     scheduleInstruct:
       "Add tags, IDs, and quantities for your selected systems. Edit your system's schedule directly from the table.",
-    selectToDownload: "Select a Document to Download",
+    // selectToDownload: "Select a Document to Download",
+    selectToDownload: "Download Control Sequence Document",
   },
 };

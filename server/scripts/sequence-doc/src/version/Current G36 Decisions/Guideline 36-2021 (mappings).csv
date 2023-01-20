@@ -101,14 +101,13 @@ The list of options should be revised in the template."
 ,Perimeter Reheat Box:,PERIM_RH,N,Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.have_perZonRehBox-ctl.have_perZonRehBox,Boolean,
 ,Yes,,,,true,
 ,No,,,,false,
-,Freeze Protection:,FRZ,N,,,Can we add a parameter to include/remove freeze protection to the template?
-,Yes,,,,,To be discussed with Jianjun.
-,No,,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
+,Freeze Protection:,FRZ,N,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.have_frePro-ctl.have_frePro,Boolean,Can we add a parameter to include/remove freeze protection to the template?
+,Yes,,,,true,To be discussed with Jianjun.
+,No,,,,false,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,Freezestat:,FRZST,N,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typFreSta-ctl.typFreSta,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat,
 ,No Freezestat,NO_FRZST,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.No_freeze_stat,
-,Freezestat hardwired directly to the equipment,WIRED_EQ,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_equipment,
-,"Freezestat connected to BAS, normally open",WIRED_BAS,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NO,Why does polarity matter here but nowhere else?
-,"Freezestat connected to BAS, normally closed",,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NC,To be discussed with Jianjun.
+,Freeze stat only hardwired to the equipment,WIRED_EQ,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_equipment,
+,Freeze stat hardwired to the equipment and the BAS,WIRED_BAS,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_BAS,
 ,AFDD:,,N,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,Yes,,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 ,No,,,,,

@@ -8,13 +8,13 @@ import { ProjectDetailInterface } from "../../data/project";
 import Spinner from '../Spinner';
 
 const CONTROL_SEQUENCE = "Control Sequence";
-const CONTROL_SEQUENCE_WITH_INFO_TEXT = "Control Sequence with Informative Text"
+const CONTROL_SEQUENCE_WITH_INFO_TEXT = "Control Sequence";
 const DOCX = "docx";
 
 const DOWNLOADABLE_FILE_LIST = [
   // { label: "Full Project", ext: "zip" },
   // { label: "Schematics", ext: "rvt" },
-  { label: CONTROL_SEQUENCE, ext: DOCX },
+  // { label: CONTROL_SEQUENCE, ext: DOCX },
   { label: CONTROL_SEQUENCE_WITH_INFO_TEXT, ext: DOCX },
   // { label: "Points List", ext: "pdf" },
   // { label: "Equipment Schedules", ext: "csv" },
@@ -27,7 +27,7 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
   //   DOWNLOADABLE_FILE_LIST.map(({ label }) => label),
   // );
 
-  const [checked, setChecked] = useState<string[]>([]);
+  const [checked, setChecked] = useState<string[]>([CONTROL_SEQUENCE_WITH_INFO_TEXT]);
   const [isLoading, setLoading] = useState<boolean>(false);
 
   const projectConfigs: ConfigInterface[] = configStore.getConfigsForProject();
@@ -78,20 +78,20 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
 
   async function downloadFiles() {
     setLoading(true);
-    if (checked.includes(CONTROL_SEQUENCE)) {
-      const response = await fetch(`${process.env.REACT_APP_API}/sequence`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({...getSequenceData(), DEL_INFO_BOX: [true]}),
-      });
+    // if (checked.includes(CONTROL_SEQUENCE)) {
+    //   const response = await fetch(`${process.env.REACT_APP_API}/sequence`, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({...getSequenceData(), DEL_INFO_BOX: [true]}),
+    //   });
 
-      // TODO: Handle error responses which do not contain an actual file
-      const sequenceDocument = await response.blob();
-      const placeholderLink = document.createElement("a");
-      placeholderLink.href = window.URL.createObjectURL(sequenceDocument);
-      placeholderLink.download = `${CONTROL_SEQUENCE}.${DOCX}`;
-      placeholderLink.click();
-    }
+    //   // TODO: Handle error responses which do not contain an actual file
+    //   const sequenceDocument = await response.blob();
+    //   const placeholderLink = document.createElement("a");
+    //   placeholderLink.href = window.URL.createObjectURL(sequenceDocument);
+    //   placeholderLink.download = `${CONTROL_SEQUENCE}.${DOCX}`;
+    //   placeholderLink.click();
+    // }
 
     if (checked.includes(CONTROL_SEQUENCE_WITH_INFO_TEXT)) {
       const response = await fetch(`${process.env.REACT_APP_API}/sequence`, {
@@ -118,18 +118,18 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
 
       <Spinner
         loading={isLoading}
-        text="Creating Sequence Document. Please wait... this may take up to one minute."
+        text="Creating Sequence Document. Please wait... this may take a few minutes."
       />
 
       <ul className="check-list">
         {DOWNLOADABLE_FILE_LIST.map(({ label, ext }) => (
           <li key={label} className="template">
-            <label>
-              <input
+            <label className="no-pointer">
+              {/*<input
                 type="checkbox"
                 onChange={(ev) => updateItem(ev, label)}
                 checked={checked.includes(label)}
-              />
+              />*/}
               {label}
               <span className="info uppercase">.{ext}</span>
             </label>

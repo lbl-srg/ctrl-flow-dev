@@ -16086,7 +16086,7 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller.u1Win",
       "type": "Buildings.Controls.OBC.CDL.Interfaces.BooleanInput",
-      "name": "Window status, true if the window is open, false if it is closed",
+      "name": "Window status, normally closed (true), when windows open, it becomes false",
       "group": "",
       "tab": "",
       "visible": false,
@@ -23593,7 +23593,7 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.u1Win",
       "type": "Buildings.Controls.OBC.CDL.Interfaces.BooleanInput",
-      "name": "Window status, true if open, false if closed",
+      "name": "Window status, normally closed (true), when windows open, it becomes false",
       "group": "",
       "tab": "",
       "visible": false,
@@ -28592,7 +28592,7 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints.u1Win",
       "type": "Buildings.Controls.OBC.CDL.Interfaces.BooleanInput",
-      "name": "Window status, true if open, false if closed",
+      "name": "Window status, normally closed (true), when windows open, it becomes false",
       "group": "",
       "tab": "",
       "visible": false,
@@ -30090,7 +30090,7 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Controller.u1Win",
       "type": "Buildings.Controls.OBC.CDL.Interfaces.BooleanInput",
-      "name": "Window status, true if the window is open, false if it is closed",
+      "name": "Window status, normally closed (true), when windows open, it becomes false",
       "group": "",
       "tab": "",
       "visible": false,
@@ -36296,7 +36296,7 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.u1Win",
       "type": "Buildings.Controls.OBC.CDL.Interfaces.BooleanInput",
-      "name": "Window status (open=true, close=false)",
+      "name": "Window status, normally closed (true), when windows open, it becomes false",
       "group": "",
       "tab": "",
       "visible": false,
@@ -37623,7 +37623,7 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneStatus.u1Win",
       "type": "Buildings.Controls.OBC.CDL.Interfaces.BooleanInput",
-      "name": "Window status: true=open, false=close",
+      "name": "Window status, normally closed (true), when windows open, it becomes false",
       "group": "",
       "tab": "",
       "visible": false,
@@ -48855,7 +48855,7 @@
           false
         ]
       },
-      "name": "Set to true if there is any VAV-reheat boxes on perimeter zones",
+      "name": "Set to true if there are any VAV-reheat boxes on perimeter zones",
       "group": "Configuration",
       "tab": "",
       "visible": true,
@@ -49233,6 +49233,16 @@
             "operator": "none",
             "operands": [
               "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.tit24CliZon"
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        },
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.have_frePro"
             ]
           },
           "final": true,
@@ -49629,6 +49639,25 @@
       "replaceable": false
     },
     {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro",
+      "type": "Boolean",
+      "value": {
+        "operator": "none",
+        "operands": [
+          true
+        ]
+      },
+      "name": "True: enable freeze protection",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.freSta",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat",
       "value": {
@@ -49641,28 +49670,26 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": true,
+      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro",
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.No_freeze_stat",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_equipment",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NO",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NC"
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_BAS"
       ],
       "definition": false,
       "replaceable": false
     },
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat",
-      "name": "Enumeration of different freeze stat",
+      "name": "Enumeration of different freeze stat options",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat",
       "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat",
       "visible": true,
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.No_freeze_stat",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_equipment",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NO",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NC"
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_BAS"
       ],
       "definition": true,
       "replaceable": false,
@@ -49684,7 +49711,7 @@
     },
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_equipment",
-      "name": "Freeze stat directly hardwired to the equipment",
+      "name": "Freeze stat only hardwired to the equipment",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat",
       "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_equipment",
       "visible": false,
@@ -49695,22 +49722,10 @@
       ]
     },
     {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NO",
-      "name": "Freeze stat connected to BAS, normally open",
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_BAS",
+      "name": "Freeze stat hardwired to the equipment and the BAS",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NO",
-      "visible": false,
-      "definition": true,
-      "replaceable": false,
-      "treeList": [
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat"
-      ]
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NC",
-      "name": "Freeze stat connected to BAS, normally close",
-      "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NC",
+      "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_BAS",
       "visible": false,
       "definition": true,
       "replaceable": false,
@@ -49761,7 +49776,6 @@
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefDamper",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefFan",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanMeasuredAir",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanCalculatedAir",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanDp"
       ],
       "definition": false,
@@ -49778,7 +49792,6 @@
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefDamper",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefFan",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanMeasuredAir",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanCalculatedAir",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanDp"
       ],
       "definition": true,
@@ -49828,18 +49841,6 @@
       "name": "Return fan, tracking measured supply and return airflow",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes",
       "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanMeasuredAir",
-      "visible": false,
-      "definition": true,
-      "replaceable": false,
-      "treeList": [
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes"
-      ]
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanCalculatedAir",
-      "name": "Return fan, tracking calculated supply and return airflow",
-      "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanCalculatedAir",
       "visible": false,
       "definition": true,
       "replaceable": false,
@@ -50439,7 +50440,7 @@
           291.15
         ]
       },
-      "name": "Highest cooling supply air temperature setpoint. It is typically 18 degC (65 degF) \n    in mild and dry climates, 16 degC (60 degF) or lower in humid climates",
+      "name": "Highest cooling supply air temperature setpoint. It is typically 18 degC (65 degF)\n    in mild and dry climates, 16 degC (60 degF) or lower in humid climates",
       "group": "Temperature limits",
       "tab": "Supply air temperature",
       "visible": true,
@@ -51344,7 +51345,7 @@
       "group": "",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": true,
+      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro",
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51363,7 +51364,7 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": true,
+      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro",
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.CDL.Types.SimpleController.P",
@@ -51387,7 +51388,7 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": true,
+      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro",
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51406,25 +51407,7 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": {
-        "operator": "||",
-        "operands": [
-          {
-            "operator": "==",
-            "operands": [
-              "freProHeaCoiCon",
-              "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
-            ]
-          },
-          {
-            "operator": "==",
-            "operands": [
-              "freProHeaCoiCon",
-              "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-            ]
-          }
-        ]
-      },
+      "enable": "have_frePro and ([object Object])",
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51443,25 +51426,7 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": {
-        "operator": "||",
-        "operands": [
-          {
-            "operator": "==",
-            "operands": [
-              "freProHeaCoiCon",
-              "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
-            ]
-          },
-          {
-            "operator": "==",
-            "operands": [
-              "freProHeaCoiCon",
-              "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-            ]
-          }
-        ]
-      },
+      "enable": "have_frePro and ([object Object])",
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51480,7 +51445,7 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": true,
+      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro",
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51499,7 +51464,7 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": true,
+      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro",
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -51588,22 +51553,10 @@
       "tab": "Pressure control",
       "visible": true,
       "enable": {
-        "operator": "||",
+        "operator": "==",
         "operands": [
-          {
-            "operator": "==",
-            "operands": [
-              "buiPreCon",
-              "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanMeasuredAir"
-            ]
-          },
-          {
-            "operator": "==",
-            "operands": [
-              "buiPreCon",
-              "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanCalculatedAir"
-            ]
-          }
+          "buiPreCon",
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanMeasuredAir"
         ]
       },
       "modifiers": {},
@@ -51627,13 +51580,6 @@
       "enable": {
         "operator": "||",
         "operands": [
-          {
-            "operator": "==",
-            "operands": [
-              "buiPreCon",
-              "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanCalculatedAir"
-            ]
-          },
           {
             "operator": "==",
             "operands": [
@@ -51676,13 +51622,6 @@
       "enable": {
         "operator": "||",
         "operands": [
-          {
-            "operator": "==",
-            "operands": [
-              "buiPreCon",
-              "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanCalculatedAir"
-            ]
-          },
           {
             "operator": "==",
             "operands": [
@@ -51775,56 +51714,6 @@
       "tab": "Pressure control",
       "visible": true,
       "enable": "([object Object])",
-      "modifiers": {},
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.retFacA",
-      "type": "Real",
-      "value": {
-        "operator": "none",
-        "operands": [
-          0.5
-        ]
-      },
-      "name": "Factor for mapping the commanded return fan speed to return airflow when the return flow is calculated",
-      "group": "Return fan",
-      "tab": "Pressure control",
-      "visible": true,
-      "enable": {
-        "operator": "==",
-        "operands": [
-          "buiPreCon",
-          "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanCalculatedAir"
-        ]
-      },
-      "modifiers": {},
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.retFacB",
-      "type": "Real",
-      "value": {
-        "operator": "none",
-        "operands": [
-          0
-        ]
-      },
-      "name": "Factor for mapping the commanded return fan speed to return airflow when the return flow is calculated",
-      "group": "Return fan",
-      "tab": "Pressure control",
-      "visible": true,
-      "enable": {
-        "operator": "==",
-        "operands": [
-          "buiPreCon",
-          "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanCalculatedAir"
-        ]
-      },
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -52480,51 +52369,6 @@
       "replaceable": false
     },
     {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.uSupFan_actual",
-      "type": "Buildings.Controls.OBC.CDL.Interfaces.RealInput",
-      "value": "",
-      "name": "Actual supply fan speed",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": true,
-      "modifiers": {
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.min": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              0
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        },
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.max": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              1
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        },
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.unit": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "1"
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.uCO2Loo_max",
       "type": "Buildings.Controls.OBC.CDL.Interfaces.RealInput",
       "value": "",
@@ -52712,7 +52556,7 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.u1FreSta",
       "type": "Buildings.Controls.OBC.CDL.Interfaces.BooleanInput",
-      "name": "Freeze protection stat signal. If the stat is normally open (the input is normally true), when enabling freeze protection, the input becomes false. If the stat is normally close, vice versa.",
+      "name": "Freeze protection stat signal. The stat is normally close (the input is normally true), when enabling freeze protection, the input becomes false",
       "group": "",
       "tab": "",
       "visible": false,
@@ -52738,57 +52582,12 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.u1RelFan",
       "type": "Buildings.Controls.OBC.CDL.Interfaces.BooleanInput",
-      "name": "Relief fan commanded on",
+      "name": "Relief fan status",
       "group": "",
       "tab": "",
       "visible": false,
       "enable": true,
       "modifiers": {},
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.uRelFan",
-      "type": "Buildings.Controls.OBC.CDL.Interfaces.RealInput",
-      "value": "",
-      "name": "Relief fan commanded speed",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": true,
-      "modifiers": {
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.min": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              0
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        },
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.max": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              1
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        },
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.unit": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "1"
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        }
-      },
       "options": [],
       "definition": false,
       "replaceable": false
@@ -53876,6 +53675,16 @@
       "visible": false,
       "enable": false,
       "modifiers": {
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro"
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        },
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.buiPreCon": {
           "expression": {
             "operator": "none",
@@ -54002,20 +53811,44 @@
       "replaceable": false
     },
     {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.buiPreCon",
-      "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes",
-      "name": "Type of building pressure control system",
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro",
+      "type": "Boolean",
+      "value": {
+        "operator": "none",
+        "operands": [
+          true
+        ]
+      },
+      "name": "True: enable freeze protection",
       "group": "",
       "tab": "",
       "visible": true,
       "enable": true,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.buiPreCon",
+      "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes",
+      "value": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefDamper"
+        ]
+      },
+      "name": "Type of building pressure control system",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro",
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.BarometricRelief",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefDamper",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefFan",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanMeasuredAir",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanCalculatedAir",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanDp"
       ],
       "definition": false,
@@ -54024,11 +53857,17 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.minOADes",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection",
+      "value": {
+        "operator": "none",
+        "operands": [
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow"
+        ]
+      },
       "name": "Design of minimum outdoor air and economizer function",
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": true,
+      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro",
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow",
@@ -54044,20 +53883,19 @@
       "value": {
         "operator": "none",
         "operands": [
-          "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NO"
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.No_freeze_stat"
         ]
       },
       "name": "Type of freeze stat",
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": true,
+      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro",
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.No_freeze_stat",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_equipment",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NO",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NC"
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_BAS"
       ],
       "definition": false,
       "replaceable": false
@@ -54075,7 +53913,7 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": true,
+      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro",
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -54094,7 +53932,7 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_hotWatCoi",
+      "enable": "have_hotWatCoi and have_frePro",
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -54113,7 +53951,7 @@
       "group": "Heating coil controller",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_hotWatCoi",
+      "enable": "have_hotWatCoi and have_frePro",
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.CDL.Types.SimpleController.P",
@@ -54137,7 +53975,7 @@
       "group": "Heating coil controller",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_hotWatCoi",
+      "enable": "have_hotWatCoi and have_frePro",
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -54156,7 +53994,7 @@
       "group": "Heating coil controller",
       "tab": "",
       "visible": true,
-      "enable": "have_hotWatCoi and ([object Object])",
+      "enable": "have_hotWatCoi and have_frePro and ([object Object])",
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -54175,7 +54013,7 @@
       "group": "Heating coil controller",
       "tab": "",
       "visible": true,
-      "enable": "have_hotWatCoi and ([object Object])",
+      "enable": "have_hotWatCoi and have_frePro and ([object Object])",
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -54194,7 +54032,7 @@
       "group": "Heating coil controller",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_hotWatCoi",
+      "enable": "have_hotWatCoi and have_frePro",
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -54213,7 +54051,7 @@
       "group": "Heating coil controller",
       "tab": "",
       "visible": true,
-      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_hotWatCoi",
+      "enable": "have_hotWatCoi and have_frePro",
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -54232,7 +54070,7 @@
       "group": "",
       "tab": "Advanced",
       "visible": true,
-      "enable": true,
+      "enable": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro",
       "modifiers": {},
       "options": [],
       "definition": false,
@@ -54524,7 +54362,7 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.u1FreSta",
       "type": "Buildings.Controls.OBC.CDL.Interfaces.BooleanInput",
-      "name": "Freeze protection stat signal. If the stat is normally open (the input is normally false), when enabling freeze protection, the input becomes true. If the stat is normally close, vice versa.",
+      "name": "Freeze protection stat signal. The stat is normally close (the input is normally true), when enabling freeze protection, the input becomes false",
       "group": "",
       "tab": "",
       "visible": false,
@@ -56785,53 +56623,14 @@
       "replaceable": false
     },
     {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.norTru",
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.norFal",
       "type": "Buildings.Controls.OBC.CDL.Logical.Not",
-      "name": "The output is normally true when the freeze stat is normally open (false)",
+      "name": "The output is normally false",
       "group": "",
       "tab": "",
       "visible": false,
       "enable": false,
       "modifiers": {},
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.logSwi",
-      "type": "Buildings.Controls.OBC.CDL.Logical.Switch",
-      "name": "Freeze protection enabled by the freeze stat",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {},
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.norOpe",
-      "type": "Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
-      "value": "",
-      "name": "Check if the freeze stat is normally open",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {
-        "Buildings.Controls.OBC.CDL.Logical.Sources.Constant.k": {
-          "expression": {
-            "operator": "==",
-            "operands": [
-              "freSta",
-              "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NO"
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        }
-      },
       "options": [],
       "definition": false,
       "replaceable": false
@@ -57242,12 +57041,263 @@
       "replaceable": false
     },
     {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai8",
+      "type": "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter",
+      "value": "",
+      "name": "Dummy block for enabling and disabling the conditional connection",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter.k": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              1
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.conInt9",
+      "type": "Buildings.Controls.OBC.CDL.Integers.Sources.Constant",
+      "value": "",
+      "name": "Dummy constant",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Integers.Sources.Constant.k": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              0
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai9",
+      "type": "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter",
+      "value": "",
+      "name": "Dummy block for enabling and disabling the conditional connection",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter.k": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              1
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai10",
+      "type": "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter",
+      "value": "",
+      "name": "Dummy block for enabling and disabling the conditional connection",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter.k": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              1
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai11",
+      "type": "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter",
+      "value": "",
+      "name": "Dummy block for enabling and disabling the conditional connection",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter.k": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              1
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai12",
+      "type": "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter",
+      "value": "",
+      "name": "Dummy block for enabling and disabling the conditional connection",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter.k": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              1
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai13",
+      "type": "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter",
+      "value": "",
+      "name": "Dummy block for enabling and disabling the conditional connection",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter.k": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              1
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai14",
+      "type": "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter",
+      "value": "",
+      "name": "Dummy block for enabling and disabling the conditional connection",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter.k": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              1
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai15",
+      "type": "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter",
+      "value": "",
+      "name": "Dummy block for enabling and disabling the conditional connection",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter.k": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              1
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.conInt10",
+      "type": "Buildings.Controls.OBC.CDL.Integers.Sources.Constant",
+      "value": "",
+      "name": "Dummy constant",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Integers.Sources.Constant.k": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              0
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection",
       "name": "Freeze protection sequence for multizone air handling unit",
       "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection",
       "visible": false,
       "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.buiPreCon",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.minOADes",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.freSta",
@@ -57356,9 +57406,7 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.minOutDam3",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.con5",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.minOutDam1",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.norTru",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.logSwi",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.norOpe",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.norFal",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.falEdg",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.and1",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.norSta3",
@@ -57377,7 +57425,17 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai6",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.or5",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.or6",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai7"
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai7",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai8",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.conInt9",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai9",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai10",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai11",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai12",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai13",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai14",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.gai15",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.conInt10"
       ],
       "definition": true,
       "replaceable": false,
@@ -58140,7 +58198,6 @@
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefDamper",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefFan",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanMeasuredAir",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanCalculatedAir",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanDp"
       ],
       "definition": false,
@@ -59033,10 +59090,10 @@
       "replaceable": false
     },
     {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.uSupFan_actual",
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.uSupFan",
       "type": "Buildings.Controls.OBC.CDL.Interfaces.RealInput",
       "value": "",
-      "name": "Actual supply fan speed",
+      "name": "Commanded supply fan speed",
       "group": "",
       "tab": "",
       "visible": false,
@@ -60165,10 +60222,10 @@
       "replaceable": false
     },
     {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithAFMS.uSupFan_actual",
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithAFMS.uSupFan",
       "type": "Buildings.Controls.OBC.CDL.Interfaces.RealInput",
       "value": "",
-      "name": "Actual supply fan speed",
+      "name": "Commanded supply fan speed",
       "group": "",
       "tab": "",
       "visible": false,
@@ -60515,7 +60572,7 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithAFMS.u1SupFan",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithAFMS.uOpeMod",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithAFMS.uOutDam",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithAFMS.uSupFan_actual",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithAFMS.uSupFan",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithAFMS.yMinOutDam",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithAFMS.yEnaMinOut",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithAFMS.yOutDam_min",
@@ -61195,10 +61252,10 @@
       "replaceable": false
     },
     {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithDP.uSupFan_actual",
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithDP.uSupFan",
       "type": "Buildings.Controls.OBC.CDL.Interfaces.RealInput",
       "value": "",
-      "name": "Actual supply fan speed",
+      "name": "Commanded supply fan speed",
       "group": "",
       "tab": "",
       "visible": false,
@@ -61518,7 +61575,7 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithDP.u1SupFan",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithDP.uOpeMod",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithDP.uOutDam",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithDP.uSupFan_actual",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithDP.uSupFan",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithDP.y1MinOutDam",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithDP.yOutDam_min",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithDP.yOutDam_max",
@@ -66830,109 +66887,6 @@
       ]
     },
     {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.noAshCli",
-      "type": "Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
-      "value": "",
-      "name": "No ASHRAE climate zone",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {
-        "Buildings.Controls.OBC.CDL.Logical.Sources.Constant.k": {
-          "expression": {
-            "operator": "==",
-            "operands": [
-              "ashCliZon",
-              "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified"
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.noTit24Cli",
-      "type": "Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
-      "value": "",
-      "name": "No Title 24 climate zone",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {
-        "Buildings.Controls.OBC.CDL.Logical.Sources.Constant.k": {
-          "expression": {
-            "operator": "==",
-            "operands": [
-              "tit24CliZon",
-              "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified"
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.noCli",
-      "type": "Buildings.Controls.OBC.CDL.Logical.And",
-      "name": "Climate zone is not specified",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {},
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.not2",
-      "type": "Buildings.Controls.OBC.CDL.Logical.Not",
-      "name": "Logical not",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {},
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.assMes2",
-      "type": "Buildings.Controls.OBC.CDL.Utilities.Assert",
-      "value": "",
-      "name": "Warning when the climate zone is not specified",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {
-        "Buildings.Controls.OBC.CDL.Utilities.Assert.message": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "Warning: Climate zone is not specified!"
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller",
       "name": "Multi zone VAV AHU economizer control sequence",
@@ -66976,7 +66930,7 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.uRetDamMin",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.VOutMinSet_flow_normalized",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.VOut_flow_normalized",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.uSupFan_actual",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.uSupFan",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.effAbsOutAir_normalized",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.uCO2Loo_max",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.effDesOutAir_normalized",
@@ -67002,12 +66956,7 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.enaDis",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.modRet",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.modRel",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.ecoHigLim",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.noAshCli",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.noTit24Cli",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.noCli",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.not2",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.assMes2"
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.ecoHigLim"
       ],
       "definition": true,
       "replaceable": false,
@@ -72920,81 +72869,6 @@
       ]
     },
     {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.addPar",
-      "type": "Buildings.Controls.OBC.CDL.Continuous.AddParameter",
-      "value": "",
-      "name": "Mapping commanded fan speed to return flow",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {
-        "Buildings.Controls.OBC.CDL.Continuous.AddParameter.p": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.retFacB"
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.gai",
-      "type": "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter",
-      "value": "",
-      "name": "Mapping commanded fan speed to return flow",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {
-        "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter.k": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.retFacA"
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.gai1",
-      "type": "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter",
-      "value": "",
-      "name": "Gain factor",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {
-        "Buildings.Controls.OBC.CDL.Continuous.MultiplyByParameter.k": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              1
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.relFanCon",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReliefFan",
       "value": "",
@@ -73798,109 +73672,6 @@
       ]
     },
     {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.noAshCli",
-      "type": "Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
-      "value": "",
-      "name": "No ASHRAE climate zone",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {
-        "Buildings.Controls.OBC.CDL.Logical.Sources.Constant.k": {
-          "expression": {
-            "operator": "==",
-            "operands": [
-              "ashCliZon",
-              "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified"
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.noTit24Cli",
-      "type": "Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
-      "value": "",
-      "name": "No Title 24 climate zone",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {
-        "Buildings.Controls.OBC.CDL.Logical.Sources.Constant.k": {
-          "expression": {
-            "operator": "==",
-            "operands": [
-              "tit24CliZon",
-              "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified"
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.noCli",
-      "type": "Buildings.Controls.OBC.CDL.Logical.And",
-      "name": "Climate zone is not specified",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {},
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.not2",
-      "type": "Buildings.Controls.OBC.CDL.Logical.Not",
-      "name": "Logical not",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {},
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.assMes2",
-      "type": "Buildings.Controls.OBC.CDL.Utilities.Assert",
-      "value": "",
-      "name": "Warning when the climate zone is not specified",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {
-        "Buildings.Controls.OBC.CDL.Utilities.Assert.message": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "Warning: Climate zone is not specified!"
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller",
       "name": "Multizone VAV air handling unit controller",
@@ -73911,6 +73682,7 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.venStd",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.ashCliZon",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.tit24CliZon",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.have_frePro",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.freSta",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.minOADes",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.buiPreCon",
@@ -73996,8 +73768,6 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.TdRetFan",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.retFanSpe_max",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.retFanSpe_min",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.retFacA",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.retFacB",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.p_rel_RetFan_min",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.p_rel_RetFan_max",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.relFanSpe_min",
@@ -74019,7 +73789,6 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.VSumZonAbsMin_flow",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.VSumZonDesMin_flow",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.VAirOut_flow",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.uSupFan_actual",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.uCO2Loo_max",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.dpMinOutDam",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.TAirRet",
@@ -74028,7 +73797,6 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.u1FreSta",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.u1SofSwiRes",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.u1RelFan",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.uRelFan",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.TAirMix",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.dpBui",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.VAirSup_flow",
@@ -74071,15 +73839,7 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.retFanDpCon",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.retFanAirTra",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.tit24OutAirSet",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.addPar",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.gai",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.gai1",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.relFanCon",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.noAshCli",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.noTit24Cli",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.noCli",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.not2",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.assMes2"
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.relFanCon"
       ],
       "definition": true,
       "replaceable": false,
@@ -76791,7 +76551,7 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneStatusDuplicator.u1Win",
       "type": "Buildings.Controls.OBC.CDL.Interfaces.BooleanInput",
-      "name": "True when the window is open, false when the window is close or the zone does not have window status sensor",
+      "name": "Window status, normally closed (true), when windows open, it becomes false. For zone without sensor, it is true",
       "group": "",
       "tab": "",
       "visible": false,
@@ -78203,7 +77963,7 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Win",
       "type": "Buildings.Controls.OBC.CDL.Interfaces.BooleanInput",
-      "name": "True when the window is open, false when the window is close or the zone does not have window status sensor",
+      "name": "Window status, normally closed (true), when windows open, it becomes false. For zone without sensor, it is true",
       "group": "",
       "tab": "",
       "visible": false,
@@ -78539,6 +78299,19 @@
       "replaceable": false
     },
     {
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.not1",
+      "type": "Buildings.Controls.OBC.CDL.Logical.Not",
+      "name": "Logical not",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus",
       "name": "Block that outputs the zone group status",
@@ -78579,7 +78352,8 @@
         "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yEndSetUp",
         "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZonMax",
         "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZonMin",
-        "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yOpeWin"
+        "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yOpeWin",
+        "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.not1"
       ],
       "definition": true,
       "replaceable": false,
@@ -79296,31 +79070,6 @@
       "replaceable": false
     },
     {
-      "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.FIXME_uRelFan",
-      "type": "Buildings.Controls.OBC.CDL.Continuous.Sources.Constant",
-      "value": "",
-      "name": "FIXME #1913: The commanded speed should be used",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {
-        "Buildings.Controls.OBC.CDL.Continuous.Sources.Constant.k": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              1
-            ]
-          },
-          "final": false,
-          "redeclare": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.y1FanSup_actual",
       "type": "Buildings.Controls.OBC.CDL.Routing.BooleanScalarReplicator",
       "value": "",
@@ -79866,31 +79615,6 @@
       ]
     },
     {
-      "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.FIXME_uSupFan_actual",
-      "type": "Buildings.Controls.OBC.CDL.Continuous.Sources.Constant",
-      "value": "",
-      "name": "FIXME #1913: The commanded speed should be used",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {
-        "Buildings.Controls.OBC.CDL.Continuous.Sources.Constant.k": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              1
-            ]
-          },
-          "final": false,
-          "redeclare": false
-        }
-      },
-      "options": [],
-      "definition": false,
-      "replaceable": false
-    },
-    {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.secOutRel",
       "type": "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection",
       "value": "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection",
@@ -80049,6 +79773,25 @@
       "replaceable": false
     },
     {
+      "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.have_frePro",
+      "type": "Boolean",
+      "value": {
+        "operator": "none",
+        "operands": [
+          true
+        ]
+      },
+      "name": "Set to true to include freeze protection",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typFreSta",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat",
       "value": {
@@ -80057,17 +79800,16 @@
           "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.No_freeze_stat"
         ]
       },
-      "name": "Low limit (freeze) protection",
+      "name": "Option for low limit (freeze) protection",
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": true,
+      "enable": "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.have_frePro",
       "modifiers": {},
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.No_freeze_stat",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_equipment",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NO",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Connected_to_BAS_NC"
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_BAS"
       ],
       "definition": false,
       "replaceable": false
@@ -80230,7 +79972,6 @@
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefDamper",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefFan",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanMeasuredAir",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanCalculatedAir",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanDp"
       ],
       "definition": false,
@@ -80665,6 +80406,7 @@
         "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typCtlEco",
         "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typCtlFanRet",
         "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.use_TMix",
+        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.have_frePro",
         "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typFreSta",
         "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typSecOut",
         "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.buiPreCon",
@@ -80745,13 +80487,11 @@
         "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.reqZonPreRes",
         "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.FIXME_u1FreSta",
         "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.FIXME_u1SofSwiRes",
-        "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.FIXME_uRelFan",
         "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.y1FanSup_actual",
         "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.TAirSup",
         "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.intVecRep",
         "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.asgOpeMod",
         "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.ahuMod",
-        "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.FIXME_uSupFan_actual",
         "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.secOutRel",
         "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.coiCoo",
         "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.coiHeaPre",
@@ -80759,6 +80499,7 @@
         "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typCtlEco",
         "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typCtlFanRet",
         "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.use_TMix",
+        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.have_frePro",
         "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typFreSta",
         "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typSecOut",
         "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.buiPreCon",
@@ -82959,10 +82700,22 @@
       "tab": "",
       "visible": false,
       "enable": {
-        "operator": "==",
+        "operator": "&&",
         "operands": [
-          "typ",
-          "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone"
+          {
+            "operator": "==",
+            "operands": [
+              "typ",
+              "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "buiPreCon",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanMeasuredAir"
+            ]
+          }
         ]
       },
       "modifiers": {
