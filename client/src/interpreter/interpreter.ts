@@ -1,13 +1,12 @@
-import { resolvePath } from "react-router-dom";
-import Config, { ConfigInterface } from "../../src/data/config";
-import Template, {
-  TemplateInterface,
-  OptionInterface,
-} from "../../src/data/template";
-import { ConfigValues } from "../../src/utils/modifier-helpers";
+import { ConfigInterface } from "../../src/data/config";
+import { TemplateInterface, OptionInterface } from "../../src/data/template";
 import { removeEmpty } from "../../src/utils/utils";
 
 export type Literal = boolean | string | number;
+
+export interface ConfigValues {
+  [key: string]: string;
+}
 
 export type Expression = {
   operator: string;
@@ -57,7 +56,9 @@ function createPossiblePaths(scope: string, path: string) {
     paths.push([segments.join("."), path].filter((p) => p !== "").join("."));
     segments.pop();
   }
-  paths.push(path); // original path without scope needs to be added as well.. TODO: this can cause dups
+
+  // TODO: this can cause duplicates if scope is '' - a check can probably be done before the while loop
+  paths.push(path);
 
   return paths;
 }
@@ -99,10 +100,9 @@ export function applyPathModifiers(
 }
 
 /**
- *
- *
- * Given an instance path and context, knows how to find the original option by
- * applying path modifiers, selections, and modifiers (redeclares)
+ * Given an instance path and context, find the original option by
+ * applying inner/outer associations (path modifiers), selections,
+ * redeclares (which are stored in modifiers)
  *
  * Keep all traversal logic in here
  *
@@ -174,8 +174,6 @@ const _instancePathToOption = (
         if (typeof resolvedValue === "string" && instanceMod.redeclare) {
           const potentialOption = context.options[resolvedValue as string];
           option = potentialOption ? potentialOption : option;
-          // the potential option I need to swap
-          // option = potentialOption ? potentialOption : option;
         }
       }
     }
@@ -246,6 +244,9 @@ function isModelicaPath(path: string) {
 /**
  * Resolves the provided path using scope to correct
  * instance path, and the original option definition
+ *
+ * This creates the behavior of popping off scope to check
+ * for a variable reference
  *
  * @param path
  * @param context
@@ -349,10 +350,6 @@ export const resolveToValue = (
       const potentialExpression = typeOption?.value; // enums
       value = evaluate(potentialExpression, context, instancePathScope);
     }
-    // } else {
-    //   // assume we just want the type of the parameter
-    //   value = typeOption.type;
-    // }
   }
 
   return value;
@@ -407,11 +404,11 @@ export const evaluate = (
     case "<=":
     case ">":
     case ">=": {
-      const comparators = {
-        "<": (x: any, y: any) => x < y,
-        "<=": (x: any, y: any) => x <= y,
-        ">": (x: any, y: any) => x > y,
-        ">=": (x: any, y: any) => x >= y,
+      const comparators: Comparators = {
+        "<": (x, y) => x < y,
+        "<=": (x, y) => x <= y,
+        ">": (x, y) => x > y,
+        ">=": (x, y) => x >= y,
       };
 
       const resolvedOperands = expression.operands.map((o) =>
@@ -487,8 +484,6 @@ const addToModObject = (
   mods: {
     [key: string]: Modifier;
   },
-  options: { [key: string]: OptionInterface },
-  recursive = true,
 ) => {
   Object.entries(newMods).forEach(([k, mod]) => {
     const instanceName = k.split(".").pop();
@@ -504,21 +499,6 @@ const addToModObject = (
         ...{ ["fromClassDefinition"]: fromClassDefinition },
       };
     }
-
-    // if (false) {
-    //   // grab modifiers from original definition
-    //   const modOption = options[k];
-    //   if (modOption?.modifiers) {
-    //     addToModObject(
-    //       newMods,
-    //       baseInstancePath,
-    //       fromClassDefinition,
-    //       mods,
-    //       options,
-    //       false,
-    //     );
-    //   }
-    // }
   });
 };
 
@@ -528,12 +508,6 @@ const addToModObject = (
  * - a redeclare
  *
  * This is a small helper method that checks for either of those instances
- * TODO: this maybe should be replaced by use of instaceToOption method and the
- * use of context
- *
- * @param instancePath
- * @param mods
- * @param config
  */
 const getReplaceableType = (
   instancePath: string,
@@ -565,7 +539,10 @@ const getReplaceableType = (
   return newType ? newType : option.type;
 };
 
-// recursive helper method that traverses options grabbing modifiers
+/**
+ * Recursive helper method
+ * @returns
+ */
 const buildModsHelper = (
   option: OptionInterface,
   baseInstancePath: string,
@@ -594,10 +571,12 @@ const buildModsHelper = (
     const o = options[oPath];
     const oMods = o.modifiers;
     if (oMods) {
-      addToModObject(oMods, newBase, option.definition, mods, options);
+      addToModObject(oMods, newBase, option.definition, mods);
     }
   });
 
+  // check for choice modifier - use either a selection or the default value
+  // to grab the correct modifiers
   if (option.replaceable) {
     let choice = option.value as string | null | undefined;
     if (option.modelicaPath in selectionModelicaPathsCache) {
@@ -611,20 +590,7 @@ const buildModsHelper = (
     if (option.choiceModifiers && choice) {
       const choiceMods = option.choiceModifiers[choice];
       if (choiceMods) {
-        addToModObject(choiceMods, newBase, option.definition, mods, options);
-      }
-    }
-  }
-
-  // check if there is a selection and that selection has choice modifiers
-  if (option.modelicaPath in selectionModelicaPathsCache) {
-    const selectionPath = constructSelectionPath(option.modelicaPath, newBase);
-    const selection = selections[selectionPath];
-    if (selection && option.choiceModifiers) {
-      // check for choice modifiers
-      const choiceMods = option.choiceModifiers[selection];
-      if (choiceMods) {
-        addToModObject(choiceMods, newBase, option.definition, mods, options);
+        addToModObject(choiceMods, newBase, option.definition, mods);
       }
     }
   }
@@ -644,13 +610,11 @@ const buildModsHelper = (
         );
       });
     } else {
-      // TODO: use instanceToOption to get replaceable type!
-      // getReplaceableType is redundant (or just getValue)
       const typeOptionPath = option.replaceable
         ? getReplaceableType(newBase, option, mods, selections)
         : option.type;
 
-      const typeOption = options[typeOptionPath as string]; // TODO: remove this cast
+      const typeOption = options[typeOptionPath as string];
       if (typeOption && typeOption.options) {
         // add modifiers from type option
         if (typeOption.modifiers) {
@@ -659,7 +623,6 @@ const buildModsHelper = (
             newBase,
             typeOption.definition,
             mods,
-            options,
           );
         }
         typeOption.options.map((path) => {
@@ -703,12 +666,10 @@ export const buildMods = (
   return mods;
 };
 
-// Cache for initial template values
-const _initModCache: { [key: string]: Modifier } = {};
-
 ///////////////// Context Manager
-// Option and Instance data baked into the same object in a format
-// convenient for mapping to different UI Shapes
+// OptionInstance is meant to act like an instance of aparticular template Option.
+// Instance data baked into the same object in a format convenient for mapping
+// to different UI Shapes
 export interface OptionInstance {
   value: Literal | null | undefined; // NOT an expression
   display: boolean;
@@ -717,14 +678,26 @@ export interface OptionInstance {
   isOuter: boolean;
   type: string;
 }
-/**
- * Generating context for a given template and config
- */
 
 /**
- * This generates a context that can be queried for values using
- * an instance path, taking into account selections and the exsiting
- * definitions and modifiers for a given template
+ * Generates a 'context' for a given template configuration so
+ * that any value defined for a template can be fetched, and that value
+ * correctly takes into account selections and predefined template values/expressions
+ * to return the correct value
+ *
+ * Another name for this could be 'config instance'. I wanted this to behave like
+ * an instantiation of a template definition
+ *
+ * In the same way you might do the following if you had a class:
+ *
+ * const config = new Config(config)
+ * console.log(configContext.someVal); // prints 5
+ *
+ * You use a config context for the same type of interaction:
+ *
+ * const context = new ConfigContext(template, config, options, selections);
+ * console.log(context.getValue('someVal')); // prints 5
+ *
  */
 export class ConfigContext {
   mods: { [key: string]: Modifier } = {};
@@ -739,16 +712,12 @@ export class ConfigContext {
     public options: { [key: string]: OptionInterface },
     public selections: ConfigValues = {},
   ) {
-    if (template.modelicaPath in _initModCache) {
-      // this.mods = _initModCache[template.modelicaPath];
-    } else {
-      // calculate intial mods without selections
-      this.mods = buildMods(
-        this.options[template.modelicaPath],
-        selections,
-        this.options,
-      );
-    }
+    // calculate intial mods without selections
+    this.mods = buildMods(
+      this.options[template.modelicaPath],
+      selections,
+      this.options,
+    );
   }
 
   addToCache(path: string, optionPath: string, val: any) {
@@ -853,6 +822,11 @@ export class ConfigContext {
   }
   /**
    * Visits each available option and attempts to resolve value
+   *
+   * ConfigContext lazily resolves values, only resolving paths to values
+   * when asked. This method will traverse the tree of options associated with
+   * the template and request the value, allowing all related template options
+   * to resolve.
    */
   visitTemplateNodes(depth: number | null = null) {
     const rootOption = this.getRootOption();
@@ -888,10 +862,8 @@ export class ConfigContext {
   }
 
   /**
-   * Instance Path
-   * @param path
-   * @param scope
-   * @returns
+   * Returns an OptionInstance for the provided instance path. OptionInstance
+   * bakes in useful info related to make it easier to map to a display format
    */
   getOptionInstance(path: string, scope = ""): OptionInstance | undefined {
     const { instancePath, optionPath, outerOptionPath } = resolvePaths(
@@ -929,26 +901,11 @@ export class ConfigContext {
     const mod = this.mods[instancePath];
     const final = mod?.final !== undefined ? mod.final : false;
     if (final) {
-      return optionInstance; // punch-out, we got what we need
+      return optionInstance; // PUNCH-OUT! we got what we need
     }
 
-    // if (!option) {
-    //   console.log(instancePath);
-    // }
-    // 'scope' in this case is the current instance path's scope, which
-    // is one level up from the parameter.
-    // e.g.
-    // You have the following definition
-    // param c = false;
-    // Class A
-    //     param b
-    //        enable = c === true // 'c' is a reference to a local param c, not the global 'c'
-    //     param c = true
-    //
-    // e = new A()
-
-    // The scope of the expression 'enable = c === true' must be able to first reference
-    // what is found inside the scope of e, an instance of class A
+    // expressions attached to an option are relative to the options
+    // scope only requiring one level to be popped off (slice(0, -1))
     const enable =
       option && "enable" in option
         ? evaluate(
@@ -981,8 +938,8 @@ export class ConfigContext {
    */
   getEvaluatedValues() {
     const evaluatedValues: { [key: string]: Literal | null | undefined } = {};
-    // We may potentially need this to grab more evaluations needed by
-    // the document
+    // Values are lazy loaded so only what is needed to display all of a templates options is
+    // resolved. If more evaluations are needed by the sequence document call this:
     // this.visitTemplateNodes();
     const resolvedValues = removeEmpty(this._resolvedValues) as {
       [key: string]: { value: Literal | null | undefined; optionPath: string };

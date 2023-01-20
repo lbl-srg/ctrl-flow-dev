@@ -9,11 +9,9 @@ import { ConfigValues } from "../../../utils/modifier-helpers";
 export interface TemplateProps {
   systemPath: string;
   templatePath: string;
-  projectSelections: ConfigValues;
-  projectEvaluatedValues: ConfigValues;
 }
 
-const Template = ({ systemPath, templatePath, projectSelections, projectEvaluatedValues }: TemplateProps) => {
+const Template = ({ systemPath, templatePath }: TemplateProps) => {
   const { templateStore, configStore, uiStore } = useStores();
 
   const configs: ConfigInterface[] = configStore.getConfigsForSystemTemplate(
@@ -55,12 +53,7 @@ const Template = ({ systemPath, templatePath, projectSelections, projectEvaluate
 
       <div className="config-container">
         {configs.map((config) => (
-          <Config
-            key={config.id}
-            configId={config.id}
-            projectSelections={projectSelections}
-            projectEvaluatedValues={projectEvaluatedValues}
-          />
+          <Config key={config.id} configId={config.id} />
         ))}
       </div>
 
