@@ -1,9 +1,6 @@
 ///////////////// Context Mapper: Maps a ConfigContext to a configuration page DisplayList
 
-import Template, {
-  TemplateInterface,
-  OptionInterface,
-} from "../../src/data/template";
+import { OptionInterface } from "../../src/data/template";
 
 import {
   ConfigContext,
@@ -11,7 +8,6 @@ import {
   constructSelectionPath,
 } from "./interpreter";
 
-type DisplayItem = FlatConfigOptionGroup | FlatConfigOption;
 export interface FlatConfigOptionGroup {
   groupName: string;
   selectionPath: string;
@@ -29,10 +25,7 @@ export interface FlatConfigOption {
   selectionType: string;
 }
 
-export interface FlatConfigOptionChoice {
-  modelicaPath: string;
-  name: string;
-}
+type DisplayItem = FlatConfigOptionGroup | FlatConfigOption;
 
 export const MODELICA_LITERALS_TO_NOT_DISPLAY = ["String", "Real", "Integer"];
 
@@ -49,9 +42,6 @@ const displayOptionFilter = (
 
 /**
  * Maps an OptionInstance to a a display option - handles booleans and dropdowns
- * @param optionInstance
- * @param parentModelicaPath
- * @param scope
  */
 export function _formatDisplayOption(
   optionInstance: OptionInstance,
@@ -105,9 +95,6 @@ export function _formatDisplayGroup(
   paramInstance: OptionInstance,
   context: ConfigContext,
 ) {
-  // TODO: optionInstance for definitions? Not sure what happens here
-  // this 'path' should never be used. It does need to be a unique ID though. Previous instance
-  // path + group?
   const instancePath = `${paramInstance.instancePath}.__group`;
   const selectionPath = constructSelectionPath(
     option.modelicaPath,
@@ -115,11 +102,8 @@ export function _formatDisplayGroup(
   );
   const mappedItems = option.options
     ?.flatMap((o) => {
-      // TODO: an option can be a definition - _formatDisplayItem should do the right thing
-      // also: how to step building bad paths
       const childOption = context.options[o];
       if (childOption.definition && childOption?.options?.length) {
-        // definitions do not have an instance path
         return _formatDisplayGroup(childOption, paramInstance, context);
       } else {
         const paramName = o.split(".").pop();
@@ -150,10 +134,6 @@ export function _formatDisplayGroup(
 /**
  * Recursive method that handles traversal of OptionInstances and generates
  * the appropriate groups and options
- * @param optionInstance
- * @param parentModelicaPath
- * @param context
- * @returns
  */
 export function _formatDisplayItem(
   optionInstance: OptionInstance,
@@ -182,7 +162,7 @@ export function _formatDisplayItem(
       _formatDisplayOption(optionInstance, parentModelicaPath, context),
     );
   }
-  // check if we render type
+  // check if the type needs to be rendered
   const type =
     optionInstance.value !== undefined && optionInstance.value !== null
       ? optionInstance.value
