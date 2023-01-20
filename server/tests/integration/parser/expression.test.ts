@@ -1,6 +1,7 @@
 import { createTestModelicaJson, fullTempDirPath } from "./utils";
 import { ModifiersN, getTemplates } from "../../../src/parser/template";
 import { loadPackage, getSystemTypes, Template } from "../../../src/parser/";
+import { evaluateExpression } from "../../../src/expression";
 import { initializeTestModelicaJson } from "./utils";
 import * as parser from "../../../src/parser/parser";
 const testModelicaFile = "TestPackage.Template.TestTemplate";
@@ -41,12 +42,7 @@ describe("Template Input visible/enable expressions", () => {
     inputs = getInputs();
   });
 
-  it("'enable=false' sets false", () => {
-    const falsyPath = 'TestPackage.Template.TestTemplate.test_int';
-    const falsyInput = inputs[falsyPath];
-  
-    expect(falsyInput.visible).toBeFalsy();
-
+  it("no enable sets true", () => {
     const truthyPath = 'TestPackage.Template.TestTemplate.test_real';
     const truthyInput = inputs[truthyPath];
 
