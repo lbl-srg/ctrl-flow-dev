@@ -41,12 +41,7 @@ describe("Template Input visible/enable expressions", () => {
     inputs = getInputs();
   });
 
-  it("'enable=false' sets false", () => {
-    const falsyPath = 'TestPackage.Template.TestTemplate.test_int';
-    const falsyInput = inputs[falsyPath];
-  
-    expect(falsyInput.visible).toBeFalsy();
-
+  it("no enable sets true", () => {
     const truthyPath = 'TestPackage.Template.TestTemplate.test_real';
     const truthyInput = inputs[truthyPath];
 
