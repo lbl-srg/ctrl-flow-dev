@@ -1,6 +1,6 @@
-# Tech Debt
+# Tech Debt/Feature Implementation Overview Jan. 2023
 
-This is a high level summary of some of the tech-debt in ctrl-flow
+This is a high level summary of some of the tech-debt in ctrl-flow. It is by no means exhaustive and is meant more to capture some specific items just prior to sequence-document beta testing at the beginning of 2023.
 
 ## Template Instances
 
