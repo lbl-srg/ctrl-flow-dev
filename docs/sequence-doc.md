@@ -18,7 +18,7 @@ A typical annotation looks as follows:
 
 `RELIEFDMPR`: short code defined in the mappings CSV
 
-Annotations are evaluted into either true or false, showing or hiding the specific section based. This expression checks: does `SP` equal the type `RELIEFDMPR`. The meaning of `buiPreCon` and `ReliefFan` is mapped to a specific modelica template location in the mapping csv.
+Annotations are evaluted into either true or false, showing or hiding the specific section based. This expression checks: does `BSP` equal the type `RELIEFDMPR`. The meaning of `buiPreCon` and `ReliefFan` is mapped to a specific modelica template location in the mapping csv.
 
 The annotation is enclosed in square brackets `[]`
 
