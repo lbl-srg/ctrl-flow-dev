@@ -1,6 +1,6 @@
 import { useStores } from "../../../data";
 import { observer } from "mobx-react";
-import { OptionInterface, TemplateInterface } from "../../../data/template";
+import { TemplateInterface } from "../../../data/template";
 
 const System = observer(({ systemPath }: { systemPath: string }) => {
   const { uiStore, configStore, templateStore } = useStores();

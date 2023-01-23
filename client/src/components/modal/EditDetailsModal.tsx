@@ -11,6 +11,10 @@ import { FlatConfigOption } from "../steps/Configs/SlideOut";
 import OptionSelect from "../steps/Configs/OptionSelect";
 import { useDebouncedCallback } from "use-debounce";
 import { removeEmpty } from "../../utils/utils";
+import {
+  SystemTypeInterface,
+  TemplateInterface
+} from "../../data/template";
 
 import {
   applyValueModifiers,
@@ -35,7 +39,7 @@ const EditDetailsModal = observer(
     isOpen,
     close,
   }: EditDetailsModalProps) => {
-    const { projectStore, templateStore } = useStores();
+    const { configStore, projectStore, templateStore } = useStores();
     const details = projectStore.getProjectDetails();
     const projectOptions = templateStore.getOptionsForProject();
     const allOptions = templateStore.getAllOptions();
@@ -91,6 +95,10 @@ const EditDetailsModal = observer(
       options: OptionInterface[],
       parentModelicaPath: string,
     ): FlatConfigOption[] {
+      const removeNotSpecifiedList = [
+        'Buildings.Templates.Data.AllSystems.ashCliZon',
+        'Buildings.Templates.Data.AllSystems.tit24CliZon'
+      ];
       let displayOptions: FlatConfigOption[] = [];
 
       options.forEach((option) => {
@@ -105,13 +113,17 @@ const EditDetailsModal = observer(
         );
 
         if (isVisible && option.childOptions?.length) {
+          const modifiedChildOptions = removeNotSpecifiedList.includes(option.modelicaPath)
+            ? option.childOptions.filter((opt) => opt.name !== 'Not specified')
+            : option.childOptions;
+
           displayOptions = [
             ...displayOptions,
             {
               parentModelicaPath,
               modelicaPath: option.modelicaPath,
               name: option.name,
-              choices: option.childOptions || [],
+              choices: modifiedChildOptions || [],
               value:
                 selectedValues[selectionPath] || evaluatedValues[selectionPath],
               scope: "",
@@ -203,15 +215,48 @@ const EditDetailsModal = observer(
       });
     }
 
+    // TODO: There needs to be a cleaner way to delete the zone that is not associated to the energy standard
+    // This was done due to time and was a bug found last min.
+    function adjustProjectSelections() {
+      const projectSelectedItems = selectedValues;
+      const energyStandard = projectSelectedItems['Buildings.Templates.Data.AllSystems.stdEne'];
+
+      if (
+        energyStandard === 'Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1' &&
+        projectSelectedItems['Buildings.Templates.Data.AllSystems.tit24CliZon']
+      ) {
+        delete projectSelectedItems['Buildings.Templates.Data.AllSystems.tit24CliZon'];
+      }
+
+      if (
+        energyStandard === 'Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24' &&
+        projectSelectedItems['Buildings.Templates.Data.AllSystems.ashCliZon']
+      ) {
+        delete projectSelectedItems['Buildings.Templates.Data.AllSystems.ashCliZon'];
+      }
+
+      return projectSelectedItems;
+    }
+
     function save(ev: SyntheticEvent) {
       ev.preventDefault();
       ev.stopPropagation();
       const newProjectDetails: ProjectDetailInterface = {
         ...formInputs,
-        selections: selectedValues,
+        selections: adjustProjectSelections(),
         evaluatedValues: removeEmpty(evaluatedValues),
       };
       projectStore.setProjectDetails(newProjectDetails);
+      // This removes all configs when saving project details.
+      // The reason for this is we don't want the user to use saved configs with
+      // changed project details as it will cause issues with evaluated values.
+      templateStore.systemTypes.forEach((systemType: SystemTypeInterface) => {
+        const templates = templateStore.getTemplatesForSystem(systemType.modelicaPath);
+
+        templates.forEach((option: TemplateInterface) => {
+          configStore.removeAllForSystemTemplate(systemType.modelicaPath, option.modelicaPath);
+        });
+      });
       if (afterSubmit) afterSubmit();
     }
 
