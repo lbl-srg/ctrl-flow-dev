@@ -23758,7 +23758,7 @@
       "enable": {
         "operator": "none",
         "operands": [
-          "have_CO2Sen and (not have_SZVAV and not have_parFanPowUni)"
+          "have_CO2Sen and not have_SZVAV and not have_parFanPowUni"
         ]
       },
       "modifiers": {},
@@ -23782,7 +23782,7 @@
       "enable": {
         "operator": "none",
         "operands": [
-          "have_CO2Sen and (not have_SZVAV and not have_typTerUni)"
+          "have_CO2Sen and not have_SZVAV and not have_typTerUni"
         ]
       },
       "modifiers": {},
@@ -23806,7 +23806,7 @@
       "enable": {
         "operator": "none",
         "operands": [
-          "have_CO2Sen and (not have_parFanPowUni and not have_typTerUni)"
+          "have_CO2Sen and not have_parFanPowUni and not have_typTerUni"
         ]
       },
       "modifiers": {},
@@ -47285,7 +47285,7 @@
       "visible": false,
       "enable": false,
       "modifiers": {
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource.nPorts": {
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.nPorts": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -47399,7 +47399,7 @@
       "replaceable": false
     },
     {
-      "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialSource.nPorts",
+      "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.nPorts",
       "type": "Integer",
       "value": {
         "operator": "none",
@@ -47418,7 +47418,7 @@
       "replaceable": false
     },
     {
-      "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialSource.verifyInputs",
+      "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.verifyInputs",
       "type": "Boolean",
       "value": {
         "operator": "none",
@@ -47437,7 +47437,7 @@
       "replaceable": false
     },
     {
-      "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialSource.ports",
+      "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.ports",
       "type": "Modelica.Fluid.Interfaces.FluidPorts_b",
       "value": "",
       "name": "Fluid ports",
@@ -47446,7 +47446,7 @@
       "visible": false,
       "enable": true,
       "modifiers": {
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource.max": {
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.max": {
           "expression": {
             "operator": "if_elseif",
             "operands": [
@@ -47484,7 +47484,7 @@
           "final": false,
           "redeclare": false
         },
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource.min": {
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.min": {
           "expression": {
             "operator": "if_elseif",
             "operands": [
@@ -47528,20 +47528,20 @@
       "replaceable": false
     },
     {
-      "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialSource",
-      "type": "Buildings.Fluid.Sources.BaseClasses.PartialSource",
-      "name": "Partial component source with one fluid connector",
-      "value": "Buildings.Fluid.Sources.BaseClasses.PartialSource",
+      "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialAirSource",
+      "type": "Buildings.Fluid.Sources.BaseClasses.PartialAirSource",
+      "name": "Partial component air source with one fluid connector",
+      "value": "Buildings.Fluid.Sources.BaseClasses.PartialAirSource",
       "visible": false,
       "options": [
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource.nPorts",
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource.verifyInputs",
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource.ports"
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.nPorts",
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.verifyInputs",
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.ports"
       ],
       "definition": true,
       "replaceable": false,
       "treeList": [
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource"
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource"
       ]
     },
     {
@@ -47551,7 +47551,7 @@
       "value": "Buildings.Fluid.Sources.BaseClasses.Outside",
       "visible": false,
       "modifiers": {
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource.verifyInputs": {
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.verifyInputs": {
           "expression": {
             "operator": "none",
             "operands": [
@@ -47567,15 +47567,15 @@
         "Buildings.Fluid.Sources.BaseClasses.Outside.C",
         "Buildings.Fluid.Sources.BaseClasses.Outside.C_in",
         "Buildings.Fluid.Sources.BaseClasses.Outside.weaBus",
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource.nPorts",
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource.verifyInputs",
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource.ports"
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.nPorts",
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.verifyInputs",
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.ports"
       ],
       "definition": true,
       "replaceable": false,
       "treeList": [
         "Buildings.Fluid.Sources.BaseClasses.Outside",
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource"
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource"
       ]
     },
     {
@@ -47590,16 +47590,16 @@
         "Buildings.Fluid.Sources.BaseClasses.Outside.C",
         "Buildings.Fluid.Sources.BaseClasses.Outside.C_in",
         "Buildings.Fluid.Sources.BaseClasses.Outside.weaBus",
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource.nPorts",
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource.verifyInputs",
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource.ports"
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.nPorts",
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.verifyInputs",
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.ports"
       ],
       "definition": true,
       "replaceable": false,
       "treeList": [
         "Buildings.Fluid.Sources.Outside",
         "Buildings.Fluid.Sources.BaseClasses.Outside",
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource"
+        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource"
       ]
     },
     {
@@ -48000,6 +48000,152 @@
       "options": [],
       "definition": false,
       "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialSource.nPorts",
+      "type": "Integer",
+      "value": {
+        "operator": "none",
+        "operands": [
+          0
+        ]
+      },
+      "name": "Number of ports",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialSource.verifyInputs",
+      "type": "Boolean",
+      "value": {
+        "operator": "none",
+        "operands": [
+          false
+        ]
+      },
+      "name": "Set to true to stop the simulation with an error if the medium temperature is outside its allowable range",
+      "group": "",
+      "tab": "Advanced",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialSource.ports",
+      "type": "Modelica.Fluid.Interfaces.FluidPorts_b",
+      "value": "",
+      "name": "Fluid ports",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "Buildings.Fluid.Sources.BaseClasses.PartialSource.max": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "flowDirection",
+                      "Modelica.Fluid.Types.PortFlowDirection.Leaving"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  {
+                    "operator": "none",
+                    "operands": [
+                      "+Modelica.Constants.inf"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "final": false,
+          "redeclare": false
+        },
+        "Buildings.Fluid.Sources.BaseClasses.PartialSource.min": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "flowDirection",
+                      "Modelica.Fluid.Types.PortFlowDirection.Entering"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  {
+                    "operator": "none",
+                    "operands": [
+                      "-Modelica.Constants.inf"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "final": false,
+          "redeclare": false
+        }
+      },
+      "options": [],
+      "definition": false,
+      "replaceable": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialSource",
+      "type": "Buildings.Fluid.Sources.BaseClasses.PartialSource",
+      "name": "Partial component source with one fluid connector",
+      "value": "Buildings.Fluid.Sources.BaseClasses.PartialSource",
+      "visible": false,
+      "options": [
+        "Buildings.Fluid.Sources.BaseClasses.PartialSource.nPorts",
+        "Buildings.Fluid.Sources.BaseClasses.PartialSource.verifyInputs",
+        "Buildings.Fluid.Sources.BaseClasses.PartialSource.ports"
+      ],
+      "definition": true,
+      "replaceable": false,
+      "treeList": [
+        "Buildings.Fluid.Sources.BaseClasses.PartialSource"
+      ]
     },
     {
       "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialSource_Xi_C",
@@ -49061,7 +49207,7 @@
             "operator": "!=",
             "operands": [
               "ctl.typ",
-              "Buildings.Templates.AirHandlersFans.Types.Controller.Guideline36"
+              "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone"
             ]
           }
         ]
