@@ -76,23 +76,17 @@ Upon selection, the previous 'replacable' block is replaced with a 'redeclare' b
         fanSupDra,
 ```
 
-TODO: `inner` keyword - does this impact traversal?
-
 ### Option Discovery
 
 Available template selections are NOT all listed in a single file. To get the full tree of available options, extended models, subcomponents, and `record`s need to be traversed recursively.
 
 Throughout the templates qualified names are used to reference other parameters in a modelica package. We can use these names as package relative paths to determine what other json files need to be traversed to get all available options.
 
-> NOTE: additional details about the [lookup rules](https://mbe.modelica.university/components/packages/lookup/) related to these qualified paths.
-
 An example modelica path:
 
 ```
 "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler"
 ```
-
-> NOTE: A [`record`](https://mbe.modelica.university/behavior/equations/record_def/) is just a collection of parameters, like a class without functions.
 
 Doing so will generate a tree of options for the model and subcomponents.
 
@@ -104,7 +98,7 @@ model VAVMultiZone "Multiple-zone VAV"
   extends Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler(
 ```
 
-### Configuraiton Types
+### Configuration Types
 
 The configuration will need to render three types of input fields:
 
@@ -114,9 +108,9 @@ The configuration will need to render three types of input fields:
 
 ### Where to get Schedule Table Data
 
-Templates will have a parameter pointing to a `Record`. The general pattern being followed is to name this parameter `dat`. This record will contain all related control and mechanical points for the schedule(TODO: detail control vs. mechanical points).
+Templates will have a parameter pointing to a `Record`. The general pattern being followed is to name this parameter `dat`. Any subcomponent that has a record with a paremter `dat` is extracted as a schedule option. These records will contain all related control and mechanical points for the schedule
 
-Within the `dat` `Record` parameters will be be structured in the following way:
+Within a `dat` `Record` parameters will be be structured in the following way:
 
 - `Record dat`
   - `param1`
@@ -129,7 +123,7 @@ Within the `dat` `Record` parameters will be be structured in the following way:
 
 The `dat` `Record` will contain sub `Record`s that group parameters together, and these sub-groupings will be what we use to organize table headings in the schedules table.
 
-So the above listing of parameters and sub `Record`s would become:
+The above listing of parameters and sub `Record`s when rendered should become:
 
 ```
                  |    subgroup1    |    subgroup2    |
@@ -139,8 +133,6 @@ So the above listing of parameters and sub `Record`s would become:
 | row1  |  val1  |  val2  |  val3  | val4   | val4   |
 | row2  |  ...
 ```
-
-### Expressions (TODO)
 
 ## Modelica-Json Tool
 
