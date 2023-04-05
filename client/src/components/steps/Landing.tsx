@@ -28,7 +28,7 @@ function Landing() {
 
       <main className="landing">
         <header>
-          <h1 className="header-one">Welcome to Lawrence Berkley National Labs</h1>
+          <h1 className="header-one">Welcome to Lawrence Berkeley National Labs</h1>
           <h2 className="header-two">ctrl-flow</h2>
           <h3 className="header-three">High Performance Controls Design Tool</h3>
         </header>
