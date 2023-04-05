@@ -10786,7 +10786,7 @@
     },
     {
       "modelicaPath": "Buildings.Templates.Types.Units.SI",
-      "name": "International system of units",
+      "name": "SI - International units",
       "type": "Buildings.Templates.Types.Units",
       "value": "Buildings.Templates.Types.Units.SI",
       "visible": false,
@@ -10798,7 +10798,7 @@
     },
     {
       "modelicaPath": "Buildings.Templates.Types.Units.IP",
-      "name": "Imperial system of units",
+      "name": "IP - Imperial units",
       "type": "Buildings.Templates.Types.Units",
       "value": "Buildings.Templates.Types.Units.IP",
       "visible": false,
