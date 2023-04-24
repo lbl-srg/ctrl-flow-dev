@@ -1,0 +1,86 @@
+name: ctrl-flow deployment
+
+on:
+  push:
+    branches: main
+env:
+  LBL_STAGE: production 
+  DEBIAN_FRONTEND: noninteractive
+  TEMPLATES_FILE_NAME: templates.json
+jobs:
+  build-template-json:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
+      - name: Build Docker Image for LBL Parser and API Server
+        run: docker build -t lbl-api-cdk .
+      - name: Create A Container and copy file
+        run: |
+          CONTAINER_ID=$(docker create lbl-api-cdk)
+          docker cp $CONTAINER_ID:/server/scripts/templates.json $GITHUB_WORKSPACE/$TEMPLATES_FILE_NAME
+          echo "CONTAINER_ID=$CONTAINER_ID" >> $GITHUB_ENV
+      - name: Copy templates.json out of the container
+        run: docker cp $CONTAINER_ID:/server/scripts/templates.json $TEMPLATES_FILE_NAME
+      - name: Upload templates.json as an artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: $TEMPLATES_FILE_NAME
+          path: ${{github.workspace}}/${{env.TEMPLATES_FILE_NAME}}
+      - name: Remove the container
+        run: docker rm -v ${{env.CONTAINER_ID}}
+
+  deploy:
+    needs: build-template-json
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: cdk
+    strategy:
+      matrix:
+        node-version: [16.x] # currently only supporting 16 and up
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+      - name: Update template.json
+        uses: actions/download-artifact@v2
+        with:
+          name: $TEMPLATES_FILE_NAME
+          path: ../client/src/data
+      - name: install node packages
+        run: npm i
+      - name: Synthesize cloud formation template
+        run: npx aws-cdk synth
+      - name: Deploy stack
+        run: npx aws-cdk deploy --require-approval never --outputs-file cdk.out/cdk-outputs.json
+      - name: Set environment variables and deploy to s3
+        run: |
+          export API_ARN=$(jq -r .LblCdkStack${{env.LBL_STAGE}}.LbLALBArn cdk.out/cdk-outputs.json)
+          aws elbv2 modify-load-balancer-attributes --load-balancer-arn $API_ARN --attributes Key=idle_timeout.timeout_seconds,Value=300
+          export REACT_APP_API=$(jq -r .LblCdkStack${{env.LBL_STAGE}}.LbLApiUrl cdk.out/cdk-outputs.json)/api
+          cd $GITHUB_WORKSPACE/client
+          npm i
+          npm run buildForS3
+          cd $GITHUB_WORKSPACE/client
+          aws s3 rm s3://lbl-client-${LBL_STAGE}/ --recursive
+          aws s3 sync build s3://lbl-client-${LBL_STAGE}/
