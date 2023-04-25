@@ -5,10 +5,13 @@ name: Client Tests (Unit and Integration)
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - staging
   pull_request:
-    branches: [ main ]
-
+    branches:
+      - main
+      - staging
 jobs:
   build:
     runs-on: ubuntu-latest
