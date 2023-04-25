@@ -77,7 +77,7 @@ jobs:
         run: |
           export API_ARN=$(jq -r .LblCdkStack${{env.LBL_STAGE}}.LbLALBArn cdk.out/cdk-outputs.json)
           aws elbv2 modify-load-balancer-attributes --load-balancer-arn $API_ARN --attributes Key=idle_timeout.timeout_seconds,Value=300
-          export REACT_APP_API=$(jq -r .LblCdkStack${{env.LBL_STAGE}}.LbLApiUrl cdk.out/cdk-outputs.json)/api
+          export REACT_APP_API=https://ctrl-flow.lbl.gov/api
           cd $GITHUB_WORKSPACE/client
           npm i
           npm run buildForS3
