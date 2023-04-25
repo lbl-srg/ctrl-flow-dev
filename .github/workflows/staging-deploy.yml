@@ -1,8 +1,8 @@
-name: ctrl-flow deployment
+name: ctrl-flow staging deployment
 
 on:
   push:
-    branches: [release]
+    branches: staging 
 env:
   LBL_STAGE: staging
   DEBIAN_FRONTEND: noninteractive
@@ -77,10 +77,19 @@ jobs:
         run: |
           export API_ARN=$(jq -r .LblCdkStack${{env.LBL_STAGE}}.LbLALBArn cdk.out/cdk-outputs.json)
           aws elbv2 modify-load-balancer-attributes --load-balancer-arn $API_ARN --attributes Key=idle_timeout.timeout_seconds,Value=300
-          export REACT_APP_API=$(jq -r .LblCdkStack${{env.LBL_STAGE}}.LbLApiUrl cdk.out/cdk-outputs.json)/api
+          export REACT_APP_API=https://staging.ctrl-flow.lbl.gov/api
           cd $GITHUB_WORKSPACE/client
           npm i
           npm run buildForS3
           cd $GITHUB_WORKSPACE/client
           aws s3 rm s3://lbl-client-${LBL_STAGE}/ --recursive
           aws s3 sync build s3://lbl-client-${LBL_STAGE}/
+      - name: Invalidate Cloudfront
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: ${{ secrets.STAGING_CLOUDFRONT_ID }}
+          PATHS: "/*"
+          AWS_REGION: us-east-2
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+

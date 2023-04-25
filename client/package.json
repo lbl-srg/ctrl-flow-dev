@@ -2,7 +2,7 @@
   "name": "lbl-linkage",
   "version": "0.1.26",
   "private": true,
-  "homepage": "https://devetry.github.io/LBL-Linkage-Widget-v2",
+  "homepage": "https://github.com/lbl-srg/ctrl-flow-dev",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",

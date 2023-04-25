@@ -21,7 +21,7 @@ export class LblCdkStack extends cdk.Stack {
     ////  Begin S3 Bucket for Client
     const bucket = new Bucket(this, `lbl-client-${stage}`, {
       bucketName: `lbl-client-${stage}`,
-      publicReadAccess: false,
+      publicReadAccess: true,
       websiteIndexDocument: "index.html",
       websiteErrorDocument: "index.html",
       autoDeleteObjects: true,
