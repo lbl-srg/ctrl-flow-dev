@@ -84,3 +84,12 @@ jobs:
           cd $GITHUB_WORKSPACE/client
           aws s3 rm s3://lbl-client-${LBL_STAGE}/ --recursive
           aws s3 sync build s3://lbl-client-${LBL_STAGE}/
+      - name: Invalidate Cloudfront
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: ${{ secrets.STAGING_CLOUDFRONT_ID }}
+          PATHS: "/*"
+          AWS_REGION: us-east-2
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
