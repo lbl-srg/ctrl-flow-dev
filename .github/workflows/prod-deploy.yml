@@ -1,4 +1,4 @@
-name: ctrl-flow deployment
+name: ctrl-flow prod deployment
 
 on:
   push:
