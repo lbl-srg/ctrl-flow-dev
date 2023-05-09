@@ -33,7 +33,7 @@ jobs:
       - name: Upload templates.json as an artifact
         uses: actions/upload-artifact@v2
         with:
-          name: $TEMPLATES_FILE_NAME
+          name: template
           path: ${{github.workspace}}/${{env.TEMPLATES_FILE_NAME}}
       - name: Remove the container
         run: docker rm -v ${{env.CONTAINER_ID}}
@@ -65,7 +65,7 @@ jobs:
       - name: Update template.json
         uses: actions/download-artifact@v2
         with:
-          name: $TEMPLATES_FILE_NAME
+          name: template
           path: ../client/src/data
       - name: install node packages
         run: npm i
