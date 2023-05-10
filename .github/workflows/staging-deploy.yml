@@ -80,7 +80,6 @@ jobs:
           aws elbv2 modify-load-balancer-attributes --load-balancer-arn $API_ARN --attributes Key=idle_timeout.timeout_seconds,Value=300
           export REACT_APP_API=https://staging.ctrl-flow.lbl.gov/api
           cd $GITHUB_WORKSPACE/client
-          ls src/data
           npm i
           npm run buildForS3
           cd $GITHUB_WORKSPACE/client
