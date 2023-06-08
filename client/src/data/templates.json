@@ -10798,7 +10798,7 @@
     },
     {
       "modelicaPath": "Buildings.Templates.Types.Units.IP",
-      "name": "Imperial system of units",
+      "name": "Imperial system units",
       "type": "Buildings.Templates.Types.Units",
       "value": "Buildings.Templates.Types.Units.IP",
       "visible": false,

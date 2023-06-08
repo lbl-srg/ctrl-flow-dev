@@ -1,7 +1,7 @@
 #!/bin/sh
 set -x
 
-MODELICA_BUILDINGS_COMMIT=88b6ccdd0831c7bc0adb301f1ffb30cc4ba03df1
+MODELICA_BUILDINGS_COMMIT=06dddcf187878a44dbe6491f179bf1be866db331
 MODELICA_JSON_COMMIT=a46a361c3047c0a2b3d1cfc9bc8b0a4ced16006a
 
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
