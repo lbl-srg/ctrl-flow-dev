@@ -3,6 +3,7 @@ import Modal, { ModalInterface } from "./Modal";
 function AboutModal({ isOpen, close }: ModalInterface) {
   const links: string[] = ['https://simulationresearch.lbl.gov/modelica', 'https://obc.lbl.gov', 'https://www.ashrae.org/permissions'];
   const email = <a href = "mailto:ctrl-flow@lbl.gov">ctrl-flow@lbl.gov</a>;
+  const copyRightLink = <a href = "mailto:ctrl-flow@lbl.gov">ctrl-flow@lbl.gov</a>;
   
   function renderLink(link: string) {
     return (
