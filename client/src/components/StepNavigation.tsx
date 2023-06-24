@@ -75,10 +75,10 @@ function StepNavigation() {
       <div className="step-navigation">
         {previous && (
           <div className="prev-container">
-            <Link to={previous.path}>
+            {/* <Link to={previous.path}>
               <i className="icon-left-open" />
               {itl.terms.back}
-            </Link>
+            </Link> */}
           </div>
         )}
 

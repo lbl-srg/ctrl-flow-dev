@@ -57,10 +57,10 @@ const Template = ({ systemPath, templatePath }: TemplateProps) => {
         ))}
       </div>
 
-      <a href="#" onClick={add}>
+      {/* <a href="#" onClick={add}>
         <i className="icon-plus" />
         {itl.phrases.addConfig}
-      </a>
+      </a> */}
     </article>
   );
 };
