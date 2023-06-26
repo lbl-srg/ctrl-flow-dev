@@ -72,14 +72,14 @@ const Sidebarlayout = observer(
                   Project &gt; &nbsp;
                   <strong>{"details"}</strong>
                 </div>
-                {modalOpen ? null : (
+                {/* {modalOpen ? null : (
                   <button
                     className="small inline"
                     onClick={() => setModalOpen(true)}
                   >
                     {itl.terms.edit}
                   </button>
-                )}
+                )} */}
               </header>
 
               {modalOpen ? null : contentLeft}
