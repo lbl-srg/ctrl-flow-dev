@@ -2,7 +2,7 @@
 
 ctrl-flow Copyright (c) 2023, The Regents of the University of California,
 through Lawrence Berkeley National Laboratory (subject to receipt of
-any required approvals from the U.S. Dept. of Energy), Taylor Engineering,
+any required approvals from the U.S. Dept. of Energy), Taylor Engineers,
 LLP, Building Intelligence Group LLC, Modelon, Inc., DEPT® (formerly
 Devetry, Inc.) and Solamen SAS.  All rights reserved.
 
@@ -17,7 +17,7 @@ notice, this list of conditions and the following disclaimer in the
 documentation and/or other materials provided with the distribution.
 
 (3) Neither the name of the University of California, Lawrence Berkeley
-National Laboratory, U.S. Dept. of Energy, Taylor Engineering, LLP,
+National Laboratory, U.S. Dept. of Energy, Taylor Engineers, LLP,
 Building Intelligence Group LLC, Modelon, Inc., DEPT® (formerly
 Devetry, Inc.), Solamen SAS nor the names of its contributors may be
 used to endorse or promote products derived from this software without
