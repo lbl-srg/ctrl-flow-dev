@@ -300,7 +300,7 @@ export abstract class Element {
    */
   getLinkageKeywordValue(): boolean | undefined {
     if (this.annotation) {
-      const linkageKeyword = "__Linkage";
+      const linkageKeyword = "__ctrlFlow";
       const linkageAnnotation = this.annotation.find(
         (m) => m.name === linkageKeyword,
       );

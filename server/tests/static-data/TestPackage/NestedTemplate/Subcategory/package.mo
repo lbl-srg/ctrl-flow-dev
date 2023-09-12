@@ -1,5 +1,5 @@
 within TestPackage.NestedTemplate;
 package Subcategory "Test Subcategory"
   extends Modelica.Icons.Package;
-  annotation(__LinkageTemplate=true);
+  annotation(__ctrlFlow_template=true);
 end Subcategory;
