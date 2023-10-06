@@ -47,7 +47,7 @@ jobs:
         working-directory: cdk
     strategy:
       matrix:
-        node-version: [16.x] # currently only supporting 16 and up
+        node-version: [19.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
       - uses: actions/checkout@v2
