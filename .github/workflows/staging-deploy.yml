@@ -47,7 +47,7 @@ jobs:
         working-directory: cdk
     strategy:
       matrix:
-        node-version: [16.x] # currently only supporting 16 and up
+        node-version: [18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
       - uses: actions/checkout@v2
@@ -68,8 +68,14 @@ jobs:
         with:
           name: template
           path: ${{github.workspace}}/client/src/data
-      - name: install node packages
-        run: npm i
+      - name: Install node packages
+        run: |
+          # Updated the lib in my project
+          npm i -D aws-cdk@latest
+          # Reinstalling all packages
+          rm -fr node_modules package-lock.json cdk.out
+          # Reinstalling
+          npm i
       - name: Synthesize cloud formation template
         run: npx aws-cdk synth
       - name: Deploy stack
