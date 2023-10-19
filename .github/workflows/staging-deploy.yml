@@ -68,7 +68,11 @@ jobs:
         with:
           name: template
           path: ${{github.workspace}}/client/src/data
-      - name: install node packages
+      - name: Uninstall aws-cdk
+        run: npm uninstall -g aws-cdk
+      - name: Install aws-cdk
+        run: npm install -g aws-cdk
+      - name: Install node packages
         run: npm i
       - name: Synthesize cloud formation template
         run: npx aws-cdk synth
