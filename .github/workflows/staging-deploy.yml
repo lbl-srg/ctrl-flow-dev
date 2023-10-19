@@ -68,12 +68,14 @@ jobs:
         with:
           name: template
           path: ${{github.workspace}}/client/src/data
-      - name: Uninstall aws-cdk
-        run: npm uninstall -g aws-cdk
-      - name: Install aws-cdk
-        run: npm install -g aws-cdk
       - name: Install node packages
-        run: npm i
+        run: |
+          # Updated the lib in my project
+          npm i -D aws-cdk@latest
+          # Reinstalling all packages
+          rm -fr node_modules package-lock.json cdk.out
+          # Reinstalling
+          npm i
       - name: Synthesize cloud formation template
         run: npx aws-cdk synth
       - name: Deploy stack
