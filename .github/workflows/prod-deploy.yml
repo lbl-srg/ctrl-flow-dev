@@ -68,8 +68,12 @@ jobs:
         with:
           name: template
           path: ${{github.workspace}}/client/src/data
-      - name: install node packages
-        run: npm i
+      - name: Install node packages
+        run: |
+          # Updated the lib
+          npm i -D aws-cdk@latest
+          rm -fr node_modules package-lock.json cdk.out
+          npm i
       - name: Synthesize cloud formation template
         run: npx aws-cdk synth
       - name: Deploy stack

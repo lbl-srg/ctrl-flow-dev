@@ -70,11 +70,9 @@ jobs:
           path: ${{github.workspace}}/client/src/data
       - name: Install node packages
         run: |
-          # Updated the lib in my project
+          # Updated the lib
           npm i -D aws-cdk@latest
-          # Reinstalling all packages
           rm -fr node_modules package-lock.json cdk.out
-          # Reinstalling
           npm i
       - name: Synthesize cloud formation template
         run: npx aws-cdk synth
