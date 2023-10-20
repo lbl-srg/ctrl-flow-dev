@@ -5,7 +5,7 @@ import { execSync } from "child_process";
 import { typeStore } from "./parser";
 import config from "../../src/config";
 
-export const TEMPLATE_IDENTIFIER = "__LinkageTemplate";
+export const TEMPLATE_IDENTIFIER = "__ctrlFlow_template";
 export const MODELICAPATH = [
   `${config.MODELICA_DEPENDENCIES}/template-json/json/`,
 ];

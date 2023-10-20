@@ -414,7 +414,7 @@ describe("Path resolution", () => {
    * Gracefully handles a null reference
    *
    * fanRet has no link to 'dat' as it is marked as
-   * linkage enable === false
+   * __ctrlFlow enable === false
    */
   it("Gracefully handle secOutRel.secRel.fanRet.dat.nFan resolving as null", () => {
     const context = new ConfigContext(
@@ -1037,7 +1037,7 @@ describe("Display Option and Display Group Generation", () => {
     expect(displayOptions).toBeDefined();
   });
 
-  // TODO: may need linkage annotation for this
+  // TODO: may need ctrlFlow annotation for this
   it("Hides params with outer designation", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,

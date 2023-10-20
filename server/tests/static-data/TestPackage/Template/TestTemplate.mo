@@ -40,7 +40,7 @@ model TestTemplate "Test Template"
           "Third Test Component"),
         choice(
           redeclare replaceable TestPackage.Component.FourthComponent selectable_component(
-            redeclare final TestPackage.Component.SecondComponent replaceable_param 
+            redeclare final TestPackage.Component.SecondComponent replaceable_param
           )
           "Fourth Test Component")
         )
@@ -120,7 +120,7 @@ model TestTemplate "Test Template"
   // Linkage keyword override - true to false
   parameter Integer linkage_keyword_false
     "Param to test linkage keyword override to false"
-    annotation (Dialog(enable=true), __Linkage(enable=false));
+    annotation (Dialog(enable=true), __ctrlFlow(enable=false));
 
   parameter TestPackage.Types.IceCream typ = TestPackage.Types.IceCream.Chocolate
     "Test Enum"
@@ -130,7 +130,7 @@ model TestTemplate "Test Template"
 
   // redclare modifier params
   TestPackage.Component.FourthComponent redeclare_param_01(
-      redeclare final TestPackage.Component.SecondComponent replaceable_param 
+      redeclare final TestPackage.Component.SecondComponent replaceable_param
     )
     "First Param to test component redeclares"
     annotation(Dialog(enable=true));
@@ -169,6 +169,6 @@ model TestTemplate "Test Template"
           "Third Test Component")),
       Dialog(group="Selectable Component"));
 
-  annotation (__LinkageTemplate=true);
+  annotation (__ctrlFlow_template=true);
 
 end TestTemplate;

@@ -769,7 +769,7 @@ export class ConfigContext {
 
     if (!optionPath) {
       // Unable to resolve value - likely a param link explicitly broken using
-      // the annotation __Linkage(enable=false)
+      // the annotation __ctrlFlow(enable=false)
       return null; // PUNCH-OUT! Unable to resolve value
     }
 

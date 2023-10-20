@@ -174,7 +174,7 @@ It creates the following dictionary of modifiers on the option `Buildings.Templa
 In [parser.ts](./parser.ts) `loadPackage` wwill attemp to load the provided path.
 
 ### Template Entry Points
-There is a simple template discovery process with a grep for "__LinkageTemplate".
+There is a simple template discovery process with a grep for "__ctrlFlow_template".
 
 The executed command looks as follows:
 
@@ -192,7 +192,7 @@ During the process of creating `Element`s, each element gets registered to a typ
 
 If an `Element` indicates that it is a type not currently in the TypeStore, it attempts to find the file and load it.
 
-**The type store attempts to expand any relative paths**. 
+**The type store attempts to expand any relative paths**.
 
 Modelica supports relative pathing in multiple ways. The typestore generates a list of possible paths and iterates through the list in an attempt to find the file. The order of this list is meant to match modelicas priority order for search.
 
@@ -221,9 +221,9 @@ It is likely a good idea to try and separate out 'Modifier' like objects that ha
 The current approach is a simplistic and not very flexible. A more robust approach has been discussed:
 
 - Use a flag indicating that a package (in our case Buildings.Templates) is to be considered as the "root" for all template URIs, for instance:
-__Linkage(routing="root")
+__ctrlFlow(routing="root")
 - For each template class (for instance Buildings.Templates.AirHandlersFans.VAVMultiZone):
-__Linkage(routing="template")
+__ctrlFlow(routing="template")
 
 
 >The contract for the template developer will then be that the class URI dictates the explorer tree structure, starting from the "root" package (necessarily unique inside a library).
