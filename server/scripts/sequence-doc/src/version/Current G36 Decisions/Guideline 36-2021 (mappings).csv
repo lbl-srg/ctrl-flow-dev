@@ -74,14 +74,14 @@ The list of options should be revised in the template."
 ,MZVAV,MZVAV,,Buildings.Templates.AirHandlersFans.VAVMultiZone,,
 ,SZVAV,SZVAV,,,,NOT implemented in Templates. Covered by G36.
 ,DFDD,DFDD,,,,NOT implemented in Templates. Covered by G36.
-,Pressure Control:,BSP,Y,Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.buiPreCon-ctl.buiPreCon,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes,
-,Barometric relief (no fan),BARO,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.BarometricRelief,NOT implemented in Templates. Covered by G36.
-,Actuated relief damper (no fan),DMPR,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefDamper,
+,Pressure Control:,BSP,Y,Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.buiPreCon-ctl.buiPreCon,Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl,
+,Barometric relief (no fan),BARO,,,Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.BarometricRelief,NOT implemented in Templates. Covered by G36.
+,Actuated relief damper (no fan),DMPR,,,Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReliefDamper,
 ,Barometric damper with relief fan,RELIEF,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
-,Actuated relief damper with relief fan,RELIEFDMPR,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefFan,
-,Return fan - AF tracking (AMFS),RETURNTRACK,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanMeasuredAir,
-,Return fan - AF tracking (Calculated),,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanCalculatedAir,Removed from Templates. Not properly described in G36.
-,Return fan - Direct Building Pressure Control (DP),RETURNDP,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanDp,
+,Actuated relief damper with relief fan,RELIEFDMPR,,,Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReliefFan,
+,Return fan - AF tracking (AMFS),RETURNTRACK,,,Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir,
+,Return fan - AF tracking (Calculated),,,,Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanCalculatedAir,Removed from Templates. Not properly described in G36.
+,Return fan - Direct Building Pressure Control (DP),RETURNDP,,,Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanDp,
 ,Return fan - Speed tracking (SZVAV),RETURNSPD,,,,"Option for SZVAV, not implemented in Templates. Covered by G36."
 ,OA Damper Configuration and Measurement:,OA,Y,Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut-secOutRel.secOut,Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection,
 ,100% OA,100OA,,,Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.NoEconomizer,NOT implemented in Templates. NOT covered by G36.
