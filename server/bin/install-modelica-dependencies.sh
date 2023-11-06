@@ -1,7 +1,7 @@
 #!/bin/sh
 set -x
 
-MODELICA_BUILDINGS_COMMIT=06dddcf187878a44dbe6491f179bf1be866db331
+MODELICA_BUILDINGS_COMMIT=6263b4788b2013a5a5ac3bf5ef163d453995058c
 MODELICA_JSON_COMMIT=a46a361c3047c0a2b3d1cfc9bc8b0a4ced16006a
 
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
@@ -21,11 +21,7 @@ cd -
 
 git clone -b v3.2.3+build.4 --single-branch --depth 1 https://github.com/modelica/ModelicaStandardLibrary.git
 
-# TODO: remove patching
-cd modelica-buildings
-git apply $parent_path/bin/linkage-keyword.patch
-
-cd ../modelica-json
+cd modelica-json
 git apply $parent_path/bin/maven-install.patch
 make install
 make compile

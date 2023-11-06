@@ -1,20 +1,20 @@
 # Modelica Resources
 
-This is a collection of links/information to help get an overview of modelica and how it integrates with the Linkage widget.
+This is a collection of links/information to help get an overview of modelica and how it integrates with the ctrl-flow widget (formerly called "Linkage").
 
 # Modelica Templates
 
 Modelica templates are special .mo files that have inputs to allow a component to be configured.
 
-These templates exist in the modelica-buildings repo on the [issue1374_templates branch](https://github.com/lbl-srg/modelica-buildings/tree/issue1374_templates).
+These templates exist in the modelica-buildings repo on the [master branch](https://github.com/lbl-srg/modelica-buildings/tree/master/Buildings/Templates).
 
-The linkage widget interacts with these templates parsed as [`modelica-json`](https://github.com/lbl-srg/modelica-json).
+The ctrl-flow widget interacts with these templates parsed as [`modelica-json`](https://github.com/lbl-srg/modelica-json).
 
 ## Template Inputs
 
 All examples are from the most complete template, VAVMultizone.
 
-For additional details about template inputs refer to the requirements website for detailed information on [Parameter Dialog Annotations](https://lbl-srg.github.io/linkage.js/requirements.html#parameter-dialog-annotations).
+For additional details about template inputs refer to the requirements website for detailed information on [Parameter Dialog Annotations](https://lbl-srg.github.io/ctrl-flow/requirements.html#parameter-dialog-annotations).
 
 ### Variables
 
@@ -34,7 +34,7 @@ From this parameter we extract the following:
 - parameter type is an enum of type `Buildings.Templates.AirHandlersFans.Types.Configuration`
 - NOTE: tab can also be specified, e.g. `annotation (Dialog(tab="Assumptions", group="Heat transfer"))`
 
-Additional details on variables and how we translate into UI in [the requirements](https://lbl-srg.github.io/linkage.js/requirements.html#variables)
+Additional details on variables and how we translate into UI in [the requirements](https://lbl-srg.github.io/ctrl-flow/requirements.html#variables)
 
 `final` keyword: TODO
 

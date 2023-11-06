@@ -60,10 +60,10 @@
 ,CHW,CHW,,,Buildings.Templates.Components.Coils.WaterBasedCooling,
 ,DX/Evaporator coil w/ variable speed compressor (future),DX_VFD,,,Buildings.Templates.Components.Coils.EvaporatorVariableSpeed,Implemented in Templates. NOT covered by G36.
 ,DX/Evaporator coil w/ multi-stage compressor (future),DX_STGD,,,Buildings.Templates.Components.Coils.EvaporatorMultiStage,Implemented in Templates. NOT covered by G36.
-,Economizer:,ECON,Y,Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.have_eco-secOutRel.have_eco,Boolean,"This refers to the economizer FUNCTION, see https://github.com/lbl-srg/modelica-buildings/pull/3140#issue-1434648178"
+,Economizer:,ECON,Y,Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.have_eco-secOutRel.have_eco,Boolean,"This refers to the economizer FUNCTION, see https://github.com/lbl-srg/modelica-buildings/pull/3140#issue-1434648178"
 ,None,,,,false,NOT implemented in Templates. Not covered by G36.
 ,Yes,,,,true,
-,Economizer High Limit Type:,ECON_HL,Y,Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.typCtlEco-ctl.typCtlEco,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer,
+,Economizer High Limit Type:,ECON_HL,Y,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typCtlEco-ctl.typCtlEco,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer,
 ,Fixed DB,DB,,,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulb,
 ,Differential DB,DIFFDB,,,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.DifferentialDryBulb,
 ,Fixed DB + Differential DB,FXDIFFDB,,,Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulbWithDifferentialDryBulb,
@@ -74,14 +74,14 @@ The list of options should be revised in the template."
 ,MZVAV,MZVAV,,Buildings.Templates.AirHandlersFans.VAVMultiZone,,
 ,SZVAV,SZVAV,,,,NOT implemented in Templates. Covered by G36.
 ,DFDD,DFDD,,,,NOT implemented in Templates. Covered by G36.
-,Pressure Control:,BSP,Y,Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.buiPreCon-ctl.buiPreCon,Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl,
-,Barometric relief (no fan),BARO,,,Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.BarometricRelief,NOT implemented in Templates. Covered by G36.
-,Actuated relief damper (no fan),DMPR,,,Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReliefDamper,
+,Pressure Control:,BSP,Y,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.buiPreCon-ctl.buiPreCon,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes,
+,Barometric relief (no fan),BARO,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.BarometricRelief,NOT implemented in Templates. Covered by G36.
+,Actuated relief damper (no fan),DMPR,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefDamper,
 ,Barometric damper with relief fan,RELIEF,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
-,Actuated relief damper with relief fan,RELIEFDMPR,,,Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReliefFan,
-,Return fan - AF tracking (AMFS),RETURNTRACK,,,Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir,
-,Return fan - AF tracking (Calculated),,,,Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanCalculatedAir,Removed from Templates. Not properly described in G36.
-,Return fan - Direct Building Pressure Control (DP),RETURNDP,,,Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanDp,
+,Actuated relief damper with relief fan,RELIEFDMPR,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefFan,
+,Return fan - AF tracking (AMFS),RETURNTRACK,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanMeasuredAir,
+,Return fan - AF tracking (Calculated),,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanCalculatedAir,Removed from Templates. Not properly described in G36.
+,Return fan - Direct Building Pressure Control (DP),RETURNDP,,,Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReturnFanDp,
 ,Return fan - Speed tracking (SZVAV),RETURNSPD,,,,"Option for SZVAV, not implemented in Templates. Covered by G36."
 ,OA Damper Configuration and Measurement:,OA,Y,Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut-secOutRel.secOut,Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection,
 ,100% OA,100OA,,,Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.NoEconomizer,NOT implemented in Templates. NOT covered by G36.
@@ -101,10 +101,10 @@ The list of options should be revised in the template."
 ,Perimeter Reheat Box:,PERIM_RH,N,Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.have_perZonRehBox-ctl.have_perZonRehBox,Boolean,
 ,Yes,,,,true,
 ,No,,,,false,
-,Freeze Protection:,FRZ,N,Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.have_frePro-ctl.have_frePro,Boolean,Can we add a parameter to include/remove freeze protection to the template?
+,Freeze Protection:,FRZ,N,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.have_frePro-ctl.have_frePro,Boolean,Can we add a parameter to include/remove freeze protection to the template?
 ,Yes,,,,true,To be discussed with Jianjun.
 ,No,,,,false,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
-,Freezestat:,FRZST,N,Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.typFreSta-ctl.typFreSta,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat,
+,Freezestat:,FRZST,N,Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typFreSta-ctl.typFreSta,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat,
 ,No Freezestat,NO_FRZST,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.No_freeze_stat,
 ,Freeze stat only hardwired to the equipment,WIRED_EQ,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_equipment,
 ,Freeze stat hardwired to the equipment and the BAS,WIRED_BAS,,,Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_BAS,
@@ -124,13 +124,13 @@ The list of options should be revised in the template."
 ,DD VAV - Mixing Control with Discharge Airflow Sensor,DDDIS,,,,NOT implemented in Templates. Covered by G36.
 ,DD VAV - Cold-Duct Minimum Control,DDCDMIN,,,,NOT implemented in Templates. Covered by G36.
 ,Fan Coil Unit,FCU,,,,NOT implemented in Templates. Covered by G36.
-,Occupancy Sensor:,OCC,N,Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_occSen-ctl.have_occSen,Boolean,Missing modelica path for occupancy sensors
+,Occupancy Sensor:,OCC,N,Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.have_occSen-ctl.have_occSen,Boolean,Missing modelica path for occupancy sensors
 ,Yes,,,,true,"DEPT:  if any terminals have an occupancy sensor, this applies"
 ,No,,,,false,
-,Window Switch:,WIN,N,Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_winSen-ctl.have_winSen,Boolean,Missing modelica path for window switches
+,Window Switch:,WIN,N,Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.G36VAVBox.have_winSen-ctl.have_winSen,Boolean,Missing modelica path for window switches
 ,Yes,,,,true,"DEPT:  if any terminals have a window switch, this applies"
 ,No,,,,false,
-,CO2 Sensor:,CO2,N,Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox.have_CO2Sen-ctl.have_CO2Sen,Boolean,
+,CO2 Sensor:,CO2,N,Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialVAVBoxController.have_CO2Sen-ctl.have_CO2Sen,Boolean,
 ,Yes,,,,true,"DEPT:  if any terminals have a CO2 sensor, this applies"
 ,No,,,,false,
 ,Terminal Heat Source:,TERM_HT,N,Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea-coiHea,Buildings.Templates.Components.Coils,

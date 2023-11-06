@@ -45,10 +45,6 @@ RUN node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json 
 # COPY --from=alpine-node-modelica /dependencies /dependencies
 WORKDIR /server
 
-# TODO run parseTemplateJSON
-# output is /server/scripts/templates.json
-# Gets copied to /client/src/data/
-
 # Copy the rest of the server app
 RUN npm i
 COPY . .
