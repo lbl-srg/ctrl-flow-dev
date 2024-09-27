@@ -38,6 +38,11 @@
     "webpack": "^5.94.0",
     "webpack-cli": "^4.10.0"
   },
+  "overrides": {
+    "body-parser": "^1.20.3",
+    "superagent": "^9.0.0",
+    "semver": "^7.5.2"
+  },
   "scripts": {
     "docker:start": "docker-compose -p linkage-containers -f docker/docker-compose.yaml --env-file ./.env up -d && npm run docker:logs",
     "docker:debug": "docker-compose -p linkage-containers -f docker/docker-compose.yaml -f docker/docker-compose.debug.yaml --env-file ./.env up -d && npm run docker:logs",
