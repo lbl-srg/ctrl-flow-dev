@@ -21,6 +21,13 @@
     "web-vitals": "^2.1.2",
     "zustand": "^3.6.7"
   },
+  "overrides": {
+    "body-parser": "^1.20.3",
+    "superagent": "^9.0.0",
+    "semver": "^7.5.2",
+    "rollup": "^3.29.5",
+    "nth-check": "^2.0.1"
+  },
   "scripts": {
     "start": "react-app-rewired start",
     "build": "npm version patch && react-app-rewired build",
