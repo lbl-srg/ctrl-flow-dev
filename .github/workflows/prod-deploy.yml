@@ -4,7 +4,7 @@ on:
   push:
     branches: main
 env:
-  LBL_STAGE: production 
+  LBL_STAGE: production
   DEBIAN_FRONTEND: noninteractive
   TEMPLATES_FILE_NAME: templates.json
 jobs:
@@ -14,9 +14,9 @@ jobs:
       run:
         working-directory: server
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
@@ -31,7 +31,7 @@ jobs:
       - name: Copy templates.json out of the container
         run: docker cp $CONTAINER_ID:/server/scripts/templates.json $TEMPLATES_FILE_NAME
       - name: Upload templates.json as an artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: template
           path: ${{github.workspace}}/${{env.TEMPLATES_FILE_NAME}}
@@ -50,21 +50,21 @@ jobs:
         node-version: [18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
           cache-dependency-path: client/package-lock.json
       - name: Configure AWS CLI
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
       - name: Update template.json
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: template
           path: ${{github.workspace}}/client/src/data
