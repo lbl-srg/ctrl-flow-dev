@@ -4,7 +4,7 @@ on:
   push:
     branches: main
 env:
-  LBL_STAGE: production 
+  LBL_STAGE: production
   DEBIAN_FRONTEND: noninteractive
   TEMPLATES_FILE_NAME: templates.json
 jobs:
@@ -14,7 +14,7 @@ jobs:
       run:
         working-directory: server
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
@@ -31,7 +31,7 @@ jobs:
       - name: Copy templates.json out of the container
         run: docker cp $CONTAINER_ID:/server/scripts/templates.json $TEMPLATES_FILE_NAME
       - name: Upload templates.json as an artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: template
           path: ${{github.workspace}}/${{env.TEMPLATES_FILE_NAME}}
@@ -50,7 +50,7 @@ jobs:
         node-version: [18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
@@ -64,7 +64,7 @@ jobs:
           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
       - name: Update template.json
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: template
           path: ${{github.workspace}}/client/src/data
