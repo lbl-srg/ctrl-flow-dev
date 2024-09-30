@@ -1,6 +1,6 @@
 {
   "name": "lbl-linkage",
-  "version": "0.1.27",
+  "version": "0.1.28",
   "private": true,
   "homepage": "https://github.com/lbl-srg/ctrl-flow-dev",
   "dependencies": {
@@ -60,6 +60,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.17.12",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@emotion/babel-plugin": "^11.7.1",
     "@picocss/pico": "^1.4.4",
     "@types/jest": "^29.2.2",
