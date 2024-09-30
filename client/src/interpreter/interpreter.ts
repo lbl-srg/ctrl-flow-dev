@@ -887,7 +887,7 @@ export class ConfigContext {
     }
     const option = this.options[optionPath as string];
     const type =
-      option && "replaceable" in option ? (value as string) : option?.type;
+      option && "replaceable" in option ? (value as string) : option?.['type'];
     const castValue = value as Literal | null | undefined;
     const optionInstance = {
       value: castValue,
