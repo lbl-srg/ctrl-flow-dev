@@ -1,13 +1,13 @@
 {
   "name": "lbl-linkage",
-  "version": "0.1.27",
+  "version": "0.1.28",
   "private": true,
   "homepage": "https://github.com/lbl-srg/ctrl-flow-dev",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
-    "@types/node": "^16.11.14",
+    "@types/node": "^20.9.4",
     "@types/react-dom": "^17.0.11",
     "formik": "^2.2.9",
     "react": "^17.0.2",
@@ -20,6 +20,13 @@
     "use-debounce": "^7.0.1",
     "web-vitals": "^2.1.2",
     "zustand": "^3.6.7"
+  },
+  "overrides": {
+    "body-parser": "^1.20.3",
+    "superagent": "^9.0.0",
+    "semver": "^7.5.2",
+    "rollup": "^3.29.5",
+    "nth-check": "^2.0.1"
   },
   "scripts": {
     "start": "react-app-rewired start",
@@ -53,6 +60,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.17.12",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@emotion/babel-plugin": "^11.7.1",
     "@picocss/pico": "^1.4.4",
     "@types/jest": "^29.2.2",
