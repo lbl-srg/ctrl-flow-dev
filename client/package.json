@@ -1,6 +1,6 @@
 {
   "name": "lbl-linkage",
-  "version": "0.1.28",
+  "version": "0.1.29",
   "private": true,
   "homepage": "https://github.com/lbl-srg/ctrl-flow-dev",
   "dependencies": {
@@ -23,6 +23,7 @@
   },
   "overrides": {
     "body-parser": "^1.20.3",
+    "http-proxy-middleware": "^2.0.7",
     "superagent": "^9.0.0",
     "semver": "^7.5.2",
     "rollup": "^3.29.5",
