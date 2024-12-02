@@ -7,12 +7,9 @@ import { useLocation } from "react-router-dom";
 import { useStores } from "../../data";
 import { observer } from "mobx-react";
 
-import itl from "../../translations";
-
 const Sidebarlayout = observer(
   ({ contentLeft, contentRight, isFullScreen = true }) => {
     const { uiStore, projectStore } = useStores();
-    const projectDetails = projectStore.getProjectDetails();
 
     const [isDragging, setIsDragging] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);

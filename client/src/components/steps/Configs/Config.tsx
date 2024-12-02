@@ -7,7 +7,7 @@ import SlideOut from "./SlideOut";
 import { useStores } from "../../../data";
 
 import { OptionInterface, TemplateInterface } from "../../../data/template";
-import { Modifiers, ConfigValues } from "../../../utils/modifier-helpers";
+import { ConfigValues } from "../../../utils/modifier-helpers";
 import { ConfigInterface } from "../../../data/config";
 import Spinner from "../../Spinner";
 
@@ -21,11 +21,6 @@ const Config = observer(({ configId }: ConfigProps) => {
   const template = templateStore.getTemplateByPath(
     config.templatePath,
   ) as TemplateInterface;
-  const templateOptions: OptionInterface[] =
-    templateStore.getOptionsForTemplate(template?.modelicaPath);
-  const templateModifiers: Modifiers = templateStore.getModifiersForTemplate(
-    template?.modelicaPath,
-  );
   const selections: ConfigValues = configStore.getConfigSelections(configId);
   const allOptions: { [key: string]: OptionInterface } =
     templateStore.getAllOptions();
