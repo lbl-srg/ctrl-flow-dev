@@ -1,8 +1,6 @@
 // import { Field, Form, Formik } from "formik";
 import Modal, { ModalInterface } from "./Modal";
-import itl from "../../translations";
 import { useStores } from "../../data";
-import { getFormData } from "../../utils/dom-utils";
 import { observer } from "mobx-react";
 import { ChangeEvent, SyntheticEvent, useState } from "react";
 import { ProjectDetailInterface } from "../../data/project";
@@ -19,7 +17,6 @@ import {
 import {
   applyValueModifiers,
   applyVisibilityModifiers,
-  Modifiers,
   ConfigValues,
 } from "../../utils/modifier-helpers";
 
@@ -318,7 +315,7 @@ const EditDetailsModal = observer(
                 defaultValue={formInputs.size}
               />
             </label>*/}
-            
+
           {/*<div className="grid">
             <label htmlFor="units">
               {itl.terms.units}

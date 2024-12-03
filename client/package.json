@@ -5,16 +5,17 @@
   "homepage": "https://github.com/lbl-srg/ctrl-flow-dev",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.1",
-    "@testing-library/react": "^12.1.2",
+    "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^13.5.0",
     "@types/node": "^20.9.4",
-    "@types/react-dom": "^17.0.11",
+    "@types/react-dom": "^18.3.1",
+    "css-loader": "^7.1.2",
     "formik": "^2.2.9",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-localization": "^1.0.19",
     "react-router-dom": "^6.2.2",
-    "react-scripts": "5.0.0",
+    "react-scripts": "^5.0.1",
     "react-zoom-pan-pinch": "^2.1.3",
     "typescript": "^4.5.4",
     "use-debounce": "^7.0.1",
@@ -22,12 +23,8 @@
     "zustand": "^3.6.7"
   },
   "overrides": {
-    "body-parser": "^1.20.3",
-    "http-proxy-middleware": "^2.0.7",
-    "superagent": "^9.0.0",
-    "semver": "^7.5.2",
-    "rollup": "^3.29.5",
-    "nth-check": "^2.0.1"
+    "nth-check": "^2.1.0",
+    "postcss": "^8.4.31"
   },
   "scripts": {
     "start": "react-app-rewired start",
@@ -66,7 +63,7 @@
     "@picocss/pico": "^1.4.4",
     "@types/jest": "^29.2.2",
     "@types/jsdom": "^20.0.1",
-    "@types/react": "^17.0.40",
+    "@types/react": "^18.3.12",
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",

@@ -1,6 +1,5 @@
-import { storeHooks } from "./store-helpers";
 import { deepCopy } from "./utils";
-import { Modifiers, applyPathModifiers } from "./modifier-helpers";
+import { applyPathModifiers } from "./modifier-helpers";
 import { OptionInterface } from "../data/template";
 
 export type Literal = boolean | string | number;

@@ -1,13 +1,13 @@
 # Installs Pandoc, TexLive, and make4ht on a Ubuntu Linux distribution
-FROM ubuntu:22.04 as ubuntu-pandoc
+FROM ubuntu:22.04 AS ubuntu-pandoc
 
 # Installs Node 16.16.0 LTS with NVM
 # FROM ubuntu-pandoc as ubuntu-pandoc-node
 RUN apt-get --assume-yes update && apt-get --assume-yes install curl bash
 ENV NVM_DIR=/usr/local/nvm
-ENV NODE_VERSION=16.16.0
+ENV NODE_VERSION=20.18.1
 RUN mkdir $NVM_DIR
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
