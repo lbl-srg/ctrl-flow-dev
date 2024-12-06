@@ -35,6 +35,10 @@ export const isInputGroup = (elementType: string) =>
 export const isDefinition = (elementType: string) =>
   !["replaceable", "component_clause", "import_clause"].includes(elementType);
 
+// Specialized kinds of classes that may be used as templates
+export const mayBeTemplate = (classPrefix: string) =>
+  ["block", "model"].some(cla => classPrefix.includes(cla));
+
 export const isLiteral = (path: string) => MODELICA_LITERALS.includes(path);
 
 class Store {
@@ -394,8 +398,8 @@ export class InputGroup extends Element {
       this.annotation &&
       this.annotation.find((m) => m.name === TEMPLATE_IDENTIFIER)
     ) {
-      this.entryPoint = true;
-      if (definition.class_prefixes === "model") {
+      this.entryPoint = true; // Can be a package matching a system type, or a template
+      if (mayBeTemplate(definition.class_prefixes)) {
         new Template(this);
       }
     }
@@ -891,22 +895,26 @@ function _constructElement(
 
   definition =
     "class_definition" in definition ? definition.class_definition : definition;
-  // either the element type is defined ('type', 'model', 'package', or 'record') or
-  // 'extend_clause' or 'component_clause' is provided
+  // From https://specification.modelica.org/maint/3.6/introduction1.html#some-definitions
+  // an element can be either a class definition (or short class definition)
+  // of the kind 'type', 'model', 'package', 'block', 'record', etc. or
+  // an extends_clause, or
+  // a component_clause (basically a variable or an instance of a class)
   let elementType = null;
-  if ("class_prefixes" in definition) {
+
+  if ("class_prefixes" in definition) { // Class definition (or short class definition)
     elementType = definition.class_prefixes;
     elementType = elementType.replace("partial ", "");
     elementType = elementType.replace("expandable ", "");
   } else if (extend in definition) {
     elementType = extend;
-  } else if (replaceable in definition && definition.replaceable) {
-    elementType = replaceable;
   } else if (component in definition) {
     elementType = component;
   } else if (importClause in definition) {
     elementType = importClause;
   }
+
+  elementType = definition.replaceable ? replaceable : elementType;
 
   let element: Element | undefined;
 
