@@ -881,7 +881,7 @@ export class Import extends Element {
  * @returns
  */
 function _constructElement(
-  definition: any,
+  definition: any, // object from the class_definition array or from the element_list array
   basePath: string,
 ): Element | undefined {
   const extend = "extends_clause";
