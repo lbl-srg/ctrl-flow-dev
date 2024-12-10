@@ -31,7 +31,7 @@ let inputs: {[key: string]: parser.TemplateInput} = {};
 
 function getInputs() {
   const file = parser.getFile(testModelicaFile) as parser.File;
-  const template = file.elementList[0] as parser.InputGroup;
+  const template = file.elementList[0] as parser.LongClass;
   return template.getInputs();
 }
 

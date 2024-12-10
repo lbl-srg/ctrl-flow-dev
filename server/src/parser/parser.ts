@@ -3,8 +3,8 @@
  * Various structures in modelica are generically converted to 'elements', with each specific structure
  * implemented as a class that extends the 'Element' base class.
  *
- * The parser also keeps a store of type definitions, so that as json is unpacked and converted to an 'Element'
- * that element is available if referenced by another piece of modelica-json.
+ * The parser also keeps a store of type definitions, so that as json is unpacked and converted to
+ * an 'Element' that element is available if referenced by another piece of modelica-json.
  */
 
 import { findPackageEntryPoints, loader, TEMPLATE_IDENTIFIER } from "./loader";
@@ -27,17 +27,31 @@ export const EXTEND_NAME = "__extend";
 export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 const PROJECT_PATH = "Buildings.Templates.Data.AllSystems";
 const PROJECT_INSTANCE_PATH = "datAll";
+const ELEMENT_TYPES = [
+  "block", // Modelica specialized classes
+  "class",
+  "connector",
+  "model",
+  "package",
+  "record",
+  "type",
+  "component_clause", // Local typing for parsing purposes
+  "extends_clause",
+  "import_clause",
+  "", // Undefined
+] as const;
+const TEMPLATE_TYPES: ElementType[] = ["block", "model"]; // Specialized kinds of classes that may be used as templates
 
-// TODO: convert 'elementType' to an enum
-export const isInputGroup = (elementType: string) =>
+type ElementType = (typeof ELEMENT_TYPES)[number];
+
+export const isInputGroup = (elementType: ElementType): boolean =>
   ["model", "block", "package"].includes(elementType);
 
-export const isDefinition = (elementType: string) =>
+export const isDefinition = (elementType: ElementType): boolean =>
   !["replaceable", "component_clause", "import_clause"].includes(elementType);
 
-// Specialized kinds of classes that may be used as templates
-export const mayBeTemplate = (classPrefix: string) =>
-  ["block", "model"].some(cla => classPrefix.includes(cla));
+export const mayBeTemplate = (classPrefixes: string | undefined): boolean =>
+  TEMPLATE_TYPES.some((cla) => classPrefixes?.includes(cla));
 
 export const isLiteral = (path: string) => MODELICA_LITERALS.includes(path);
 
@@ -65,14 +79,14 @@ class Store {
       if (basePath !== path) {
         let element = typeStore.get(basePath, "", false); // base paths SHOULD be loaded
         while (element && isInputGroup(element.elementType)) {
-          element = element as InputGroup;
-          const childElements = (element as InputGroup).elementList;
+          element = element as LongClass;
+          const childElements = (element as LongClass).elementList;
           const matchedElement = childElements?.find((e) => e.name === name);
           if (matchedElement) {
             return matchedElement;
           }
 
-          element = (element as InputGroup).extendElement;
+          element = (element as LongClass).extendElement;
         }
       }
     }
@@ -223,6 +237,7 @@ export function createProjectInputs(): { [key: string]: TemplateInput } {
     modifiers: spoofedModList,
     inputs: [PROJECT_PATH],
     elementType: "component_clause",
+    replaceable: false,
   };
 
   const optionPatchPaths = [
@@ -261,7 +276,124 @@ export interface TemplateInput {
   enable?: any;
   modifiers?: Modification[];
   choiceModifiers?: { [key: string]: Modification[] };
-  elementType: string;
+  elementType: ElementType;
+  replaceable?: boolean;
+}
+
+// Additional properties for replaceable elements
+interface Replaceable extends Element {
+  choices?: string[];
+  choiceMods?: { [key: string]: Modification[] };
+  constraint?: Element;
+  mods?: Modification[];
+  value?: any;
+  tab?: any;
+  group?: any;
+}
+
+// Utility function to handle replaceable elements (classes or instances)
+function initializeReplaceable(
+  instance: Replaceable,
+  definition: any,
+  basePath: string,
+) {
+  instance.choices = [];
+  instance.choiceMods = {};
+  instance.mods = [];
+  // the default value is original type provided
+  instance.value = instance.type;
+
+  const mod = createModification({
+    name: instance.name,
+    value: getExpression(instance.value, basePath),
+    basePath: basePath,
+    baseType: instance.type,
+  });
+
+  if (mod) {
+    instance.mods.push(mod);
+  }
+
+  // Handle constrainedby clause if present
+  if (definition.constraining_clause) {
+    const constraintDef = definition.constraining_clause;
+    instance.constraint = typeStore.get(
+      constraintDef.name,
+      basePath,
+    ) as Element;
+    if (constraintDef?.class_modification) {
+      instance.mods = [
+        ...instance.mods,
+        ...getModificationList(
+          constraintDef,
+          basePath,
+          instance.constraint.modelicaPath,
+        ),
+      ];
+    }
+  }
+
+  const choices = instance.annotation.find(
+    (m) => m.name === "choices",
+  ) as Modification;
+
+  if (choices) {
+    choices.mods.map((choice) => {
+      if (choice.value) {
+        instance.choices!.push(choice.value as string);
+        if (choice.mods.length > 0) {
+          instance.choiceMods![choice.value] = choice.mods;
+        }
+      } else {
+        throw new Error("Malformed 'Choices' specified");
+      }
+    });
+  }
+}
+
+// Utility function to handle replaceable elements (classes or instances)
+function getReplaceableInputs(
+  inputs: { [key: string]: TemplateInput },
+  recursive: boolean,
+  instance: Replaceable,
+): { [key: string]: TemplateInput } {
+  if (instance.modelicaPath in inputs) {
+    return inputs;
+  }
+
+  // if an annotation has been provided, use the choices from that annotation
+  // otherwise fallback to using the parameter type
+  const childTypes = instance.choices!.length
+    ? instance.choices
+    : [instance.type];
+  const visible = childTypes!.length > 1;
+
+  inputs[instance.modelicaPath] = {
+    modelicaPath: instance.modelicaPath,
+    type: instance.type,
+    value: instance.value,
+    name: instance.description,
+    inputs: childTypes,
+    group: instance.group,
+    tab: instance.tab,
+    visible: visible,
+    modifiers: instance.mods,
+    elementType: instance.elementType,
+    enable: instance.enable,
+    choiceModifiers: instance.choiceMods,
+  };
+
+  if (recursive) {
+    childTypes?.map((c) => {
+      // TODO: applying mods from the parameter to child types?
+      const typeInstance = typeStore.get(c) || null;
+      if (typeInstance) {
+        inputs = typeInstance.getInputs(inputs);
+      }
+    });
+  }
+
+  return inputs;
 }
 
 export abstract class Element {
@@ -271,7 +403,8 @@ export abstract class Element {
   description = "";
   entryPoint = false;
   duplicate = false;
-  elementType = "";
+  elementType: ElementType = "";
+  replaceable: boolean = false;
   enable: Expression | boolean = false;
   annotation: Modification[] = [];
   deadEnd = false;
@@ -320,12 +453,17 @@ export abstract class Element {
   }
 }
 
-export class InputGroupShort extends Element {
+export class ShortClass extends Element {
   value: string;
   description: string;
-  constructor(definition: any, basePath: string, public elementType: string) {
+  constructor(
+    definition: any,
+    basePath: string,
+    public elementType: ElementType,
+  ) {
     super();
-    const specifier = definition.class_specifier.short_class_specifier;
+    const specifier = (definition.class_definition ?? definition)
+      .class_specifier.short_class_specifier;
     this.name = specifier.identifier;
     const classValue = specifier?.value;
     this.value = classValue.description?.description_string;
@@ -346,18 +484,23 @@ export class InputGroupShort extends Element {
   }
 }
 
-export class InputGroup extends Element {
+export class LongClass extends Element {
   annotation: Modification[] = [];
   elementList: Element[] | undefined = [];
   description: string = "";
   entryPoint = false;
   mods: Modification[] | undefined;
-  extendElement: InputGroup | undefined;
+  extendElement: LongClass | undefined;
   extendElementDeadEnd = false;
 
-  constructor(definition: any, basePath: string, public elementType: string) {
+  constructor(
+    definition: any,
+    basePath: string,
+    public elementType: ElementType,
+  ) {
     super();
-    const specifier = definition.class_specifier.long_class_specifier;
+    const specifier = (definition.class_definition ?? definition)
+      .class_specifier.long_class_specifier;
     this.name = specifier.identifier;
 
     this.modelicaPath = basePath ? [basePath, this.name].join(".") : this.name;
@@ -375,12 +518,12 @@ export class InputGroup extends Element {
         ?.map((e: any) => {
           const element = _constructElement(e, this.modelicaPath);
           if (element?.elementType === "extends_clause") {
-            const extendParam = element as InputGroupExtend;
+            const extendParam = element as Extend;
             this.mods = extendParam.mods;
-            this.extendElement = typeStore.get(extendParam.type) as InputGroup;
+            this.extendElement = typeStore.get(extendParam.type) as LongClass;
             // Kludge - the instatiation of the extend type (extendParam) should
             // likely be assigned and not the fetched type. However with how
-            // the extend param is unpacked into the InputGroup, this is a smaller
+            // the extend param is unpacked into the LongClass, this is a smaller
             // change
             this.extendElementDeadEnd = extendParam.deadEnd;
           }
@@ -450,14 +593,14 @@ export class InputGroup extends Element {
       inputs: children,
       elementType: this.elementType,
       modifiers: this.mods,
+      replaceable: this.replaceable,
     };
 
     return inputs;
   }
 }
 
-// a parameter with a type
-export class Input extends Element {
+export class Component extends Element implements Replaceable {
   mod?: Modification | null;
   type = ""; // modelica path
   value: any; // modelica path?
@@ -468,11 +611,16 @@ export class Input extends Element {
   connectorSizing = false;
   tab? = "";
   group?: any = "";
+  // Optional properties for replaceable elements
+  choices?: string[];
+  choiceMods?: { [key: string]: Modification[] };
+  constraint?: Element;
+  mods?: Modification[];
 
   constructor(
-    definition: mj.ProtectedElement,
+    definition: mj.Element,
     basePath: string,
-    public elementType: string,
+    public elementType: ElementType,
   ) {
     super();
     const componentClause = definition.component_clause;
@@ -486,8 +634,8 @@ export class Input extends Element {
     this.final = definition.final ? definition.final : this.final;
     this.inner = definition.inner;
     this.outer = definition.outer;
+    this.replaceable = definition.replaceable;
     const registered = this.registerPath(this.modelicaPath, this.type);
-
     if (!registered) {
       return; // PUNCH-OUT!
     }
@@ -526,6 +674,10 @@ export class Input extends Element {
       this.value = this.mod.value;
     }
     this._setUIInfo();
+
+    if (this.replaceable) {
+      initializeReplaceable(this, definition, basePath);
+    }
   }
 
   /**
@@ -586,10 +738,13 @@ export class Input extends Element {
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
+    if (this.replaceable) {
+      inputs = getReplaceableInputs(inputs, recursive, this);
+      return inputs;
+    }
     if (this.modelicaPath in inputs) {
       return inputs;
     }
-
     // if a replaceable and in modification store - use that type
     // if not in mod store, use 'this.type'
     const typeInstance = typeStore.get(this.type) || null;
@@ -615,6 +770,7 @@ export class Input extends Element {
       inputs: childInputs,
       modifiers: this.mod ? [this.mod as Modification] : [],
       elementType: this.elementType,
+      replaceable: this.replaceable,
     };
 
     if (recursive) {
@@ -627,108 +783,7 @@ export class Input extends Element {
   }
 }
 
-export class ReplaceableInput extends Input {
-  choices: string[] = [];
-  choiceMods: { [key: string]: Modification[] } = {};
-  constraint: Element | undefined;
-  mods: Modification[] = [];
-  mod: Modification | undefined;
-  constructor(
-    definition: mj.ProtectedElement,
-    basePath: string,
-    elementType: string,
-  ) {
-    super(definition, basePath, elementType);
-
-    // the default value is original type provided
-    this.value = this.type;
-
-    const mod = createModification({
-      name: this.name,
-      value: getExpression(this.value, basePath),
-      basePath: basePath,
-      baseType: this.type,
-    });
-
-    if (mod) {
-      this.mods.push(mod);
-    }
-
-    // modifiers for replaceables are specified in a constraining
-    // interface. Check if one is present to extract modifiers
-    if (definition.constraining_clause) {
-      const constraintDef = definition.constraining_clause;
-      this.constraint = typeStore.get(constraintDef.name, basePath) as Element;
-      this.mods = constraintDef?.class_modification
-        ? [
-            ...this.mods,
-            ...getModificationList(
-              constraintDef,
-              basePath,
-              this.constraint.modelicaPath,
-            ),
-          ]
-        : [];
-    }
-
-    const choices = this.annotation.find(
-      (m) => m.name === "choices",
-    ) as Modification;
-
-    if (choices) {
-      choices.mods.map((choice) => {
-        if (choice.value) {
-          this.choices.push(choice.value as string);
-          if (choice.mods.length > 0) {
-            this.choiceMods[choice.value] = choice.mods;
-          }
-        } else {
-          throw new Error("Malformed 'Choices' specified");
-        }
-      });
-    }
-  }
-
-  getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
-    if (this.modelicaPath in inputs) {
-      return inputs;
-    }
-
-    // if an annotation has been provided, use the choices from that annotation
-    // otherwise fallback to using the parameter type
-    const childTypes = this.choices.length ? this.choices : [this.type];
-    const visible = childTypes.length > 1;
-
-    inputs[this.modelicaPath] = {
-      modelicaPath: this.modelicaPath,
-      type: this.type,
-      value: this.value,
-      name: this.description,
-      inputs: childTypes,
-      group: this.group,
-      tab: this.tab,
-      visible: visible,
-      modifiers: this.mods,
-      elementType: this.elementType,
-      enable: this.enable,
-      choiceModifiers: this.choiceMods,
-    };
-
-    if (recursive) {
-      childTypes.map((c) => {
-        // TODO: applying mods from the parameter to child types?
-        const typeInstance = typeStore.get(c) || null;
-        if (typeInstance) {
-          inputs = typeInstance.getInputs(inputs);
-        }
-      });
-    }
-
-    return inputs;
-  }
-}
-
-export class Enum extends Element {
+export class Enumeration extends Element {
   enumList: {
     modelicaPath: string;
     identifier: string;
@@ -736,13 +791,19 @@ export class Enum extends Element {
   }[] = [];
   description: string = "";
 
-  constructor(definition: any, basePath: string, public elementType: string) {
+  constructor(
+    definition: any,
+    basePath: string,
+    public elementType: ElementType,
+  ) {
     super();
-    const specifier = definition.class_specifier.short_class_specifier;
+    const specifier = (definition.class_definition ?? definition)
+      .class_specifier.short_class_specifier;
     this.name = specifier.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = this.modelicaPath;
     this.description = specifier.value.description.description_string;
+    this.replaceable = definition.replaceable;
     const registered = this.registerPath(this.modelicaPath, this.type);
     if (!registered) {
       return; // PUNCH-OUT!
@@ -774,6 +835,7 @@ export class Enum extends Element {
       visible: true,
       inputs: this.enumList.map((e) => e.modelicaPath),
       elementType: this.elementType,
+      replaceable: this.replaceable,
     };
 
     // outputs a parent input, then an input for each enum type
@@ -786,6 +848,7 @@ export class Enum extends Element {
           value: e.modelicaPath,
           visible: false,
           elementType: this.elementType,
+          replaceable: false,
         }),
     );
 
@@ -794,13 +857,17 @@ export class Enum extends Element {
 }
 
 // Inherited properties by type with modifications
-export class InputGroupExtend extends Element {
+export class Extend extends Element {
   mods: Modification[] = [];
   type: string = "";
   value: string = "";
   annotation: Modification[] = [];
 
-  constructor(definition: any, basePath: string, public elementType: string) {
+  constructor(
+    definition: any,
+    basePath: string,
+    public elementType: ElementType,
+  ) {
     super();
     this.name = EXTEND_NAME; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${this.name}`;
@@ -856,7 +923,11 @@ export class InputGroupExtend extends Element {
 export class Import extends Element {
   value: string;
 
-  constructor(definition: any, basePath: string, public elementType: string) {
+  constructor(
+    definition: any,
+    basePath: string,
+    public elementType: ElementType,
+  ) {
     super();
     const importClause = definition.import_clause as mj.ImportClause; // arbitrary name. Important that this will not collide with other param names
     this.name = importClause.identifier;
@@ -870,7 +941,7 @@ export class Import extends Element {
 
   /**
    * 'Extend' statements do not generate a unique TemplateInput as they are inherited
-   * by the InputGroup that uses them. So this function is a noop
+   * by the LongClass that uses them. So this function is a noop
    */
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
     return inputs;
@@ -885,42 +956,48 @@ export class Import extends Element {
  * @returns
  */
 function _constructElement(
-  definition: any, // object from the class_definition array or from the element_list array
+  definition: any, // object from class_definition or from element_list
   basePath: string,
 ): Element | undefined {
   const extend = "extends_clause";
   const component = "component_clause";
-  const replaceable = "replaceable";
   const importClause = "import_clause";
 
-  definition =
-    "class_definition" in definition ? definition.class_definition : definition;
+  // Reducing the definition to class_definition of an element prunes the replaceable
+  // property in case of a class definition
+  // definition =
+  //   "class_definition" in definition ? definition.class_definition : definition;
+
   // From https://specification.modelica.org/maint/3.6/introduction1.html#some-definitions
-  // an element can be either a class definition (or short class definition)
+  // an element can be either a class (or short class) definition
   // of the kind 'type', 'model', 'package', 'block', 'record', etc. or
   // an extends_clause, or
   // a component_clause (basically a variable or an instance of a class)
-  let elementType = null;
+  let elementType: ElementType;
 
-  if ("class_prefixes" in definition) { // Class definition (or short class definition)
-    elementType = definition.class_prefixes;
-    elementType = elementType.replace("partial ", "");
-    elementType = elementType.replace("expandable ", "");
+  const classPrefixes =
+    definition.class_definition?.class_prefixes ?? definition.class_prefixes;
+  if (classPrefixes != null) {
+    // Class (or short class) definition
+    elementType = classPrefixes
+      .replace("partial ", "")
+      .replace("expandable ", "");
   } else if (extend in definition) {
     elementType = extend;
   } else if (component in definition) {
     elementType = component;
   } else if (importClause in definition) {
     elementType = importClause;
+  } else {
+    // Undefined element type: PUNCH-OUT!
+    return;
   }
-
-  elementType = definition.replaceable ? replaceable : elementType;
 
   let element: Element | undefined;
 
   switch (elementType) {
     case "type":
-      element = new Enum(definition, basePath, elementType);
+      element = new Enumeration(definition, basePath, elementType);
       break;
     case "class":
     case "connector":
@@ -928,20 +1005,17 @@ function _constructElement(
     case "block":
     case "record":
     case "package":
-      const long_specifier =
-        "long_class_specifier" in definition.class_specifier;
-      element = long_specifier
-        ? new InputGroup(definition, basePath, elementType)
-        : new InputGroupShort(definition, basePath, elementType);
+      element = definition.class_specifier?.hasOwnProperty(
+        "long_class_specifier",
+      )
+        ? new LongClass(definition, basePath, elementType)
+        : new ShortClass(definition, basePath, elementType);
       break;
     case extend:
-      element = new InputGroupExtend(definition, basePath, elementType);
+      element = new Extend(definition, basePath, elementType);
       break;
     case component:
-      element = new Input(definition, basePath, elementType);
-      break;
-    case replaceable:
-      element = new ReplaceableInput(definition, basePath, elementType);
+      element = new Component(definition, basePath, elementType);
       break;
     case importClause:
       element = new Import(definition, basePath, elementType);

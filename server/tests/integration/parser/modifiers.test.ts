@@ -45,7 +45,7 @@ describe("Modifications", () => {
 
   it("Maps Modifiers to Flattened List of Expressions and Paths", () => {
     const path = `TestPackage.Template.TestTemplate`;
-    const element = findElement(path) as parser.InputGroup;
+    const element = findElement(path) as parser.LongClass;
     const inputs = element?.getInputs() as {
       [key: string]: parser.TemplateInput;
     };
@@ -110,7 +110,7 @@ describe("Modifications", () => {
     const modPath = "TestPackage.Component.FourthComponent.replaceable_param";
     const option = tOptions[path];
     const mod = option.modifiers[modPath];
-  
+
     expect(mod).toBeDefined();
     expect(mod.final).toBeTruthy();
     expect(evaluateExpression(mod.expression)).toEqual('TestPackage.Component.SecondComponent');
@@ -120,7 +120,7 @@ describe("Modifications", () => {
     const path = "TestPackage.Template.TestTemplate.typ";
     const option = tOptions[path];
     const mod = option.modifiers[path];
-  
+
     expect(mod).toBeUndefined();
   });
 });

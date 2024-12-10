@@ -1,4 +1,4 @@
-import { typeStore, isInputGroup, InputGroup, Element } from "./parser";
+import { typeStore, isInputGroup, LongClass, Element } from "./parser";
 import * as mj from "./mj-types";
 
 /**
