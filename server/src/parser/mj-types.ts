@@ -19,7 +19,7 @@ export interface ClassModification {
 
 export interface ShortClassSpecifier {
   identifier: string;
-  short_class_specifier_value: {
+  value: {
     base_prefix: string;
     name: string;
     array_subscripts: any;

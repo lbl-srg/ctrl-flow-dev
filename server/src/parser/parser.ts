@@ -24,23 +24,19 @@ import {
 import * as mj from "./mj-types";
 
 export const EXTEND_NAME = "__extend";
-export const MODELICA_LITERALS = ["String", "Boolean", "Real", "Integer"];
 const PROJECT_PATH = "Buildings.Templates.Data.AllSystems";
 const PROJECT_INSTANCE_PATH = "datAll";
+
+export const MLS_PREDEFINED_TYPES = ["String", "Boolean", "Real", "Integer"];
+export const MLS_SPECIALIZED_CLASSES = ["block", "class", "connector", "model", "package", "record", "type"];
 const ELEMENT_TYPES = [
-  "block", // Modelica specialized classes
-  "class",
-  "connector",
-  "model",
-  "package",
-  "record",
-  "type",
+  ...MLS_SPECIALIZED_CLASSES, // Modelica specialized classes
+  ...MLS_SPECIALIZED_CLASSES.map((c) => `${c}-short`), // Modelica specialized classes as short class definitions
   "component_clause", // Local typing for parsing purposes
   "extends_clause",
   "import_clause",
-  "", // Undefined
 ] as const;
-const TEMPLATE_TYPES: ElementType[] = ["block", "model"]; // Specialized kinds of classes that may be used as templates
+const TEMPLATE_CLASSES: ElementType[] = ["block", "model"]; // Specialized classes that may be used as templates
 
 type ElementType = (typeof ELEMENT_TYPES)[number];
 
@@ -48,12 +44,13 @@ export const isInputGroup = (elementType: ElementType): boolean =>
   ["model", "block", "package"].includes(elementType);
 
 export const isDefinition = (elementType: ElementType): boolean =>
-  !["replaceable", "component_clause", "import_clause"].includes(elementType);
+  !["component_clause", "import_clause"].includes(elementType);
 
 export const mayBeTemplate = (classPrefixes: string | undefined): boolean =>
-  TEMPLATE_TYPES.some((cla) => classPrefixes?.includes(cla));
+  TEMPLATE_CLASSES.some((cla) => classPrefixes?.includes(cla));
 
-export const isLiteral = (path: string) => MODELICA_LITERALS.includes(path);
+export const isPredefinedType = (path: string) =>
+  MLS_PREDEFINED_TYPES.includes(path);
 
 class Store {
   _store: Map<string, any> = new Map();
@@ -99,7 +96,7 @@ class Store {
    * the corresponding file into the store, then return the loaded results
    */
   get(path: string, basePath: string = "", load: boolean = true) {
-    if (isLiteral(path) || path === "") {
+    if (isPredefinedType(path) || path === "") {
       return;
     }
 
@@ -205,7 +202,7 @@ export const findElement = (modelicaPath: string) => {
 };
 
 function assertType(type: string) {
-  if (!MODELICA_LITERALS.includes(type) && !typeStore.has(type)) {
+  if (!MLS_PREDEFINED_TYPES.includes(type) && !typeStore.has(type)) {
     throw new Error(`${type} not defined`);
   }
 }
@@ -287,8 +284,6 @@ interface Replaceable extends Element {
   constraint?: Element;
   mods?: Modification[];
   value?: any;
-  tab?: any;
-  group?: any;
 }
 
 // Utility function to handle replaceable elements (classes or instances)
@@ -300,8 +295,10 @@ function initializeReplaceable(
   instance.choices = [];
   instance.choiceMods = {};
   instance.mods = [];
-  // the default value is original type provided
-  instance.value = instance.type;
+  // For replaceable ***components*** the default value is the instance type
+  if (instance.elementType === "component_clause") {
+    instance.value = instance.type;
+  }
 
   const mod = createModification({
     name: instance.name,
@@ -314,8 +311,16 @@ function initializeReplaceable(
     instance.mods.push(mod);
   }
 
-  // Handle constrainedby clause if present
+  // Handle constraining-clause clause if present
   if (definition.constraining_clause) {
+    // From MLS: description of replaceable elements is
+    // - within class-definition | component-clause if there is no constraining-clause
+    //   (it is then already handled by the constructor of the caller class)
+    // - at the same level of class-definition | component-clause if there is a constraining-clause
+    const descriptionBlock = definition.description
+    instance.description = descriptionBlock?.description_string || "";
+    instance.annotation = createAnnotationModifications(descriptionBlock, basePath, instance.type);
+
     const constraintDef = definition.constraining_clause;
     instance.constraint = typeStore.get(
       constraintDef.name,
@@ -363,17 +368,17 @@ function getReplaceableInputs(
 
   // if an annotation has been provided, use the choices from that annotation
   // otherwise fallback to using the parameter type
-  const childTypes = instance.choices!.length
+  const choiceTypes = instance.choices!.length
     ? instance.choices
     : [instance.type];
-  const visible = childTypes!.length > 1;
+  const visible = choiceTypes!.length > 1;
 
   inputs[instance.modelicaPath] = {
     modelicaPath: instance.modelicaPath,
     type: instance.type,
     value: instance.value,
     name: instance.description,
-    inputs: childTypes,
+    inputs: choiceTypes,
     group: instance.group,
     tab: instance.tab,
     visible: visible,
@@ -381,11 +386,12 @@ function getReplaceableInputs(
     elementType: instance.elementType,
     enable: instance.enable,
     choiceModifiers: instance.choiceMods,
+    replaceable: instance.replaceable,
   };
 
   if (recursive) {
-    childTypes?.map((c) => {
-      // TODO: applying mods from the parameter to child types?
+    choiceTypes?.map((c) => {
+      // TODO: applying mods from the parameter to choice types?
       const typeInstance = typeStore.get(c) || null;
       if (typeInstance) {
         inputs = typeInstance.getInputs(inputs);
@@ -403,11 +409,16 @@ export abstract class Element {
   description = "";
   entryPoint = false;
   duplicate = false;
-  elementType: ElementType = "";
+  elementType!: ElementType;
   replaceable: boolean = false;
   enable: Expression | boolean = false;
   annotation: Modification[] = [];
   deadEnd = false;
+  final = false;
+  inner: boolean | null = null;
+  outer: boolean | null = null;
+  tab = "";
+  group = "";
 
   abstract getInputs(
     inputs?: { [key: string]: TemplateInput },
@@ -454,8 +465,8 @@ export abstract class Element {
 }
 
 export class ShortClass extends Element {
-  value: string;
-  description: string;
+  mods?: Modification[];
+  value = ""; // Type specifier assigned to the short class identifier
   constructor(
     definition: any,
     basePath: string,
@@ -465,29 +476,54 @@ export class ShortClass extends Element {
     const specifier = (definition.class_definition ?? definition)
       .class_specifier.short_class_specifier;
     this.name = specifier.identifier;
-    const classValue = specifier?.value;
-    this.value = classValue.description?.description_string;
-    this.description = classValue.name;
+    this.value = specifier
+      ?.value
+      ?.name;
     this.modelicaPath = `${basePath}.${this.name}`;
+    this.type = this.modelicaPath;
     const registered = this.registerPath(this.modelicaPath, this.type);
     if (!registered) {
       return; // PUNCH-OUT!
     }
+    this.description = definition.description?.description_string;
+    this.replaceable = definition.replaceable;
+
+    if (this.replaceable) {
+      initializeReplaceable(this, definition, basePath);
+    }
+    setUIInfo(this);
   }
 
   getChildElements(): Element[] {
-    return [];
+    // Retrieve the child elements from the type specifier assigned to the short class
+    const typeSpecifier = typeStore.get(this.value) as LongClass;
+    if (!typeSpecifier) {console.log(this.value)}
+    return typeSpecifier == null
+      ? []
+      : typeSpecifier.getChildElements();
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
-    return inputs;
+    // Retrieve the inputs from the type specifier assigned to the short class
+    const typeSpecifier = typeStore.get(this.value) as LongClass;
+
+    if (typeSpecifier == null) {
+      return inputs;
+    }
+    // A group with no elementList is ignored
+    if (this.modelicaPath in inputs || typeSpecifier.getChildElements().length === 0) {
+      return inputs;
+    }
+    if (this.replaceable) {
+      inputs = getReplaceableInputs(inputs, recursive, this);
+      return inputs;
+    }
+    return typeSpecifier.getInputs();
   }
 }
 
 export class LongClass extends Element {
-  annotation: Modification[] = [];
   elementList: Element[] | undefined = [];
-  description: string = "";
   entryPoint = false;
   mods: Modification[] | undefined;
   extendElement: LongClass | undefined;
@@ -576,7 +612,7 @@ export class LongClass extends Element {
     // get filtered child list
     const children = this.getChildElements(true)
       .filter((el) => !el.deadEnd)
-      .filter((el) => !(el.modelicaPath in MODELICA_LITERALS))
+      .filter((el) => !(el.modelicaPath in MLS_PREDEFINED_TYPES))
       .map((el) => el.modelicaPath);
 
     // make sure all child elements (extend + other elements) get
@@ -600,17 +636,95 @@ export class LongClass extends Element {
   }
 }
 
+/**
+ * Creates annotation modifications from a description block
+ */
+function createAnnotationModifications(
+  descriptionBlock: {
+    annotation?: Array<mj.Mod | mj.WrappedMod>;
+  } | undefined,
+  basePath: string,
+  baseType: string
+): Modification[] {
+  if (!descriptionBlock?.annotation) {
+    return [];
+  }
+
+  return descriptionBlock.annotation
+    .map((mod: mj.Mod | mj.WrappedMod) =>
+      createModification({
+        definition: mod,
+        basePath,
+        baseType,
+      }),
+    )
+    .filter((m) => m !== undefined) as Modification[];
+}
+
+/**
+ * Sets tab and group if found
+ * Sets a couple params that determine if an input should be visible
+ */
+function setUIInfo(instance: Element): void {
+  const dialog = instance.annotation.find((m) => m.name === "Dialog");
+
+  const typeInstance = typeStore.find(instance.type) as Element;
+  const isInputGroupType = isInputGroup(typeInstance?.elementType);
+  const hasChoices =
+    instance.annotation.find((m) => m.name === "choices") !== undefined;
+  // for class types, no dialog annotation means don't enable
+  // for all other types it is true
+
+  if (dialog) {
+    const group = dialog.mods.find((m) => m.name === "group")?.value;
+    const tab = dialog.mods.find((m) => m.name === "tab")?.value;
+    const enable = dialog.mods.find((m) => m.name === "enable")?.value;
+
+    instance.group = group ? evaluateExpression(group) : "";
+    instance.tab = tab ? evaluateExpression(tab) : "";
+
+    if (isInputGroupType && !hasChoices) {
+      instance.enable = enable ? enable : false;
+    } else {
+      instance.enable = enable ? enable : true;
+    }
+  } else {
+    instance.enable = (isInputGroupType && !hasChoices) ? instance.enable : true;
+  }
+}
+
+function setInputVisible(inputType: TemplateInput | undefined, instance: Element): boolean {
+  const dialog = instance.annotation.find((m) => m.name === "Dialog");
+  let connectorSizing = dialog?.mods.find(
+    (m) => m.name === "connectorSizing",
+  )?.value;
+  connectorSizing = connectorSizing
+    ? evaluateExpression(connectorSizing)
+    : false;
+
+  let isVisible = !(
+    instance.outer ||
+    instance.final ||
+    connectorSizing === true
+  );
+
+  const isLiteral = MLS_PREDEFINED_TYPES.includes(instance.type);
+  /**
+   *
+   * Replaceables -> dropdown -> each child of selected component
+   *
+   * Component -> Each child becomes it's own dropdown
+   *
+   */
+  return isVisible && (isLiteral || inputType?.visible === true);
+}
+
 export class Component extends Element implements Replaceable {
   mod?: Modification | null;
   type = ""; // modelica path
-  value: any; // modelica path?
+  value: any; // assigned value (as object) for parameter, type for replaceable component
   description = "";
-  final = false;
-  inner: boolean | null = null;
-  outer: boolean | null = null;
   connectorSizing = false;
-  tab? = "";
-  group?: any = "";
   // Optional properties for replaceable elements
   choices?: string[];
   choiceMods?: { [key: string]: Modification[] };
@@ -630,7 +744,7 @@ export class Component extends Element implements Replaceable {
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
     const typeElement = typeStore.get(componentClause.type_specifier, basePath);
-    this.type = typeElement?.modelicaPath || componentClause.type_specifier; // might be a literal
+    this.type = typeElement?.modelicaPath || componentClause.type_specifier; // might be a predefined type from MLS
     this.final = definition.final ? definition.final : this.final;
     this.inner = definition.inner;
     this.outer = definition.outer;
@@ -640,26 +754,13 @@ export class Component extends Element implements Replaceable {
       return; // PUNCH-OUT!
     }
 
-    // description block (where the annotation is) can be in different locations
-    // constrainby changes this location
+    // From MLS: description of non-replaceable components is within component-clause
     const descriptionBlock =
-      componentClause.component_list.find((c: any) => "description" in c)
-        ?.description || definition["description"];
+      componentClause.component_list.find((c: any) => "description" in c)?.description
 
-    if (descriptionBlock) {
-      this.description = descriptionBlock?.description_string || "";
-      if (descriptionBlock?.annotation) {
-        this.annotation = descriptionBlock.annotation
-          .map((mod: mj.Mod | mj.WrappedMod) =>
-            createModification({
-              definition: mod,
-              basePath,
-              baseType: this.type,
-            }),
-          )
-          .filter((m) => m !== undefined) as Modification[];
-      }
-    }
+    this.description = descriptionBlock?.description_string || "";
+    this.annotation = createAnnotationModifications(descriptionBlock, basePath, this.type);
+
     this.deadEnd = this.getLinkageKeywordValue() === false;
     this.mod = declarationBlock.modification
       ? createModification({
@@ -673,68 +774,14 @@ export class Component extends Element implements Replaceable {
     if (this.mod && !this.mod.empty) {
       this.value = this.mod.value;
     }
-    this._setUIInfo();
 
     if (this.replaceable) {
       initializeReplaceable(this, definition, basePath);
     }
-  }
 
-  /**
-   * Sets tab and group if found
-   * Sets a couple params that determine if an input should be visible
-   */
-  _setUIInfo() {
-    const dialog = this.annotation.find((m) => m.name === "Dialog");
-
-    const typeInstance = typeStore.find(this.type) as Element;
-    const isInputGroupType = isInputGroup(typeInstance?.elementType);
-    const isReplaceable =
-      this.annotation.find((m) => m.name === "choices") !== undefined;
-    // for class types, no dialog annotation means don't enable
-    // for all other types it is true
-
-    if (dialog) {
-      const group = dialog.mods.find((m) => m.name === "group")?.value;
-      const tab = dialog.mods.find((m) => m.name === "tab")?.value;
-      const enable = dialog.mods.find((m) => m.name === "enable")?.value;
-      const connectorSizing = dialog.mods.find(
-        (m) => m.name === "connectorSizing",
-      )?.value;
-
-      this.group = group ? evaluateExpression(group) : "";
-      this.tab = tab ? evaluateExpression(tab) : "";
-
-      if (isInputGroupType && !isReplaceable) {
-        this.enable = enable ? enable : false;
-      } else {
-        this.enable = enable ? enable : true;
-      }
-
-      this.connectorSizing = connectorSizing
-        ? evaluateExpression(connectorSizing)
-        : false;
-    } else {
-      this.enable = isInputGroupType && !isReplaceable ? this.enable : true;
-    }
-  }
-
-  _setInputVisible(inputType: TemplateInput | undefined): boolean {
-    let isVisible = !(
-      this.outer ||
-      this.final ||
-      this.connectorSizing === true
-    );
-
-    const isLiteral = MODELICA_LITERALS.includes(this.type);
-    /**
-     *
-     * Replaceables -> dropdown -> each child of selected component
-     *
-     * Component -> Each child becomes it's own dropdown
-     *
-     */
-    return isVisible && (isLiteral || inputType?.visible === true);
+    // Must be called last since it uses this.annotation
+    // which gets modified by initializeReplaceable()
+    setUIInfo(this);
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
@@ -749,7 +796,7 @@ export class Component extends Element implements Replaceable {
     // if not in mod store, use 'this.type'
     const typeInstance = typeStore.get(this.type) || null;
     const inputTypes = typeInstance ? typeInstance.getInputs({}, false) : {};
-    const visible = this._setInputVisible(inputTypes[this.type]);
+    const visible = setInputVisible(inputTypes[this.type], this);
     let childInputs =
       this.enable === false ? [] : inputTypes[this.type]?.inputs || [];
 
@@ -784,6 +831,7 @@ export class Component extends Element implements Replaceable {
 }
 
 export class Enumeration extends Element {
+  // Should extend ShortCLass
   enumList: {
     modelicaPath: string;
     identifier: string;
@@ -886,7 +934,6 @@ export class Extend extends Element {
           }),
         )
         .filter((m: any) => m !== undefined) as Modification[];
-      this._setUIInfo();
     }
 
     this.deadEnd = this.getLinkageKeywordValue() === false;
@@ -903,10 +950,6 @@ export class Extend extends Element {
         this.type,
       );
     }
-  }
-
-  _setUIInfo() {
-    this.enable = false;
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
@@ -957,14 +1000,14 @@ export class Import extends Element {
  */
 function _constructElement(
   definition: any, // object from class_definition or from element_list
-  basePath: string,
+  basePath: string, // class name from 'within' clause if parsing a class, or class name if parsing an element
 ): Element | undefined {
   const extend = "extends_clause";
   const component = "component_clause";
   const importClause = "import_clause";
 
   // Reducing the definition to class_definition of an element prunes the replaceable
-  // property in case of a class definition
+  // property in case of a class definition, but we need it!
   // definition =
   //   "class_definition" in definition ? definition.class_definition : definition;
 
@@ -973,7 +1016,7 @@ function _constructElement(
   // of the kind 'type', 'model', 'package', 'block', 'record', etc. or
   // an extends_clause, or
   // a component_clause (basically a variable or an instance of a class)
-  let elementType: ElementType;
+  let elementType: ElementType | undefined;
 
   const classPrefixes =
     definition.class_definition?.class_prefixes ?? definition.class_prefixes;
@@ -1009,7 +1052,7 @@ function _constructElement(
         "long_class_specifier",
       )
         ? new LongClass(definition, basePath, elementType)
-        : new ShortClass(definition, basePath, elementType);
+        : new ShortClass(definition, basePath, `${elementType}-short`);
       break;
     case extend:
       element = new Extend(definition, basePath, elementType);
@@ -1039,6 +1082,10 @@ export class File {
     this.package = obj.within;
     const splitFilePath = filePath.split(".");
     if (this.package) {
+      // FIXME: The assumption below is not consistent with MLS.
+      // A one-to-one relationship between class names and file paths cannot be generically assumed.
+      // See https://github.com/lbl-srg/ctrl-flow-dev/issues/413
+      //
       // Check that each portion of the within path matches the file path
       // a mismatch means an incorrectly typed or structured package
       // Folder and file should always line up, e.g.
