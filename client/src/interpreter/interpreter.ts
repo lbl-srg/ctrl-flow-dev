@@ -650,7 +650,7 @@ export const buildMods = (
   const mods: { [key: string]: Modifier } = {};
   const selectionModelicaPaths: { [key: string]: null } = {}; // Object.keys(selections)
   Object.keys(selections).map((s) => {
-    const [modelicaPath, instancePath] = s.split("-");
+    const [modelicaPath, ] = s.split("-");
     selectionModelicaPaths[modelicaPath] = null;
   });
 

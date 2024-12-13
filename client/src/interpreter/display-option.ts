@@ -27,7 +27,7 @@ export interface FlatConfigOption {
 
 type DisplayItem = FlatConfigOptionGroup | FlatConfigOption;
 
-export const MODELICA_LITERALS_TO_NOT_DISPLAY = ["String", "Real", "Integer"];
+export const MLS_PREDEFINED_TYPES_TO_NOT_DISPLAY = ["String", "Real", "Integer"];
 
 const displayOptionFilter = (
   optionInstance: OptionInstance,
@@ -35,7 +35,7 @@ const displayOptionFilter = (
 ) => {
   return (
     optionType.startsWith("Modelica") ||
-    MODELICA_LITERALS_TO_NOT_DISPLAY.includes(optionType) ||
+    MLS_PREDEFINED_TYPES_TO_NOT_DISPLAY.includes(optionType) ||
     optionInstance.instancePath.endsWith("dat")
   );
 };

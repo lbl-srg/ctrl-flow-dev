@@ -74,7 +74,7 @@ describe("Expected Inputs are extracted", () => {
     // get elements that match literal types: Boolean, String, Real, Integer, Enum
     const templateInputs = template.getInputs();
     Object.values(templateInputs).map((o) => {
-      if (o.type in parser.MODELICA_LITERALS) {
+      if (o.type in parser.MLS_PREDEFINED_TYPES) {
         expect(o.name).not.toBeFalsy();
         expect(o.modelicaPath).not.toBeFalsy();
       }

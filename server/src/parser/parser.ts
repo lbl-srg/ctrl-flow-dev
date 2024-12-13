@@ -295,6 +295,7 @@ function initializeReplaceable(
   instance.choices = [];
   instance.choiceMods = {};
   instance.mods = [];
+
   // For replaceable ***components*** the default value is the instance type
   if (instance.elementType === "component_clause") {
     instance.value = instance.type;
@@ -708,7 +709,7 @@ function setInputVisible(inputType: TemplateInput | undefined, instance: Element
     connectorSizing === true
   );
 
-  const isLiteral = MLS_PREDEFINED_TYPES.includes(instance.type);
+  const isPredefinedType = MLS_PREDEFINED_TYPES.includes(instance.type);
   /**
    *
    * Replaceables -> dropdown -> each child of selected component
@@ -716,7 +717,7 @@ function setInputVisible(inputType: TemplateInput | undefined, instance: Element
    * Component -> Each child becomes it's own dropdown
    *
    */
-  return isVisible && (isLiteral || inputType?.visible === true);
+  return isVisible && (isPredefinedType || inputType?.visible === true);
 }
 
 export class Component extends Element implements Replaceable {
@@ -754,14 +755,6 @@ export class Component extends Element implements Replaceable {
       return; // PUNCH-OUT!
     }
 
-    // From MLS: description of non-replaceable components is within component-clause
-    const descriptionBlock =
-      componentClause.component_list.find((c: any) => "description" in c)?.description
-
-    this.description = descriptionBlock?.description_string || "";
-    this.annotation = createAnnotationModifications(descriptionBlock, basePath, this.type);
-
-    this.deadEnd = this.getLinkageKeywordValue() === false;
     this.mod = declarationBlock.modification
       ? createModification({
           definition: declarationBlock,
@@ -770,17 +763,24 @@ export class Component extends Element implements Replaceable {
           name: this.name,
         })
       : null;
-
     if (this.mod && !this.mod.empty) {
       this.value = this.mod.value;
     }
 
+    // From MLS: description of non-replaceable components is within component-clause
+    const descriptionBlock =
+      componentClause.component_list.find((c: any) => "description" in c)?.description
+    this.description = descriptionBlock?.description_string || "";
+    this.annotation = createAnnotationModifications(descriptionBlock, basePath, this.type);
+
     if (this.replaceable) {
+      // The following may modify descriptionBlock and this.annotation
       initializeReplaceable(this, definition, basePath);
     }
 
     // Must be called last since it uses this.annotation
     // which gets modified by initializeReplaceable()
+    this.deadEnd = this.getLinkageKeywordValue() === false;
     setUIInfo(this);
   }
 
