@@ -273,7 +273,6 @@ export function resolvePaths(
       };
     }
   }
-
   return { optionPath: null, instancePath: path, outerOptionPath: null };
 }
 
@@ -557,7 +556,7 @@ const buildModsHelper = (
 
   // fetch all modifiers from up the inheritance hierarchy
   const name = option.modelicaPath.split(".").pop();
-  const newBase = option.definition
+  const newBase = option.definition && !option.shortExclType // short class definitions are treated as instances
     ? baseInstancePath
     : [baseInstancePath, name].filter((p) => p !== "").join(".");
   const childOptions = option.options;
@@ -595,9 +594,9 @@ const buildModsHelper = (
     }
   }
 
-  // if this is a definition - visit all child options and grab modifiers
+  // if this is a long class definition visit all child options and grab modifiers
   if (childOptions) {
-    if (option.definition) {
+    if (option.definition && !option.shortExclType) {
       childOptions.map((path) => {
         const childOption = options[path];
         buildModsHelper(
@@ -712,7 +711,7 @@ export class ConfigContext {
     public options: { [key: string]: OptionInterface },
     public selections: ConfigValues = {},
   ) {
-    // calculate intial mods without selections
+    // calculate initial mods without selections
     this.mods = buildMods(
       this.options[template.modelicaPath],
       selections,

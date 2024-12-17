@@ -1040,6 +1040,9 @@ function _constructElement(
 
   switch (elementType) {
     case "type":
+      // May only be predefined types, enumerations, array of type, or classes extending from type.
+      // Synctatically, these are short class definitions, but they need to be treated specifically
+      // as they define enumerations that are used in the parameter dialogs.
       element = new Enumeration(definition, basePath, elementType);
       break;
     case "class":
@@ -1052,6 +1055,7 @@ function _constructElement(
         "long_class_specifier",
       )
         ? new LongClass(definition, basePath, elementType)
+        // Suffix "-short" is added to identify short class definitions that are ***not*** type definitions.
         : new ShortClass(definition, basePath, `${elementType}-short`);
       break;
     case extend:

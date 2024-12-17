@@ -103,7 +103,8 @@ export function _formatDisplayGroup(
   const mappedItems = option.options
     ?.flatMap((o) => {
       const childOption = context.options[o];
-      if (childOption.definition && childOption?.options?.length) {
+      // Long class definitions with child options form a "group" of inputs in the configuration panel
+      if (childOption.definition && !childOption.shortExclType && childOption?.options?.length) {
         return _formatDisplayGroup(childOption, paramInstance, context);
       } else {
         const paramName = o.split(".").pop();
