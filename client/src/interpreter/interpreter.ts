@@ -150,7 +150,7 @@ const _instancePathToOption = (
     // this instance path
     if (context.config?.selections) {
       Object.entries(context.selections).map(([key, value]) => {
-        const [optionPath, instancePath] = key.split("-");
+        const [ , instancePath] = key.split("-");
         if (instancePath === curInstancePathList.join(".")) {
           option = context.options[value];
         }
@@ -899,6 +899,7 @@ export class ConfigContext {
 
     const mod = this.mods[instancePath];
     const final = mod?.final !== undefined ? mod.final : false;
+
     if (final) {
       return optionInstance; // PUNCH-OUT! we got what we need
     }
@@ -917,6 +918,10 @@ export class ConfigContext {
     display = outerOption
       ? !!(display && outerOption.visible)
       : !!(display && option.visible);
+
+    if (instancePath.endsWith("secOutRel.typCtlEco")) {
+      console.log('getOptionInstance1', optionInstance, mod, 'final', final, 'visible', option.visible, 'enable', enable, 'display', display)
+    }
 
     return { ...optionInstance, display };
   }

@@ -28,7 +28,15 @@ const PROJECT_PATH = "Buildings.Templates.Data.AllSystems";
 const PROJECT_INSTANCE_PATH = "datAll";
 
 export const MLS_PREDEFINED_TYPES = ["String", "Boolean", "Real", "Integer"];
-export const MLS_SPECIALIZED_CLASSES = ["block", "class", "connector", "model", "package", "record", "type"];
+export const MLS_SPECIALIZED_CLASSES = [
+  "block",
+  "class",
+  "connector",
+  "model",
+  "package",
+  "record",
+  "type",
+];
 const ELEMENT_TYPES = [
   ...MLS_SPECIALIZED_CLASSES, // Modelica specialized classes
   ...MLS_SPECIALIZED_CLASSES.map((c) => `${c}-short`), // Modelica specialized classes as short class definitions
@@ -40,8 +48,8 @@ const TEMPLATE_CLASSES: ElementType[] = ["block", "model"]; // Specialized class
 
 type ElementType = (typeof ELEMENT_TYPES)[number];
 
-export const isInputGroup = (elementType: ElementType): boolean =>
-  ["model", "block", "package"].includes(elementType);
+export const isInputGroup = (elementType: ElementType | undefined): boolean =>
+  ["model", "block", "package"].some((el) => elementType?.includes(el));
 
 export const isDefinition = (elementType: ElementType): boolean =>
   !["component_clause", "import_clause"].includes(elementType);
@@ -318,9 +326,13 @@ function initializeReplaceable(
     // - within class-definition | component-clause if there is no constraining-clause
     //   (it is then already handled by the constructor of the caller class)
     // - at the same level of class-definition | component-clause if there is a constraining-clause
-    const descriptionBlock = definition.description
+    const descriptionBlock = definition.description;
     instance.description = descriptionBlock?.description_string || "";
-    instance.annotation = createAnnotationModifications(descriptionBlock, basePath, instance.type);
+    instance.annotation = createAnnotationModifications(
+      descriptionBlock,
+      basePath,
+      instance.type,
+    );
 
     const constraintDef = definition.constraining_clause;
     instance.constraint = typeStore.get(
@@ -369,10 +381,31 @@ function getReplaceableInputs(
 
   // if an annotation has been provided, use the choices from that annotation
   // otherwise fallback to using the parameter type
-  const choiceTypes = instance.choices!.length
-    ? instance.choices
-    : [instance.type];
-  const visible = choiceTypes!.length > 1;
+  let choiceTypes = instance.choices;
+  let choiceMods = instance.choiceMods;
+
+  // if it is an instance of a short class and the instance has no choices annotation,
+  // use the choices from the short class definition
+  if (!choiceTypes?.length && instance.elementType === "component_clause") {
+    const instanceType = typeStore.get(instance.type);
+    if (instanceType && instanceType.elementType.endsWith("-short")) {
+      choiceTypes = (instanceType as Replaceable).choices;
+      choiceMods = (instanceType as Replaceable).choiceMods;
+    }
+  }
+
+  // ultimately, fall back fallback to using the instance type
+  if (!choiceTypes?.length) {
+    choiceTypes = [instance.type];
+  }
+
+  const spoofTemplateInput: TemplateInput = {
+    type: "Real",
+    name: "temperature",
+    modelicaPath: "MyModel.temperature",
+    visible: true,
+    elementType: "model"
+  };
 
   inputs[instance.modelicaPath] = {
     modelicaPath: instance.modelicaPath,
@@ -382,17 +415,16 @@ function getReplaceableInputs(
     inputs: choiceTypes,
     group: instance.group,
     tab: instance.tab,
-    visible: visible,
+    visible: setInputVisible(spoofTemplateInput, instance),
     modifiers: instance.mods,
     elementType: instance.elementType,
     enable: instance.enable,
-    choiceModifiers: instance.choiceMods,
+    choiceModifiers: choiceMods,
     replaceable: instance.replaceable,
   };
 
   if (recursive) {
     choiceTypes?.map((c) => {
-      // TODO: applying mods from the parameter to choice types?
       const typeInstance = typeStore.get(c) || null;
       if (typeInstance) {
         inputs = typeInstance.getInputs(inputs);
@@ -477,9 +509,7 @@ export class ShortClass extends Element {
     const specifier = (definition.class_definition ?? definition)
       .class_specifier.short_class_specifier;
     this.name = specifier.identifier;
-    this.value = specifier
-      ?.value
-      ?.name;
+    this.value = specifier?.value?.name;
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = this.modelicaPath;
     const registered = this.registerPath(this.modelicaPath, this.type);
@@ -498,10 +528,10 @@ export class ShortClass extends Element {
   getChildElements(): Element[] {
     // Retrieve the child elements from the type specifier assigned to the short class
     const typeSpecifier = typeStore.get(this.value) as LongClass;
-    if (!typeSpecifier) {console.log(this.value)}
-    return typeSpecifier == null
-      ? []
-      : typeSpecifier.getChildElements();
+    if (!typeSpecifier) {
+      console.log(this.value);
+    }
+    return typeSpecifier == null ? [] : typeSpecifier.getChildElements();
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
@@ -512,7 +542,10 @@ export class ShortClass extends Element {
       return inputs;
     }
     // A group with no elementList is ignored
-    if (this.modelicaPath in inputs || typeSpecifier.getChildElements().length === 0) {
+    if (
+      this.modelicaPath in inputs ||
+      typeSpecifier.getChildElements().length === 0
+    ) {
       return inputs;
     }
     if (this.replaceable) {
@@ -595,7 +628,9 @@ export class LongClass extends Element {
       this.extendElement === undefined ||
       (this.extendElementDeadEnd && useDeadEnd)
         ? elements
-        : [...elements, ...this.extendElement?.getChildElements(useDeadEnd)]
+        : // Child elements of the extend element are ***prepended*** to the list
+          // This will determine the order of the elements in the configuration panel
+          [...this.extendElement?.getChildElements(useDeadEnd), ...elements]
     ).filter((el) => Object.keys(el.getInputs({}, false)).length > 0);
   }
 
@@ -641,11 +676,13 @@ export class LongClass extends Element {
  * Creates annotation modifications from a description block
  */
 function createAnnotationModifications(
-  descriptionBlock: {
-    annotation?: Array<mj.Mod | mj.WrappedMod>;
-  } | undefined,
+  descriptionBlock:
+    | {
+        annotation?: Array<mj.Mod | mj.WrappedMod>;
+      }
+    | undefined,
   basePath: string,
-  baseType: string
+  baseType: string,
 ): Modification[] {
   if (!descriptionBlock?.annotation) {
     return [];
@@ -669,13 +706,16 @@ function createAnnotationModifications(
 function setUIInfo(instance: Element): void {
   const dialog = instance.annotation.find((m) => m.name === "Dialog");
 
-  const typeInstance = typeStore.find(instance.type) as Element;
-  const isInputGroupType = isInputGroup(typeInstance?.elementType);
+  const instanceType = typeStore.find(instance.type) as Element;
+  const isInputGroupType = isInputGroup(instanceType?.elementType);
   const hasChoices =
     instance.annotation.find((m) => m.name === "choices") !== undefined;
-  // for class types, no dialog annotation means don't enable
-  // for all other types it is true
-
+  // for composite types (input groups), don't enable if:
+  // - no dialog annotation and
+  // - not replaceable or replaceable w/o choices annotation (the latter is specific to ctrl-flow)
+  // for all other types enable by default
+  const isDisabledGroup = isInputGroupType &&
+    (!instance.replaceable || (instance.replaceable && !hasChoices))
   if (dialog) {
     const group = dialog.mods.find((m) => m.name === "group")?.value;
     const tab = dialog.mods.find((m) => m.name === "tab")?.value;
@@ -683,18 +723,17 @@ function setUIInfo(instance: Element): void {
 
     instance.group = group ? evaluateExpression(group) : "";
     instance.tab = tab ? evaluateExpression(tab) : "";
-
-    if (isInputGroupType && !hasChoices) {
-      instance.enable = enable ? enable : false;
-    } else {
-      instance.enable = enable ? enable : true;
-    }
+    const _enable = isDisabledGroup ? false : true;
+    instance.enable = enable ? enable : _enable;
   } else {
-    instance.enable = (isInputGroupType && !hasChoices) ? instance.enable : true;
+    instance.enable = isDisabledGroup ? instance.enable : true;
   }
 }
 
-function setInputVisible(inputType: TemplateInput | undefined, instance: Element): boolean {
+function setInputVisible(
+  inputType: TemplateInput | undefined,
+  instance: Element,
+): boolean {
   const dialog = instance.annotation.find((m) => m.name === "Dialog");
   let connectorSizing = dialog?.mods.find(
     (m) => m.name === "connectorSizing",
@@ -710,13 +749,14 @@ function setInputVisible(inputType: TemplateInput | undefined, instance: Element
   );
 
   const isPredefinedType = MLS_PREDEFINED_TYPES.includes(instance.type);
-  /**
-   *
-   * Replaceables -> dropdown -> each child of selected component
-   *
-   * Component -> Each child becomes it's own dropdown
-   *
-   */
+
+  if (instance.modelicaPath.endsWith('PartialControllerVAVMultizone.coiHeaPre')) {
+    console.log('inputType', inputType);
+    console.log('instance', instance);
+    console.log('isVisible', isVisible);
+    console.log('isPredefinedType', isPredefinedType);
+  }
+
   return isVisible && (isPredefinedType || inputType?.visible === true);
 }
 
@@ -768,10 +808,15 @@ export class Component extends Element implements Replaceable {
     }
 
     // From MLS: description of non-replaceable components is within component-clause
-    const descriptionBlock =
-      componentClause.component_list.find((c: any) => "description" in c)?.description
+    const descriptionBlock = componentClause.component_list.find(
+      (c: any) => "description" in c,
+    )?.description;
     this.description = descriptionBlock?.description_string || "";
-    this.annotation = createAnnotationModifications(descriptionBlock, basePath, this.type);
+    this.annotation = createAnnotationModifications(
+      descriptionBlock,
+      basePath,
+      this.type,
+    );
 
     if (this.replaceable) {
       // The following may modify descriptionBlock and this.annotation
@@ -795,13 +840,15 @@ export class Component extends Element implements Replaceable {
     // if a replaceable and in modification store - use that type
     // if not in mod store, use 'this.type'
     const typeInstance = typeStore.get(this.type) || null;
-    const inputTypes = typeInstance ? typeInstance.getInputs({}, false) : {};
-    const visible = setInputVisible(inputTypes[this.type], this);
+    const typeInputs = typeInstance ? typeInstance.getInputs({}, false) : {};
+    const visible = setInputVisible(typeInputs[this.type], this);
     let childInputs =
-      this.enable === false ? [] : inputTypes[this.type]?.inputs || [];
+      this.enable === false || this.deadEnd
+        ? []
+        : typeInputs[this.type]?.inputs || [];
 
-    childInputs.filter((inputType) => {
-      const element = typeStore.get(inputType);
+    childInputs.filter((typeInputs) => {
+      const element = typeStore.get(typeInputs);
       return !element?.deadEnd;
     });
 
@@ -1055,8 +1102,8 @@ function _constructElement(
         "long_class_specifier",
       )
         ? new LongClass(definition, basePath, elementType)
-        // Suffix "-short" is added to identify short class definitions that are ***not*** type definitions.
-        : new ShortClass(definition, basePath, `${elementType}-short`);
+        : // Suffix "-short" is added to identify short class definitions that are ***not*** type definitions.
+          new ShortClass(definition, basePath, `${elementType}-short`);
       break;
     case extend:
       element = new Extend(definition, basePath, elementType);
