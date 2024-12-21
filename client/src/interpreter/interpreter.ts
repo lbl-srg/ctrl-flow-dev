@@ -95,7 +95,6 @@ export function applyPathModifiers(
       ? [postFix, splitScopePath.pop()].filter((p) => p === "").join(".")
       : splitScopePath.pop();
   }
-
   return modifiedPath;
 }
 
@@ -150,7 +149,7 @@ const _instancePathToOption = (
     // this instance path
     if (context.config?.selections) {
       Object.entries(context.selections).map(([key, value]) => {
-        const [ , instancePath] = key.split("-");
+        const [, instancePath] = key.split("-");
         if (instancePath === curInstancePathList.join(".")) {
           option = context.options[value];
         }
@@ -556,9 +555,10 @@ const buildModsHelper = (
 
   // fetch all modifiers from up the inheritance hierarchy
   const name = option.modelicaPath.split(".").pop();
-  const newBase = option.definition && !option.shortExclType // short class definitions are treated as instances
-    ? baseInstancePath
-    : [baseInstancePath, name].filter((p) => p !== "").join(".");
+  const newBase =
+    option.definition && !option.shortExclType // short class definitions are treated as instances
+      ? baseInstancePath
+      : [baseInstancePath, name].filter((p) => p !== "").join(".");
   const childOptions = option.options;
 
   const optionsWithModsList: string[] =
@@ -649,7 +649,7 @@ export const buildMods = (
   const mods: { [key: string]: Modifier } = {};
   const selectionModelicaPaths: { [key: string]: null } = {}; // Object.keys(selections)
   Object.keys(selections).map((s) => {
-    const [modelicaPath, ] = s.split("-");
+    const [modelicaPath] = s.split("-");
     selectionModelicaPaths[modelicaPath] = null;
   });
 
@@ -886,7 +886,7 @@ export class ConfigContext {
     }
     const option = this.options[optionPath as string];
     const type =
-      option && "replaceable" in option ? (value as string) : option?.['type'];
+      option && "replaceable" in option ? (value as string) : option?.["type"];
     const castValue = value as Literal | null | undefined;
     const optionInstance = {
       value: castValue,
@@ -916,11 +916,25 @@ export class ConfigContext {
         : false;
     display = !isExpression(enable) ? !!enable : display;
     display = outerOption
-      ? !!(display && outerOption.visible)
+      ? false // outer elements are always hidden
       : !!(display && option.visible);
 
-    if (instancePath.endsWith("secOutRel.typCtlEco")) {
-      console.log('getOptionInstance1', optionInstance, mod, 'final', final, 'visible', option.visible, 'enable', enable, 'display', display)
+    if (instancePath.endsWith("OutdoorSection_MAWD.test_display")) {
+      console.log(
+        "getOptionInstance",
+        optionInstance,
+        mod,
+        "final",
+        final,
+        "visible",
+        option.visible,
+        "enable",
+        enable,
+        "outerOption",
+        outerOption?.visible,
+        "display",
+        display,
+      );
     }
 
     return { ...optionInstance, display };
