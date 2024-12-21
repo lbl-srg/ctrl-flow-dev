@@ -130,9 +130,8 @@ const _instancePathToOption = (
 
   const pathSegments = modifiedPath.split(".");
   const curInstancePathList = [pathSegments.shift()]; // keep track of instance path for modifiers
-  let curOptionPath: string | null | undefined = `${
-    context.template.modelicaPath
-  }.${curInstancePathList[curInstancePathList.length - 1]}`;
+  let curOptionPath: string | null | undefined =
+    `${context.template.modelicaPath}.${curInstancePathList[0]}`;
   if (pathSegments.length === 0) {
     // special case: original type definition should be defined
     const rootOption = context.getRootOption();
@@ -178,7 +177,6 @@ const _instancePathToOption = (
     }
 
     // special 'datAll' case
-
     if (
       curOptionPath !== undefined &&
       !option &&
@@ -190,18 +188,25 @@ const _instancePathToOption = (
     // Otherwise - do the normal thing and attempt to find the instance type
     // by looking in options
     if (!option && curOptionPath) {
-      // otherwise just attempt to grab the option
       const paramOption = context.options[curOptionPath];
+
       if (!paramOption) {
         break; // PUNCH-OUT!
       } else {
         option = context.options[paramOption.type];
         if (option === undefined) {
-          // console.log(`param type undefined: ${paramOption.type}`);
           curOptionPath = null;
           break;
         }
       }
+    }
+
+    // For short classes, the actual instance is within the options
+    // of the type assigned to the short class identifier.
+    // (If this type is modified by the user selection, this has already been caught by
+    // the selection check above.)
+    if (option?.shortExclType) {
+      option = context.options[option?.value as string];
     }
 
     if (pathSegments.length === 0) {
@@ -210,9 +215,9 @@ const _instancePathToOption = (
 
     const paramName = pathSegments.shift();
     curInstancePathList.push(paramName);
+
     // use the options child list to get the correct type - inherited types
     // are only correctly referenced through this list
-
     curOptionPath = option?.options?.find(
       (o) => o.split(".").pop() === paramName,
     ) as string;
@@ -870,7 +875,6 @@ export class ConfigContext {
       this,
       scope,
     );
-
     if (!optionPath || optionPath.startsWith("Modelica")) {
       return;
     }
@@ -919,24 +923,17 @@ export class ConfigContext {
       ? false // outer elements are always hidden
       : !!(display && option.visible);
 
-    if (instancePath.endsWith("OutdoorSection_MAWD.test_display")) {
-      console.log(
-        "getOptionInstance",
-        optionInstance,
-        mod,
-        "final",
-        final,
-        "visible",
-        option.visible,
-        "enable",
+    if (instancePath.endsWith("secOutRel.secOut.test_display")) {
+      console.log({
+        instancePath,
+        optionPath,
+        outerOption,
         enable,
-        "outerOption",
-        outerOption?.visible,
-        "display",
+        final,
         display,
-      );
+        option,
+      })
     }
-
     return { ...optionInstance, display };
   }
 
