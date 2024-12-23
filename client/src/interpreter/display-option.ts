@@ -176,6 +176,7 @@ export function _formatDisplayItem(
   if (
     !optionInstance.isOuter &&
     typeOption.definition &&
+    !typeOption.shortExclType &&
     typeOption.options?.length
   ) {
     const displayGroup = _formatDisplayGroup(
