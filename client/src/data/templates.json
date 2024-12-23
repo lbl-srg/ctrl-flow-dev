@@ -5216,49 +5216,41 @@
       "shortExclType": false
     },
     {
+      "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper.test_display",
+      "type": "Boolean",
+      "value": {
+        "operator": "none",
+        "operands": [
+          true
+        ]
+      },
+      "name": "Test parameter",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper.damOut",
       "type": "Buildings.Templates.Components.Dampers.Modulating",
-      "value": "",
+      "value": "Buildings.Templates.Components.Dampers.Modulating",
       "name": "Outdoor air damper",
       "group": "",
       "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {
-        "Buildings.Templates.Components.Interfaces.PartialDamper.use_inputFilter": {
-          "expression": {
-            "operator": "!=",
-            "operands": [
-              "energyDynamics",
-              "Modelica.Fluid.Types.Dynamics.SteadyState"
-            ]
-          },
-          "final": false,
-          "redeclare": false
-        },
-        "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.allowFlowReversal"
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        },
-        "Buildings.Templates.Components.Interfaces.PartialDamper.dat": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              "dat.damOut"
-            ]
-          },
-          "final": true,
-          "redeclare": false
-        }
-      },
-      "replaceable": false,
-      "options": [],
+      "visible": true,
+      "modifiers": {},
+      "enable": true,
+      "choiceModifiers": {},
+      "replaceable": true,
+      "options": [
+        "Buildings.Templates.Components.Dampers.Modulating",
+        "Buildings.Templates.Components.Dampers.None"
+      ],
       "definition": false,
       "shortExclType": false
     },
@@ -7043,6 +7035,45 @@
       ]
     },
     {
+      "modelicaPath": "Buildings.Templates.Components.Dampers.None",
+      "type": "Buildings.Templates.Components.Dampers.None",
+      "name": "No damper",
+      "value": "Buildings.Templates.Components.Dampers.None",
+      "visible": false,
+      "modifiers": {
+        "Buildings.Templates.Components.Interfaces.PartialDamper.typ": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.Components.Types.Damper.None"
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "Buildings.Templates.Components.Interfaces.PartialDamper.typ",
+        "Buildings.Templates.Components.Interfaces.PartialDamper.dat",
+        "Buildings.Templates.Components.Interfaces.PartialDamper.dp_nominal",
+        "Buildings.Templates.Components.Interfaces.PartialDamper.use_inputFilter",
+        "Buildings.Templates.Components.Interfaces.PartialDamper.riseTime",
+        "Buildings.Templates.Components.Interfaces.PartialDamper.init",
+        "Buildings.Templates.Components.Interfaces.PartialDamper.y_start",
+        "Buildings.Templates.Components.Interfaces.PartialDamper.typBla",
+        "Buildings.Templates.Components.Interfaces.PartialDamper.text_rotation",
+        "Buildings.Templates.Components.Interfaces.PartialDamper.text_flip",
+        "Buildings.Templates.Components.Interfaces.PartialDamper.bus"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Templates.Components.Dampers.None",
+        "Buildings.Templates.Components.Interfaces.PartialDamper"
+      ]
+    },
+    {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper.VOut_flow",
       "type": "Buildings.Templates.Components.Sensors.VolumeFlowRate",
       "value": "",
@@ -8520,6 +8551,7 @@
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.port_aHeaRec",
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.port_bHeaRec",
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.bus",
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper.test_display",
         "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper.damOut",
         "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper.VOut_flow",
         "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper.TOut",
@@ -20065,6 +20097,7 @@
           }
         ]
       },
+      "choiceModifiers": {},
       "replaceable": true,
       "options": [
         "Buildings.Fluid.DXSystems.Cooling.AirSource.Data.SingleSpeed.Carrier_Centurion_50PG06"
