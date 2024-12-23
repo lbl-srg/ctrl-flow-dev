@@ -14,11 +14,11 @@ model TestTemplate "Test Template"
     component_param="First Component Template Override")
     annotation(Dialog(enable=true));
 
-  // Test inner implementation of outer
-  inner String nested_outer_param = "inner reassignment";
+  // Test inner/outer declaration
+  inner String inner_outer_param = "inner assignment";
 
   /*
-    Test a replacable with inner implementation of outer
+    Test a replacable with outer declaration
   */
   inner replaceable
     TestPackage.Component.SecondComponent
@@ -101,10 +101,6 @@ model TestTemplate "Test Template"
   parameter Integer test_int=2
     "Test Integer"
     annotation (Dialog(enable=false));
-
-  // disable condition: an outer declaration
-  outer parameter Integer outer_param
-    "Outer param";
 
   // disable condition: 'connectorSizing=true'
   parameter Integer connector_param

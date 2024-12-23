@@ -128,7 +128,7 @@ describe("Template wrapper class functionality", () => {
     });
   });
 
-  it("Genereates path modifiers", () => {
+  it("Generates path modifiers", () => {
     const templates = getTemplates();
     const template = templates.find(
       (t) => t.modelicaPath === TEMPLATE_PATH,
@@ -136,19 +136,17 @@ describe("Template wrapper class functionality", () => {
 
     const { pathModifiers } = template.getSystemTemplate();
 
+    console.log(pathModifiers)
+
     expect(pathModifiers).toBeDefined();
     expect("third.selectable_component" in pathModifiers).toBeTruthy();
     expect(pathModifiers["third.selectable_component"]).toEqual(
       "selectable_component",
     );
 
-    // TODO: I'm a little unsure I'm handling instance pathing correct here
-    // This test is specifically around inherited 'outer' params. Child options
-    // get 'flattened' from inhereted classes, so the outer definition will likely
-    // be in the inherited class and then implemented in the child class. Each would
-    // have the same 'scope'
-    expect("nested_outer_param" in pathModifiers).toBeTruthy();
-    expect(pathModifiers["nested_outer_param"]).toEqual("nested_outer_param");
+    // This test that an outer param is correctly linked to a top-level inner declaration
+    expect("selectable_component.inner_outer_param" in pathModifiers).toBeTruthy();
+    expect(pathModifiers["selectable_component.inner_outer_param"]).toEqual("inner_outer_param");
   });
 
   it("Finds types associated by redeclares", () => {

@@ -56,7 +56,7 @@ describe("Template Input visible/enable expressions", () => {
   });
 
   it("'outer' prefix sets false", () => {
-    const falsyPath = 'TestPackage.Template.TestTemplate.outer_param';
+    const falsyPath = 'TestPackage.Component.SecondComponent.inner_outer_param';
     const falsyInput = inputs[falsyPath];
     expect(falsyInput.visible).toBeFalsy();
   });
