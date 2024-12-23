@@ -201,14 +201,6 @@ const _instancePathToOption = (
       }
     }
 
-    // For short classes, the actual instance is within the options
-    // of the type assigned to the short class identifier.
-    // (If this type is modified by the user selection, this has already been caught by
-    // the selection check above.)
-    if (option?.shortExclType) {
-      option = context.options[option?.value as string];
-    }
-
     if (pathSegments.length === 0) {
       break;
     }
@@ -923,17 +915,6 @@ export class ConfigContext {
       ? false // outer elements are always hidden
       : !!(display && option.visible);
 
-    if (instancePath.endsWith("secOutRel.secOut.test_display")) {
-      console.log({
-        instancePath,
-        optionPath,
-        outerOption,
-        enable,
-        final,
-        display,
-        option,
-      })
-    }
     return { ...optionInstance, display };
   }
 

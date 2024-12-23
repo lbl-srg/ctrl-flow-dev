@@ -384,16 +384,6 @@ function getReplaceableInputs(
   let choiceTypes = instance.choices;
   let choiceMods = instance.choiceMods;
 
-  // if it is an instance of a short class and the instance has no choices annotation,
-  // use the choices from the short class definition
-  if (!choiceTypes?.length && instance.elementType === "component_clause") {
-    const instanceType = typeStore.get(instance.type);
-    if (instanceType && instanceType.elementType.endsWith("-short")) {
-      choiceTypes = (instanceType as Replaceable).choices;
-      choiceMods = (instanceType as Replaceable).choiceMods;
-    }
-  }
-
   // ultimately, fall back fallback to using the instance type
   if (!choiceTypes?.length) {
     choiceTypes = [instance.type];
@@ -749,13 +739,6 @@ function setInputVisible(
   );
 
   const isPredefinedType = MLS_PREDEFINED_TYPES.includes(instance.type);
-
-  if (instance.modelicaPath.endsWith('PartialControllerVAVMultizone.coiHeaPre')) {
-    console.log('inputType', inputType);
-    console.log('instance', instance);
-    console.log('isVisible', isVisible);
-    console.log('isPredefinedType', isPredefinedType);
-  }
 
   return isVisible && (isPredefinedType || inputType?.visible === true);
 }
