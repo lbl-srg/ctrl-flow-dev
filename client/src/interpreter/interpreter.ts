@@ -644,7 +644,7 @@ const buildModsHelper = (
       const typeOption = options[typeOptionPath as string];
 
       if (typeOption && typeOption.options) {
-        // add modifiers from type option
+        // Add modifiers from type option
         if (typeOption.modifiers) {
           addToModObject(
             typeOption.modifiers,
@@ -653,6 +653,25 @@ const buildModsHelper = (
             mods,
           );
         }
+
+        // Each parent class must also be visited
+        // See https://github.com/lbl-srg/ctrl-flow-dev/issues/360
+        typeOption
+          .treeList
+          ?.filter((path) => path !== (typeOptionPath as string)) // Exclude current class from being visited again
+          .map((oPath) => {
+            const o = options[oPath];
+            buildModsHelper(
+              o,
+              newBase,
+              mods,
+              options,
+              selections,
+              selectionModelicaPathsCache,
+            );
+          })
+
+        // Further populate `mods` with all options belonging to this class
         typeOption.options.map((path) => {
           const childOption = options[path];
 
@@ -683,12 +702,12 @@ export const buildMods = (
   });
 
   buildModsHelper(
-    startOption,
-    "",
-    mods,
-    options,
-    selections,
-    selectionModelicaPaths,
+    /* option */ startOption,
+    /* baseInstancePath */ "",
+    /* mods */ mods,
+    /* options */ options,
+    /* selections */ selections,
+    /* selectionModelicaPathsCache */ selectionModelicaPaths,
   );
 
   return mods;
