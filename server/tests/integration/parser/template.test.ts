@@ -5,7 +5,7 @@ import {
   Template,
   getOptions,
 } from "../../../src/parser/";
-
+import fs from "fs";
 import { getTemplates, getProject } from "../../../src/parser/template";
 
 const TEMPLATE_PATH = "TestPackage.Template.TestTemplate";
@@ -136,7 +136,7 @@ describe("Template wrapper class functionality", () => {
 
     const { pathModifiers } = template.getSystemTemplate();
 
-    console.log(pathModifiers)
+    console.log(pathModifiers);
 
     expect(pathModifiers).toBeDefined();
     expect("third.selectable_component" in pathModifiers).toBeTruthy();
@@ -145,8 +145,12 @@ describe("Template wrapper class functionality", () => {
     );
 
     // This test that an outer param is correctly linked to a top-level inner declaration
-    expect("selectable_component.inner_outer_param" in pathModifiers).toBeTruthy();
-    expect(pathModifiers["selectable_component.inner_outer_param"]).toEqual("inner_outer_param");
+    expect(
+      "selectable_component.inner_outer_param" in pathModifiers,
+    ).toBeTruthy();
+    expect(pathModifiers["selectable_component.inner_outer_param"]).toEqual(
+      "inner_outer_param",
+    );
   });
 
   it("Finds types associated by redeclares", () => {
@@ -214,5 +218,23 @@ describe("'Project' items are extracted", () => {
       .forEach((path) => {
         expect(pathModifiers[path]).toEqual(PROJECT_INSTANCE_NAME);
       });
+  });
+
+  it("Replaceable short class definitions ***using full class names*** are supported", () => {
+    const templates = getTemplates();
+    const template = templates.find(
+      (t) => t.modelicaPath === TEMPLATE_PATH,
+    ) as Template;
+    const { options } = template.getOptions();
+    // Check that the short class instance has the proper type
+    expect(options[`${TEMPLATE_PATH}.shortClassInstance`].type).toEqual(
+      `${TEMPLATE_PATH}.ShortClass`,
+    );
+    // Check that the replaceable short class has the expected options
+    // (from the choices annotation)
+    expect(options[`${TEMPLATE_PATH}.ShortClass`].options).toEqual([
+      "TestPackage.Component.FirstComponent",
+      "TestPackage.Component.SecondComponent",
+    ]);
   });
 });

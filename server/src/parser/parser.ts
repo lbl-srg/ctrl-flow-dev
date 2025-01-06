@@ -618,9 +618,7 @@ export class LongClass extends Element {
       this.extendElement === undefined ||
       (this.extendElementDeadEnd && useDeadEnd)
         ? elements
-        : // Child elements of the extend element are ***prepended*** to the list
-          // This will determine the order of the elements in the configuration panel
-          [...this.extendElement?.getChildElements(useDeadEnd), ...elements]
+        : [...elements, ...this.extendElement?.getChildElements(useDeadEnd)]
     ).filter((el) => Object.keys(el.getInputs({}, false)).length > 0);
   }
 
