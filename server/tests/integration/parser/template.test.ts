@@ -5,7 +5,6 @@ import {
   Template,
   getOptions,
 } from "../../../src/parser/";
-import fs from "fs";
 import { getTemplates, getProject } from "../../../src/parser/template";
 
 const TEMPLATE_PATH = "TestPackage.Template.TestTemplate";
@@ -220,7 +219,7 @@ describe("'Project' items are extracted", () => {
       });
   });
 
-  it("Replaceable short class definitions ***using full class names*** are supported", () => {
+  it("Replaceable short class definitions are supported", () => {
     const templates = getTemplates();
     const template = templates.find(
       (t) => t.modelicaPath === TEMPLATE_PATH,

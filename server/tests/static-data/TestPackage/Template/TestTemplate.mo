@@ -166,9 +166,8 @@ model TestTemplate "Test Template"
       Dialog(group="Selectable Component"));
 
   // Test short class definition
-  // Currently only full class names are supported for short class assignments
   replaceable model ShortClass =
-    TestPackage.Component.FirstComponent
+    Component.FirstComponent
     constrainedby TestPackage.Interface.PartialComponent
     "Replaceable short class"
     annotation(choices(

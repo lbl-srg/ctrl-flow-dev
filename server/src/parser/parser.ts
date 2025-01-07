@@ -498,8 +498,9 @@ export class ShortClass extends Element {
     super();
     const specifier = (definition.class_definition ?? definition)
       .class_specifier.short_class_specifier;
+    const specifierType = typeStore.get(specifier.value?.name, basePath);
     this.name = specifier.identifier;
-    this.value = specifier?.value?.name;
+    this.value = specifierType?.modelicaPath || specifier.value?.name;
     this.modelicaPath = `${basePath}.${this.name}`;
     this.type = this.modelicaPath;
     const registered = this.registerPath(this.modelicaPath, this.type);
