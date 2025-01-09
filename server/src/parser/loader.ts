@@ -94,7 +94,7 @@ export function findPackageEntryPoints(
   const templateNodes: TemplateNode[] = [];
   const entryPoints: { path: string; json: Object | undefined }[] = [];
   MODELICA_JSON_PATH.forEach((dir) => {
-    const dirPath = path.resolve(dir, className);
+    const dirPath = path.resolve(dir, className.replace(/\./g, "/"));
     if (fs.existsSync(dirPath)) {
       // Find all template files.
       const templatePaths = systemGrep(TEMPLATE_IDENTIFIER, dirPath);

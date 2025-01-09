@@ -9,7 +9,7 @@ import {
   getProject
 } from "../src/parser";
 
-loadPackage("Buildings");
+loadPackage("Buildings.Templates");
 
 const { options, scheduleOptions } = getOptions();
 
