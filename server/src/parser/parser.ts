@@ -979,28 +979,26 @@ export class File {
   }
 }
 
-let pathPrefix = "";
-export function setPathPrefix(prefix: string) {
-  pathPrefix = prefix;
-}
-
 /**
  * Extracts the given file into the type store
+ * @param filePath - The ***relative*** path to the file to load (e.g. "Buildings/Templates/File")
  */
-export const getFile = (filePath: string) => {
-  const jsonData = loader(pathPrefix, filePath);
+export const getFile = (className: string) => {
+  const jsonData = loader(className);
   if (jsonData) {
-    return new File(jsonData, filePath);
+    return new File(jsonData, className);
   } else {
     // console.log(`Not found: ${filePath}`);
   }
 };
 
-// Searches a package for templates, then loads the file
-// creating template instances
-export const loadPackage = (filePath: string) => {
-  const paths = findPackageEntryPoints(pathPrefix, filePath);
-
+/**
+ * Searches a package for templates, then loads the file
+ * creating template instances.
+ * @param packageName - The full class name of the package to load (e.g. "Library.Package.SubPackage")
+ */
+export const loadPackage = (packageName: string) => {
+  const paths = findPackageEntryPoints(packageName);
   paths?.map(({ json, path }) => new File(json, path));
 
   // Attempt to load project settings from a pre-defined path
