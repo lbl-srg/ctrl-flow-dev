@@ -87,14 +87,24 @@ function systemGrep(regExp: string, dirPath: string): string[] | null {
   }
 }
 
+/**
+ * Finds all entry points that contain the template identifier for a given package.
+ * - LIMITATION: This function requires that the package uses
+ *   [Directory Hierarchy Mapping](https://specification.modelica.org/maint/3.6/packages.html#directory-hierarchy-mapping)
+ * @param packageName - The Modelica class name of the package to search for entry points
+ * @returns An array of objects containing the path and parsed JSON for each entry point found
+ */
 export function findPackageEntryPoints(
-  className: string,
+  packageName: string,
 ): { path: string; json: Object | undefined }[] {
   const templates: any[] = [];
   const templateNodes: TemplateNode[] = [];
   const entryPoints: { path: string; json: Object | undefined }[] = [];
   MODELICA_JSON_PATH.forEach((dir) => {
-    const dirPath = path.resolve(dir, className.replace(/\./g, "/"));
+    // We need a top directory to look up for entry points
+    // so we can simply convert the class name to a relative path
+    // without adding any file extension.
+    const dirPath = path.resolve(dir, packageName.replace(/\./g, "/"));
     if (fs.existsSync(dirPath)) {
       // Find all template files.
       const templatePaths = systemGrep(TEMPLATE_IDENTIFIER, dirPath);
@@ -156,6 +166,8 @@ export function findPackageEntryPoints(
 
 /**
  * Gets the path to a Modelica JSON file based on the full class name.
+ * - LIMITATION: This function requires that the library packages use
+ *   [Directory Hierarchy Mapping](https://specification.modelica.org/maint/3.6/packages.html#directory-hierarchy-mapping)
  * @param className - The full Modelica class name (e.g. "Library.Package.Class")
  * @param dirPath - The directory path to search in
  * @returns The file path if found, null otherwise
