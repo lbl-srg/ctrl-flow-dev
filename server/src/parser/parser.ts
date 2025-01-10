@@ -7,7 +7,7 @@
  * that element is available if referenced by another piece of modelica-json.
  */
 
-import { findPackageEntryPoints, loader, TEMPLATE_IDENTIFIER } from "./loader";
+import { findPackageEntryPoints, loader, TEMPLATE_LIST, PACKAGE_LIST } from "./loader";
 import { Template } from "./template";
 import {
   createModification,
@@ -390,18 +390,15 @@ export class InputGroup extends Element {
     );
     this.deadEnd = this.getLinkageKeywordValue() === false;
 
-    if (
-      this.annotation &&
-      this.annotation.find((m) => m.name === TEMPLATE_IDENTIFIER)
-    ) {
+    if ([...TEMPLATE_LIST, ...PACKAGE_LIST].includes(this.modelicaPath)) {
       this.entryPoint = true;
-      if (definition.class_prefixes === "model") {
+      if (TEMPLATE_LIST.includes(this.modelicaPath)) {
         new Template(this);
       }
     }
   }
 
-  /**
+  /**@
    * Returns the list of elements with all inherited elements flattened
    */
   getChildElements(useDeadEnd = false): Element[] {
@@ -953,9 +950,9 @@ function _constructElement(
 export class File {
   public package = ""; // only important part of a file
   public elementList: Element[] = [];
-  constructor(obj: any, filePath: string) {
+  constructor(obj: any, className: string) {
     this.package = obj.within;
-    const splitFilePath = filePath.split(".");
+    const splitFilePath = className.split(".");
     if (this.package) {
       // Check that each portion of the within path matches the file path
       // a mismatch means an incorrectly typed or structured package
@@ -998,8 +995,8 @@ export const getFile = (className: string) => {
  * @param packageName - The full class name of the package to load (e.g. "Library.Package.SubPackage")
  */
 export const loadPackage = (packageName: string) => {
-  const paths = findPackageEntryPoints(packageName);
-  paths?.map(({ json, path }) => new File(json, path));
+  const entryPoints = findPackageEntryPoints(packageName);
+  entryPoints?.map(({ json, className }) => new File(json, className));
 
   // Attempt to load project settings from a pre-defined path
   const projectPath = "Buildings.Templates.Data.AllSystems";

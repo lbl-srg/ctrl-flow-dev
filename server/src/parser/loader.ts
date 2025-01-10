@@ -1,4 +1,3 @@
-
 import path from "path";
 import fs from "fs";
 import { execSync } from "child_process";
@@ -7,9 +6,9 @@ import { typeStore } from "./parser";
 import config from "../../src/config";
 
 // The following arrays are populated with the ***full class names***
-// of templates (identified with class annotation __ctrlFlow(routing = "template")
+// of templates identified with class annotation __ctrlFlow(routing="template")
 // and all packages containing templates up to the root package
-// (identified with class annotation __ctrlFlow(routing = "root").
+// identified with class annotation __ctrlFlow(routing="root").
 export const TEMPLATE_LIST: string[] = [];
 export const PACKAGE_LIST: string[] = [];
 
@@ -36,6 +35,10 @@ type TemplateNode = {
   parentName: string | null;
 };
 
+// Master list of TemplateNode objects representing all templates and packages.
+// It is intended to be used in the future when the UI can handle nested packages.
+const templateNodes: TemplateNode[] = [];
+
 export function getClassNameFromRelativePath(filePath: string) {
   filePath = filePath.endsWith(".json") ? filePath.slice(0, -5) : filePath;
   return filePath.replace(/\//g, ".");
@@ -46,10 +49,6 @@ export function getClassNameFromJson(json: any): string {
     (json.within ? json.within + "." : "") +
     json.class_definition[0].class_specifier.long_class_specifier.identifier
   );
-}
-
-function getWithinFromClassName(className: string): string {
-  return className.split(".").slice(0, -1).join(".");
 }
 
 /**
@@ -91,48 +90,52 @@ function systemGrep(regExp: string, dirPath: string): string[] | null {
  * Finds all entry points that contain the template identifier for a given package.
  * - LIMITATION: This function requires that the package uses
  *   [Directory Hierarchy Mapping](https://specification.modelica.org/maint/3.6/packages.html#directory-hierarchy-mapping)
+ * - Currently, only entryPoints, TEMPLATE_LIST and PACKAGE_LIST are used.
+ * - In the future, when the UI can handle nested packages, entryPoints should be removed
+ *   and templateNodes should be used to create the file tree structure.
  * @param packageName - The Modelica class name of the package to search for entry points
  * @returns An array of objects containing the path and parsed JSON for each entry point found
  */
 export function findPackageEntryPoints(
   packageName: string,
-): { path: string; json: Object | undefined }[] {
-  const templates: any[] = [];
-  const templateNodes: TemplateNode[] = [];
-  const entryPoints: { path: string; json: Object | undefined }[] = [];
+): { className: string; json: Object | undefined }[] {
+  const entryPoints: { className: string; json: Object | undefined }[] = [];
   MODELICA_JSON_PATH.forEach((dir) => {
-    // We need a top directory to look up for entry points
-    // so we can simply convert the class name to a relative path
-    // without adding any file extension.
+    // We can simply convert the class name to a relative path without adding any file extension
+    // because we only need a top directory to look up for entry points.
     const dirPath = path.resolve(dir, packageName.replace(/\./g, "/"));
     if (fs.existsSync(dirPath)) {
       // Find all template files.
       const templatePaths = systemGrep(TEMPLATE_IDENTIFIER, dirPath);
+
+      // Populate arrays storing templates.
       templatePaths?.forEach((p) => {
-        templates.push(require(p));
+        const templateJson = loader(p);
+        const templateNode = createTemplateNode(templateJson);
+        TEMPLATE_LIST.push(templateNode.className);
+        templateNodes.push(templateNode);
       });
 
       // Find root package.
       const rootPackagePath = systemGrep(TEMPLATE_ROOT, dirPath)?.[0];
       if (!rootPackagePath) {
-        console.error("Error: root package not found in: " + dirPath);
+        console.error("Error: root package not found in " + dirPath);
         process.exit(1);
       }
-      const rootPackageJson = require(rootPackagePath);
+      const rootPackageJson = loader(rootPackagePath);
       const rootPackageName = getClassNameFromJson(rootPackageJson);
 
-      // Iterate over all template files up to the root package and populate the templateNodes array.
-      for (let template of templates) {
-        const templateNode = createTemplateNode(template);
-        TEMPLATE_LIST.push(templateNode.className);
-        templateNodes.push(templateNode);
-        let packageName = template.within;
+      // Iterate over all template files up to the root package and populate
+      // templateNodes, TEMPLATE_LIST, PACKAGE_LIST and entryPoints.
+
+      for (let templateJson of [...templateNodes.map(({json}) => json)]) {
+        let packageName = (templateJson as any).within;
         while (packageName && packageName !== rootPackageName) {
-          const packagePath = getPathFromClassName(packageName, dirPath);
+          const packagePath = getPathFromClassName(packageName, dir);
           if (!packagePath) {
             break;
           }
-          const packageJson = require(packagePath);
+          const packageJson = loader(packagePath);
           // If the package is already in the templateNodes array, its parents have also been added.
           if (
             templateNodes
@@ -141,27 +144,20 @@ export function findPackageEntryPoints(
           ) {
             break;
           }
+          if (!packageJson) {
+            continue;
+          }
           const packageNode = createTemplateNode(packageJson);
           PACKAGE_LIST.push(packageNode.className);
           templateNodes.push(packageNode);
 
-          // Temporary fix until the UI can handle nested packages:
-          // We only store in entryPoints the immediate parent package.
-          if (packageName === templateNode.parentName) {
-            const relativePath = path.relative(dir, packagePath);
-            entryPoints.push({
-              path: relativePath,
-              json: getClassNameFromRelativePath(relativePath),
-            })
-          }
-
-          packageName = packageJson.within;
+          packageName = (packageJson as any).within;
         }
       }
     }
   });
 
-  return entryPoints;
+  return templateNodes.map(({ className, json }) => { return { className, json }; });
 }
 
 /**
