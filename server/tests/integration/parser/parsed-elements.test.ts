@@ -14,7 +14,7 @@ describe("Basic parser functionality", () => {
   //   parser.typeStore._store = new Map();
   // });
 
-  it("Extracts Template modelica path", () => {
+  it("Extracts Template class name", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const [template, ..._rest] = file.elementList;
     const expectedPath = "TestPackage.Template.TestTemplate";
@@ -62,12 +62,12 @@ describe("Basic parser functionality", () => {
   });
 });
 
-describe("Expected Inputs are extracted", () => {
+describe("Expected elements are extracted", () => {
   beforeAll(() => {
     initializeTestModelicaJson();
   });
 
-  it("Generates Inputs for literal types", () => {
+  it("Generates Component objects for literal types", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.LongClass;
 
@@ -191,10 +191,10 @@ describe("Expected Inputs are extracted", () => {
     });
   });
 
-  it("Extracts expected InputGroup inputs", () => {
+  it("Extracts expected LongClass inputs", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const inputGroup = file.elementList[0] as parser.LongClass;
-    const inputs = inputGroup.getInputs();
+    const longClass = file.elementList[0] as parser.LongClass;
+    const inputs = longClass.getInputs();
     const firstComponentInput =
       inputs["TestPackage.Template.TestTemplate.first"];
 
@@ -203,8 +203,8 @@ describe("Expected Inputs are extracted", () => {
 
   it("Extracts expected extend class inputs", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const inputGroup = file.elementList[0] as parser.LongClass;
-    const inputs = inputGroup.getInputs();
+    const longClass = file.elementList[0] as parser.LongClass;
+    const inputs = longClass.getInputs();
     const extendParamPath = "TestPackage.Interface.PartialComponent.container";
     const extendInput = inputs[extendParamPath];
     expect(extendInput).toBeTruthy();
