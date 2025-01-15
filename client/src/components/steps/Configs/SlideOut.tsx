@@ -148,17 +148,6 @@ const SlideOut = ({
     );
   }
 
-  async function downloadFiles() {
-    const blob = new Blob([JSON.stringify(context, null, 2)], {
-      type: "application/json",
-    });
-    const projectConfigsLink = document.createElement("a");
-    projectConfigsLink.href = window.URL.createObjectURL(blob);
-    projectConfigsLink.download = 'context.json';
-    projectConfigsLink.click();
-    close();
-  }
-
   return (
     <Modal isOpen close={close} className="config-slide-out">
       <h3>{template?.name}</h3>
@@ -176,12 +165,6 @@ const SlideOut = ({
           placeholder="Name Your Configuration"
         />*/}
         {renderDisplayOptions(displayedOptions)}
-
-        <div className="action-bar margin-top-lg">
-          <button className="inline" onClick={downloadFiles}>
-            {itl.phrases.downloadSelected}
-          </button>
-        </div>
         <div className="submit-container">
           <button type="submit">{itl.terms.save}</button>
         </div>
