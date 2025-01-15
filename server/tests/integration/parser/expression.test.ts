@@ -1,6 +1,5 @@
-import { createTestModelicaJson, fullTempDirPath } from "./utils";
 import { ModifiersN, getTemplates } from "../../../src/parser/template";
-import { loadPackage, getSystemTypes, Template } from "../../../src/parser/";
+import { loadPackage, Template } from "../../../src/parser/";
 import { initializeTestModelicaJson } from "./utils";
 import * as parser from "../../../src/parser/parser";
 const testModelicaFile = "TestPackage.Template.TestTemplate";
@@ -10,8 +9,8 @@ let template: Template | undefined;
 
 describe("Expression", () => {
   beforeAll(() => {
-    createTestModelicaJson();
-    loadPackage(`${fullTempDirPath}/TestPackage`);
+    initializeTestModelicaJson();
+    loadPackage('TestPackage');
     const templates = getTemplates();
     template = templates.find(
       (t) => t.modelicaPath === templatePath,

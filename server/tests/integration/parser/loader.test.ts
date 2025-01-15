@@ -1,3 +1,4 @@
+import { findPackageEntryPoints } from "../../../src/parser/loader";
 import * as parser from "../../../src/parser/parser";
 import { initializeTestModelicaJson } from "./utils";
 
@@ -20,11 +21,25 @@ describe("Parser file loading", () => {
     expect(file.package).toBe("TestPackage");
   });
 
+  it("Finds package entry points", () => {
+    const packageName = "TestPackage";
+    const entryPointNames = findPackageEntryPoints(packageName)
+      .map(({className}) => className)
+      .sort();
+    expect(entryPointNames).toEqual([
+      'TestPackage.NestedTemplate',
+      'TestPackage.NestedTemplate.Subcategory',
+      'TestPackage.NestedTemplate.Subcategory.SecondTemplate',
+      'TestPackage.Template',
+      'TestPackage.Template.TestTemplate'
+    ]);
+  });
+
   it("Discovers template files and project options", () => {
-    const packagePath = "TestPackage";
-    const projectOptionsPath = "Buildings.Templates.Data.AllSystems";
-    parser.loadPackage(packagePath);
-    const projectOptionElement = parser.typeStore.find(projectOptionsPath);
+    const packageName = "TestPackage";
+    const projectOptionsClassName = "Buildings.Templates.Data.AllSystems";
+    parser.loadPackage(packageName);
+    const projectOptionElement = parser.typeStore.find(projectOptionsClassName);
     expect(projectOptionElement).toBeDefined();
   });
 });

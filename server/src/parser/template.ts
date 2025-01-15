@@ -62,7 +62,7 @@ export function getOptions(): {
 export interface Option {
   type: string;
   name: string;
-  modelicaPath: string;
+  modelicaPath: string; // Modelica fully qualified class name
   visible: boolean;
   options?: string[];
   group?: Literal | string;
@@ -180,11 +180,11 @@ function _mapInputToOption(input: parser.TemplateInput): Option {
 
 export interface SystemTypeN {
   description: string;
-  modelicaPath: string;
+  modelicaPath: string; // Modelica fully qualified class name
 }
 
 export interface SystemTemplateN {
-  modelicaPath: string;
+  modelicaPath: string; // Modelica fully qualified class name
   pathModifiers: { [key: string]: string };
   scheduleOptionPaths: string[];
   systemTypes: string[];
@@ -192,7 +192,7 @@ export interface SystemTemplateN {
 }
 
 export interface ModifiersN {
-  modelicaPath: string;
+  modelicaPath: string; // Modelica fully qualified class name
   value: any;
 }
 
@@ -222,17 +222,25 @@ export class Template {
   _extractSystemTypes(element: parser.Element) {
     const path = element.modelicaPath.split(".");
     path.pop();
-    while (path.length) {
-      const type = parser.findElement(path.join("."));
-      if (type && type.entryPoint) {
-        const systemType = {
-          description: type.description,
-          modelicaPath: type.modelicaPath,
-        };
-        this.systemTypes.unshift(systemType);
-        systemTypeStore.set(type.modelicaPath, systemType);
+
+    // Fix for https://github.com/lbl-srg/ctrl-flow-dev/issues/422
+    // Currently the UI does not support nested system types.
+    // Therefore, we only add the Modelica class name of the containing package.
+    const type = parser.findElement(path.join("."));
+    if (type && type.entryPoint) {
+      if (!type.description) {
+        console.error(
+          "Error: missing class description string in entry point " +
+            type.modelicaPath,
+        );
+        process.exit(1);
       }
-      path.pop();
+      const systemType = {
+        description: type.description,
+        modelicaPath: type.modelicaPath,
+      };
+      this.systemTypes.unshift(systemType);
+      systemTypeStore.set(type.modelicaPath, systemType);
     }
   }
 

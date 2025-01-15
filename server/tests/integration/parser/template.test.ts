@@ -1,4 +1,4 @@
-import { createTestModelicaJson, fullTempDirPath } from "./utils";
+import { initializeTestModelicaJson } from "./utils";
 import {
   loadPackage,
   getSystemTypes,
@@ -14,8 +14,8 @@ const NESTED_TEMPLATE_PATH =
 
 describe("Template wrapper class functionality", () => {
   beforeAll(() => {
-    createTestModelicaJson();
-    loadPackage(`${fullTempDirPath}/TestPackage`);
+    initializeTestModelicaJson();
+    loadPackage('TestPackage');
   });
 
   it("Extracts two templates and three Template types to be in stores", () => {
@@ -23,7 +23,7 @@ describe("Template wrapper class functionality", () => {
     expect(templates.length).toBe(2);
 
     const systemTypes = [...getSystemTypes()];
-    expect(systemTypes.length).toBe(3);
+    expect(systemTypes.length).toBe(2);
   });
 
   it("Templates have expected SystemTypes", () => {
@@ -37,7 +37,7 @@ describe("Template wrapper class functionality", () => {
     const templateSystemTypes = template.getSystemTypes();
     expect(templateSystemTypes.length).toBe(1);
     const nestedTemplateSystemTypes = nestedTemplate.getSystemTypes();
-    expect(nestedTemplateSystemTypes.length).toBe(2);
+    expect(nestedTemplateSystemTypes.length).toBe(1);
   });
 
   it("Templates output expected linkage schema for SystemTemplates", () => {
@@ -64,8 +64,8 @@ describe("Template wrapper class functionality", () => {
     );
   });
 
-  it("Keeps system types in correct order", () => {
-    // The system types should match the directory order
+  it("There should be only one system type for each template", () => {
+    // Check that we only add the Modelica class name of the containing package.
     const templates = getTemplates();
 
     const nestedTemplate = templates.find(
@@ -74,7 +74,6 @@ describe("Template wrapper class functionality", () => {
 
     const templateJSON = nestedTemplate.getSystemTemplate();
     const expectedOrder = [
-      "TestPackage.NestedTemplate",
       "TestPackage.NestedTemplate.Subcategory",
     ];
 
@@ -128,7 +127,7 @@ describe("Template wrapper class functionality", () => {
     });
   });
 
-  it("Genereates path modifiers", () => {
+  it("Generates path modifiers", () => {
     const templates = getTemplates();
     const template = templates.find(
       (t) => t.modelicaPath === TEMPLATE_PATH,
@@ -169,8 +168,8 @@ const PROJECT_INSTANCE_NAME = "datAll";
 
 describe("'Project' items are extracted", () => {
   beforeAll(() => {
-    createTestModelicaJson();
-    loadPackage(`${fullTempDirPath}/TestPackage`);
+    initializeTestModelicaJson();
+    loadPackage('TestPackage');
   });
   it("Project is populated and all project options are included in options", () => {
     const project = getProject();

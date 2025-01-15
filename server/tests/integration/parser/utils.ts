@@ -1,4 +1,5 @@
 import * as parser from "../../../src/parser/parser";
+import { prependToModelicaJsonPath } from '../../../src/parser/loader';
 import { createModelicaJson } from "../../../scripts/generate-modelica-json";
 
 // NOTE: if the test modelica package changes it will need to be
@@ -21,7 +22,7 @@ export function createTestModelicaJson() {
  */
 export function initializeTestModelicaJson() {
   createTestModelicaJson();
-  parser.setPathPrefix(fullTempDirPath);
+  prependToModelicaJsonPath([fullTempDirPath]);
 }
 
 type SimpleOption = {

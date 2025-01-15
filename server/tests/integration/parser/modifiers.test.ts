@@ -1,4 +1,4 @@
-import { createTestModelicaJson, fullTempDirPath } from "./utils";
+import { initializeTestModelicaJson } from "./utils";
 import {
   getTemplates,
   Option,
@@ -21,8 +21,8 @@ const isExpression = (obj: any) =>
 
 describe("Modifications", () => {
   beforeAll(() => {
-    createTestModelicaJson();
-    loadPackage(`${fullTempDirPath}/TestPackage`);
+    initializeTestModelicaJson();
+    loadPackage('TestPackage');
     const templates = getTemplates();
     const template = templates.find(
       (t) => t.modelicaPath === templatePath,
@@ -110,7 +110,7 @@ describe("Modifications", () => {
     const modPath = "TestPackage.Component.FourthComponent.replaceable_param";
     const option = tOptions[path];
     const mod = option.modifiers[modPath];
-  
+
     expect(mod).toBeDefined();
     expect(mod.final).toBeTruthy();
     expect(evaluateExpression(mod.expression)).toEqual('TestPackage.Component.SecondComponent');
@@ -120,7 +120,7 @@ describe("Modifications", () => {
     const path = "TestPackage.Template.TestTemplate.typ";
     const option = tOptions[path];
     const mod = option.modifiers[path];
-  
+
     expect(mod).toBeUndefined();
   });
 });

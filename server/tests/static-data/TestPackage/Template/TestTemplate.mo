@@ -169,6 +169,5 @@ model TestTemplate "Test Template"
           "Third Test Component")),
       Dialog(group="Selectable Component"));
 
-  annotation (__ctrlFlow_template=true);
-
+  annotation(__ctrlFlow(routing="template"));
 end TestTemplate;
