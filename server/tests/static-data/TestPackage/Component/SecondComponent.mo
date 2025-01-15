@@ -10,4 +10,8 @@ model SecondComponent "Second Component"
     "Second Component Example Boolean Param"
     annotation(Evaluate=true);
 
+  // disable condition: an outer declaration
+  outer parameter String inner_outer_param
+    "Outer param";
+
 end SecondComponent;
