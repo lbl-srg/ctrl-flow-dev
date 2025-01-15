@@ -23,7 +23,6 @@ describe("Template wrapper class functionality", () => {
     expect(templates.length).toBe(2);
 
     const systemTypes = [...getSystemTypes()];
-    console.log(systemTypes);
     expect(systemTypes.length).toBe(2);
   });
 

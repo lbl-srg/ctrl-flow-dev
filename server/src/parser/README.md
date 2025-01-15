@@ -176,7 +176,7 @@ In [parser.ts](./parser.ts) `loadPackage` wwill attemp to load the provided path
 ### Template Entry Points
 The template discovery process relies on a grep for the following hierarchical class annotations:
 
-- `__ctrlFlow(routing="root()`: Marks the lop-level package containing all templates, e.g.,
+- `__ctrlFlow(routing="root")`: Marks the top-level package containing all templates, e.g.,
 `Buildings.Templates`
 - `__ctrlFlow(routing="template")`: Marks individual template classes, e.g.,
 `Buildings.Templates.AirHandlersFans.VAVMultiZone`
