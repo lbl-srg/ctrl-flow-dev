@@ -55,29 +55,27 @@ The above modelica generates the following elements:
 
 1. `model ExampleModel "An Example Model"`
 
-This creates an `Element` of type `InputGroup`. An `InputGroup` is an element that has child elements (in this case it has three: the referenced extended class `ExampleExtendModel`, `component`, and `id`)
+This creates an `Element` of type `LongClass`. A `LongClass` is an element that has child elements (in this case it has three: the referenced extended class `ExampleExtendModel`, `component`, and `id`)
 
 This elements gets put in the type store at the path: `ExamplePackage.ExampleModel`
 
 2. `extends ExampleExtendModel`
 
-`Extend` statements in modelica are effectively treated as an additional parameter on a model. An implicit parameter name of `__extend` is given. There is a unique type for extend classes `InputGroupExtend`.
+`Extend` statements in Modelica are effectively treated as an additional parameter on a model. An implicit parameter name of `__extend` is given. There is a unique type for extend classes: `Extend`.
 
-`InputGroup`s have a reference to `InputGroupExtend` instance (in this case `ExampleModel` has a reference to `ExampleExtendModel`). The behavior required to 'flatten' inherited properties is taken care of in the `InputGroup` implementation.
+`LongClass` objects have a reference to `Extend` objects (in this case `ExampleModel` has a reference to `ExampleExtendModel`).
+The behavior required to 'flatten' inherited properties is taken care of in the `LongClass` implementation.
 
-This extend element get added to the type store with the following path: `ExamplePackage.ExampleModel.__extend`. This is a purely internal reference that is not exposed in linkage schema (and is likely not necessary since input groups hold onto a reference to the `InputGroupExtend` reference).
+This extend element get added to the type store with the following path: `ExamplePackage.ExampleModel.__extend`.
+This is a purely internal reference that is not exposed in linkage schema (and is likely not necessary since input groups hold onto a reference to the `Extend` reference).
 
-3.  '''
-    parameter Example.Component component(
-    componentParam=5
-    )
-    '''
+3.  `parameter Example.Component component(componentParam=5)`
 
 This element gets added as type an element type `Input` at the path `ExamplePackage.ExampleModel.component`. This description also has a `componentParam=5`. This is unpacked as a modifier with an 'instance path' of `component.componentParam`. See the modifier section for more details.
 
 4. `parameter String id = "An example assignment"`
 
-This element gets added to the type store as type `Input` at the path `ExamplePackage.ExampleModel.id`. The `Input` param 'value' gets assigned as a simple expression.
+This element gets added to the type store as type `Component` at the path `ExamplePackage.ExampleModel.id`. The `Component` param 'value' gets assigned as a simple expression.
 
 #### Export Format
 

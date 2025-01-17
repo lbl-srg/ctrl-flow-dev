@@ -19,7 +19,7 @@ export interface ClassModification {
 
 export interface ShortClassSpecifier {
   identifier: string;
-  short_class_specifier_value: {
+  value: {
     base_prefix: string;
     name: string;
     array_subscripts: any;
@@ -46,8 +46,8 @@ export interface ExtendClause {
 }
 
 export interface ElementSection {
-  public_element_list: Array<ProtectedElement>;
-  protected_element_list: Array<ProtectedElement>;
+  public_element_list: Array<Element>;
+  protected_element_list: Array<Element>;
   equation_section: any;
   algorithm_section: any;
 }
@@ -56,7 +56,7 @@ export interface LongClassSpecifier {
   identifier: string;
   description_string: string;
   composition: {
-    element_list: Array<ProtectedElement>;
+    element_list: Array<Element>;
     element_sections: Array<ElementSection>;
   };
 }
@@ -75,7 +75,9 @@ export interface DerClassSpecifier {
   };
 }
 
-export interface ClassSpecifier {
+// See https://github.com/lbl-srg/modelica-json/issues/239
+// We define here ClassDefinition as an object (not as an array), consistently with the grammar.
+export interface ClassDefinition {
   final: boolean;
   encapsulated: boolean;
   class_prefixes: string;
@@ -85,8 +87,6 @@ export interface ClassSpecifier {
     der_class_specifier?: DerClassSpecifier;
   };
 }
-
-export type ClassDefinition = Array<ClassSpecifier>;
 
 export interface Component {
   declaration: DeclarationBlock;
@@ -103,7 +103,7 @@ export interface ComponentClause {
   component_list: Array<Component>;
 }
 
-export interface ProtectedElement {
+export interface Element {
   import_clause: ImportClause;
   extends_clause: ExtendClause;
   redeclare: boolean;
