@@ -95,7 +95,6 @@ export function applyPathModifiers(
       ? [postFix, splitScopePath.pop()].filter((p) => p === "").join(".")
       : splitScopePath.pop();
   }
-
   return modifiedPath;
 }
 
@@ -131,9 +130,8 @@ const _instancePathToOption = (
 
   const pathSegments = modifiedPath.split(".");
   const curInstancePathList = [pathSegments.shift()]; // keep track of instance path for modifiers
-  let curOptionPath: string | null | undefined = `${
-    context.template.modelicaPath
-  }.${curInstancePathList[curInstancePathList.length - 1]}`;
+  let curOptionPath: string | null | undefined =
+    `${context.template.modelicaPath}.${curInstancePathList[0]}`;
   if (pathSegments.length === 0) {
     // special case: original type definition should be defined
     const rootOption = context.getRootOption();
@@ -150,7 +148,7 @@ const _instancePathToOption = (
     // this instance path
     if (context.config?.selections) {
       Object.entries(context.selections).map(([key, value]) => {
-        const [optionPath, instancePath] = key.split("-");
+        const [, instancePath] = key.split("-");
         if (instancePath === curInstancePathList.join(".")) {
           option = context.options[value];
         }
@@ -179,7 +177,6 @@ const _instancePathToOption = (
     }
 
     // special 'datAll' case
-
     if (
       curOptionPath !== undefined &&
       !option &&
@@ -191,18 +188,25 @@ const _instancePathToOption = (
     // Otherwise - do the normal thing and attempt to find the instance type
     // by looking in options
     if (!option && curOptionPath) {
-      // otherwise just attempt to grab the option
       const paramOption = context.options[curOptionPath];
+
       if (!paramOption) {
         break; // PUNCH-OUT!
       } else {
         option = context.options[paramOption.type];
         if (option === undefined) {
-          // console.log(`param type undefined: ${paramOption.type}`);
           curOptionPath = null;
           break;
         }
       }
+    }
+
+    // For short classes, the actual instance is within the options
+    // of the type assigned to the short class identifier.
+    // (If this type is modified by the user selection, this has already been caught by
+    // the selection check above.)
+    if (option?.shortExclType) {
+      option = context.options[option?.value as string];
     }
 
     if (pathSegments.length === 0) {
@@ -211,9 +215,9 @@ const _instancePathToOption = (
 
     const paramName = pathSegments.shift();
     curInstancePathList.push(paramName);
+
     // use the options child list to get the correct type - inherited types
     // are only correctly referenced through this list
-
     curOptionPath = option?.options?.find(
       (o) => o.split(".").pop() === paramName,
     ) as string;
@@ -273,7 +277,6 @@ export function resolvePaths(
       };
     }
   }
-
   return { optionPath: null, instancePath: path, outerOptionPath: null };
 }
 
@@ -504,22 +507,46 @@ const addToModObject = (
 
 /**
  * The type of a replaceable option can be made either by:
- * - a selection
- * - a redeclare
+ * - a selection that directly maps to a redeclare statement for the element instancePath
+ * - a selection that maps to another element which contains a redeclare statement for the element
+ *   (which will then be found in the mods object)
  *
- * This is a small helper method that checks for either of those instances
+ * This is a small helper method that checks for either of those cases.
+ * For non repleaceable elements, this function returns option.type.
  */
 const getReplaceableType = (
   instancePath: string,
   option: OptionInterface,
   mods: { [key: string]: { expression: Expression; final: boolean } },
   selections: ConfigValues,
+  options: { [key: string]: OptionInterface },
 ) => {
-  // check if there is a selection for this option, if so use
-  const selectionPath = constructSelectionPath(
-    option.modelicaPath,
-    instancePath,
-  );
+  // check if there is a selection for this option, if so use it
+  let selectionPath;
+  // first check if this is an instance of a replaceable short class
+  const typeOption = options[option.type as string];
+  if (
+    typeOption &&
+    typeOption.definition &&
+    typeOption.shortExclType &&
+    typeOption.replaceable
+  ) {
+    // for the UI, we don't support lookup of short class definitions within packages
+    // so the short class element name is necessarily within the same variable namespace as the instance
+    selectionPath = constructSelectionPath(
+      typeOption.modelicaPath,
+      instancePath.split(".").slice(0, -1).join(".") +
+        "." +
+        typeOption.type.split(".").pop(),
+    );
+  } else if (option.replaceable) {
+    // for replaceable components, the selection path is directly created from the instance path
+    selectionPath = constructSelectionPath(option.modelicaPath, instancePath);
+  } else {
+    // non replaceable element: the type is fixed, return it
+    return option.type;
+  }
+
   const selectionType = selections ? selections[selectionPath] : null;
 
   if (selectionType) {
@@ -557,9 +584,10 @@ const buildModsHelper = (
 
   // fetch all modifiers from up the inheritance hierarchy
   const name = option.modelicaPath.split(".").pop();
-  const newBase = option.definition
-    ? baseInstancePath
-    : [baseInstancePath, name].filter((p) => p !== "").join(".");
+  const newBase =
+    option.definition && !option.shortExclType // short class definitions are treated as instances
+      ? baseInstancePath
+      : [baseInstancePath, name].filter((p) => p !== "").join(".");
   const childOptions = option.options;
 
   const optionsWithModsList: string[] =
@@ -575,29 +603,29 @@ const buildModsHelper = (
     }
   });
 
-  // check for choice modifier - use either a selection or the default value
+  // check for redeclare in selections or use default type
   // to grab the correct modifiers
   if (option.replaceable) {
-    let choice = option.value as string | null | undefined;
+    let redeclaredType = option.value as string | null | undefined;
     if (option.modelicaPath in selectionModelicaPathsCache) {
       const selectionPath = constructSelectionPath(
         option.modelicaPath,
         newBase,
       );
-      choice = selections[selectionPath];
+      redeclaredType = selections[selectionPath];
     }
 
-    if (option.choiceModifiers && choice) {
-      const choiceMods = option.choiceModifiers[choice];
+    if (option.choiceModifiers && redeclaredType) {
+      const choiceMods = option.choiceModifiers[redeclaredType];
       if (choiceMods) {
         addToModObject(choiceMods, newBase, option.definition, mods);
       }
     }
   }
 
-  // if this is a definition - visit all child options and grab modifiers
+  // if this is a long class definition visit all child options and grab modifiers
   if (childOptions) {
-    if (option.definition) {
+    if (option.definition && !option.shortExclType) {
       childOptions.map((path) => {
         const childOption = options[path];
         buildModsHelper(
@@ -610,11 +638,11 @@ const buildModsHelper = (
         );
       });
     } else {
-      const typeOptionPath = option.replaceable
-        ? getReplaceableType(newBase, option, mods, selections)
-        : option.type;
-
+      // if this is a replaceable element, get the redeclared type
+      // (this includes instances of replaceable short classes)
+      const typeOptionPath = getReplaceableType(newBase, option, mods, selections, options);
       const typeOption = options[typeOptionPath as string];
+
       if (typeOption && typeOption.options) {
         // Add modifiers from type option
         if (typeOption.modifiers) {
@@ -669,7 +697,7 @@ export const buildMods = (
   const mods: { [key: string]: Modifier } = {};
   const selectionModelicaPaths: { [key: string]: null } = {}; // Object.keys(selections)
   Object.keys(selections).map((s) => {
-    const [modelicaPath, instancePath] = s.split("-");
+    const [modelicaPath] = s.split("-");
     selectionModelicaPaths[modelicaPath] = null;
   });
 
@@ -731,7 +759,7 @@ export class ConfigContext {
     public options: { [key: string]: OptionInterface },
     public selections: ConfigValues = {},
   ) {
-    // calculate intial mods without selections
+    // calculate initial mods without selections
     this.mods = buildMods(
       this.options[template.modelicaPath],
       selections,
@@ -872,7 +900,7 @@ export class ConfigContext {
   isValidSelection(selectionPath: string) {
     const paths = selectionPath.split("-");
     if (paths.length == 2) {
-      const [modelicaPath, instancePath] = paths;
+      const [, instancePath] = paths;
       const instance = this.getOptionInstance(instancePath);
       return !!instance?.display;
     } else {
@@ -890,7 +918,6 @@ export class ConfigContext {
       this,
       scope,
     );
-
     if (!optionPath || optionPath.startsWith("Modelica")) {
       return;
     }
@@ -906,7 +933,7 @@ export class ConfigContext {
     }
     const option = this.options[optionPath as string];
     const type =
-      option && "replaceable" in option ? (value as string) : option?.['type'];
+      option && "replaceable" in option ? (value as string) : option?.["type"];
     const castValue = value as Literal | null | undefined;
     const optionInstance = {
       value: castValue,
@@ -919,6 +946,7 @@ export class ConfigContext {
 
     const mod = this.mods[instancePath];
     const final = mod?.final !== undefined ? mod.final : false;
+
     if (final) {
       return optionInstance; // PUNCH-OUT! we got what we need
     }
@@ -935,7 +963,7 @@ export class ConfigContext {
         : false;
     display = !isExpression(enable) ? !!enable : display;
     display = outerOption
-      ? !!(display && outerOption.visible)
+      ? false // outer elements are always hidden
       : !!(display && option.visible);
 
     return { ...optionInstance, display };

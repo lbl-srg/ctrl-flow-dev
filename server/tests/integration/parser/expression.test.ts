@@ -30,7 +30,7 @@ let inputs: {[key: string]: parser.TemplateInput} = {};
 
 function getInputs() {
   const file = parser.getFile(testModelicaFile) as parser.File;
-  const template = file.elementList[0] as parser.InputGroup;
+  const template = file.elementList[0] as parser.LongClass;
   return template.getInputs();
 }
 
@@ -55,7 +55,7 @@ describe("Template Input visible/enable expressions", () => {
   });
 
   it("'outer' prefix sets false", () => {
-    const falsyPath = 'TestPackage.Template.TestTemplate.outer_param';
+    const falsyPath = 'TestPackage.Component.SecondComponent.inner_outer_param';
     const falsyInput = inputs[falsyPath];
     expect(falsyInput.visible).toBeFalsy();
   });

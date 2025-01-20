@@ -27,7 +27,7 @@ export interface FlatConfigOption {
 
 type DisplayItem = FlatConfigOptionGroup | FlatConfigOption;
 
-export const MODELICA_LITERALS_TO_NOT_DISPLAY = ["String", "Real", "Integer"];
+export const MLS_PREDEFINED_TYPES_TO_NOT_DISPLAY = ["String", "Real", "Integer"];
 
 const displayOptionFilter = (
   optionInstance: OptionInstance,
@@ -35,7 +35,7 @@ const displayOptionFilter = (
 ) => {
   return (
     optionType.startsWith("Modelica") ||
-    MODELICA_LITERALS_TO_NOT_DISPLAY.includes(optionType) ||
+    MLS_PREDEFINED_TYPES_TO_NOT_DISPLAY.includes(optionType) ||
     optionInstance.instancePath.endsWith("dat")
   );
 };
@@ -103,7 +103,8 @@ export function _formatDisplayGroup(
   const mappedItems = option.options
     ?.flatMap((o) => {
       const childOption = context.options[o];
-      if (childOption.definition && childOption?.options?.length) {
+      // Long class definitions with child options form a "group" of inputs in the configuration panel
+      if (childOption.definition && !childOption.shortExclType && childOption?.options?.length) {
         return _formatDisplayGroup(childOption, paramInstance, context);
       } else {
         const paramName = o.split(".").pop();
@@ -175,6 +176,7 @@ export function _formatDisplayItem(
   if (
     !optionInstance.isOuter &&
     typeOption.definition &&
+    !typeOption.shortExclType &&
     typeOption.options?.length
   ) {
     const displayGroup = _formatDisplayGroup(

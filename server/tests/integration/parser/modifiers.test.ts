@@ -45,7 +45,7 @@ describe("Modifications", () => {
 
   it("Maps Modifiers to Flattened List of Expressions and Paths", () => {
     const path = `TestPackage.Template.TestTemplate`;
-    const element = findElement(path) as parser.InputGroup;
+    const element = findElement(path) as parser.LongClass;
     const inputs = element?.getInputs() as {
       [key: string]: parser.TemplateInput;
     };

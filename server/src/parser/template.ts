@@ -69,12 +69,13 @@ export interface Option {
   tab?: string;
   value?: any;
   enable?: any;
-  treeList?: string[];
+  treeList?: string[]; // Only defined if (option.definition)
   modifiers: { [key: string]: { expression: Expression; final: boolean } };
   choiceModifiers?: { [key: string]: Mods };
   replaceable: boolean;
   elementType: string;
   definition: boolean;
+  shortExclType: boolean; // Short class definition excluding `type` definition
 }
 
 export interface Project {
@@ -125,15 +126,26 @@ export function flattenModifiers(
   return mods;
 }
 
+/**
+ * Returns the classes containing the declaration of the class components
+ * including the class itself.
+ */
 function _getTreeList(option: Option) {
   const treeList: string[] = [option.type];
 
   option.options?.map((o) => {
-    // remove the last '.' path
-    const basePath = o.split(".").slice(0, -1).join(".");
-
-    if (!treeList.includes(basePath)) {
-      treeList.push(basePath);
+    let treeElement: string;
+    // For replaceable elements we store the choices from the annotation within `options` via `getInputs()`
+    // These are ***class names***, not instance paths (= <className>.<instanceName>).
+    // This applies to replaceable short class definitions for which we don't trim the instance name.
+    if (option.shortExclType) {
+      treeElement = o;
+    } else {
+      // remove the trailing '*.<instanceName>' to retrieve the class name from the instance path
+      treeElement = o.split(".").slice(0, -1).join(".");
+    }
+    if (!treeList.includes(treeElement)) {
+      treeList.push(treeElement);
     }
   });
 
@@ -169,7 +181,8 @@ function _mapInputToOption(input: parser.TemplateInput): Option {
 
   option.options = options;
   option.definition = parser.isDefinition(input.elementType);
-  option.replaceable = input.elementType === "replaceable";
+  option.shortExclType = input.elementType.endsWith("-short");
+  option.replaceable = input.replaceable || false;
 
   if (option.definition) {
     option.treeList = _getTreeList(option);
@@ -304,7 +317,7 @@ export class Template {
   ) {
     if (parser.isDefinition(element.elementType)) {
       if (parser.isInputGroup(element.elementType)) {
-        const inputGroup = element as parser.InputGroup;
+        const inputGroup = element as parser.LongClass;
         const childElements = inputGroup.getChildElements();
         // breadth first - check all class params first, then dive into types
         childElements.map((el) => {
@@ -325,7 +338,7 @@ export class Template {
     } else {
       // TODO: I could be fouling up inner/outer resolution by checking ALL subcomponents
       // against eachother
-      const param = element as parser.Input;
+      const param = element as parser.Component;
       const path = [instancePrefix, param.name]
         .filter((p) => p !== "")
         .join(".");

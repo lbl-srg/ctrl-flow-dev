@@ -14,7 +14,7 @@ describe("Basic parser functionality", () => {
   //   parser.typeStore._store = new Map();
   // });
 
-  it("Extracts Template modelica path", () => {
+  it("Extracts Template class name", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const [template, ..._rest] = file.elementList;
     const expectedPath = "TestPackage.Template.TestTemplate";
@@ -25,7 +25,7 @@ describe("Basic parser functionality", () => {
     const paramName = "dat";
 
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.elementList[0] as parser.InputGroup;
+    const template = file.elementList[0] as parser.LongClass;
     const expectedPath = `${template.modelicaPath}.${paramName}`;
     const element = template.elementList?.find(
       (e) => e.modelicaPath === expectedPath,
@@ -37,12 +37,12 @@ describe("Basic parser functionality", () => {
     const paramName = "dat";
 
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.elementList[0] as parser.InputGroup;
+    const template = file.elementList[0] as parser.LongClass;
     const expectedPath = `${template.modelicaPath}.${paramName}`;
 
     const dat = template.elementList?.find(
       (e) => e.modelicaPath === expectedPath,
-    ) as parser.Input;
+    ) as parser.Component;
 
     const input = dat.getInputs()[expectedPath];
 
@@ -51,7 +51,7 @@ describe("Basic parser functionality", () => {
 
   it("Extracts model elements", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.elementList[0] as parser.InputGroup;
+    const template = file.elementList[0] as parser.LongClass;
     expect(template.elementList?.length).not.toBe(0);
     template.elementList?.map((e: parser.Element) =>
       expect(e.modelicaPath).not.toBeFalsy(),
@@ -62,19 +62,19 @@ describe("Basic parser functionality", () => {
   });
 });
 
-describe("Expected Inputs are extracted", () => {
+describe("Expected elements are extracted", () => {
   beforeAll(() => {
     initializeTestModelicaJson();
   });
 
-  it("Generates Inputs for literal types", () => {
+  it("Generates Component objects for literal types", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.elementList[0] as parser.InputGroup;
+    const template = file.elementList[0] as parser.LongClass;
 
     // get elements that match literal types: Boolean, String, Real, Integer, Enum
     const templateInputs = template.getInputs();
     Object.values(templateInputs).map((o) => {
-      if (o.type in parser.MODELICA_LITERALS) {
+      if (o.type in parser.MLS_PREDEFINED_TYPES) {
         expect(o.name).not.toBeFalsy();
         expect(o.modelicaPath).not.toBeFalsy();
       }
@@ -109,7 +109,7 @@ describe("Expected Inputs are extracted", () => {
   */
   it("Extracts literal value expression", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.elementList[0] as parser.InputGroup;
+    const template = file.elementList[0] as parser.LongClass;
     const inputs = template.getInputs();
     const input = inputs[
       "TestPackage.Template.TestTemplate.expression_bool"
@@ -120,7 +120,7 @@ describe("Expected Inputs are extracted", () => {
 
   it("Extracts 'choices'", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.elementList[0] as parser.InputGroup;
+    const template = file.elementList[0] as parser.LongClass;
     const component = template.elementList?.find(
       (e) => e.name === "selectable_component",
     ) as parser.Element;
@@ -131,7 +131,7 @@ describe("Expected Inputs are extracted", () => {
     const [choice1, choice2, choice3] = input.inputs as string[];
     expect(choice1).toBe("TestPackage.Component.SecondComponent");
     expect(choice2).toBe("TestPackage.Component.ThirdComponent");
-  
+
     // choice Mods:
     expect(input.choiceModifiers).toBeDefined();
     if (input.choiceModifiers) {
@@ -147,7 +147,7 @@ describe("Expected Inputs are extracted", () => {
     const expectedTab = "Tabby";
     const expectedGroup = "Groupy";
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.elementList[0] as parser.InputGroup;
+    const template = file.elementList[0] as parser.LongClass;
     const inputs = template.getInputs();
     const input = inputs["TestPackage.Template.TestTemplate.nullable_bool"];
     expect(input?.group).toEqual(expectedGroup);
@@ -157,7 +157,7 @@ describe("Expected Inputs are extracted", () => {
 
   it("Set 'visible' parameter correctly", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.elementList[0] as parser.InputGroup;
+    const template = file.elementList[0] as parser.LongClass;
 
     const inputs = template.getInputs();
     const input = inputs["TestPackage.Template.TestTemplate.should_ignore"];
@@ -167,7 +167,7 @@ describe("Expected Inputs are extracted", () => {
 
   it("Enums parameter returns the expected inputs", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.elementList[0] as parser.InputGroup;
+    const template = file.elementList[0] as parser.LongClass;
     const expectedValues = ["Chocolate", "Vanilla", "Strawberry"];
     const parentPath = "TestPackage.Template.TestTemplate.typ";
     const element = template.elementList?.find(
@@ -191,10 +191,10 @@ describe("Expected Inputs are extracted", () => {
     });
   });
 
-  it("Extracts expected InputGroup inputs", () => {
+  it("Extracts expected LongClass inputs", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const inputGroup = file.elementList[0] as parser.InputGroup;
-    const inputs = inputGroup.getInputs();
+    const longClass = file.elementList[0] as parser.LongClass;
+    const inputs = longClass.getInputs();
     const firstComponentInput =
       inputs["TestPackage.Template.TestTemplate.first"];
 
@@ -203,8 +203,8 @@ describe("Expected Inputs are extracted", () => {
 
   it("Extracts expected extend class inputs", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const inputGroup = file.elementList[0] as parser.InputGroup;
-    const inputs = inputGroup.getInputs();
+    const longClass = file.elementList[0] as parser.LongClass;
+    const inputs = longClass.getInputs();
     const extendParamPath = "TestPackage.Interface.PartialComponent.container";
     const extendInput = inputs[extendParamPath];
     expect(extendInput).toBeTruthy();
@@ -212,7 +212,7 @@ describe("Expected Inputs are extracted", () => {
 
   it("All child inputs have valid input references", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.elementList[0] as parser.InputGroup;
+    const template = file.elementList[0] as parser.LongClass;
     const inputs = template.getInputs();
 
     // debugging structure to track input generation
@@ -237,7 +237,7 @@ describe("Expected Inputs are extracted", () => {
 
   it("Replaceable 'enable' field is set as expected", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.elementList[0] as parser.InputGroup;
+    const template = file.elementList[0] as parser.LongClass;
     const replaceableInput =
       template.getInputs()[
         "TestPackage.Template.TestTemplate.selectable_component"
@@ -248,7 +248,7 @@ describe("Expected Inputs are extracted", () => {
 
   it("Linkage Keyword overrides enable logic", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
-    const template = file.elementList[0] as parser.InputGroup;
+    const template = file.elementList[0] as parser.LongClass;
     const templateInputs = template.getInputs();
 
     const forcedFalse =

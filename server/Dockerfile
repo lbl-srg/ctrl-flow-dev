@@ -23,6 +23,7 @@ COPY bin/ bin/
 COPY package*.json ./
 
 # Install python dependencies
+RUN apt-get update --assume-yes && apt-get upgrade --assume-yes
 RUN apt-get --assume-yes install pip
 COPY scripts/sequence-doc scripts/sequence-doc
 RUN npm run install-python-deps
