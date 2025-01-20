@@ -1,4 +1,4 @@
-import { createTestModelicaJson, fullTempDirPath } from "./utils";
+import { initializeTestModelicaJson } from "./utils";
 import { loadPackage, getOptions } from "../../../src/parser/";
 import { evaluateExpression } from "../../../src/parser/expression";
 
@@ -9,8 +9,8 @@ import { evaluateExpression } from "../../../src/parser/expression";
 
 describe("Path Expansion", () => {
   beforeAll(() => {
-    createTestModelicaJson();
-    loadPackage(`${fullTempDirPath}/TestPackage`);
+    initializeTestModelicaJson();
+    loadPackage('TestPackage');
   });
 
   it("Parameter type paths are expanded", () => {

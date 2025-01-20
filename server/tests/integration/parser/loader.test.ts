@@ -21,10 +21,10 @@ describe("Parser file loading", () => {
   });
 
   it("Discovers template files and project options", () => {
-    const packagePath = "TestPackage";
-    const projectOptionsPath = "Buildings.Templates.Data.AllSystems";
-    parser.loadPackage(packagePath);
-    const projectOptionElement = parser.typeStore.find(projectOptionsPath);
+    const packageName = "TestPackage";
+    const projectOptionsClassName = "Buildings.Templates.Data.AllSystems";
+    parser.loadPackage(packageName);
+    const projectOptionElement = parser.typeStore.find(projectOptionsClassName);
     expect(projectOptionElement).toBeDefined();
   });
 });

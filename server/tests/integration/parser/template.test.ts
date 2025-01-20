@@ -1,4 +1,4 @@
-import { createTestModelicaJson, fullTempDirPath } from "./utils";
+import { initializeTestModelicaJson } from "./utils";
 import {
   loadPackage,
   getSystemTypes,
@@ -13,8 +13,8 @@ const NESTED_TEMPLATE_PATH =
 
 describe("Template wrapper class functionality", () => {
   beforeAll(() => {
-    createTestModelicaJson();
-    loadPackage(`${fullTempDirPath}/TestPackage`);
+    initializeTestModelicaJson();
+    loadPackage('TestPackage');
   });
 
   it("Extracts two templates and three Template types to be in stores", () => {
@@ -170,8 +170,8 @@ const PROJECT_INSTANCE_NAME = "datAll";
 
 describe("'Project' items are extracted", () => {
   beforeAll(() => {
-    createTestModelicaJson();
-    loadPackage(`${fullTempDirPath}/TestPackage`);
+    initializeTestModelicaJson();
+    loadPackage('TestPackage');
   });
   it("Project is populated and all project options are included in options", () => {
     const project = getProject();
