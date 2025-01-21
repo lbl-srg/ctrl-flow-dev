@@ -27,6 +27,7 @@ export interface OptionInterface {
   choiceModifiers?: { [key: string]: Modifiers };
   treeList: string[];
   definition: boolean;
+  shortExclType: boolean; // Short class definition excluding `type` definition
   replaceable: boolean;
 }
 

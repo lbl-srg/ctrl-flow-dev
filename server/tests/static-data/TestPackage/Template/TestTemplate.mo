@@ -14,11 +14,11 @@ model TestTemplate "Test Template"
     component_param="First Component Template Override")
     annotation(Dialog(enable=true));
 
-  // Test inner implementation of outer
-  inner String nested_outer_param = "inner reassignment";
+  // Test inner/outer declaration
+  inner String inner_outer_param = "inner assignment";
 
   /*
-    Test a replacable with inner implementation of outer
+    Test a replacable with outer declaration
   */
   inner replaceable
     TestPackage.Component.SecondComponent
@@ -102,10 +102,6 @@ model TestTemplate "Test Template"
     "Test Integer"
     annotation (Dialog(enable=false));
 
-  // disable condition: an outer declaration
-  outer parameter Integer outer_param
-    "Outer param";
-
   // disable condition: 'connectorSizing=true'
   parameter Integer connector_param
     "Connector Param"
@@ -168,6 +164,23 @@ model TestTemplate "Test Template"
           redeclare replaceable Component.ThirdComponent selectable_component_with_relative_paths
           "Third Test Component")),
       Dialog(group="Selectable Component"));
+
+
+  // Test short class definition
+  replaceable model ShortClass =
+    Component.FirstComponent
+    constrainedby TestPackage.Interface.PartialComponent
+    "Replaceable short class"
+    annotation(choices(
+      choice(redeclare replaceable model ShortClass =
+        TestPackage.Component.FirstComponent
+        "First Test Component"),
+      choice(redeclare replaceable model ShortClass =
+      TestPackage.Component.SecondComponent
+        "Second Test Component")));
+
+  ShortClass shortClassInstance
+    "Instance of short class";
 
   annotation(__ctrlFlow(routing="template"));
 end TestTemplate;

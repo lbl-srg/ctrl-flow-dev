@@ -1,4 +1,4 @@
-import { typeStore, isInputGroup, InputGroup, Element } from "./parser";
+import { typeStore, isInputGroup, LongClass, Element } from "./parser";
 import * as mj from "./mj-types";
 
 /**
@@ -172,11 +172,6 @@ function unpackModblock(props: ModificationProps) {
     }
   }
 
-  modBlock =
-    "element_modification_or_replaceable" in definition
-      ? definition.element_modification_or_replaceable.element_modification
-      : definition;
-
   // grab identifier
   if ("name" in modBlock) {
     name = modBlock.name;
@@ -229,28 +224,36 @@ function unpackModblock(props: ModificationProps) {
         .class_modification[0] as mj.RedeclareMod;
       if (choiceMod.element_redeclaration) {
         const replaceable = (choiceMod.element_redeclaration
-          .element_replaceable ||
+          .element_replaceable ??
           choiceMod.element_redeclaration) as mj.ElementReplaceable;
-        const replaceableType = typeStore.get(
-          replaceable.component_clause1.type_specifier,
-          basePath,
-        );
+        const clause =
+          "component_clause1" in (replaceable as mj.ElementReplaceable)
+            ? replaceable.component_clause1
+            : replaceable.short_class_definition;
+        const typeSpecifier =
+          "component_clause1" in replaceable
+            ? (clause as mj.ComponentClause1).type_specifier
+            : (clause as mj.ShortClassDefinition).short_class_specifier.value
+                ?.name;
+        const constrainingClause = replaceable.constraining_clause;
+        const replaceableType = typeStore.get(typeSpecifier, basePath);
         value = replaceableType?.modelicaPath || ""; // modelicaPath is the replaceable type
         // get selection mods
-        const declaration =
-          replaceable.component_clause1.component_declaration1.declaration;
+        const classModification = (
+          "component_clause1" in replaceable
+            ? (clause as mj.ComponentClause1).component_declaration1.declaration
+                ?.modification
+            : (clause as mj.ShortClassDefinition).short_class_specifier.value
+                ?.class_modification
+        ) as mj.ClassMod;
         // Additional modifiers can be attached to choice
-        if (declaration?.modification) {
-          mods = getModificationList(
-            declaration.modification as mj.ClassMod,
-            basePath,
-            value,
-          );
+        if (classModification) {
+          mods = getModificationList(classModification, basePath, value);
           // TODO: getModificationList should handle redeclares but it is not
           // correctly unpacking nested modifiers - this is a bug
           // kludge: remove nested modifiers
+          // See https://github.com/lbl-srg/ctrl-flow-dev/issues/416
           mods.forEach((m) => (m.mods = []));
-          console.log(mods);
         }
       }
     } else if ("class_modification" in mod) {
