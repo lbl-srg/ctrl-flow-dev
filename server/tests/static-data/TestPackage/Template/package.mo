@@ -1,6 +1,4 @@
 within TestPackage;
-package Template "Test Template"
+package Template "Test Template Package"
   extends Modelica.Icons.Package;
-
-  annotation (__ctrlFlow_template=true);
 end Template;

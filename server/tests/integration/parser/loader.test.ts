@@ -1,3 +1,4 @@
+import { findPackageEntryPoints } from "../../../src/parser/loader";
 import * as parser from "../../../src/parser/parser";
 import { initializeTestModelicaJson } from "./utils";
 
@@ -18,6 +19,20 @@ describe("Parser file loading", () => {
   it("Finds 'package' using modelica path", () => {
     const file = parser.getFile(testPackagePath) as parser.File;
     expect(file.package).toBe("TestPackage");
+  });
+
+  it("Finds package entry points", () => {
+    const packageName = "TestPackage";
+    const entryPointNames = findPackageEntryPoints(packageName)
+      .map(({className}) => className)
+      .sort();
+    expect(entryPointNames).toEqual([
+      'TestPackage.NestedTemplate',
+      'TestPackage.NestedTemplate.Subcategory',
+      'TestPackage.NestedTemplate.Subcategory.SecondTemplate',
+      'TestPackage.Template',
+      'TestPackage.Template.TestTemplate'
+    ]);
   });
 
   it("Discovers template files and project options", () => {

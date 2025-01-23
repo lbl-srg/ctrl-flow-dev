@@ -165,6 +165,7 @@ model TestTemplate "Test Template"
           "Third Test Component")),
       Dialog(group="Selectable Component"));
 
+
   // Test short class definition
   replaceable model ShortClass =
     Component.FirstComponent
@@ -181,6 +182,5 @@ model TestTemplate "Test Template"
   ShortClass shortClassInstance
     "Instance of short class";
 
-  annotation (__ctrlFlow_template=true);
-
+  annotation(__ctrlFlow(routing="template"));
 end TestTemplate;
