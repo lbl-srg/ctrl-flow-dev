@@ -7,7 +7,12 @@
  * an 'Element' that element is available if referenced by another piece of modelica-json.
  */
 
-import { findPackageEntryPoints, loader, TEMPLATE_IDENTIFIER } from "./loader";
+import {
+  findPackageEntryPoints,
+  loader,
+  TEMPLATE_LIST,
+  PACKAGE_LIST,
+} from "./loader";
 import { Template } from "./template";
 import {
   createModification,
@@ -53,9 +58,6 @@ export const isInputGroup = (elementType: ElementType | undefined): boolean =>
 
 export const isDefinition = (elementType: ElementType): boolean =>
   !["component_clause", "import_clause"].includes(elementType);
-
-export const mayBeTemplate = (classPrefixes: string | undefined): boolean =>
-  TEMPLATE_CLASSES.some((cla) => classPrefixes?.includes(cla));
 
 export const isPredefinedType = (path: string) =>
   MLS_PREDEFINED_TYPES.includes(path);
@@ -394,7 +396,7 @@ function getReplaceableInputs(
     name: "temperature",
     modelicaPath: "MyModel.temperature",
     visible: true,
-    elementType: "model"
+    elementType: "model",
   };
 
   inputs[instance.modelicaPath] = {
@@ -519,9 +521,7 @@ export class ShortClass extends Element {
   getChildElements(): Element[] {
     // Retrieve the child elements from the type specifier assigned to the short class
     const typeSpecifier = typeStore.get(this.value) as LongClass;
-    if (!typeSpecifier) {
-      console.log(this.value);
-    }
+
     return typeSpecifier == null ? [] : typeSpecifier.getChildElements();
   }
 
@@ -598,18 +598,15 @@ export class LongClass extends Element {
     );
     this.deadEnd = this.getLinkageKeywordValue() === false;
 
-    if (
-      this.annotation &&
-      this.annotation.find((m) => m.name === TEMPLATE_IDENTIFIER)
-    ) {
-      this.entryPoint = true; // Can be a package matching a system type, or a template
-      if (mayBeTemplate(definition.class_prefixes)) {
+    if ([...TEMPLATE_LIST, ...PACKAGE_LIST].includes(this.modelicaPath)) {
+      this.entryPoint = true;
+      if (TEMPLATE_LIST.includes(this.modelicaPath)) {
         new Template(this);
       }
     }
   }
 
-  /**
+  /**@
    * Returns the list of elements with all inherited elements flattened
    */
   getChildElements(useDeadEnd = false): Element[] {
@@ -703,8 +700,9 @@ function setUIInfo(instance: Element): void {
   // - no dialog annotation and
   // - not replaceable or replaceable w/o choices annotation (the latter is specific to ctrl-flow)
   // for all other types enable by default
-  const isDisabledGroup = isInputGroupType &&
-    (!instance.replaceable || (instance.replaceable && !hasChoices))
+  const isDisabledGroup =
+    isInputGroupType &&
+    (!instance.replaceable || (instance.replaceable && !hasChoices));
   if (dialog) {
     const group = dialog.mods.find((m) => m.name === "group")?.value;
     const tab = dialog.mods.find((m) => m.name === "tab")?.value;
@@ -1023,22 +1021,17 @@ export class Import extends Element {
 /**
  * Given a list of elements, discovers and returns the formatted type
  *
- * @param definition
- * @param basePath
- * @returns
+ * @param definition - Object from class_definition array or from element_list array
+ * @param basePath - Class name from 'within' clause if parsing a class, or class name if parsing an element
+ * @returns An Element instance or undefined if element type cannot be determined
  */
 function _constructElement(
-  definition: any, // object from class_definition or from element_list
-  basePath: string, // class name from 'within' clause if parsing a class, or class name if parsing an element
+  definition: any,
+  basePath: string,
 ): Element | undefined {
   const extend = "extends_clause";
   const component = "component_clause";
   const importClause = "import_clause";
-
-  // Reducing the definition to class_definition of an element prunes the replaceable
-  // property in case of a class definition, but we need it!
-  // definition =
-  //   "class_definition" in definition ? definition.class_definition : definition;
 
   // From https://specification.modelica.org/maint/3.6/introduction1.html#some-definitions
   // an element can be either a class (or short class) definition
@@ -1080,12 +1073,15 @@ function _constructElement(
     case "block":
     case "record":
     case "package":
-      element = definition.class_specifier?.hasOwnProperty(
-        "long_class_specifier",
-      )
-        ? new LongClass(definition, basePath, elementType)
-        : // Suffix "-short" is added to identify short class definitions that are ***not*** type definitions.
-          new ShortClass(definition, basePath, `${elementType}-short`);
+      const classSpecifier =
+        definition.class_specifier ?? // object from class_definition array
+        definition.class_definition.class_specifier; // object from element_list array
+      if (classSpecifier.hasOwnProperty("long_class_specifier")) {
+        element = new LongClass(definition, basePath, elementType);
+      } else if (classSpecifier.hasOwnProperty("short_class_specifier")) {
+        // Suffix "-short" is added to identify short class definitions that are ***not*** type definitions.
+        element = new ShortClass(definition, basePath, `${elementType}-short`);
+      }
       break;
     case extend:
       element = new Extend(definition, basePath, elementType);
@@ -1101,9 +1097,7 @@ function _constructElement(
   const result = element?.duplicate
     ? typeStore.get(element?.modelicaPath)
     : element;
-  if (!result) {
-    // console.log(`Unable to parse the following block:\n${definition}`);
-  }
+
   return result;
 }
 
@@ -1111,9 +1105,9 @@ function _constructElement(
 export class File {
   public package = ""; // only important part of a file
   public elementList: Element[] = [];
-  constructor(obj: any, filePath: string) {
+  constructor(obj: any, className: string) {
     this.package = obj.within;
-    const splitFilePath = filePath.split(".");
+    const splitFilePath = className.split(".");
     if (this.package) {
       // FIXME: The assumption below is not consistent with MLS.
       // A one-to-one relationship between class names and file paths cannot be generically assumed.
@@ -1149,8 +1143,6 @@ export const getFile = (className: string) => {
   const jsonData = loader(className);
   if (jsonData) {
     return new File(jsonData, className);
-  } else {
-    // console.log(`Not found: ${filePath}`);
   }
 };
 
@@ -1160,8 +1152,8 @@ export const getFile = (className: string) => {
  * @param packageName - The full class name of the package to load (e.g. "Library.Package.SubPackage")
  */
 export const loadPackage = (packageName: string) => {
-  const paths = findPackageEntryPoints(packageName);
-  paths?.map(({ json, path }) => new File(json, path));
+  const entryPoints = findPackageEntryPoints(packageName);
+  entryPoints?.map(({ json, className }) => new File(json, className));
 
   // Attempt to load project settings from a pre-defined path
   const projectPath = "Buildings.Templates.Data.AllSystems";

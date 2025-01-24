@@ -172,18 +172,21 @@ It creates the following dictionary of modifiers on the option `Buildings.Templa
 In [parser.ts](./parser.ts) `loadPackage` wwill attemp to load the provided path.
 
 ### Template Entry Points
-There is a simple template discovery process with a grep for "__ctrlFlow_template".
+The template discovery process relies on a grep for the following hierarchical class annotations:
 
-The executed command looks as follows:
+- `__ctrlFlow(routing="root")`: Marks the top-level package containing all templates, e.g.,
+`Buildings.Templates`
+- `__ctrlFlow(routing="template")`: Marks individual template classes, e.g.,
+`Buildings.Templates.AirHandlersFans.VAVMultiZone`
 
-```typescript
-const cmd = `grep -rl ${dirPath} -e "${TEMPLATE_IDENTIFIER}"`;
-```
+All template classes, and all packages between the root package and the template classes
+are considered as "entry points" and added to the `templateNodes` array of [loader.ts](./loader.ts).
+This means that the class URI ultimately dictates the explorer tree structure,
+starting from the "root" package which must be unique inside a library.
 
-This command ultimately returns a list of files that contain the unique string.
-
-Each of these file paths then get 'loaded' in [parser.ts](./parser.ts) into a `File` instance, which starts the process of consuming modelica JSON and generating various types of parse `Element`s.
-
+Based on their URIs, the entry points are loaded in [parser.ts](./parser.ts) into
+`File` instances, which starts the process of consuming modelica JSON and generating
+various types of parsed `Element`s.
 
 ### Type Store
 During the process of creating `Element`s, each element gets registered to a typestore using the modelica path.
@@ -215,23 +218,6 @@ Currently data is NOT being pulled in from the Modelica Standard Library. A simp
 It is likely a good idea to try and separate out 'Modifier' like objects that have a modelicaPath vs. those that do not. `redeclare` and `final` only relate to modifiers that have a `modelicaPath`.
 
 ### Template Entry Points
-
-The current approach is a simplistic and not very flexible. A more robust approach has been discussed:
-
-- Use a flag indicating that a package (in our case Buildings.Templates) is to be considered as the "root" for all template URIs, for instance:
-__ctrlFlow(routing="root")
-- For each template class (for instance Buildings.Templates.AirHandlersFans.VAVMultiZone):
-__ctrlFlow(routing="template")
-
-
->The contract for the template developer will then be that the class URI dictates the explorer tree structure, starting from the "root" package (necessarily unique inside a library).
-So for instance the template Buildings.Templates.AirHandlersFans.VAVMultiZone with the above annotation would yield the following tree structure:
->
->AirHandlersFans
->
->└── VAVMultiZone
->
->Without having to add any annotation to the subpackage Buildings.Templates.AirHandlersFans.
-```
-
-To implement this, the grep command can continue to be used (by changing the template identifier), however the process for finding subpackages would need to be tweaked a bit in the parser since they are not explicitly listed from the grep command.
+The UI doesn't currently support multiple subpackages. Therefore, only the
+parent package of each template class is used to generate the tree structure in the UI.
+See the function `_extractSystemTypes` in [template.ts](./template.ts).
