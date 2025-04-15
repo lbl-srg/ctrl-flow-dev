@@ -22,6 +22,12 @@ export class LblCdkStack extends cdk.Stack {
     const bucket = new Bucket(this, `lbl-client-${stage}`, {
       bucketName: `lbl-client-${stage}`,
       publicReadAccess: true,
+      blockPublicAccess: {
+        blockPublicAcls: false,
+        blockPublicPolicy: false,
+        ignorePublicAcls: false,
+        restrictPublicBuckets: false,
+      },
       websiteIndexDocument: "index.html",
       websiteErrorDocument: "index.html",
       autoDeleteObjects: true,
