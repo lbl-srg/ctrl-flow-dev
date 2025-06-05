@@ -5,6 +5,7 @@ import { createModelicaJson } from "../../../scripts/generate-modelica-json";
 // NOTE: if the test modelica package changes it will need to be
 // manually removed to update for tests
 const testPackagePath = "tests/static-data/TestPackage";
+const testSecondPackagePath = "tests/static-data/SecondTestPackage";
 // We need an exact match on path to test project settings
 const buildingsPackage = "tests/static-data/Buildings";
 const tempDirPath = "/tmp/test-linkage-widget/";
@@ -13,6 +14,7 @@ export const fullTempDirPath = `${tempDirPath}json/tests/static-data/`;
 
 export function createTestModelicaJson() {
   createModelicaJson(testPackagePath, tempDirPath);
+  createModelicaJson(testSecondPackagePath, tempDirPath);
   createModelicaJson(buildingsPackage, tempDirPath);
 }
 

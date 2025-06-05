@@ -42,4 +42,12 @@ describe("Parser file loading", () => {
     const projectOptionElement = parser.typeStore.find(projectOptionsClassName);
     expect(projectOptionElement).toBeDefined();
   });
+
+  it("Is able to load the second test package", () => {
+    const packageName = "SecondTestPackage";
+    const secondPackageTestParam = "SecondTestPackage.Templates.Plants.Chiller.testParam";
+    parser.loadPackage(packageName);
+    const projectOptionElement = parser.typeStore.find(secondPackageTestParam);
+    expect(projectOptionElement).toBeDefined();
+  });
 });
