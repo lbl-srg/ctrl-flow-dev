@@ -1,3 +1,4 @@
+import templateData from "../../src/data/templates.json";
 import RootStore from "../../src/data";
 import { ConfigInterface } from "../../src/data/config";
 import { ConfigValues } from "../../src/utils/modifier-helpers";
@@ -29,7 +30,7 @@ import {
 } from "../../src/interpreter/display-option";
 
 // initialize global test dependencies
-const store = new RootStore();
+const store = new RootStore(templateData);
 const projectSelections = {
   "Buildings.Templates.Data.AllSystems.stdEne":
     "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
@@ -82,8 +83,8 @@ const addNewConfig = (
 };
 
 const mzConfig = addNewConfig("VAVMultiZone Config", mzTemplate, {});
-const zoneConfig = addNewConfig("VAV Box Cooling Only", zoneTemplate, {});
-const zoneReheatConfig = addNewConfig("VAV Box Reheat", zoneReheatTemplate, {});
+// const zoneConfig = addNewConfig("VAV Box Cooling Only", zoneTemplate, {});
+// const zoneReheatConfig = addNewConfig("VAV Box Reheat", zoneReheatTemplate, {});
 
 describe("Path Modifier tests", () => {
   it("Applies a path modifier", () => {
@@ -717,7 +718,7 @@ describe("Scope tests", () => {
     );
 
     // falls back to original
-    let typSecOut = context.getValue("ctl.typSecOut"); // ctl.typSecOut = secOutRel.typSecOut
+    const typSecOut = context.getValue("ctl.typSecOut"); // ctl.typSecOut = secOutRel.typSecOut
     expect(typSecOut).toEqual(
       "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper",
     );

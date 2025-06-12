@@ -1,5 +1,5 @@
-import tplData from "./templates.json";
 import RootStore from ".";
+import { TemplateDataInterface } from "./types";
 import { buildModifiers, Modifiers } from "../utils/modifier-helpers";
 import { Expression } from "../utils/expression-helpers";
 
@@ -67,10 +67,10 @@ export default class Template {
   systemTypes: SystemTypeInterface[];
   rootStore: RootStore;
 
-  constructor(rootStore: RootStore) {
-    this.templates = tplData.templates;
-    this.optionList = tplData.options;
-    this.systemTypes = tplData.systemTypes;
+  constructor(rootStore: RootStore, templateData: TemplateDataInterface) {
+    this.templates = templateData.templates;
+    this.optionList = templateData.options;
+    this.systemTypes = templateData.systemTypes;
     this.rootStore = rootStore;
 
     // create option dictionary for quick lookup
