@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 import { TemplateInterface } from "./template";
-import RootStore from ".";
+import RootStore, { getStorageKey } from ".";
 import { ConfigInterface } from "./config";
 
 const MIN_WIDTH = 100;
@@ -21,7 +21,7 @@ export default class Ui {
     makeAutoObservable(this);
 
     makePersistable(this, {
-      name: this.rootStore.getStorageKey("ui"),
+      name: getStorageKey("ui"),
       properties: ["leftColWidth"],
     });
   }
