@@ -13,11 +13,15 @@ import {
 } from "mobx-persist-store";
 import tplData from "./templates.json";
 
-const ROOT_STORAGE_KEY = `lbl-storage-v${npmPkg.version}`;
-export const getStorageKey = (suffix: string) =>
-  `${ROOT_STORAGE_KEY}-${suffix}`;
+const ROOT_STORAGE_KEY = `lbl-storage`;
+export const getStorageKey = (suffix: string, version?: string) =>
+  version
+    ? `${ROOT_STORAGE_KEY}-v${version}-${suffix}`
+    : `${ROOT_STORAGE_KEY}-${suffix}`;
 
-// setup config for saving to localStorage
+/**
+ * Adds mobx integration, writing object state to browser local storage
+ */
 function makePersistent<T extends object>(
   instance: T,
   opts: PersistenceStorageOptions<T, keyof T>,
@@ -39,36 +43,38 @@ configurePersistable(
 
 type StoreOptions = {
   persist: boolean; // store in local storage
+  version: string;
 };
 
 class RootStore {
-  storageKey = `lbl-storage-v${npmPkg.version}`;
   uiStore: UiStore;
   templateStore: TemplateStore;
   projectStore: ProjectStore;
   configStore: ConfigStore;
 
-  constructor(templateData: TemplateDataInterface, options: StoreOptions) {
+  constructor(templateData: TemplateDataInterface, options?: StoreOptions) {
     const projectStore = new ProjectStore(this);
     const configStore = new ConfigStore(this);
     this.uiStore = new UiStore(this);
     this.templateStore = new TemplateStore(this, templateData);
     this.projectStore = options?.persist
       ? makePersistent(projectStore, {
-          name: getStorageKey("projects"),
+          name: getStorageKey("projects", options.version),
           properties: ["projects", "activeProjectId"],
         })
       : projectStore;
-    this.configStore = options.persist
+    this.configStore = options?.persist
       ? makePersistent(configStore, {
-          name: getStorageKey("configs"),
+          name: getStorageKey("configs", options.version),
           properties: ["configs"],
         })
       : configStore;
   }
 }
 
-const StoresContext = createContext(new RootStore(tplData, { persist: true }));
+const StoresContext = createContext(
+  new RootStore(tplData, { persist: true, version: npmPkg.version }),
+);
 
 // this will be the function available for the app to connect to the stores
 export const useStores = () => useContext(StoresContext);
