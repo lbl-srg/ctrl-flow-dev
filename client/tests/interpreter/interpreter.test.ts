@@ -166,7 +166,7 @@ describe("Modifiers", () => {
         "Buildings.Templates.Components.Coils.WaterBasedCooling",
     };
     const mods = buildMods(mzOption, selections, allOptions);
-    const coiCooPath = "coiCoo.val";
+    const coiCooPath = "coiCoo.typVal";
 
     expect(coiCooPath in mods).toBeTruthy();
     const coiCooMod = mods[coiCooPath];
@@ -342,7 +342,7 @@ describe("Path resolution", () => {
     );
 
     const expectedPath =
-      "Buildings.Templates.ZoneEquipment.Components.Controls.Interfaces.PartialController.typ";
+      "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController.typ";
     const { optionPath } = resolvePaths("ctl.typ", context);
 
     // TODO: need a better parameter...
@@ -365,7 +365,7 @@ describe("Path resolution", () => {
       "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo",
     );
     expect(outerOptionPath).toBe(
-      "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.coiCoo",
+      "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.coiCoo",
     );
 
     expect(instancePath).toBe("coiCoo");
@@ -380,7 +380,7 @@ describe("Path resolution", () => {
     );
 
     const expression = buildExpression("none", [
-      "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.dat",
+      "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.dat",
     ]);
     evaluate(expression);
 
@@ -446,10 +446,10 @@ describe("resolveToValue tests using context and evaluation", () => {
   });
 
   it("Gets a value that interacts with a modifier redeclare and choice redeclare", () => {
-    const instancePath = "coiHeaPre.val";
+    const instancePath = "secOutRel.secRel.fanRet";
     const selections = {
-      "Buildings.Templates.Components.Interfaces.PartialValve.val-coiHeaPre.val":
-        "Buildings.Templates.Components.Valves.TwoWayModulating",
+      "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.fanRet-secOutRel.secRel.fanRet":
+        "Buildings.Templates.Components.Fans.ArrayVariable",
     };
     const config = addNewConfig(
       "Config to test Choice Modifiers and modifier redeclares",
@@ -460,11 +460,11 @@ describe("resolveToValue tests using context and evaluation", () => {
       mzTemplate as TemplateInterface,
       config as ConfigInterface,
       allOptions,
+      config.selections as ConfigValues,
     );
 
-    // TODO: this is the 'default' value so it is not testing choice modifiers well
     const expectedVal =
-      "Buildings.Templates.Components.Valves.TwoWayModulating";
+      "Buildings.Templates.Components.Fans.ArrayVariable";
     const val = context.getValue(instancePath);
     expect(val).toEqual(expectedVal);
   });
@@ -585,7 +585,7 @@ describe("ctl.have_CO2Sen enable expression", () => {
     const firstOperand = {
       operator: "==",
       operands: [
-        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialController.typ",
+        "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.typ",
         "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone",
       ],
     };
@@ -636,7 +636,7 @@ describe("ctl.have_CO2Sen enable expression", () => {
     const secondOperand = {
       operator: "==",
       operands: [
-        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.typSecOut",
+        "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.typSecOut",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure",
       ],
     };
@@ -692,7 +692,7 @@ describe("ctl.have_CO2Sen enable expression", () => {
     const thirdOperand = {
       operator: "==",
       operands: [
-        "Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.stdVen",
+        "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.stdVen",
         stdVenValue,
       ],
     };
@@ -748,13 +748,13 @@ describe("Scope tests", () => {
     // test path resolution of original secOutRel.secOut.dat
     const { optionPath, instancePath } = resolvePaths(path, context, "");
     const originalParamDefinition =
-      "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.Interfaces.PartialOutdoorSection.dat";
+      "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.dat";
     expect(optionPath).toEqual(originalParamDefinition);
     expect(path).toEqual(instancePath); // instance path should not change
     // test modifier value
     // modifier points to the correct parameter definition (secOutRel.dat location)
     expect(context.mods["secOutRel.secOut.dat"].expression.operands[0]).toEqual(
-      "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.Interfaces.PartialOutdoorReliefReturnSection.dat",
+      "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.dat",
     );
 
     // scope is wrong when we attempt to get value
@@ -1156,7 +1156,7 @@ describe("Specific parameter debugging", () => {
     expect(optionInstance?.display).toBeFalsy();
   });
 
-  it("coiCoo.val should NOT show for any selection of coiCoo", () => {
+  it("coiCoo.typVal should NOT show for any selection of coiCoo", () => {
     const selections = {
       "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo":
         "Buildings.Templates.Components.Coils.WaterBasedCooling",
@@ -1181,11 +1181,11 @@ describe("Specific parameter debugging", () => {
       selections,
     );
 
-    const optionInstance = context.getOptionInstance("coiCoo.val");
+    const optionInstance = context.getOptionInstance("coiCoo.typVal");
     expect(optionInstance?.display).toBeFalsy();
 
     const otherOptionInstance =
-      contextWithSelection.getOptionInstance("coiCoo.val");
+      contextWithSelection.getOptionInstance("coiCoo.typVal");
     expect(otherOptionInstance?.display).toBeFalsy();
 
     const displayOptions = mapToDisplayOptions(context);
