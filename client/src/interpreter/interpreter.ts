@@ -826,10 +826,6 @@ export class ConfigContext {
     scope = "",
     stack: (Literal | Expression)[] = [],
   ): Literal | Expression | null | undefined {
-    // console.log(path);
-    if (path === "ctl.buiPreCon") {
-      const a = 1;
-    }
     if (this._previousInstancePath === path) {
       console.log(`Cycling on path: ${path}`);
       return null; // prevent cycle
