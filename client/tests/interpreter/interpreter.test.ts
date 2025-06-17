@@ -83,8 +83,8 @@ const addNewConfig = (
 };
 
 const mzConfig = addNewConfig("VAVMultiZone Config", mzTemplate, {});
-// const zoneConfig = addNewConfig("VAV Box Cooling Only", zoneTemplate, {});
-// const zoneReheatConfig = addNewConfig("VAV Box Reheat", zoneReheatTemplate, {});
+const zoneConfig = addNewConfig("VAV Box Cooling Only", zoneTemplate, {});
+const zoneReheatConfig = addNewConfig("VAV Box Reheat", zoneReheatTemplate, {});
 
 describe("Path Modifier tests", () => {
   it("Applies a path modifier", () => {
@@ -464,8 +464,7 @@ describe("resolveToValue tests using context and evaluation", () => {
       config.selections as ConfigValues,
     );
 
-    const expectedVal =
-      "Buildings.Templates.Components.Fans.ArrayVariable";
+    const expectedVal = "Buildings.Templates.Components.Fans.ArrayVariable";
     const val = context.getValue(instancePath);
     expect(val).toEqual(expectedVal);
   });
