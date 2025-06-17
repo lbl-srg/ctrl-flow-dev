@@ -784,8 +784,6 @@ export class ConfigContext {
   _resolvedValues: {
     [key: string]: { value: Literal | null; optionPath: string };
   } = {};
-  _previousInstancePath: string | null = null;
-
   constructor(
     public template: TemplateInterface,
     public config: ConfigInterface,
@@ -826,12 +824,6 @@ export class ConfigContext {
     scope = "",
     stack: (Literal | Expression)[] = [],
   ): Literal | Expression | null | undefined {
-    if (this._previousInstancePath === path) {
-      console.log(`Cycling on path: ${path}`);
-      return null; // prevent cycle
-    } else {
-      this._previousInstancePath = path;
-    }
     let val = null;
     let optionPath: string | null = "";
     let instancePath = path;
@@ -856,7 +848,6 @@ export class ConfigContext {
     const selectionPath = constructSelectionPath(optionPath, instancePath);
     // check selections
     if (this.selections && selectionPath in this.selections) {
-      this._previousInstancePath = null;
       this.addToCache(path, optionPath, this.selections[selectionPath]);
       return this.selections[selectionPath];
     }
@@ -871,7 +862,6 @@ export class ConfigContext {
         stack,
       );
       if (val) {
-        this._previousInstancePath = null;
         this.addToCache(path, optionPath, val);
         return val;
       }
@@ -881,7 +871,6 @@ export class ConfigContext {
     const optionScope = instancePath.split(".").slice(0, -1).join(".");
     val = evaluate(this.options[optionPath]?.value, this, optionScope, stack);
     this.addToCache(path, optionPath, val);
-    this._previousInstancePath = null;
     return val;
   }
 
@@ -905,7 +894,6 @@ export class ConfigContext {
       // try and treat as a template node reference
       const option = this.options[path];
       if (option?.definition) {
-        this._previousInstancePath = null;
         this.addToCache(path, optionPath, path);
         pathIsTheValue = true;
       }
