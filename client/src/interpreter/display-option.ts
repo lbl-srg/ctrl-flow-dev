@@ -1,6 +1,6 @@
 ///////////////// Context Mapper: Maps a ConfigContext to a configuration page DisplayList
 
-import { OptionInterface } from "../../src/data/template";
+import { OptionInterface } from "../../src/data/types";
 
 import {
   ConfigContext,
@@ -27,7 +27,11 @@ export interface FlatConfigOption {
 
 type DisplayItem = FlatConfigOptionGroup | FlatConfigOption;
 
-export const MLS_PREDEFINED_TYPES_TO_NOT_DISPLAY = ["String", "Real", "Integer"];
+export const MLS_PREDEFINED_TYPES_TO_NOT_DISPLAY = [
+  "String",
+  "Real",
+  "Integer",
+];
 
 const displayOptionFilter = (
   optionInstance: OptionInstance,
@@ -104,7 +108,11 @@ export function _formatDisplayGroup(
     ?.flatMap((o) => {
       const childOption = context.options[o];
       // Long class definitions with child options form a "group" of inputs in the configuration panel
-      if (childOption.definition && !childOption.shortExclType && childOption?.options?.length) {
+      if (
+        childOption.definition &&
+        !childOption.shortExclType &&
+        childOption?.options?.length
+      ) {
         return _formatDisplayGroup(childOption, paramInstance, context);
       } else {
         const paramName = o.split(".").pop();

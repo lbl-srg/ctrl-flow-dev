@@ -3,7 +3,7 @@ import { useStores } from "../../data";
 import { observer } from "mobx-react";
 import { SyntheticEvent } from "react";
 import { ConfigInterface } from "../../data/config";
-import { TemplateInterface } from "../../data/template";
+import { TemplateInterface } from "../../data/types";
 
 const SystemTemplate = observer(
   ({

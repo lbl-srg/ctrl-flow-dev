@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { makePersistable } from "mobx-persist-store";
-import { TemplateInterface } from "./template";
+import { TemplateInterface } from "./types";
 import RootStore, { getStorageKey } from ".";
 import { ConfigInterface } from "./config";
 

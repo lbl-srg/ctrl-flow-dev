@@ -1,7 +1,6 @@
 import { Fragment, ChangeEvent } from "react";
 import { useStores } from "../../../data";
 
-import { OptionInterface } from "../../../data/template";
 import { FlatConfigOption } from "./SlideOut";
 
 export interface OptionSelectProps {
@@ -13,22 +12,14 @@ export interface OptionSelectProps {
   ) => void;
 }
 
-const OptionSelect = ({
-  option,
-  updateSelectedOption,
-}: OptionSelectProps) => {
-
+const OptionSelect = ({ option, updateSelectedOption }: OptionSelectProps) => {
   function selectOption(event: ChangeEvent<HTMLSelectElement>) {
     if (option.selectionType === "Boolean") {
       const value =
         event.target.value === "true" || event.target.value === "false"
           ? JSON.parse(event.target.value)
           : null;
-      updateSelectedOption(
-        option.modelicaPath,
-        option.scope,
-        value,
-      );
+      updateSelectedOption(option.modelicaPath, option.scope, value);
     } else {
       updateSelectedOption(
         option.modelicaPath,
@@ -45,11 +36,11 @@ const OptionSelect = ({
       return (
         <select
           name={`${option.modelicaPath}-${option.scope}`}
-          defaultValue={option.value || ''}
+          defaultValue={option.value || ""}
           onChange={selectOption}
           required
         >
-          <option value=''></option>
+          <option value=""></option>
           {option.booleanChoices?.map((choice) => (
             <option key={`${option.modelicaPath}-${choice}`} value={choice}>
               {choice}
@@ -62,11 +53,11 @@ const OptionSelect = ({
     return (
       <select
         name={`${option.modelicaPath}-${option.scope}`}
-        defaultValue={option.value || ''}
+        defaultValue={option.value || ""}
         onChange={selectOption}
         required
       >
-        <option value=''></option>
+        <option value=""></option>
         {option.choices?.map((choice) => (
           <option key={choice.modelicaPath} value={choice.modelicaPath}>
             {choice.name}
@@ -78,9 +69,7 @@ const OptionSelect = ({
 
   return (
     <Fragment>
-      <label>
-        {option.name}
-      </label>
+      <label>{option.name}</label>
       {renderSelect()}
     </Fragment>
   );
