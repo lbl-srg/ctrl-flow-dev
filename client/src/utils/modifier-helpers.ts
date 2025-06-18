@@ -1,4 +1,4 @@
-import { OptionInterface } from "../data/template";
+import { OptionInterface } from "../data/types";
 import { FlatConfigOption } from "../components/steps/Configs/SlideOut";
 import { deepCopy } from "./utils";
 import {
@@ -122,7 +122,13 @@ export function buildModifiers(
     const datAll = options["datAll"]; // project settings
     updateModifiers(datAll, "", modifiers, "", options);
   }
-  updateModifiers(startOption, baseInstancePath, modifiers, selectedType, options);
+  updateModifiers(
+    startOption,
+    baseInstancePath,
+    modifiers,
+    selectedType,
+    options,
+  );
 
   return modifiers;
 }
@@ -278,7 +284,8 @@ export function getUpdatedModifiers(
     if (values[key] !== null) {
       const selectedType = values[key];
       const modelicaPath = key.split("-")[0];
-      const instancePath = key.split("-")[1]?.split(".").slice(0, -1).join(".") || '';
+      const instancePath =
+        key.split("-")[1]?.split(".").slice(0, -1).join(".") || "";
       const option = allOptions[modelicaPath] as OptionInterface;
       let choiceModifiers = {};
 
