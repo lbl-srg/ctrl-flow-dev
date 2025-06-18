@@ -593,8 +593,8 @@ const buildModsHelper = (
   const childOptions = option.options;
 
   const optionsWithModsList: string[] =
-    "treeList" in option && option.treeList.length > 0
-      ? option.treeList
+    (option?.treeList?.length ?? 0) > 0
+      ? (option.treeList as string[])
       : [option.modelicaPath];
 
   optionsWithModsList.map((oPath) => {

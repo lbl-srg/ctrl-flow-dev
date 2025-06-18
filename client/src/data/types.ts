@@ -45,9 +45,9 @@ export interface OptionInterface {
   childOptions?: OptionInterface[];
   valueExpression?: any; //{ expression: string; modelicaPath: string };
   enable?: any; // { modelicaPath: string; expression: string };
-  modifiers: any;
-  choiceModifiers?: { [key: string]: Modifiers };
-  treeList: string[];
+  modifiers?: any;
+  choiceModifiers?: { [key: string]: Modifiers | undefined };
+  treeList?: string[];
   definition: boolean;
   shortExclType: boolean; // Short class definition excluding `type` definition
   replaceable: boolean;
