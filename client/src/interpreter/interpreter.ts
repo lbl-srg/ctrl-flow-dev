@@ -904,6 +904,16 @@ export class ConfigContext {
     return this.options[this.template.modelicaPath];
   }
 
+  /**
+   * This is a sanitization method that steps through each selection and confirms
+   * it is for a valid instance path for making a selection (`instance?.display`)
+   *
+   * TODO: this likely can be removed. This seems like a band-aid for something that should
+   * be taken care of by the interpreter properly indicating what should and should not
+   * be displayed
+   * @param selectionPath
+   * @returns
+   */
   isValidSelection(selectionPath: string) {
     const paths = selectionPath.split("-");
     if (paths.length == 2) {
