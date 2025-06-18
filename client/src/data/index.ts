@@ -70,6 +70,18 @@ class RootStore {
         })
       : configStore;
   }
+
+  getTemplate(path: string) {
+    return this.templateStore.getTemplateByPath(path);
+  }
+
+  getTemplates() {
+    return this.templateStore.getAllOptions();
+  }
+
+  getTemplateNodes() {
+    return this.templateStore.getAllOptions();
+  }
 }
 
 const StoresContext = createContext(
