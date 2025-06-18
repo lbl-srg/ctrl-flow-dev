@@ -1,0 +1,1663 @@
+{
+  "templates": [
+    {
+      "modelicaPath": "TestPackage.NestedTemplate.Subcategory.SecondTemplate",
+      "scheduleOptionPaths": [],
+      "systemTypes": ["TestPackage.NestedTemplate.Subcategory"],
+      "pathModifiers": {},
+      "name": "Subcategory Template"
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate",
+      "scheduleOptionPaths": ["TestPackage.Template.TestTemplate.dat"],
+      "systemTypes": ["TestPackage.Template"],
+      "pathModifiers": {
+        "datAll": "datAll",
+        "first.datAll": "datAll",
+        "selectable_component.inner_outer_param": "inner_outer_param",
+        "third.selectable_component": "selectable_component",
+        "redeclare_param_01.replaceable_param.datAll": "datAll",
+        "redeclare_param_02.replaceable_param.datAll": "datAll",
+        "short_path_component.replaceable_param.datAll": "datAll",
+        "selectable_component_with_relative_paths.inner_outer_param": "inner_outer_param",
+        "ShortClass.datAll": "datAll",
+        "shortClassInstance.datAll": "datAll"
+      },
+      "name": "Test Template"
+    }
+  ],
+  "systemTypes": [
+    {
+      "description": "Test Subcategory",
+      "modelicaPath": "TestPackage.NestedTemplate.Subcategory"
+    },
+    {
+      "description": "Test Template Package",
+      "modelicaPath": "TestPackage.Template"
+    }
+  ],
+  "options": [
+    {
+      "modelicaPath": "TestPackage.NestedTemplate.Subcategory.SecondTemplate.second_template_param",
+      "type": "String",
+      "value": {
+        "operator": "none",
+        "operands": ["2nd Template Param"]
+      },
+      "name": "Second Template Parameter",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.NestedTemplate.Subcategory.SecondTemplate",
+      "type": "TestPackage.NestedTemplate.Subcategory.SecondTemplate",
+      "name": "Subcategory Template",
+      "value": "TestPackage.NestedTemplate.Subcategory.SecondTemplate",
+      "visible": false,
+      "replaceable": false,
+      "options": [
+        "TestPackage.NestedTemplate.Subcategory.SecondTemplate.second_template_param"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": ["TestPackage.NestedTemplate.Subcategory.SecondTemplate"]
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.first",
+      "type": "TestPackage.Component.FirstComponent",
+      "value": "",
+      "name": "",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "none",
+        "operands": [true]
+      },
+      "modifiers": {
+        "TestPackage.Component.FirstComponent.component_param": {
+          "expression": {
+            "operator": "none",
+            "operands": ["First Component Template Override"]
+          },
+          "final": false,
+          "redeclare": false
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "TestPackage.Component.FirstComponent.component_param",
+        "TestPackage.Component.FirstComponent.datAll",
+        "TestPackage.Interface.PartialComponent.container",
+        "TestPackage.Interface.PartialComponent.icecream"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Component.FirstComponent.component_param",
+      "type": "String",
+      "value": {
+        "operator": "none",
+        "operands": ["First Component Param"]
+      },
+      "name": "",
+      "group": "TestGroup",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Component.FirstComponent.datAll",
+      "type": "Buildings.Templates.Data.AllSystems",
+      "name": "",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": ["Buildings.Templates.Data.AllSystems.projectSetting"],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Data.AllSystems.projectSetting",
+      "type": "Boolean",
+      "value": {
+        "operator": "none",
+        "operands": [false]
+      },
+      "name": "Example Project setting",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Data.AllSystems",
+      "type": "Buildings.Templates.Data.AllSystems",
+      "name": "Top-level (whole building) system parameters",
+      "value": "Buildings.Templates.Data.AllSystems",
+      "visible": false,
+      "replaceable": false,
+      "options": ["Buildings.Templates.Data.AllSystems.projectSetting"],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": ["Buildings.Templates.Data.AllSystems"]
+    },
+    {
+      "modelicaPath": "TestPackage.Interface.PartialComponent.container",
+      "type": "TestPackage.Types.Container",
+      "name": "Container Type",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [
+        "TestPackage.Types.Container.Hand",
+        "TestPackage.Types.Container.Bowl",
+        "TestPackage.Types.Container.Cone"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Types.Container",
+      "name": "Enumeration for container types",
+      "type": "TestPackage.Types.Container",
+      "value": "TestPackage.Types.Container",
+      "visible": true,
+      "replaceable": false,
+      "options": [
+        "TestPackage.Types.Container.Hand",
+        "TestPackage.Types.Container.Bowl",
+        "TestPackage.Types.Container.Cone"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": ["TestPackage.Types.Container"]
+    },
+    {
+      "modelicaPath": "TestPackage.Types.Container.Hand",
+      "name": "Hand",
+      "type": "TestPackage.Types.Container",
+      "value": "TestPackage.Types.Container.Hand",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": ["TestPackage.Types.Container"]
+    },
+    {
+      "modelicaPath": "TestPackage.Types.Container.Bowl",
+      "name": "Bowl",
+      "type": "TestPackage.Types.Container",
+      "value": "TestPackage.Types.Container.Bowl",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": ["TestPackage.Types.Container"]
+    },
+    {
+      "modelicaPath": "TestPackage.Types.Container.Cone",
+      "name": "Cone",
+      "type": "TestPackage.Types.Container",
+      "value": "TestPackage.Types.Container.Cone",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": ["TestPackage.Types.Container"]
+    },
+    {
+      "modelicaPath": "TestPackage.Interface.PartialComponent.icecream",
+      "type": "TestPackage.Types.IceCream",
+      "name": "IceCream Type",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [
+        "TestPackage.Types.IceCream.Chocolate",
+        "TestPackage.Types.IceCream.Vanilla",
+        "TestPackage.Types.IceCream.Strawberry"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Types.IceCream",
+      "name": "Enumeration for ice cream types",
+      "type": "TestPackage.Types.IceCream",
+      "value": "TestPackage.Types.IceCream",
+      "visible": true,
+      "replaceable": false,
+      "options": [
+        "TestPackage.Types.IceCream.Chocolate",
+        "TestPackage.Types.IceCream.Vanilla",
+        "TestPackage.Types.IceCream.Strawberry"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": ["TestPackage.Types.IceCream"]
+    },
+    {
+      "modelicaPath": "TestPackage.Types.IceCream.Chocolate",
+      "name": "Chocolate",
+      "type": "TestPackage.Types.IceCream",
+      "value": "TestPackage.Types.IceCream.Chocolate",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": ["TestPackage.Types.IceCream"]
+    },
+    {
+      "modelicaPath": "TestPackage.Types.IceCream.Vanilla",
+      "name": "Vanilla",
+      "type": "TestPackage.Types.IceCream",
+      "value": "TestPackage.Types.IceCream.Vanilla",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": ["TestPackage.Types.IceCream"]
+    },
+    {
+      "modelicaPath": "TestPackage.Types.IceCream.Strawberry",
+      "name": "Strawberry",
+      "type": "TestPackage.Types.IceCream",
+      "value": "TestPackage.Types.IceCream.Strawberry",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": ["TestPackage.Types.IceCream"]
+    },
+    {
+      "modelicaPath": "TestPackage.Interface.PartialComponent",
+      "type": "TestPackage.Interface.PartialComponent",
+      "name": "Interface for Test Components",
+      "value": "TestPackage.Interface.PartialComponent",
+      "visible": false,
+      "replaceable": false,
+      "options": [
+        "TestPackage.Interface.PartialComponent.container",
+        "TestPackage.Interface.PartialComponent.icecream"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": ["TestPackage.Interface.PartialComponent"]
+    },
+    {
+      "modelicaPath": "TestPackage.Component.FirstComponent",
+      "type": "TestPackage.Component.FirstComponent",
+      "name": "First Component",
+      "value": "TestPackage.Component.FirstComponent",
+      "visible": false,
+      "modifiers": {
+        "TestPackage.Interface.PartialComponent.container": {
+          "expression": {
+            "operator": "none",
+            "operands": ["TestPackage.Types.Container.Hand"]
+          },
+          "final": false,
+          "redeclare": false
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "TestPackage.Component.FirstComponent.component_param",
+        "TestPackage.Component.FirstComponent.datAll",
+        "TestPackage.Interface.PartialComponent.container",
+        "TestPackage.Interface.PartialComponent.icecream"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "TestPackage.Component.FirstComponent",
+        "TestPackage.Interface.PartialComponent"
+      ]
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.inner_outer_param",
+      "type": "String",
+      "value": {
+        "operator": "none",
+        "operands": ["inner assignment"]
+      },
+      "name": "",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.selectable_component",
+      "type": "TestPackage.Component.SecondComponent",
+      "value": "TestPackage.Component.SecondComponent",
+      "name": "Replaceable Component",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "modifiers": {
+        "TestPackage.Interface.PartialComponent.container": {
+          "expression": {
+            "operator": "none",
+            "operands": ["TestPackage.Types.Container.Cone"]
+          },
+          "final": true,
+          "redeclare": false
+        },
+        "TestPackage.Interface.PartialComponent.icecream": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "!=",
+                    "operands": [
+                      "first.icecream",
+                      "TestPackage.Types.IceCream.Chocolate"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": ["first.icecream"]
+                  }
+                ]
+              },
+              {
+                "operator": "else_if",
+                "operands": [
+                  {
+                    "operator": "!=",
+                    "operands": [
+                      "third.icecream",
+                      "TestPackage.Types.IceCream.Chocolate"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": ["third.icecream"]
+                  }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  {
+                    "operator": "none",
+                    "operands": ["TestPackage.Types.IceCream.Chocolate"]
+                  }
+                ]
+              }
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        }
+      },
+      "enable": true,
+      "choiceModifiers": {
+        "TestPackage.Component.FourthComponent": {
+          "TestPackage.Component.FourthComponent.replaceable_param": {
+            "expression": {
+              "operator": "none",
+              "operands": ["TestPackage.Component.SecondComponent"]
+            },
+            "final": true,
+            "redeclare": true
+          }
+        }
+      },
+      "replaceable": true,
+      "options": [
+        "TestPackage.Component.SecondComponent",
+        "TestPackage.Component.ThirdComponent",
+        "TestPackage.Component.FourthComponent"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Component.SecondComponent.component_param",
+      "type": "String",
+      "value": {
+        "operator": "none",
+        "operands": ["Second Component Param"]
+      },
+      "name": "",
+      "group": "TestGroup",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Component.SecondComponent.is_another_param",
+      "type": "Boolean",
+      "value": {
+        "operator": "none",
+        "operands": [true]
+      },
+      "name": "Second Component Example Boolean Param",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Component.SecondComponent.inner_outer_param",
+      "type": "String",
+      "name": "Outer param",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Component.SecondComponent",
+      "type": "TestPackage.Component.SecondComponent",
+      "name": "Second Component",
+      "value": "TestPackage.Component.SecondComponent",
+      "visible": false,
+      "modifiers": {
+        "TestPackage.Interface.PartialComponent.container": {
+          "expression": {
+            "operator": "none",
+            "operands": ["TestPackage.Types.Container.Bowl"]
+          },
+          "final": false,
+          "redeclare": false
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "TestPackage.Component.SecondComponent.component_param",
+        "TestPackage.Component.SecondComponent.is_another_param",
+        "TestPackage.Component.SecondComponent.inner_outer_param",
+        "TestPackage.Interface.PartialComponent.container",
+        "TestPackage.Interface.PartialComponent.icecream"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "TestPackage.Component.SecondComponent",
+        "TestPackage.Interface.PartialComponent"
+      ]
+    },
+    {
+      "modelicaPath": "TestPackage.Component.ThirdComponent.component_param",
+      "type": "String",
+      "value": {
+        "operator": "none",
+        "operands": ["Third Component Param"]
+      },
+      "name": "",
+      "group": "TestGroup",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Component.ThirdComponent.selectable_component",
+      "type": "TestPackage.Interface.PartialComponent",
+      "value": "TestPackage.Interface.PartialComponent",
+      "name": "",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "modifiers": {},
+      "enable": false,
+      "choiceModifiers": {},
+      "replaceable": true,
+      "options": ["TestPackage.Interface.PartialComponent"],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Component.ThirdComponent.container_from_outer",
+      "type": "TestPackage.Types.Container",
+      "value": {
+        "operator": "none",
+        "operands": ["selectable_component.container"]
+      },
+      "name": "",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [
+        "TestPackage.Types.Container.Hand",
+        "TestPackage.Types.Container.Bowl",
+        "TestPackage.Types.Container.Cone"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Component.ThirdComponent",
+      "type": "TestPackage.Component.ThirdComponent",
+      "name": "Third Component",
+      "value": "TestPackage.Component.ThirdComponent",
+      "visible": false,
+      "modifiers": {
+        "TestPackage.Interface.PartialComponent.container": {
+          "expression": {
+            "operator": "none",
+            "operands": ["TestPackage.Types.Container.Cone"]
+          },
+          "final": false,
+          "redeclare": false
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "TestPackage.Component.ThirdComponent.component_param",
+        "TestPackage.Component.ThirdComponent.selectable_component",
+        "TestPackage.Component.ThirdComponent.container_from_outer",
+        "TestPackage.Interface.PartialComponent.container",
+        "TestPackage.Interface.PartialComponent.icecream"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "TestPackage.Component.ThirdComponent",
+        "TestPackage.Interface.PartialComponent"
+      ]
+    },
+    {
+      "modelicaPath": "TestPackage.Component.FourthComponent.replaceable_param",
+      "type": "TestPackage.Component.FirstComponent",
+      "value": "TestPackage.Component.FirstComponent",
+      "name": "Replaceable Parameter",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "modifiers": {},
+      "enable": false,
+      "choiceModifiers": {},
+      "replaceable": true,
+      "options": ["TestPackage.Component.FirstComponent"],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Component.FourthComponent",
+      "type": "TestPackage.Component.FourthComponent",
+      "name": "Fourth Component",
+      "value": "TestPackage.Component.FourthComponent",
+      "visible": false,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [
+        "TestPackage.Component.FourthComponent.replaceable_param",
+        "TestPackage.Interface.PartialComponent.container",
+        "TestPackage.Interface.PartialComponent.icecream"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "TestPackage.Component.FourthComponent",
+        "TestPackage.Interface.PartialComponent"
+      ]
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.third",
+      "type": "TestPackage.Component.ThirdComponent",
+      "value": "",
+      "name": "",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "TestPackage.Component.ThirdComponent.component_param": {
+          "expression": {
+            "operator": "none",
+            "operands": ["Third Component Template Override"]
+          },
+          "final": false,
+          "redeclare": false
+        }
+      },
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.dat",
+      "type": "TestPackage.Template.Data.TestTemplate",
+      "value": "",
+      "name": "Record with additional parameters",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "TestPackage.Template.Data.TestTemplate.container_selectable_component": {
+          "expression": {
+            "operator": "none",
+            "operands": ["selectable_component.container"]
+          },
+          "final": true,
+          "redeclare": false
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "TestPackage.Template.Data.TestTemplate.record_parameter",
+        "TestPackage.Template.Data.TestTemplate.nested_bool",
+        "TestPackage.Template.Data.TestTemplate.container_selectable_component",
+        "TestPackage.Template.Data.TestTemplate.flag_enabled",
+        "TestPackage.Template.Data.PartialTemplate.ctl",
+        "TestPackage.Template.Data.PartialTemplate.partialData"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.Data.TestTemplate.record_parameter",
+      "type": "String",
+      "value": {
+        "operator": "none",
+        "operands": ["Record Parameter"]
+      },
+      "name": "",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.Data.TestTemplate.nested_bool",
+      "type": "Boolean",
+      "value": {
+        "operator": "none",
+        "operands": [true]
+      },
+      "name": "",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.Data.TestTemplate.container_selectable_component",
+      "type": "TestPackage.Types.Container",
+      "name": "Container Type",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [
+        "TestPackage.Types.Container.Hand",
+        "TestPackage.Types.Container.Bowl",
+        "TestPackage.Types.Container.Cone"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.Data.TestTemplate.flag_enabled",
+      "type": "Boolean",
+      "value": "",
+      "name": "Uninitialized parameter with enable attribute and start value",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": {
+        "operator": "==",
+        "operands": [
+          "container_selectable_component",
+          "TestPackage.Types.Container.Bowl"
+        ]
+      },
+      "modifiers": {
+        "TestPackage.Template.Data.TestTemplate.start": {
+          "expression": {
+            "operator": "none",
+            "operands": [true]
+          },
+          "final": false,
+          "redeclare": false
+        }
+      },
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.Data.PartialTemplate.ctl",
+      "type": "TestPackage.Component.Data.TestTemplateController",
+      "value": "TestPackage.Component.Data.TestTemplateController",
+      "name": "Controller",
+      "group": "Controls",
+      "tab": "",
+      "visible": true,
+      "modifiers": {},
+      "enable": true,
+      "choiceModifiers": {},
+      "replaceable": true,
+      "options": ["TestPackage.Component.Data.TestTemplateController"],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Component.Data.TestTemplateController.typSecRel",
+      "type": "Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection",
+      "name": "Relief/return air section type",
+      "group": "Configuration",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "none",
+        "operands": [true]
+      },
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Component.Data.TestTemplateController",
+      "type": "TestPackage.Component.Data.TestTemplateController",
+      "name": "Controller",
+      "value": "TestPackage.Component.Data.TestTemplateController",
+      "visible": false,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [
+        "TestPackage.Component.Data.TestTemplateController.typSecRel"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": ["TestPackage.Component.Data.TestTemplateController"]
+    },
+    {
+      "modelicaPath": "TestPackage.Template.Data.PartialTemplate.partialData",
+      "type": "Boolean",
+      "value": {
+        "operator": "none",
+        "operands": [false]
+      },
+      "name": "Partial Data Parameter",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.Data.PartialTemplate",
+      "type": "TestPackage.Template.Data.PartialTemplate",
+      "name": "Record for TestTemplate Interface Class",
+      "value": "TestPackage.Template.Data.PartialTemplate",
+      "visible": false,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [
+        "TestPackage.Template.Data.PartialTemplate.ctl",
+        "TestPackage.Template.Data.PartialTemplate.partialData"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": ["TestPackage.Template.Data.PartialTemplate"]
+    },
+    {
+      "modelicaPath": "TestPackage.Template.Data.TestTemplate",
+      "type": "TestPackage.Template.Data.TestTemplate",
+      "name": "Test Record",
+      "value": "TestPackage.Template.Data.TestTemplate",
+      "visible": false,
+      "modifiers": {
+        "TestPackage.Template.Data.PartialTemplate.ctl": {
+          "expression": {
+            "operator": "none",
+            "operands": ["TestPackage.Component.Data.TestTemplateController"]
+          },
+          "final": false,
+          "redeclare": true
+        },
+        "TestPackage.Component.Data.TestTemplateController.typSecRel": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "TestPackage.Component.Data.TestTemplateController.typSecRel"
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "TestPackage.Template.Data.TestTemplate.record_parameter",
+        "TestPackage.Template.Data.TestTemplate.nested_bool",
+        "TestPackage.Template.Data.TestTemplate.container_selectable_component",
+        "TestPackage.Template.Data.TestTemplate.flag_enabled",
+        "TestPackage.Template.Data.PartialTemplate.ctl",
+        "TestPackage.Template.Data.PartialTemplate.partialData"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "TestPackage.Template.Data.TestTemplate",
+        "TestPackage.Template.Data.PartialTemplate"
+      ]
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.should_ignore",
+      "type": "String",
+      "value": {
+        "operator": "none",
+        "operands": ["ignore me"]
+      },
+      "name": "Final parameter that should be ignored",
+      "group": "Configuration",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "none",
+        "operands": [true]
+      },
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.nullable_bool",
+      "type": "Boolean",
+      "value": {
+        "operator": "none",
+        "operands": [false]
+      },
+      "name": "Test boolean",
+      "group": "Groupy",
+      "tab": "Tabby",
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [true]
+      },
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.expression_bool",
+      "type": "Boolean",
+      "value": {
+        "operator": "none",
+        "operands": ["dat.nested_bool"]
+      },
+      "name": "",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.complex_expression_bool",
+      "type": "Boolean",
+      "value": {
+        "operator": "||",
+        "operands": [
+          {
+            "operator": "==",
+            "operands": ["first.container", "TestPackage.Types.Container.Hand"]
+          },
+          {
+            "operator": "==",
+            "operands": ["first.container", "TestPackage.Types.Container.Bowl"]
+          },
+          {
+            "operator": "&&",
+            "operands": [
+              {
+                "operator": "==",
+                "operands": [
+                  "first.container",
+                  "TestPackage.Types.Container.Cone"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "first.icecream",
+                  "TestPackage.Types.IceCream.Chocolate"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "name": "Set to true if IceCream is Chocolate with a container",
+      "group": "Configuration",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.test_string_uninitialized",
+      "type": "String",
+      "name": "Test String that is uninitialized",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.test_string_initialized",
+      "type": "String",
+      "value": {
+        "operator": "none",
+        "operands": ["I'm all set"]
+      },
+      "name": "Test string that is initialized",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.test_real",
+      "type": "Real",
+      "value": {
+        "operator": "none",
+        "operands": [1]
+      },
+      "name": "Test real number",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.test_int",
+      "type": "Integer",
+      "value": {
+        "operator": "none",
+        "operands": [2]
+      },
+      "name": "Test Integer",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": {
+        "operator": "none",
+        "operands": [false]
+      },
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.connector_param",
+      "type": "Integer",
+      "name": "Connector Param",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "none",
+        "operands": [true]
+      },
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.connector_param_false",
+      "type": "Integer",
+      "name": "Param with connectorSizing",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.linkage_keyword_false",
+      "type": "Integer",
+      "name": "Param to test linkage keyword override to false",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": false,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.typ",
+      "type": "TestPackage.Types.IceCream",
+      "value": {
+        "operator": "none",
+        "operands": ["TestPackage.Types.IceCream.Chocolate"]
+      },
+      "name": "Test Enum",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [
+        "TestPackage.Types.IceCream.Chocolate",
+        "TestPackage.Types.IceCream.Vanilla",
+        "TestPackage.Types.IceCream.Strawberry"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.redeclare_param_01",
+      "type": "TestPackage.Component.FourthComponent",
+      "value": "",
+      "name": "First Param to test component redeclares",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "none",
+        "operands": [true]
+      },
+      "modifiers": {
+        "TestPackage.Component.FourthComponent.replaceable_param": {
+          "expression": {
+            "operator": "none",
+            "operands": ["TestPackage.Component.SecondComponent"]
+          },
+          "final": true,
+          "redeclare": true
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "TestPackage.Component.FourthComponent.replaceable_param",
+        "TestPackage.Interface.PartialComponent.container",
+        "TestPackage.Interface.PartialComponent.icecream"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.redeclare_param_02",
+      "type": "TestPackage.Component.FourthComponent",
+      "value": "",
+      "name": "Second Param to test component redeclares",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "none",
+        "operands": [true]
+      },
+      "modifiers": {
+        "TestPackage.Component.FourthComponent.replaceable_param": {
+          "expression": {
+            "operator": "none",
+            "operands": ["TestPackage.Component.ThirdComponent"]
+          },
+          "final": false,
+          "redeclare": true
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "TestPackage.Component.FourthComponent.replaceable_param",
+        "TestPackage.Interface.PartialComponent.container",
+        "TestPackage.Interface.PartialComponent.icecream"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.short_path_component",
+      "type": "TestPackage.Component.FourthComponent",
+      "value": "",
+      "name": "",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": false,
+      "modifiers": {
+        "TestPackage.Component.FourthComponent.replaceable_param": {
+          "expression": {
+            "operator": "none",
+            "operands": ["TestPackage.Component.FifthComponent"]
+          },
+          "final": false,
+          "redeclare": true
+        }
+      },
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.test_record",
+      "type": "TestPackage.Template.LocalVars",
+      "value": "",
+      "name": "",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "TestPackage.Template.LocalVars.local_var": {
+          "expression": {
+            "operator": "none",
+            "operands": ["Modified Value"]
+          },
+          "final": false,
+          "redeclare": false
+        }
+      },
+      "replaceable": false,
+      "options": ["TestPackage.Template.LocalVars.local_var"],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.LocalVars.local_var",
+      "type": "String",
+      "value": {
+        "operator": "none",
+        "operands": ["Default Value"]
+      },
+      "name": "A test value for local references",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.LocalVars",
+      "type": "TestPackage.Template.LocalVars",
+      "name": "Record to Test Local Var references",
+      "value": "TestPackage.Template.LocalVars",
+      "visible": false,
+      "modifiers": {},
+      "replaceable": false,
+      "options": ["TestPackage.Template.LocalVars.local_var"],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": ["TestPackage.Template.LocalVars"]
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.selectable_component_with_relative_paths",
+      "type": "TestPackage.Component.SecondComponent",
+      "value": "TestPackage.Component.SecondComponent",
+      "name": "Replaceable Component",
+      "group": "Selectable Component",
+      "tab": "",
+      "visible": true,
+      "modifiers": {
+        "TestPackage.Interface.PartialComponent.container": {
+          "expression": {
+            "operator": "none",
+            "operands": ["Types.Container.Cone"]
+          },
+          "final": true,
+          "redeclare": false
+        },
+        "TestPackage.Interface.PartialComponent.icecream": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "!=",
+                    "operands": [
+                      "first.icecream",
+                      "TestPackage.Types.IceCream.Chocolate"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": ["first.icecream"]
+                  }
+                ]
+              },
+              {
+                "operator": "else_if",
+                "operands": [
+                  {
+                    "operator": "!=",
+                    "operands": [
+                      "third.icecream",
+                      "TestPackage.Types.IceCream.Chocolate"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": ["third.icecream"]
+                  }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  {
+                    "operator": "none",
+                    "operands": ["TestPackage.Types.IceCream.Chocolate"]
+                  }
+                ]
+              }
+            ]
+          },
+          "final": true,
+          "redeclare": false
+        }
+      },
+      "enable": true,
+      "choiceModifiers": {},
+      "replaceable": true,
+      "options": [
+        "TestPackage.Component.SecondComponent",
+        "TestPackage.Component.ThirdComponent"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.ShortClass",
+      "type": "TestPackage.Template.TestTemplate.ShortClass",
+      "value": "TestPackage.Component.FirstComponent",
+      "name": "Replaceable short class",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "modifiers": {},
+      "enable": true,
+      "choiceModifiers": {},
+      "replaceable": true,
+      "options": [
+        "TestPackage.Component.FirstComponent",
+        "TestPackage.Component.SecondComponent"
+      ],
+      "definition": true,
+      "shortExclType": true,
+      "treeList": [
+        "TestPackage.Template.TestTemplate.ShortClass",
+        "TestPackage.Component.FirstComponent",
+        "TestPackage.Component.SecondComponent"
+      ]
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate.shortClassInstance",
+      "type": "TestPackage.Template.TestTemplate.ShortClass",
+      "name": "Instance of short class",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": false,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Interface.ExtendInterface.interface_param",
+      "type": "String",
+      "value": {
+        "operator": "none",
+        "operands": ["Interface Param"]
+      },
+      "name": "",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Interface.NestedExtendInterface.nested_interface_param",
+      "type": "String",
+      "value": {
+        "operator": "none",
+        "operands": ["Nested Interface Param"]
+      },
+      "name": "",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Interface.NestedExtendInterface.nested_outer_param",
+      "type": "String",
+      "name": "",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Interface.NestedExtendInterface.nested_assignment_of_outer_param",
+      "type": "String",
+      "value": {
+        "operator": "none",
+        "operands": [
+          "TestPackage.Interface.NestedExtendInterface.nested_outer_param"
+        ]
+      },
+      "name": "",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Interface.NestedExtendInterface",
+      "type": "TestPackage.Interface.NestedExtendInterface",
+      "name": "Test Extend Interface",
+      "value": "TestPackage.Interface.NestedExtendInterface",
+      "visible": false,
+      "replaceable": false,
+      "options": [
+        "TestPackage.Interface.NestedExtendInterface.nested_interface_param",
+        "TestPackage.Interface.NestedExtendInterface.nested_outer_param",
+        "TestPackage.Interface.NestedExtendInterface.nested_assignment_of_outer_param"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": ["TestPackage.Interface.NestedExtendInterface"]
+    },
+    {
+      "modelicaPath": "TestPackage.Interface.ExtendInterface",
+      "type": "TestPackage.Interface.ExtendInterface",
+      "name": "Test Extend Interface",
+      "value": "TestPackage.Interface.ExtendInterface",
+      "visible": false,
+      "modifiers": {
+        "TestPackage.Interface.NestedExtendInterface.nested_interface_param": {
+          "expression": {
+            "operator": "none",
+            "operands": ["Extend mod of nested param"]
+          },
+          "final": false,
+          "redeclare": false
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "TestPackage.Interface.ExtendInterface.interface_param",
+        "TestPackage.Interface.NestedExtendInterface.nested_interface_param",
+        "TestPackage.Interface.NestedExtendInterface.nested_outer_param",
+        "TestPackage.Interface.NestedExtendInterface.nested_assignment_of_outer_param"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "TestPackage.Interface.ExtendInterface",
+        "TestPackage.Interface.NestedExtendInterface"
+      ]
+    },
+    {
+      "modelicaPath": "TestPackage.Template.TestTemplate",
+      "type": "TestPackage.Template.TestTemplate",
+      "name": "Test Template",
+      "value": "TestPackage.Template.TestTemplate",
+      "visible": false,
+      "modifiers": {
+        "TestPackage.Interface.ExtendInterface.interface_param": {
+          "expression": {
+            "operator": "none",
+            "operands": ["Updated Value"]
+          },
+          "final": false,
+          "redeclare": false
+        },
+        "TestPackage.Interface.NestedExtendInterface.nested_interface_param": {
+          "expression": {
+            "operator": "none",
+            "operands": ["Template mod of the nested param"]
+          },
+          "final": false,
+          "redeclare": false
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "TestPackage.Template.TestTemplate.first",
+        "TestPackage.Template.TestTemplate.inner_outer_param",
+        "TestPackage.Template.TestTemplate.selectable_component",
+        "TestPackage.Template.TestTemplate.third",
+        "TestPackage.Template.TestTemplate.dat",
+        "TestPackage.Template.TestTemplate.should_ignore",
+        "TestPackage.Template.TestTemplate.nullable_bool",
+        "TestPackage.Template.TestTemplate.expression_bool",
+        "TestPackage.Template.TestTemplate.complex_expression_bool",
+        "TestPackage.Template.TestTemplate.test_string_uninitialized",
+        "TestPackage.Template.TestTemplate.test_string_initialized",
+        "TestPackage.Template.TestTemplate.test_real",
+        "TestPackage.Template.TestTemplate.test_int",
+        "TestPackage.Template.TestTemplate.connector_param",
+        "TestPackage.Template.TestTemplate.connector_param_false",
+        "TestPackage.Template.TestTemplate.typ",
+        "TestPackage.Template.TestTemplate.redeclare_param_01",
+        "TestPackage.Template.TestTemplate.redeclare_param_02",
+        "TestPackage.Template.TestTemplate.short_path_component",
+        "TestPackage.Template.TestTemplate.test_record",
+        "TestPackage.Template.TestTemplate.selectable_component_with_relative_paths",
+        "TestPackage.Template.TestTemplate.ShortClass",
+        "TestPackage.Template.TestTemplate.shortClassInstance",
+        "TestPackage.Interface.ExtendInterface.interface_param",
+        "TestPackage.Interface.NestedExtendInterface.nested_interface_param",
+        "TestPackage.Interface.NestedExtendInterface.nested_outer_param",
+        "TestPackage.Interface.NestedExtendInterface.nested_assignment_of_outer_param"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "TestPackage.Template.TestTemplate",
+        "TestPackage.Interface.ExtendInterface",
+        "TestPackage.Interface.NestedExtendInterface"
+      ]
+    },
+    {
+      "modelicaPath": "TestPackage.Component.FifthComponent.replaceable_param",
+      "type": "TestPackage.Component.FirstComponent",
+      "value": "TestPackage.Component.FirstComponent",
+      "name": "Replaceable Parameter",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "modifiers": {},
+      "enable": false,
+      "choiceModifiers": {},
+      "replaceable": true,
+      "options": ["TestPackage.Component.FirstComponent"],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "TestPackage.Component.FifthComponent",
+      "type": "TestPackage.Component.FifthComponent",
+      "name": "Fifth Component",
+      "value": "TestPackage.Component.FifthComponent",
+      "visible": false,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [
+        "TestPackage.Component.FifthComponent.replaceable_param",
+        "TestPackage.Interface.PartialComponent.container",
+        "TestPackage.Interface.PartialComponent.icecream"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "TestPackage.Component.FifthComponent",
+        "TestPackage.Interface.PartialComponent"
+      ]
+    },
+    {
+      "modelicaPath": "datAll",
+      "name": "datAll",
+      "type": "Buildings.Templates.Data.AllSystems",
+      "value": "Buildings.Templates.Data.AllSystems",
+      "visible": false,
+      "modifiers": {
+        "Buildings.Templates.Data.AllSystems.projectSetting": {
+          "expression": {
+            "operator": "none",
+            "operands": [false]
+          },
+          "final": false,
+          "redeclare": false
+        },
+        "Buildings.Templates.Data.AllSystems.AllSystems": {
+          "expression": "Buildings.Templates.Data.AllSystems",
+          "final": false,
+          "redeclare": false
+        }
+      },
+      "replaceable": false,
+      "options": ["Buildings.Templates.Data.AllSystems"],
+      "definition": false,
+      "shortExclType": false
+    }
+  ],
+  "scheduleOptions": []
+}
