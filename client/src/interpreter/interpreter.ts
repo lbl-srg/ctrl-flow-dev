@@ -1,5 +1,5 @@
 import { ConfigInterface } from "../../src/data/config";
-import { TemplateInterface, OptionInterface } from "../../src/data/template";
+import { TemplateInterface, OptionInterface } from "../../src/data/types";
 import { removeEmpty } from "../../src/utils/utils";
 
 export type Literal = boolean | string | number;
@@ -130,8 +130,10 @@ const _instancePathToOption = (
 
   const pathSegments = modifiedPath.split(".");
   const curInstancePathList = [pathSegments.shift()]; // keep track of instance path for modifiers
-  let curOptionPath: string | null | undefined =
-    `${context.template.modelicaPath}.${curInstancePathList[0]}`;
+  let curOptionPath:
+    | string
+    | null
+    | undefined = `${context.template.modelicaPath}.${curInstancePathList[0]}`;
   if (pathSegments.length === 0) {
     // special case: original type definition should be defined
     const rootOption = context.getRootOption();
@@ -640,7 +642,13 @@ const buildModsHelper = (
     } else {
       // if this is a replaceable element, get the redeclared type
       // (this includes instances of replaceable short classes)
-      const typeOptionPath = getReplaceableType(newBase, option, mods, selections, options);
+      const typeOptionPath = getReplaceableType(
+        newBase,
+        option,
+        mods,
+        selections,
+        options,
+      );
       const typeOption = options[typeOptionPath as string];
 
       if (typeOption && typeOption.options) {
@@ -656,8 +664,7 @@ const buildModsHelper = (
 
         // Each parent class must also be visited
         // See https://github.com/lbl-srg/ctrl-flow-dev/issues/360
-        typeOption
-          .treeList
+        typeOption.treeList
           ?.filter((path) => path !== (typeOptionPath as string)) // Exclude current class from being visited again
           .map((oPath) => {
             const o = options[oPath];
@@ -669,7 +676,7 @@ const buildModsHelper = (
               selections,
               selectionModelicaPathsCache,
             );
-          })
+          });
 
         // Further populate `mods` with all options belonging to this class
         typeOption.options.map((path) => {
