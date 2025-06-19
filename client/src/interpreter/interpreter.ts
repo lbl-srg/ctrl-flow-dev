@@ -119,6 +119,7 @@ const _instancePathToOption = (
   instancePath: string;
   outerOptionPath: string | null | undefined;
 } => {
+  // apply inner/outer
   const modifiedPath = applyPathMods
     ? applyPathModifiers(instancePath, context.template.pathModifiers)
     : instancePath;
@@ -130,8 +131,10 @@ const _instancePathToOption = (
 
   const pathSegments = modifiedPath.split(".");
   const curInstancePathList = [pathSegments.shift()]; // keep track of instance path for modifiers
-  let curOptionPath: string | null | undefined =
-    `${context.template.modelicaPath}.${curInstancePathList[0]}`;
+  let curOptionPath:
+    | string
+    | null
+    | undefined = `${context.template.modelicaPath}.${curInstancePathList[0]}`;
   if (pathSegments.length === 0) {
     // special case: original type definition should be defined
     const rootOption = context.getRootOption();
@@ -238,13 +241,6 @@ const _instancePathToOption = (
   };
 };
 
-// This is a hack to determine modelica paths
-// The backend expands all relative paths every 'option' path should begin with 'Modelica'
-// 'Modelica' or 'Buildings' it is a modelica path
-function isModelicaPath(path: string) {
-  return path.startsWith("Modelica") || path.startsWith("Buildings");
-}
-
 /**
  * Resolves the provided path using scope to correct
  * instance path, and the original option definition
@@ -294,6 +290,36 @@ export type OperatorType =
   | "else"
   | Comparator;
 
+export const resolveInstancePathToValue = (
+  operand: string,
+  context: ConfigContext,
+  scope = "",
+  stack: (Literal | Expression)[] = [],
+) => {
+  let value: any = null;
+  const { instancePath, optionPath } = resolvePaths(operand, context, scope);
+  const instancePathScope = instancePath.split(".").slice(0, -1).join(".");
+  // have the actual instance path, check for cached value
+  value = context._getCachedValue(instancePath);
+  // if no value, check instance path now that scope should be properly applied
+  value =
+    value === undefined || value === null
+      ? context.getValue(instancePath, "", stack)
+      : value;
+  // fallback to the original option
+  if ((value === undefined || value === null) && optionPath) {
+    const typeOption = context.options[optionPath];
+    if (typeOption?.definition) {
+      value = typeOption.modelicaPath;
+    } else if (typeOption && "value" in typeOption) {
+      const potentialExpression = typeOption?.value; // enums
+      value = evaluate(potentialExpression, context, instancePathScope, stack);
+    }
+  }
+
+  return value;
+};
+
 /**
  * Resolve something to its value/type, dealing with Literals
  * and expressions
@@ -304,8 +330,11 @@ export const resolveToValue = (
   operand: Literal | Expression,
   context?: ConfigContext,
   scope = "",
+  stack: (Literal | Expression)[] = [],
 ): Literal | null | undefined | Expression => {
   let value: any = null;
+
+  // TODO: we likely need a process to separate string literals
   if (["number", "boolean"].includes(typeof operand)) {
     return evaluate(operand);
   }
@@ -314,44 +343,36 @@ export const resolveToValue = (
     return operand;
   }
 
+  // Cycle Detection using operand stack list
+  if (
+    !["number", "boolean"].includes(typeof operand) &&
+    stack.includes(operand)
+  ) {
+    return value; // cycling - PUNCH-OUT!
+  } else {
+    stack.push(operand);
+  }
+
   const _context = context as ConfigContext;
 
   if (typeof operand !== "string") return;
 
-  if (isModelicaPath(operand)) {
+  value = resolveInstancePathToValue(operand, _context, scope, stack);
+
+  if (value === undefined || value === null) {
+    // treat as a possible direct reference to an 'option' or template node
     const option = _context.options[operand];
     if (option === undefined) {
       // console.log(`undefined path: ${operand}`);
-      // TODO: these are modelica paths that should
-      // be extracted!
       return operand;
     }
     if (option?.definition) {
-      return operand;
+      return operand; // it is a definition, the value is a 'Type'
     } else {
       // Update the operand with just the param name
       const name = operand.split(".").pop() as string;
       operand = name;
-    }
-  }
-
-  const { instancePath, optionPath } = resolvePaths(operand, _context, scope);
-  const instancePathScope = instancePath.split(".").slice(0, -1).join(".");
-  // have the actual instance path, check for cached value
-  value = _context._getCachedValue(instancePath);
-  // if no value, check instance path now that scope should be properly applied
-  value =
-    value === undefined || value === null
-      ? _context.getValue(instancePath)
-      : value;
-  // fallback to the original option
-  if ((value === undefined || value === null) && optionPath) {
-    const typeOption = _context.options[optionPath];
-    if (typeOption?.definition) {
-      value = typeOption.modelicaPath;
-    } else if (typeOption && "value" in typeOption) {
-      const potentialExpression = typeOption?.value; // enums
-      value = evaluate(potentialExpression, context, instancePathScope);
+      value = resolveInstancePathToValue(operand, _context, scope, stack);
     }
   }
 
@@ -369,13 +390,14 @@ export const evaluateModifier = (
   mod: Modifier,
   context: ConfigContext,
   instancePath = "",
+  stack: (Literal | Expression)[] = [],
 ) => {
   const sliceAmount = mod?.fromClassDefinition ? -1 : -2;
   const expressionScope = instancePath
     .split(".")
     .slice(0, sliceAmount)
     .join(".");
-  return evaluate(mod?.expression, context, expressionScope);
+  return evaluate(mod?.expression, context, expressionScope, stack);
 };
 
 type Comparators = { [key: string]: (x: any, y: any) => any };
@@ -390,6 +412,7 @@ export const evaluate = (
   possibleExpression: Expression | Literal | null | undefined,
   context?: ConfigContext,
   scope?: string,
+  stack: (Literal | Expression)[] = [],
 ) => {
   if (!isExpression(possibleExpression)) {
     return possibleExpression; // already a constant
@@ -401,7 +424,12 @@ export const evaluate = (
 
   switch (expression.operator) {
     case "none":
-      val = resolveToValue(expression.operands[0] as Literal, context, scope);
+      val = resolveToValue(
+        expression.operands[0] as Literal,
+        context,
+        scope,
+        stack,
+      );
       break;
     case "<":
     case "<=":
@@ -415,7 +443,7 @@ export const evaluate = (
       };
 
       const resolvedOperands = expression.operands.map((o) =>
-        resolveToValue(o, context, scope),
+        resolveToValue(o, context, scope, [...stack]),
       );
       val = comparators[expression.operator](
         resolvedOperands[0],
@@ -427,7 +455,7 @@ export const evaluate = (
     case "==":
     case "!=": {
       const resolvedOperands = expression.operands.map((o) =>
-        resolveToValue(o, context, scope),
+        resolveToValue(o, context, scope, [...stack]),
       );
       const isEqual = allElementsEqual(resolvedOperands);
       val = expression.operator.includes("!") ? !isEqual : isEqual;
@@ -435,14 +463,14 @@ export const evaluate = (
     }
     case "||": {
       val = expression.operands.reduce(
-        (acc, cur) => !!(evaluate(cur, context, scope) || acc),
+        (acc, cur) => !!(evaluate(cur, context, scope, stack) || acc),
         false,
       );
       break;
     }
     case "&&": {
       val = expression.operands.reduce(
-        (acc, cur) => !!(evaluate(cur, context, scope) && acc),
+        (acc, cur) => !!(evaluate(cur, context, scope, stack) && acc),
         true,
       );
       break;
@@ -452,19 +480,19 @@ export const evaluate = (
     case "if_array":
     case "if_elseif": {
       val = expression.operands
-        .map((o) => evaluate(o, context, scope))
+        .map((o) => evaluate(o, context, scope, stack))
         .filter((val) => val !== null)[0];
       break;
     }
     case "if":
     case "else_if": {
-      val = evaluate(expression.operands[0], context, scope)
-        ? evaluate(expression.operands[1], context, scope)
+      val = evaluate(expression.operands[0], context, scope, stack)
+        ? evaluate(expression.operands[1], context, scope, stack)
         : null;
       break;
     }
     case "else": {
-      val = evaluate(expression.operands[0], context, scope);
+      val = evaluate(expression.operands[0], context, scope, stack);
       break;
     }
   }
@@ -640,7 +668,13 @@ const buildModsHelper = (
     } else {
       // if this is a replaceable element, get the redeclared type
       // (this includes instances of replaceable short classes)
-      const typeOptionPath = getReplaceableType(newBase, option, mods, selections, options);
+      const typeOptionPath = getReplaceableType(
+        newBase,
+        option,
+        mods,
+        selections,
+        options,
+      );
       const typeOption = options[typeOptionPath as string];
 
       if (typeOption && typeOption.options) {
@@ -656,8 +690,7 @@ const buildModsHelper = (
 
         // Each parent class must also be visited
         // See https://github.com/lbl-srg/ctrl-flow-dev/issues/360
-        typeOption
-          .treeList
+        typeOption.treeList
           ?.filter((path) => path !== (typeOptionPath as string)) // Exclude current class from being visited again
           .map((oPath) => {
             const o = options[oPath];
@@ -669,7 +702,7 @@ const buildModsHelper = (
               selections,
               selectionModelicaPathsCache,
             );
-          })
+          });
 
         // Further populate `mods` with all options belonging to this class
         typeOption.options.map((path) => {
@@ -714,7 +747,7 @@ export const buildMods = (
 };
 
 ///////////////// Context Manager
-// OptionInstance is meant to act like an instance of aparticular template Option.
+// OptionInstance is meant to act like an instance of a particular template Option.
 // Instance data baked into the same object in a format convenient for mapping
 // to different UI Shapes
 export interface OptionInstance {
@@ -751,8 +784,6 @@ export class ConfigContext {
   _resolvedValues: {
     [key: string]: { value: Literal | null; optionPath: string };
   } = {};
-  _previousInstancePath: string | null = null;
-
   constructor(
     public template: TemplateInterface,
     public config: ConfigInterface,
@@ -788,33 +819,27 @@ export class ConfigContext {
    * A null return means the value cannot be resolved
    * @param path
    */
-  getValue(path: string, scope = ""): Literal | Expression | null | undefined {
-    if (this._previousInstancePath === path) {
-      // console.log(`Cycling on path: ${path}`);
-      return null; // prevent cycle
-    } else {
-      this._previousInstancePath = path;
-    }
+  getValue(
+    path: string,
+    scope = "",
+    stack: (Literal | Expression)[] = [],
+  ): Literal | Expression | null | undefined {
     let val = null;
     let optionPath: string | null = "";
     let instancePath = path;
 
-    if (isModelicaPath(path)) {
-      const option = this.options[path];
-      if (option.definition) {
-        this._previousInstancePath = null;
-        this.addToCache(path, optionPath, path);
-        return path;
-      }
-      optionPath = path;
-    } else {
-      // instance path to original option
-      const paths = resolvePaths(path, this, scope);
-      optionPath = paths.optionPath;
-      instancePath = paths.instancePath;
-    }
+    const {
+      optionPath: foundOptionPath,
+      pathIsTheValue,
+      instancePath: newInstancePath,
+    } = this.getValueHelper(path, scope);
 
-    if (!optionPath) {
+    optionPath = foundOptionPath;
+    instancePath = newInstancePath;
+
+    if (pathIsTheValue) return path;
+
+    if (!foundOptionPath) {
       // Unable to resolve value - likely a param link explicitly broken using
       // the annotation __ctrlFlow(enable=false)
       return null; // PUNCH-OUT! Unable to resolve value
@@ -823,7 +848,6 @@ export class ConfigContext {
     const selectionPath = constructSelectionPath(optionPath, instancePath);
     // check selections
     if (this.selections && selectionPath in this.selections) {
-      this._previousInstancePath = null;
       this.addToCache(path, optionPath, this.selections[selectionPath]);
       return this.selections[selectionPath];
     }
@@ -831,9 +855,13 @@ export class ConfigContext {
     // Check if a value is on a modifier
     const mod = this.mods[instancePath];
     if (mod) {
-      val = evaluateModifier(this.mods[instancePath], this, instancePath);
+      val = evaluateModifier(
+        this.mods[instancePath],
+        this,
+        instancePath,
+        stack,
+      );
       if (val) {
-        this._previousInstancePath = null;
         this.addToCache(path, optionPath, val);
         return val;
       }
@@ -841,10 +869,38 @@ export class ConfigContext {
 
     // return whatever value is present on the original option definition
     const optionScope = instancePath.split(".").slice(0, -1).join(".");
-    val = evaluate(this.options[optionPath]?.value, this, optionScope);
+    val = evaluate(this.options[optionPath]?.value, this, optionScope, stack);
     this.addToCache(path, optionPath, val);
-    this._previousInstancePath = null;
     return val;
+  }
+
+  /**\
+   * Extracts details about the provided path, including:
+   * - 'pathIsTheValue': is the path actually a type reference (and therefore the value)
+   * - 'optionPath': what is the original template node path
+   * - 'instancePath': what is the intance path
+   *
+   * @param path
+   * @param scope
+   * @returns
+   */
+  getValueHelper(path: string, scope: string) {
+    // instance path to original option
+    const paths = resolvePaths(path, this, scope);
+    let optionPath = paths.optionPath || "";
+    const instancePath = paths.instancePath;
+    let pathIsTheValue = false;
+    if (!optionPath) {
+      // try and treat as a template node reference
+      const option = this.options[path];
+      if (option?.definition) {
+        this.addToCache(path, optionPath, path);
+        pathIsTheValue = true;
+      }
+      optionPath = path;
+    }
+
+    return { optionPath, pathIsTheValue, instancePath };
   }
 
   _visitChildNodes(instancePath: string, depth: number | null) {
@@ -919,6 +975,7 @@ export class ConfigContext {
       scope,
     );
     if (!optionPath || optionPath.startsWith("Modelica")) {
+      // TODO: remove 'startsWith("Modelica")'
       return;
     }
 
@@ -982,6 +1039,7 @@ export class ConfigContext {
 
   /**
    * Maps the cache of values to the selection format
+   *
    */
   getEvaluatedValues() {
     const evaluatedValues: { [key: string]: Literal | null | undefined } = {};
