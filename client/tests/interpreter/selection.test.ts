@@ -1,5 +1,37 @@
 import { createTemplateContext, createSelections, TestTemplate } from "./utils";
 
+describe("Multiple Package Selections", () => {
+  it("Should allow selections from two different packages", () => {
+    const firstTemplateNode = "TestPackage.Template.TestTemplate.typ";
+    const firstTemplateNodeSelection = "TestPackage.Types.IceCream.Vanilla";
+    const secondTemplateNode =
+      "SecondTestPackage.Templates.Plants.Chiller.testParam";
+    const secondTemplateNodeSelection = "true";
+
+    const { store, config: testTemplateConfig } = createTemplateContext(
+      TestTemplate.TestTemplate,
+      createSelections({ [firstTemplateNode]: firstTemplateNodeSelection }),
+    );
+
+    const { config: secondTestTemplateConfig } = createTemplateContext(
+      TestTemplate.SecondTestTemplate,
+      createSelections({ [secondTemplateNode]: secondTemplateNodeSelection }),
+      { store }, // re-use store
+    );
+
+    const firstTemplateSelections = testTemplateConfig.selections!;
+    expect(firstTemplateSelections[firstTemplateNode]).toBeDefined();
+    expect(firstTemplateSelections[firstTemplateNode]).toEqual(
+      firstTemplateNodeSelection,
+    );
+
+    const secondTemplateSelections = secondTestTemplateConfig.selections!;
+    expect(secondTemplateSelections[secondTemplateNode]).toBeDefined();
+    expect(secondTemplateSelections[secondTemplateNode]).toEqual(
+      secondTemplateNodeSelection,
+    );
+  });
+});
 describe("Valid selection", () => {
   it("Returns an invalid selection", () => {
     // you should NOT be able to select secOutRel.secRel.fanRel if a ReliefDamper is specified for secOutRel.secRel
