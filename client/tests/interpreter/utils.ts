@@ -1,6 +1,6 @@
 import RootStore from "../../src/data";
 import templateData from "../../src/data/templates.json";
-import testTemplateData from "../static-data/test-package-templates.json";
+import testTemplateData from "../static-data/test-templates.json";
 
 import {
   ConfigInterface,
@@ -25,8 +25,8 @@ const projectSelections = {
 const mzTemplatePath = "Buildings.Templates.AirHandlersFans.VAVMultiZone";
 const zoneTemplatePath = "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly";
 const zoneReheatTemplatePath = "Buildings.Templates.ZoneEquipment.VAVBoxReheat";
-const allOptions = store.templateStore.getAllOptions();
-const allTemplates = store.templateStore.getAllTemplates();
+const testTemplatePath = "TestPackage.Template.TestTemplate";
+const secondTestTemplatePath = "SecondTestPackage.Templates.Plants.Chiller";
 
 /**
  * Adds boilerplate project level selections
@@ -73,22 +73,44 @@ export const buildExpression = (operator: OperatorType, operands: any[]) => {
 export const getRootStore = () => store;
 export const getTestStore = () => testStore;
 
-export const createStore = () => {
-  return new RootStore(templateData);
+export const createStore = (testStore: TestStore) => {
+  switch (testStore) {
+    case TestStore.RootStore:
+      return new RootStore(templateData);
+    case TestStore.TestStore:
+      return new RootStore(testTemplateData);
+    default:
+      return new RootStore(templateData);
+  }
 };
 
+/**
+ *
+ * @param templatePath
+ * @param selections
+ * @param options
+ *     configName?: if provided manually sets the config name
+ *     store: use the provided store instead of creating the default store for a given template
+ * @returns
+ */
 export const createTemplateContext = (
   templatePath: TestTemplate,
   selections: {
     [key: string]: string;
   } = {},
-  configName?: string,
+  options?: { configName?: string; store: RootStore },
 ) => {
-  const store = createStore();
-  const { path, configName: _configName } = _testTemplateData[templatePath];
+  const {
+    path,
+    configName: _configName,
+    testStore,
+  } = _testTemplateData[templatePath];
+
+  const store = options?.store || createStore(testStore);
+  const allOptions = store.templateStore.getAllOptions();
   const template = store.getTemplate(path)!;
   const config = addNewConfig(
-    configName || _configName,
+    options?.configName || _configName,
     template,
     selections,
     store,
@@ -100,7 +122,7 @@ export const createTemplateContext = (
     createSelections(selections),
   );
 
-  return { context, template, path };
+  return { context, template, path, store, config };
 };
 
 export const getTestTemplateData = (testTemplate: TestTemplate) =>
@@ -110,19 +132,39 @@ export enum TestTemplate {
   MultiZoneTemplate,
   ZoneTemplate,
   ZoneReheat,
+  TestTemplate,
+  SecondTestTemplate,
+}
+
+export enum TestStore {
+  RootStore,
+  TestStore,
 }
 
 const _testTemplateData = {
   [TestTemplate.MultiZoneTemplate]: {
     path: mzTemplatePath,
     configName: "VAVMultiZone Config",
+    testStore: TestStore.RootStore,
   },
   [TestTemplate.ZoneTemplate]: {
     path: zoneTemplatePath,
     configName: "Zone Config",
+    testStore: TestStore.RootStore,
   },
   [TestTemplate.ZoneReheat]: {
     path: zoneReheatTemplatePath,
     configName: "Zone Reheat Config",
+    testStore: TestStore.RootStore,
+  },
+  [TestTemplate.TestTemplate]: {
+    path: testTemplatePath,
+    configName: "Test Template Config",
+    testStore: TestStore.TestStore,
+  },
+  [TestTemplate.SecondTestTemplate]: {
+    path: secondTestTemplatePath,
+    configName: "Second Test Template Config",
+    testStore: TestStore.TestStore,
   },
 };
