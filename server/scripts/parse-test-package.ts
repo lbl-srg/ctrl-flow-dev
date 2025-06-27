@@ -8,10 +8,17 @@ import {
 } from "../src/parser";
 
 import { fullTempDirPath } from "../tests/integration/parser/utils";
-loadPackage(`${fullTempDirPath}/TestPackage`);
+import { prependToModelicaJsonPath } from "../src/parser/loader";
 
-// const buildDir = `${process.cwd()}/build/modelica-json/json`;
-// loadPackage(`${buildDir}/Buildings/Templates`);
+// TODO: if this path is prepended here, buildings/templates does not finish
+// loading, and throws with a bad reference. Something in the parser is not handling
+// a failed lookup well
+// prependToModelicaJsonPath([fullTempDirPath]);
+
+// loadPackage(`Buildings/Templates`);
+prependToModelicaJsonPath([fullTempDirPath]);
+loadPackage(`${fullTempDirPath}/TestPackage`);
+loadPackage(`${fullTempDirPath}/SecondTestPackage/Templates`);
 
 const { options, scheduleOptions } = getOptions();
 
@@ -22,8 +29,6 @@ const data = {
   scheduleOptions: scheduleOptions,
 };
 
-const dest = path.resolve(
-  `${__dirname}/../public/templates/system-template-test-package.json`,
-);
+const dest = path.resolve(`${__dirname}/test-templates.json`);
 
 fs.writeFileSync(dest, JSON.stringify(data, null, 2));
