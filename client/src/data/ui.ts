@@ -1,7 +1,5 @@
-import { makeAutoObservable } from "mobx";
-import { makePersistable } from "mobx-persist-store";
 import { TemplateInterface } from "./types";
-import RootStore, { getStorageKey } from ".";
+import RootStore from ".";
 import { ConfigInterface } from "./config";
 
 const MIN_WIDTH = 100;

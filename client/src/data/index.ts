@@ -32,15 +32,6 @@ function makePersistent<T extends object>(
   return instance;
 }
 
-configurePersistable(
-  {
-    storage: window.localStorage,
-    stringify: true,
-    debugMode: false,
-  },
-  { delay: 200, fireImmediately: false },
-);
-
 type StoreOptions = {
   persist: boolean; // store in local storage
   version?: string;
@@ -53,28 +44,33 @@ class RootStore {
   configStore: ConfigStore;
 
   constructor(templateData: TemplateDataInterface, options?: StoreOptions) {
-    const projectStore = new ProjectStore(this);
-    const configStore = new ConfigStore(this);
+    this.projectStore = new ProjectStore(this);
+    this.configStore = new ConfigStore(this);
     this.uiStore = new UiStore(this);
     this.templateStore = new TemplateStore(this, templateData);
-    this.projectStore = options?.persist
-      ? makePersistent(projectStore, {
-          name: getStorageKey("projects", options.version),
-          properties: ["projects", "activeProjectId"],
-        })
-      : projectStore;
-    this.configStore = options?.persist
-      ? makePersistent(configStore, {
-          name: getStorageKey("configs", options.version),
-          properties: ["configs"],
-        })
-      : configStore;
-    this.uiStore = options?.persist
-      ? makePersistent(this.uiStore, {
-          name: getStorageKey("ui", options.version),
-          properties: ["leftColWidth"],
-        })
-      : this.uiStore;
+
+    if (options?.persist) {
+      configurePersistable(
+        {
+          storage: window.localStorage,
+          stringify: true,
+          debugMode: false,
+        },
+        { delay: 200, fireImmediately: false },
+      );
+      this.projectStore = makePersistent(this.projectStore, {
+        name: getStorageKey("projects", options.version),
+        properties: ["projects", "activeProjectId"],
+      });
+      this.configStore = makePersistent(this.configStore, {
+        name: getStorageKey("configs", options.version),
+        properties: ["configs"],
+      });
+      this.uiStore = makePersistent(this.uiStore, {
+        name: getStorageKey("ui", options.version),
+        properties: ["leftColWidth"],
+      });
+    }
   }
 
   getTemplate(path: string) {
