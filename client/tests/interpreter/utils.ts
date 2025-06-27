@@ -11,8 +11,6 @@ import {
 import { OperatorType, ConfigContext } from "../../src/interpreter/interpreter";
 
 // initialize global test dependencies
-const store = new RootStore(templateData);
-const testStore = new RootStore(testTemplateData);
 const projectSelections = {
   "Buildings.Templates.Data.AllSystems.stdEne":
     "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
@@ -70,17 +68,14 @@ export const buildExpression = (operator: OperatorType, operands: any[]) => {
   return { operator, operands };
 };
 
-export const getRootStore = () => store;
-export const getTestStore = () => testStore;
-
 export const createStore = (testStore: TestStore) => {
   switch (testStore) {
     case TestStore.RootStore:
-      return new RootStore(templateData);
+      return new RootStore(templateData, { persist: false });
     case TestStore.TestStore:
-      return new RootStore(testTemplateData);
+      return new RootStore(testTemplateData, { persist: false });
     default:
-      return new RootStore(templateData);
+      return new RootStore(templateData, { persist: false });
   }
 };
 

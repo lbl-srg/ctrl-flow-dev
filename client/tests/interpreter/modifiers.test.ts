@@ -3,18 +3,19 @@ import { buildMods } from "../../src/interpreter/interpreter";
 import { evaluateModifier } from "../../src/interpreter/interpreter";
 
 import {
-  getRootStore,
+  createStore,
   getTestTemplateData,
   createSelections,
   createTemplateContext,
+  TestStore,
   TestTemplate,
 } from "./utils";
 
-let store = getRootStore();
+let store = createStore(TestStore.RootStore);
 
 describe("Modifiers", () => {
   beforeEach(() => {
-    store = getRootStore()!;
+    store = createStore(TestStore.RootStore)!;
   });
   it("Sets the correct value for a redeclared type", () => {
     const { context } = createTemplateContext(
