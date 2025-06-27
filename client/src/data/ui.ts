@@ -17,13 +17,6 @@ export default class Ui {
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
-
-    makeAutoObservable(this);
-
-    makePersistable(this, {
-      name: getStorageKey("ui"),
-      properties: ["leftColWidth"],
-    });
   }
 
   // actions

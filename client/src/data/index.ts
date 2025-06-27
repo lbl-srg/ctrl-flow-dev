@@ -43,7 +43,7 @@ configurePersistable(
 
 type StoreOptions = {
   persist: boolean; // store in local storage
-  version: string;
+  version?: string;
 };
 
 class RootStore {
@@ -69,6 +69,12 @@ class RootStore {
           properties: ["configs"],
         })
       : configStore;
+    this.uiStore = options?.persist
+      ? makePersistent(this.uiStore, {
+          name: getStorageKey("ui", options.version),
+          properties: ["leftColWidth"],
+        })
+      : this.uiStore;
   }
 
   getTemplate(path: string) {
