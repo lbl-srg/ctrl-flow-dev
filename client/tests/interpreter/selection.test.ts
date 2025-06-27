@@ -1,7 +1,7 @@
 import { createTemplateContext, createSelections, TestTemplate } from "./utils";
 
 describe("Multiple Package Selections", () => {
-  it("Should allow selections from two different packages", () => {
+  it("Should allow selections from two different top-level packages (libraries)", () => {
     const firstTemplateNode = "TestPackage.Template.TestTemplate.typ";
     const firstTemplateNodeSelection = "TestPackage.Types.IceCream.Vanilla";
     const secondTemplateNode =
