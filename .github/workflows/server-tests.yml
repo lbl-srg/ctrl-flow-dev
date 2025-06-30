@@ -12,6 +12,7 @@ on:
     branches:
       - main
       - staging
+      - issue431_multiLibs # TODO: remove when issue431_multiLibs is merged into staging
 env:
   MODELICA_DEPENDENCIES: ../dependencies
 jobs:
