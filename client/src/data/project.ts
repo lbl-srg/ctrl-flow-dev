@@ -1,6 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { makeAutoObservable, toJS } from "mobx";
-import { makePersistable } from "mobx-persist-store";
+import { toJS } from "mobx";
 import RootStore from ".";
 import { ConfigValues } from "../utils/modifier-helpers";
 
@@ -40,13 +39,6 @@ export default class Project {
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
-
-    makeAutoObservable(this);
-
-    makePersistable(this, {
-      name: this.rootStore.getStorageKey("projects"),
-      properties: ["projects", "activeProjectId"],
-    });
   }
 
   setActiveProjectId(id: string) {

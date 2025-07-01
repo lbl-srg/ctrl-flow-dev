@@ -1,40 +1,11 @@
-import tplData from "./templates.json";
 import RootStore from ".";
+import { TemplateDataInterface } from "./types";
 import { buildModifiers, Modifiers } from "../utils/modifier-helpers";
-import { Expression } from "../utils/expression-helpers";
-
-export interface TemplateInterface {
-  modelicaPath: string;
-  name: string;
-  systemTypes: string[];
-  options?: string[];
-  pathModifiers?: { [key: string]: string | undefined };
-}
-
-export interface OptionInterface {
-  modelicaPath: string;
-  type: string;
-  name: string;
-  value?: string | boolean | null | number | Expression;
-  group?: string;
-  tab?: string;
-  visible?: boolean;
-  options?: string[];
-  childOptions?: OptionInterface[];
-  valueExpression?: any; //{ expression: string; modelicaPath: string };
-  enable?: any; // { modelicaPath: string; expression: string };
-  modifiers: any;
-  choiceModifiers?: { [key: string]: Modifiers };
-  treeList: string[];
-  definition: boolean;
-  shortExclType: boolean; // Short class definition excluding `type` definition
-  replaceable: boolean;
-}
-
-export interface SystemTypeInterface {
-  description: string;
-  modelicaPath: string;
-}
+import {
+  TemplateInterface,
+  OptionInterface,
+  SystemTypeInterface,
+} from "./types";
 
 const icons = [
   {
@@ -67,10 +38,10 @@ export default class Template {
   systemTypes: SystemTypeInterface[];
   rootStore: RootStore;
 
-  constructor(rootStore: RootStore) {
-    this.templates = tplData.templates;
-    this.optionList = tplData.options;
-    this.systemTypes = tplData.systemTypes;
+  constructor(rootStore: RootStore, templateData: TemplateDataInterface) {
+    this.templates = templateData.templates;
+    this.optionList = templateData.options;
+    this.systemTypes = templateData.systemTypes;
     this.rootStore = rootStore;
 
     // create option dictionary for quick lookup

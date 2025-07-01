@@ -1,0 +1,34 @@
+# Script README's
+
+## parse-test-package.ts
+
+This script is for re-generating static json for testing the interpreter in the front end, including the templates from the test packages `TestPackage` and `SecondTestPackage`. This should only be run if the static json needs to be updated. The file in the client is checked in so it will typically not need to be re-generated.
+
+It is easiest to run this script inside the docker container. Start the container, then launch a shell into the container
+
+```
+cd server
+npm run docker:start
+npm run docker:shell
+```
+
+Inside the container, go to where the app is mounted and run the npm command that invokes `parse-test-package.ts`
+
+```
+# inside the container!
+cd /app
+npm run parseTestJSON
+```
+
+This outputs static json in the file `/app/scripts/test-templates.json` that includes templates from the test packages `TestPackage` and `SecondTestPackage`.
+
+NOTE: the 'app' folder is mounted outside of the docker container. Relative the root of this repo the generated file is located at `./server/scripts/test-templates.json`.
+
+Move this file into the folder `./client/tests/static-data/`.
+
+You can confirm the file is in the right place by running client interpreter tests.
+
+```
+cd client
+npm run test:interpreter
+```

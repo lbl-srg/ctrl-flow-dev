@@ -1,4 +1,4 @@
-import { OptionInterface } from "../data/template";
+import { OptionInterface } from "../data/types";
 import { FlatConfigOption } from "../components/steps/Configs/SlideOut";
 import { deepCopy } from "./utils";
 import {
@@ -122,7 +122,13 @@ export function buildModifiers(
     const datAll = options["datAll"]; // project settings
     updateModifiers(datAll, "", modifiers, "", options);
   }
-  updateModifiers(startOption, baseInstancePath, modifiers, selectedType, options);
+  updateModifiers(
+    startOption,
+    baseInstancePath,
+    modifiers,
+    selectedType,
+    options,
+  );
 
   return modifiers;
 }
@@ -264,43 +270,4 @@ export function applyVisibilityModifiers(
   }
 
   return !!(visible && enable);
-}
-
-export function getUpdatedModifiers(
-  values: ConfigValues,
-  modifiers: Modifiers,
-  allOptions: { [key: string]: OptionInterface },
-) {
-  const optionKeys: string[] = Object.keys(values);
-  let updatedModifiers: Modifiers = deepCopy(modifiers);
-
-  optionKeys.forEach((key) => {
-    if (values[key] !== null) {
-      const selectedType = values[key];
-      const modelicaPath = key.split("-")[0];
-      const instancePath = key.split("-")[1]?.split(".").slice(0, -1).join(".") || '';
-      const option = allOptions[modelicaPath] as OptionInterface;
-      let choiceModifiers = {};
-
-      if (option?.choiceModifiers) {
-        choiceModifiers = option?.choiceModifiers[values[key]];
-        // take modifiers and change to instace keys, instancePath above and add to updatedModifiers as the last item.
-      }
-
-      updatedModifiers = {
-        ...updatedModifiers,
-        ...buildModifiers(
-          option,
-          instancePath,
-          updatedModifiers,
-          selectedType,
-          allOptions,
-          false,
-        ),
-        ...choiceModifiers,
-      };
-    }
-  });
-
-  return updatedModifiers;
 }

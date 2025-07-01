@@ -6,7 +6,7 @@ import { useStores } from "../../../data";
 
 import "../../../styles/steps/configs.scss";
 
-import { SystemTypeInterface } from "../../../data/template";
+import { SystemTypeInterface } from "../../../data/types";
 
 const Configs = () => {
   const { templateStore } = useStores();

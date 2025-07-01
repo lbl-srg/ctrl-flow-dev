@@ -6,7 +6,7 @@ import SlideOutOpenButton from "./SlideOutOpenButton";
 import SlideOut from "./SlideOut";
 import { useStores } from "../../../data";
 
-import { OptionInterface, TemplateInterface } from "../../../data/template";
+import { OptionInterface, TemplateInterface } from "../../../data/types";
 import { ConfigValues } from "../../../utils/modifier-helpers";
 import { ConfigInterface } from "../../../data/config";
 import Spinner from "../../Spinner";

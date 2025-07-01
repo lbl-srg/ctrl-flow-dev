@@ -3,7 +3,7 @@ import itl from "../../translations";
 import { useStores } from "../../data";
 
 import "../../styles/components/left-navigation.scss";
-import { SystemTypeInterface } from "../../data/template";
+import { SystemTypeInterface } from "../../data/types";
 
 const LeftNav = () => {
   const { templateStore } = useStores();

@@ -1,6 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { makeAutoObservable, toJS } from "mobx";
-import { makePersistable } from "mobx-persist-store";
+import { toJS } from "mobx";
 import RootStore from "./index";
 
 import { ConfigValues } from "../utils/modifier-helpers";
@@ -30,13 +29,6 @@ export default class Config {
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
-
-    makeAutoObservable(this);
-
-    makePersistable(this, {
-      name: this.rootStore.getStorageKey("config"),
-      properties: ["configs"],
-    });
   }
 
   add(config: ConfigProps) {
@@ -128,14 +120,9 @@ export default class Config {
     );
   }
 
-  getConfigsForProject(
-    //TODO: need to connect project to configs
-    //projectId: string,
-  ): ConfigInterface[] {
+  //TODO: need to connect project to configs
+  getConfigsForProject(): ConfigInterface[] {
     return toJS(this.configs);
-    /*return this.configs.filter(
-      (config) => config.projectId === projectId
-    );*/
   }
 
   removeAllForSystemTemplate(systemPath: string, templatePath: string) {

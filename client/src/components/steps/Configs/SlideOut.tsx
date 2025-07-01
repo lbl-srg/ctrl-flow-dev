@@ -2,7 +2,7 @@ import { ChangeEvent, FormEvent, Fragment, useEffect, useState } from "react";
 
 import itl from "../../../translations";
 import { useStores } from "../../../data";
-import { OptionInterface } from "../../../data/template";
+import { OptionInterface } from "../../../data/types";
 import Modal from "../../modal/Modal";
 import OptionSelect from "./OptionSelect";
 import { mapToDisplayOptions as mapConfigContextToDisplayOptions } from "../../../interpreter/display-option";

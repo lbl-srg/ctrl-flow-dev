@@ -1,6 +1,6 @@
 import { deepCopy } from "./utils";
 import { applyPathModifiers } from "./modifier-helpers";
-import { OptionInterface } from "../data/template";
+import { OptionInterface } from "../data/types";
 
 export type Literal = boolean | string | number;
 
@@ -41,16 +41,16 @@ export function resolveValue(
     // We adjust scope to evaluate an expression if needed
     // Set scope relative to class definition by popping off what is assumed to be a param name
     newScope = scope.split(".").slice(0, -1).join(".");
-  } else if (typeof value === 'string') {
+  } else if (typeof value === "string") {
     // Since we don't have a selectionPath that means value is coming from inside an expression,
     // So if value is a string we need to do the following logic
 
     // This section checks if we have a selection to resolveValue
     // We need to determine if value is a modelicaPath or an instancePath,
     // Below tests if a selection exists based on if value is a modelicaPath
-    const splitScopePath = scope.split('.');
+    const splitScopePath = scope.split(".");
 
-    while(splitScopePath.length > 0) {
+    while (splitScopePath.length > 0) {
       const testPath = splitScopePath.join(".");
       const valueSelectionPath: any = testPath ? `${value}-${testPath}` : value;
 

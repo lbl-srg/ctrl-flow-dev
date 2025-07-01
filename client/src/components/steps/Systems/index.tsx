@@ -4,7 +4,7 @@ import System from "./System";
 import { useStores } from "../../../data";
 
 import "../../../styles/steps/systems.scss";
-import { SystemTypeInterface } from "../../../data/template";
+import { SystemTypeInterface } from "../../../data/types";
 
 const Systems = () => {
   const { templateStore } = useStores();

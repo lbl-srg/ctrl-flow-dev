@@ -1,6 +1,4 @@
-import { makeAutoObservable } from "mobx";
-import { makePersistable } from "mobx-persist-store";
-import { TemplateInterface } from "./template";
+import { TemplateInterface } from "./types";
 import RootStore from ".";
 import { ConfigInterface } from "./config";
 
@@ -17,13 +15,6 @@ export default class Ui {
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
-
-    makeAutoObservable(this);
-
-    makePersistable(this, {
-      name: this.rootStore.getStorageKey("ui"),
-      properties: ["leftColWidth"],
-    });
   }
 
   // actions

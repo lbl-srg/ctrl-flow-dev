@@ -4,15 +4,12 @@ import { useStores } from "../../data";
 import { observer } from "mobx-react";
 import { ChangeEvent, SyntheticEvent, useState } from "react";
 import { ProjectDetailInterface } from "../../data/project";
-import { OptionInterface } from "../../data/template";
+import { OptionInterface } from "../../data/types";
 import { FlatConfigOption } from "../steps/Configs/SlideOut";
 import OptionSelect from "../steps/Configs/OptionSelect";
 import { useDebouncedCallback } from "use-debounce";
 import { removeEmpty } from "../../utils/utils";
-import {
-  SystemTypeInterface,
-  TemplateInterface
-} from "../../data/template";
+import { SystemTypeInterface, TemplateInterface } from "../../data/types";
 
 import {
   applyValueModifiers,
@@ -41,22 +38,20 @@ const EditDetailsModal = observer(
     const projectOptions = templateStore.getOptionsForProject();
     const allOptions = templateStore.getAllOptions();
     const [formInputs, setFormInputs] = useState({
-      name: details?.name || '',
-      address: details?.address || '',
-      type: details?.type || '',
+      name: details?.name || "",
+      address: details?.address || "",
+      type: details?.type || "",
       size: details?.size || 0,
-      notes: details?.notes || '',
+      notes: details?.notes || "",
     });
     const [selectedValues, setSelectedValues] = useState<ConfigValues>(
-      projectStore.getProjectSelections()
+      projectStore.getProjectSelections(),
     );
 
     const evaluatedValues = getEvaluatedValues(projectOptions);
-    const displayedOptions = getDisplayOptions(projectOptions, 'root');
+    const displayedOptions = getDisplayOptions(projectOptions, "root");
 
-    function getEvaluatedValues(
-      options: OptionInterface[],
-    ): ConfigValues {
+    function getEvaluatedValues(options: OptionInterface[]): ConfigValues {
       let evaluatedValues: ConfigValues = {};
 
       options.forEach((option) => {
@@ -78,9 +73,7 @@ const EditDetailsModal = observer(
         if (option.childOptions?.length) {
           evaluatedValues = {
             ...evaluatedValues,
-            ...getEvaluatedValues(
-              option.childOptions,
-            ),
+            ...getEvaluatedValues(option.childOptions),
           };
         }
       });
@@ -93,8 +86,8 @@ const EditDetailsModal = observer(
       parentModelicaPath: string,
     ): FlatConfigOption[] {
       const removeNotSpecifiedList = [
-        'Buildings.Templates.Data.AllSystems.ashCliZon',
-        'Buildings.Templates.Data.AllSystems.tit24CliZon'
+        "Buildings.Templates.Data.AllSystems.ashCliZon",
+        "Buildings.Templates.Data.AllSystems.tit24CliZon",
       ];
       let displayOptions: FlatConfigOption[] = [];
 
@@ -110,8 +103,10 @@ const EditDetailsModal = observer(
         );
 
         if (isVisible && option.childOptions?.length) {
-          const modifiedChildOptions = removeNotSpecifiedList.includes(option.modelicaPath)
-            ? option.childOptions.filter((opt) => opt.name !== 'Not specified')
+          const modifiedChildOptions = removeNotSpecifiedList.includes(
+            option.modelicaPath,
+          )
+            ? option.childOptions.filter((opt) => opt.name !== "Not specified")
             : option.childOptions;
 
           displayOptions = [
@@ -136,10 +131,7 @@ const EditDetailsModal = observer(
             if (selectedOption) {
               displayOptions = [
                 ...displayOptions,
-                ...getDisplayOptions(
-                  [selectedOption],
-                  option.modelicaPath,
-                ),
+                ...getDisplayOptions([selectedOption], option.modelicaPath),
               ];
             }
           } else if (evaluatedValues[selectionPath]) {
@@ -150,20 +142,14 @@ const EditDetailsModal = observer(
             if (evaluatedOption) {
               displayOptions = [
                 ...displayOptions,
-                ...getDisplayOptions(
-                  [evaluatedOption],
-                  option.modelicaPath,
-                ),
+                ...getDisplayOptions([evaluatedOption], option.modelicaPath),
               ];
             }
           }
         } else if (option.childOptions?.length) {
           displayOptions = [
             ...displayOptions,
-            ...getDisplayOptions(
-              option.childOptions,
-              option.modelicaPath,
-            ),
+            ...getDisplayOptions(option.childOptions, option.modelicaPath),
           ];
         }
       });
@@ -172,7 +158,9 @@ const EditDetailsModal = observer(
     }
 
     const updateTextInput = useDebouncedCallback(
-      (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
+      (
+        event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
+      ) => {
         setFormInputs((prevState: any) => {
           return {
             ...prevState,
@@ -190,7 +178,7 @@ const EditDetailsModal = observer(
           [event.target.name]: event.target.value,
         };
       });
-    };
+    }
 
     function updateSelectedOption(
       parentModelicaPath: string,
@@ -216,20 +204,27 @@ const EditDetailsModal = observer(
     // This was done due to time and was a bug found last min.
     function adjustProjectSelections() {
       const projectSelectedItems = selectedValues;
-      const energyStandard = projectSelectedItems['Buildings.Templates.Data.AllSystems.stdEne'];
+      const energyStandard =
+        projectSelectedItems["Buildings.Templates.Data.AllSystems.stdEne"];
 
       if (
-        energyStandard === 'Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1' &&
-        projectSelectedItems['Buildings.Templates.Data.AllSystems.tit24CliZon']
+        energyStandard ===
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1" &&
+        projectSelectedItems["Buildings.Templates.Data.AllSystems.tit24CliZon"]
       ) {
-        delete projectSelectedItems['Buildings.Templates.Data.AllSystems.tit24CliZon'];
+        delete projectSelectedItems[
+          "Buildings.Templates.Data.AllSystems.tit24CliZon"
+        ];
       }
 
       if (
-        energyStandard === 'Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24' &&
-        projectSelectedItems['Buildings.Templates.Data.AllSystems.ashCliZon']
+        energyStandard ===
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24" &&
+        projectSelectedItems["Buildings.Templates.Data.AllSystems.ashCliZon"]
       ) {
-        delete projectSelectedItems['Buildings.Templates.Data.AllSystems.ashCliZon'];
+        delete projectSelectedItems[
+          "Buildings.Templates.Data.AllSystems.ashCliZon"
+        ];
       }
 
       return projectSelectedItems;
@@ -248,10 +243,15 @@ const EditDetailsModal = observer(
       // The reason for this is we don't want the user to use saved configs with
       // changed project details as it will cause issues with evaluated values.
       templateStore.systemTypes.forEach((systemType: SystemTypeInterface) => {
-        const templates = templateStore.getTemplatesForSystem(systemType.modelicaPath);
+        const templates = templateStore.getTemplatesForSystem(
+          systemType.modelicaPath,
+        );
 
         templates.forEach((option: TemplateInterface) => {
-          configStore.removeAllForSystemTemplate(systemType.modelicaPath, option.modelicaPath);
+          configStore.removeAllForSystemTemplate(
+            systemType.modelicaPath,
+            option.modelicaPath,
+          );
         });
       });
       if (afterSubmit) afterSubmit();
@@ -269,10 +269,10 @@ const EditDetailsModal = observer(
                   updateSelectedOption={updateSelectedOption}
                 />
               </label>
-            )
+            );
           })}
         </div>
-      )
+      );
     }
 
     return (
