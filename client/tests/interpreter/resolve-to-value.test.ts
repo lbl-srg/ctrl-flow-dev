@@ -15,7 +15,7 @@ describe("resolveToValue tests using context and evaluation", () => {
     const instancePath = "secOutRel.secRel.fanRet";
     const selections = {
       "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.fanRet-secOutRel.secRel.fanRet":
-        "Buildings.Templates.Components.Fans.ArrayVariable",
+        { value: "Buildings.Templates.Components.Fans.ArrayVariable" },
     };
     const { context } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
@@ -52,7 +52,7 @@ describe("Testing context getValue", () => {
     const configName = "VAVMultiZone Config with selections";
     const selections = {
       ["Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupBlo-fanSupBlo"]:
-        "Buildings.Templates.Components.Fans.SingleVariable",
+        { value: "Buildings.Templates.Components.Fans.SingleVariable" },
     };
 
     const { context } = createTemplateContext(

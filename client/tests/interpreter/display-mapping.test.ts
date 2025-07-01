@@ -29,13 +29,13 @@ describe("Display Option and Display Group Generation", () => {
     const displayOption = _formatDisplayOption(
       optionInstance as OptionInstance,
       parent?.option.modelicaPath as string,
-      context
+      context,
     );
 
     expect(displayOption).toBeDefined();
     expect(displayOption.selectionType).toEqual("Boolean");
     expect(displayOption.modelicaPath).toEqual(
-      optionInstance?.option?.modelicaPath
+      optionInstance?.option?.modelicaPath,
     );
     expect(displayOption.value).toEqual(false.toString());
   });
@@ -48,12 +48,12 @@ describe("Display Option and Display Group Generation", () => {
     const displayOption = _formatDisplayOption(
       optionInstance as OptionInstance,
       parentInstance?.option.modelicaPath as string,
-      context
+      context,
     );
 
     expect(displayOption.name).toEqual(optionInstance?.option.name);
     expect(displayOption.value).toEqual(
-      "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper"
+      "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper",
     );
 
     const expectedChoicePaths = {
@@ -66,7 +66,7 @@ describe("Display Option and Display Group Generation", () => {
     };
 
     displayOption.choices?.map((c) =>
-      expect(c.modelicaPath in expectedChoicePaths).toBeTruthy()
+      expect(c.modelicaPath in expectedChoicePaths).toBeTruthy(),
     );
   });
 
@@ -74,16 +74,16 @@ describe("Display Option and Display Group Generation", () => {
     const { context } = createTemplateContext(TestTemplate.MultiZoneTemplate);
 
     const enumInstance = context.getOptionInstance(
-      "secOutRel.secOut.typ"
+      "secOutRel.secOut.typ",
     ) as OptionInstance;
     expect(enumInstance?.value).toEqual(
-      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper",
     );
     const parentInstance = context.getOptionInstance("secOutRel.secOut");
     const displayItems = _formatDisplayItem(
       enumInstance as OptionInstance,
       parentInstance?.option.modelicaPath as string,
-      context
+      context,
     );
 
     expect(displayItems.length).toEqual(0);
@@ -93,7 +93,7 @@ describe("Display Option and Display Group Generation", () => {
     const updatedDisplayItems = _formatDisplayItem(
       enumInstance as OptionInstance,
       parentInstance?.option.modelicaPath as string,
-      context
+      context,
     );
 
     expect(updatedDisplayItems.length).toEqual(1);
@@ -102,7 +102,7 @@ describe("Display Option and Display Group Generation", () => {
   it("Generates a display group", () => {
     const { context } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
-      createSelections()
+      createSelections(),
     );
 
     // get secOutRel type
@@ -113,7 +113,7 @@ describe("Display Option and Display Group Generation", () => {
     const displayGroup = _formatDisplayGroup(
       secOutRelTypeOption,
       secOutRel as OptionInstance,
-      context
+      context,
     );
 
     const items = displayGroup?.items as (
@@ -128,7 +128,7 @@ describe("Display Option and Display Group Generation", () => {
   it("Generates a display group and display options for Multizone Template", () => {
     const { context } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
-      {}
+      {},
     );
 
     const displayOptions = mapToDisplayOptions(context);
@@ -139,7 +139,7 @@ describe("Display Option and Display Group Generation", () => {
   it("Hides params with outer designation", () => {
     const { context } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
-      createSelections()
+      createSelections(),
     );
 
     const coiCoo = context.getOptionInstance("ctl.coiCoo") as OptionInstance;
@@ -152,7 +152,7 @@ describe("Display Option and Display Group Generation", () => {
   it("Generates a display group and display options for VAVBox Cooling Only Template", () => {
     const { context, template } = createTemplateContext(
       TestTemplate.ZoneTemplate,
-      createSelections()
+      createSelections(),
     );
     const coiHea = context.getOptionInstance("coiHea") as OptionInstance;
     expect(coiHea.display).toBeFalsy();
@@ -161,7 +161,7 @@ describe("Display Option and Display Group Generation", () => {
     const ctlDisplayOptions = _formatDisplayItem(
       ctl,
       template.modelicaPath,
-      context
+      context,
     );
 
     expect(ctlDisplayOptions.length).toBeGreaterThan(0);
@@ -175,7 +175,7 @@ describe("Display Enable is set as expected", () => {
   it("Sets enable correctly on parameter with expression", () => {
     const { context } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
-      createSelections()
+      createSelections(),
     );
 
     const optionInstance = context.getOptionInstance("fanSupBlo");
@@ -184,12 +184,12 @@ describe("Display Enable is set as expected", () => {
     const configName = "VAVMultiZone Config with fanSupDra selection";
     const selections = {
       ["Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupDra-fanSupDra"]:
-        "Buildings.Templates.Components.Fans.None",
+        { value: "Buildings.Templates.Components.Fans.None" },
     };
 
     const { context: newContext } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
-      createSelections(selections)
+      createSelections(selections),
     );
 
     const updatedOptionInstance = newContext.getOptionInstance("fanSupBlo");
@@ -199,12 +199,15 @@ describe("Display Enable is set as expected", () => {
   it("Sets ctl.have_CO2Sen param to true", () => {
     const selections = {
       "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut-secOutRel.secOut":
-        "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure",
+        {
+          value:
+            "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure",
+        },
     };
 
     const { context } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
-      createSelections(selections)
+      createSelections(selections),
     );
 
     const optionInstance = context.getOptionInstance("ctl.have_CO2Sen");
@@ -214,11 +217,11 @@ describe("Display Enable is set as expected", () => {
   it("ctl.have_winSen returns an enabled control", () => {
     const { context } = createTemplateContext(
       TestTemplate.ZoneTemplate,
-      createSelections()
+      createSelections(),
     );
 
     const haveWinSen = context.getOptionInstance(
-      "ctl.have_winSen"
+      "ctl.have_winSen",
     ) as OptionInstance;
     expect(haveWinSen.display).toBeTruthy();
   });

@@ -60,8 +60,9 @@ describe("Modifiers", () => {
     const { path } = getTestTemplateData(TestTemplate.MultiZoneTemplate);
     const mzOption = allOptions[path];
     const selections = {
-      "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo":
-        "Buildings.Templates.Components.Coils.WaterBasedCooling",
+      "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo": {
+        value: "Buildings.Templates.Components.Coils.WaterBasedCooling",
+      },
     };
     const mods = buildMods(mzOption, selections, allOptions);
     const coiCooPath = "coiCoo.typVal";

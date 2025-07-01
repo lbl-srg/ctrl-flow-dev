@@ -1,5 +1,9 @@
+export interface Selection {
+  value: string;
+}
+
 export interface ConfigValues {
-  [key: string]: string; // TODO: make payload shape
+  [key: string]: Selection; // TODO: make payload shape
 }
 
 export interface ConfigInterface {

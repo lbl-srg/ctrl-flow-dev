@@ -1,8 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { toJS } from "mobx";
 import RootStore from "./index";
-
-import { ConfigValues } from "../utils/modifier-helpers";
+import { ConfigValues } from "./types";
 
 export interface SelectionInterface {
   name: string;

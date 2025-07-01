@@ -3,10 +3,12 @@ import { createTemplateContext, createSelections, TestTemplate } from "./utils";
 describe("Multiple Package Selections", () => {
   it("Should allow selections from two different top-level packages (libraries)", () => {
     const firstTemplateNode = "TestPackage.Template.TestTemplate.typ";
-    const firstTemplateNodeSelection = "TestPackage.Types.IceCream.Vanilla";
+    const firstTemplateNodeSelection = {
+      value: "TestPackage.Types.IceCream.Vanilla",
+    };
     const secondTemplateNode =
       "SecondTestPackage.Templates.Plants.Chiller.testParam";
-    const secondTemplateNodeSelection = "true";
+    const secondTemplateNodeSelection = { value: "true" };
 
     const { store, config: testTemplateConfig } = createTemplateContext(
       TestTemplate.TestTemplate,
@@ -37,9 +39,12 @@ describe("Valid selection", () => {
     // you should NOT be able to select secOutRel.secRel.fanRel if a ReliefDamper is specified for secOutRel.secRel
     const selections = {
       "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel-secOutRel.secRel":
-        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefDamper",
+        {
+          value:
+            "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefDamper",
+        },
       "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel-secOutRel.secRel.fanRel":
-        "Buildings.Templates.Components.Fans.ArrayVariable",
+        { value: "Buildings.Templates.Components.Fans.ArrayVariable" },
     };
 
     const { context } = createTemplateContext(
@@ -58,9 +63,12 @@ describe("Valid selection", () => {
     // you SHOULD be able to select secOutRel.secRel.fanRel if a ReliefDamper is specified for secOutRel.secRel
     const selections = {
       "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel-secOutRel.secRel":
-        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan",
+        {
+          value:
+            "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan",
+        },
       "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel-secOutRel.secRel.fanRel":
-        "Buildings.Templates.Components.Fans.ArrayVariable",
+        { value: "Buildings.Templates.Components.Fans.ArrayVariable" },
     };
 
     const { context } = createTemplateContext(
@@ -77,8 +85,10 @@ describe("Valid selection", () => {
 
   it("Handles AllSystem paths", () => {
     const selections = {
-      "Buildings.Templates.Data.AllSystems.ashCliZon":
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A",
+      "Buildings.Templates.Data.AllSystems.ashCliZon": {
+        value:
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A",
+      },
     };
 
     const { context } = createTemplateContext(
