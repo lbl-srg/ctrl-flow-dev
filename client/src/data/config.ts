@@ -92,9 +92,9 @@ export default class Config {
     if (config) config.evaluatedValues = evaluatedValues;
   }
 
-  getConfigSelections(configId: string | undefined): any {
+  getConfigSelections(configId: string | undefined) {
     const config = this.getById(configId);
-    return config?.selections;
+    return config?.selections || {};
   }
 
   getConfigEvaluatedValues(configId: string | undefined): any {
