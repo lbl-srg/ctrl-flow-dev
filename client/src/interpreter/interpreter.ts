@@ -847,7 +847,7 @@ export class ConfigContext {
     const selectionPath = constructSelectionPath(optionPath, instancePath);
     // check selections
     if (this.selections && selectionPath in this.selections) {
-      this.addToCache(path, optionPath, this.selections[selectionPath]);
+      this.addToCache(path, optionPath, this.selections[selectionPath].value);
       return this.selections[selectionPath].value;
     }
 
