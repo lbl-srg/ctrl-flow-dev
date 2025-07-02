@@ -9,12 +9,15 @@ import { FlatConfigOption } from "../steps/Configs/SlideOut";
 import OptionSelect from "../steps/Configs/OptionSelect";
 import { useDebouncedCallback } from "use-debounce";
 import { removeEmpty } from "../../utils/utils";
-import { SystemTypeInterface, TemplateInterface } from "../../data/types";
+import {
+  SystemTypeInterface,
+  TemplateInterface,
+  ConfigValues,
+} from "../../data/types";
 
 import {
   applyValueModifiers,
   applyVisibilityModifiers,
-  ConfigValues,
 } from "../../utils/modifier-helpers";
 
 interface EditDetailsModalProps extends ModalInterface {
@@ -124,9 +127,8 @@ const EditDetailsModal = observer(
           ];
 
           if (selectedValues[selectionPath]) {
-            const selectedOption = allOptions[
-              selectedValues[selectionPath]
-            ] as OptionInterface;
+            const selectedValue = selectedValues[selectionPath].value;
+            const selectedOption = allOptions[selectedValue] as OptionInterface;
 
             if (selectedOption) {
               displayOptions = [
@@ -135,8 +137,9 @@ const EditDetailsModal = observer(
               ];
             }
           } else if (evaluatedValues[selectionPath]) {
+            const selectedValue = evaluatedValues[selectionPath].value;
             const evaluatedOption = allOptions[
-              evaluatedValues[selectionPath]
+              selectedValue
             ] as OptionInterface;
 
             if (evaluatedOption) {
@@ -195,7 +198,7 @@ const EditDetailsModal = observer(
 
         return {
           ...prevState,
-          [selectionPath]: choice,
+          [selectionPath]: { value: choice },
         };
       });
     }
@@ -208,7 +211,7 @@ const EditDetailsModal = observer(
         projectSelectedItems["Buildings.Templates.Data.AllSystems.stdEne"];
 
       if (
-        energyStandard ===
+        energyStandard?.value ===
           "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1" &&
         projectSelectedItems["Buildings.Templates.Data.AllSystems.tit24CliZon"]
       ) {
@@ -218,7 +221,7 @@ const EditDetailsModal = observer(
       }
 
       if (
-        energyStandard ===
+        energyStandard?.value ===
           "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24" &&
         projectSelectedItems["Buildings.Templates.Data.AllSystems.ashCliZon"]
       ) {

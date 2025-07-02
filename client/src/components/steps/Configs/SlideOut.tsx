@@ -5,8 +5,11 @@ import { useStores } from "../../../data";
 import { OptionInterface } from "../../../data/types";
 import Modal from "../../modal/Modal";
 import OptionSelect from "./OptionSelect";
-import { mapToDisplayOptions as mapConfigContextToDisplayOptions } from "../../../interpreter/display-option";
-import { ConfigContext, ConfigValues } from "../../../interpreter/interpreter";
+import {
+  mapToDisplayOptions as mapConfigContextToDisplayOptions,
+  createConfigContext,
+} from "../../../interpreter/display-option";
+import { ConfigValues } from "../../../data/types";
 import { removeEmpty } from "../../../utils/utils";
 
 import "../../../styles/components/config-slide-out.scss";
@@ -58,7 +61,7 @@ const SlideOut = ({
   });
   const [configName, setConfigName] = useState<string>(config.name);
 
-  const context = new ConfigContext(
+  const context = createConfigContext(
     template,
     config,
     allOptions,
@@ -92,7 +95,7 @@ const SlideOut = ({
 
       return {
         ...prevState,
-        [selectionPath]: choice,
+        [selectionPath]: { value: choice },
       };
     });
   }
