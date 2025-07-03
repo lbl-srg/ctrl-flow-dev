@@ -9,7 +9,7 @@ import {
   createTemplateContext,
   TestStore,
   TestTemplate,
-} from "./utils";
+} from "../utils";
 
 let store = createStore(TestStore.RootStore);
 

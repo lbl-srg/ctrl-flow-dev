@@ -1,4 +1,8 @@
-import { createTemplateContext, createSelections, TestTemplate } from "./utils";
+import {
+  createTemplateContext,
+  createSelections,
+  TestTemplate,
+} from "../utils";
 import { OptionInstance } from "../../src/interpreter/interpreter";
 import {
   _formatDisplayOption,

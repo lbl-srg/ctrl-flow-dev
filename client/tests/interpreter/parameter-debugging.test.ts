@@ -12,7 +12,11 @@ import {
   FlatConfigOptionGroup,
 } from "../../src/interpreter/display-option";
 
-import { createTemplateContext, createSelections, TestTemplate } from "./utils";
+import {
+  createTemplateContext,
+  createSelections,
+  TestTemplate,
+} from "../utils";
 
 describe("Specific parameter debugging", () => {
   it("Visits coiHea", () => {

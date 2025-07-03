@@ -1,7 +1,7 @@
 import { ConfigContext } from "../../src/interpreter/interpreter";
 import { ConfigInterface, TemplateInterface } from "../../src/data/types";
 
-import { createStore, addNewConfig, TestStore } from "./utils";
+import { createStore, addNewConfig, TestStore } from "../utils";
 
 describe("Basic Context generation without selections", () => {
   it("Is able to construct a context with test package json", () => {

@@ -1,4 +1,8 @@
-import { createTemplateContext, createSelections, TestTemplate } from "./utils";
+import {
+  createTemplateContext,
+  createSelections,
+  TestTemplate,
+} from "../utils";
 
 describe("Multiple Package Selections", () => {
   it("Should allow selections from two different top-level packages (libraries)", () => {

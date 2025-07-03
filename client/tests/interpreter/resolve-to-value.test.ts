@@ -1,6 +1,10 @@
 import { resolveToValue } from "../../src/interpreter/interpreter";
 
-import { createTemplateContext, createSelections, TestTemplate } from "./utils";
+import {
+  createTemplateContext,
+  createSelections,
+  TestTemplate,
+} from "../utils";
 
 describe("resolveToValue tests using context and evaluation", () => {
   it("Handles fanSupBlo.typ", () => {

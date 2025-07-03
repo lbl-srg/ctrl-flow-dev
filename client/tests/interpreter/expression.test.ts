@@ -1,5 +1,5 @@
 import { evaluate } from "../../src/interpreter/interpreter";
-import { buildExpression } from "./utils";
+import { buildExpression } from "../utils";
 
 /**
  * Expression evaluation tests

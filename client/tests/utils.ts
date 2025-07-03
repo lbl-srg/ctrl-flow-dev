@@ -1,14 +1,14 @@
-import RootStore from "../../src/data";
-import templateData from "../../src/data/templates.json";
-import testTemplateData from "../static-data/test-templates.json";
+import RootStore from "../src/data";
+import templateData from "../src/data/templates.json";
+import testTemplateData from "./static-data/test-templates.json";
 
 import {
   ConfigInterface,
   ConfigValues,
   TemplateInterface,
-} from "../../src/data/types";
+} from "../src/data/types";
 
-import { OperatorType, ConfigContext } from "../../src/interpreter/interpreter";
+import { OperatorType, ConfigContext } from "../src/interpreter/interpreter";
 
 // initialize global test dependencies
 const projectSelections = {
