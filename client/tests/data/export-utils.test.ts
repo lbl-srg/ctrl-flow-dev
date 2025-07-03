@@ -6,7 +6,6 @@ import {
 
 import { createTemplateContext, TestTemplate } from "../utils";
 
-// import { createTemplateContext, TestTemplate } from "../utils"
 type MapCfg = Record<string, string>;
 
 describe("mapSequenceData", () => {
@@ -23,7 +22,6 @@ describe("mapSequenceData", () => {
       c: true,
     } as const;
 
-    // 👇 Tell TypeScript the values may be number | string | boolean
     expect(mapConfigData<number | string | boolean>(input)).toEqual(expected);
   });
 });
