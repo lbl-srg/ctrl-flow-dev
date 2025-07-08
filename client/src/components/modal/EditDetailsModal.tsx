@@ -120,7 +120,8 @@ const EditDetailsModal = observer(
               name: option.name,
               choices: modifiedChildOptions || [],
               value:
-                selectedValues[selectionPath] || evaluatedValues[selectionPath],
+                selectedValues[selectionPath]?.value ||
+                evaluatedValues[selectionPath]?.value,
               scope: "",
               selectionType: "Normal",
             },
