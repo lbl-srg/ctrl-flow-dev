@@ -2,6 +2,8 @@ import {
   FlatConfigOption,
   FlatConfigOptionGroup,
 } from "../components/steps/Configs/SlideOut";
+import { ResolvedValue, Selection } from "../data/types";
+// import { Selection } from "./modifier-helpers";
 
 export type SortableByName = Required<{ name: string }>;
 
@@ -12,7 +14,7 @@ export const deduplicate = (arr: []) => Array.from(new Set(arr).values());
 export const trace = (target: any): any =>
   console.log(JSON.parse(JSON.stringify(target)));
 
-export function removeEmpty(obj: any) {
+export function removeEmpty(obj: { [key: string]: ResolvedValue | Selection }) {
   return Object.entries(obj)
     .filter(([_, v]) => v != null)
     .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {});

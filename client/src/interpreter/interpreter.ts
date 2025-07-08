@@ -1,7 +1,7 @@
 import { ConfigInterface } from "../../src/data/config";
 import { TemplateInterface, OptionInterface } from "../../src/data/types";
 import { removeEmpty } from "../../src/utils/utils";
-import { ConfigValues } from "../../src/data/types";
+import { ConfigValues, ResolvedValue } from "../../src/data/types";
 
 export type Literal = boolean | string | number;
 
@@ -781,7 +781,7 @@ export interface OptionInstance {
 export class ConfigContext {
   mods: { [key: string]: Modifier } = {};
   _resolvedValues: {
-    [key: string]: { value: Literal | null; optionPath: string };
+    [key: string]: ResolvedValue;
   } = {};
   constructor(
     public template: TemplateInterface,
@@ -1051,7 +1051,7 @@ export class ConfigContext {
    *
    */
   getEvaluatedValues() {
-    const evaluatedValues: { [key: string]: Literal | null | undefined } = {};
+    const evaluatedValues: { [key: string]: ResolvedValue } = {};
     // Values are lazy loaded so only what is needed to display all of a templates options is
     // resolved. If more evaluations are needed by the sequence document call this:
     // this.visitTemplateNodes();
@@ -1066,7 +1066,7 @@ export class ConfigContext {
 
       if (addToResolvedValues) {
         const selectionPath = constructSelectionPath(optionPath, key);
-        evaluatedValues[selectionPath] = value;
+        evaluatedValues[selectionPath] = val;
       }
     });
     return evaluatedValues;
