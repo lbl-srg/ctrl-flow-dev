@@ -103,17 +103,16 @@ const SlideOut = ({
   function saveConfigOptions(event: FormEvent) {
     event.preventDefault();
     event.stopPropagation();
-
     const validSelections: ConfigValues = {};
+
+    // TODO: this sanitization step should likely be removed
     Object.entries(selectedValues).map(([key, value]) => {
       if (context.isValidSelection(key)) {
         validSelections[key] = value;
       }
     });
-    const evaluatedValues = context.getEvaluatedValues();
-    configStore.setSelections(config.id, validSelections);
-    configStore.setEvaluatedValues(config.id, removeEmpty(evaluatedValues));
 
+    configStore.saveConfig(context, validSelections);
     close();
   }
 

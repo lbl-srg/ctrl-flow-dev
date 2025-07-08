@@ -1,7 +1,9 @@
 import { v4 as uuid } from "uuid";
 import { toJS } from "mobx";
 import RootStore from "./index";
+import { ConfigContext } from "../interpreter/interpreter";
 import { ConfigValues } from "./types";
+import { removeEmpty } from "../utils/utils";
 
 export interface SelectionInterface {
   name: string;
@@ -81,6 +83,24 @@ export default class Config {
   //   return config.selections.find((selection) => selection.name === optionPath)
   //     ?.value;
   // }
+
+  /**
+   * Applies selections, and recalculates whatever values can be resolved
+   * then updates the stores with thoes values
+   */
+  saveConfig(context: ConfigContext, selectedValues: ConfigValues) {
+    const validSelections: ConfigValues = {};
+    // some sanitization
+    Object.entries(selectedValues).map(([key, value]) => {
+      if (context.isValidSelection(key)) {
+        validSelections[key] = value;
+      }
+    });
+
+    const evaluatedValues = context.getEvaluatedValues();
+    this.setSelections(context.config.id, validSelections);
+    this.setEvaluatedValues(context.config.id, removeEmpty(evaluatedValues));
+  }
 
   setSelections(configId: string, selections: ConfigValues) {
     const config = this.getById(configId);
