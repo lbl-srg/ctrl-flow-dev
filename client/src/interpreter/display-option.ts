@@ -1,6 +1,11 @@
 ///////////////// Context Mapper: Maps a ConfigContext to a configuration page DisplayList
 
-import { OptionInterface } from "../../src/data/types";
+import {
+  ConfigValues,
+  OptionInterface,
+  TemplateInterface,
+} from "../../src/data/types";
+import { ConfigInterface } from "../data/config";
 
 import {
   ConfigContext,
@@ -208,4 +213,31 @@ export function mapToDisplayOptions(context: ConfigContext) {
   // and keep running until that number doesn't change
   _formatDisplayItem(rootInstance, "", context);
   return _formatDisplayItem(rootInstance, "", context);
+}
+
+/**
+ * Method to santize input when creating a context
+ */
+export function createConfigContext(
+  template: TemplateInterface,
+  config: ConfigInterface,
+  options: { [key: string]: OptionInterface },
+  selections: ConfigValues = {},
+) {
+  const sanitizedSelections = Object.entries(selections).reduce(
+    (acc, [key, selection]) => {
+      if (
+        selection !== null &&
+        typeof selection === "object" &&
+        "value" in selection
+      ) {
+        acc[key] = selection;
+      } else {
+        console.warn(`Unable to process selection`, selection, key);
+      }
+      return acc;
+    },
+    {} as ConfigValues,
+  );
+  return new ConfigContext(template, config, options, sanitizedSelections);
 }

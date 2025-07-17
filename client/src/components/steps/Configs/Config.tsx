@@ -7,7 +7,6 @@ import SlideOut from "./SlideOut";
 import { useStores } from "../../../data";
 
 import { OptionInterface, TemplateInterface } from "../../../data/types";
-import { ConfigValues } from "../../../utils/modifier-helpers";
 import { ConfigInterface } from "../../../data/config";
 import Spinner from "../../Spinner";
 
@@ -21,7 +20,7 @@ const Config = observer(({ configId }: ConfigProps) => {
   const template = templateStore.getTemplateByPath(
     config.templatePath,
   ) as TemplateInterface;
-  const selections: ConfigValues = configStore.getConfigSelections(configId);
+  const selections = configStore.getConfigSelections(configId);
   const allOptions: { [key: string]: OptionInterface } =
     templateStore.getAllOptions();
 

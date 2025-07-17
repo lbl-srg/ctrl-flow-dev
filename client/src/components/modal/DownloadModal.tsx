@@ -4,8 +4,8 @@ import itl from "../../translations";
 import { useStores } from "../../data";
 import { ConfigInterface } from "../../data/config";
 import { ProjectDetailInterface } from "../../data/project";
-
-import Spinner from '../Spinner';
+import { buildSequenceData } from "../../data/export-utils";
+import Spinner from "../Spinner";
 
 const CONTROL_SEQUENCE = "Control Sequence";
 const CONTROL_SEQUENCE_WITH_INFO_TEXT = "Control Sequence";
@@ -27,7 +27,9 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
   //   DOWNLOADABLE_FILE_LIST.map(({ label }) => label),
   // );
 
-  const [checked, setChecked] = useState<string[]>([CONTROL_SEQUENCE_WITH_INFO_TEXT]);
+  const [checked, setChecked] = useState<string[]>([
+    CONTROL_SEQUENCE_WITH_INFO_TEXT,
+  ]);
   const [isLoading, setLoading] = useState<boolean>(false);
 
   const projectConfigs: ConfigInterface[] = configStore.getConfigsForProject();
@@ -45,35 +47,6 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
     }
 
     setChecked([]);
-  }
-
-  function getSequenceData() {
-    const seqData: {[key: string]: any} = {};
-
-    projectConfigs.forEach((config) => {
-      const configData = {
-        ...config.evaluatedValues,
-        ...config.selections,
-        [config.systemPath]: config.templatePath,
-      };
-      const configKeys = Object.keys(configData);
-
-      configKeys.forEach((key) => {
-        if (seqData[key] !== undefined) {
-          const initalValue = seqData[key];
-          if (seqData[key].indexOf(configData[key]) === -1) {
-            seqData[key].push(configData[key]);
-          }
-        } else {
-          const [modelicaPath, instancePath] = key.split("-");
-          if (modelicaPath !== configData[key]) {
-            seqData[key] = [configData[key]];
-          }
-        }
-      });
-    });
-
-    return seqData;
   }
 
   async function downloadFiles() {
@@ -94,10 +67,11 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
     // }
 
     if (checked.includes(CONTROL_SEQUENCE_WITH_INFO_TEXT)) {
+      const sequenceData = buildSequenceData(projectConfigs);
       const response = await fetch(`${process.env.REACT_APP_API}/sequence`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({...getSequenceData(), DEL_INFO_BOX: [false]}),
+        body: JSON.stringify({ ...sequenceData, DEL_INFO_BOX: [false] }),
       });
 
       // TODO: Handle error responses which do not contain an actual file

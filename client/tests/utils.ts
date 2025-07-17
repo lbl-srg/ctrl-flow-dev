@@ -1,23 +1,27 @@
-import RootStore from "../../src/data";
-import templateData from "../../src/data/templates.json";
-import testTemplateData from "../static-data/test-templates.json";
+import RootStore from "../src/data";
+import templateData from "../src/data/templates.json";
+import testTemplateData from "./static-data/test-templates.json";
 
 import {
   ConfigInterface,
   ConfigValues,
   TemplateInterface,
-} from "../../src/data/types";
+} from "../src/data/types";
 
-import { OperatorType, ConfigContext } from "../../src/interpreter/interpreter";
+import { OperatorType, ConfigContext } from "../src/interpreter/interpreter";
 
 // initialize global test dependencies
 const projectSelections = {
-  "Buildings.Templates.Data.AllSystems.stdEne":
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
-  "Buildings.Templates.Data.AllSystems.stdVen":
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
-  "Buildings.Templates.Data.AllSystems.ashCliZon":
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
+  "Buildings.Templates.Data.AllSystems.stdEne": {
+    value: "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
+  },
+  "Buildings.Templates.Data.AllSystems.stdVen": {
+    value:
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
+  },
+  "Buildings.Templates.Data.AllSystems.ashCliZon": {
+    value: "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
+  },
 };
 
 const mzTemplatePath = "Buildings.Templates.AirHandlersFans.VAVMultiZone";
@@ -42,7 +46,7 @@ export const createSelections = (selections: ConfigValues = {}) => {
 export const addNewConfig = (
   configName: string,
   template: TemplateInterface,
-  selections: { [key: string]: string },
+  selections: ConfigValues,
   store: RootStore,
 ) => {
   store.configStore.add({
@@ -90,9 +94,7 @@ export const createStore = (testStore: TestStore) => {
  */
 export const createTemplateContext = (
   templatePath: TestTemplate,
-  selections: {
-    [key: string]: string;
-  } = {},
+  selections: ConfigValues = {},
   options?: { configName?: string; store: RootStore },
 ) => {
   const {

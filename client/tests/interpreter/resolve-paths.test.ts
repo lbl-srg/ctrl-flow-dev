@@ -9,7 +9,7 @@ import {
   createTemplateContext,
   createSelections,
   TestTemplate,
-} from "./utils";
+} from "../utils";
 
 /**
  * Includes tests for 'getValue' and 'resolveToValue'

@@ -1,12 +1,9 @@
 import { ConfigInterface } from "../../src/data/config";
 import { TemplateInterface, OptionInterface } from "../../src/data/types";
 import { removeEmpty } from "../../src/utils/utils";
+import { ConfigValues, ResolvedValue } from "../../src/data/types";
 
 export type Literal = boolean | string | number;
-
-export interface ConfigValues {
-  [key: string]: string;
-}
 
 export type Expression = {
   operator: string;
@@ -150,7 +147,8 @@ const _instancePathToOption = (
     // check if there is a selected path that specifies that option at
     // this instance path
     if (context.config?.selections) {
-      Object.entries(context.selections).map(([key, value]) => {
+      Object.entries(context.selections).map(([key, selection]) => {
+        const { value } = selection;
         const [, instancePath] = key.split("-");
         if (instancePath === curInstancePathList.join(".")) {
           option = context.options[value];
@@ -578,7 +576,7 @@ const getReplaceableType = (
   const selectionType = selections ? selections[selectionPath] : null;
 
   if (selectionType) {
-    return selectionType;
+    return selectionType.value;
   }
 
   // Check if there is a modifier for this option, if so use it:
@@ -640,7 +638,8 @@ const buildModsHelper = (
         option.modelicaPath,
         newBase,
       );
-      redeclaredType = selections[selectionPath];
+      const selection = selections[selectionPath];
+      redeclaredType = selection.value || "";
     }
 
     if (option.choiceModifiers && redeclaredType) {
@@ -782,7 +781,7 @@ export interface OptionInstance {
 export class ConfigContext {
   mods: { [key: string]: Modifier } = {};
   _resolvedValues: {
-    [key: string]: { value: Literal | null; optionPath: string };
+    [key: string]: ResolvedValue;
   } = {};
   constructor(
     public template: TemplateInterface,
@@ -848,8 +847,8 @@ export class ConfigContext {
     const selectionPath = constructSelectionPath(optionPath, instancePath);
     // check selections
     if (this.selections && selectionPath in this.selections) {
-      this.addToCache(path, optionPath, this.selections[selectionPath]);
-      return this.selections[selectionPath];
+      this.addToCache(path, optionPath, this.selections[selectionPath].value);
+      return this.selections[selectionPath].value;
     }
 
     // Check if a value is on a modifier
@@ -1052,7 +1051,7 @@ export class ConfigContext {
    *
    */
   getEvaluatedValues() {
-    const evaluatedValues: { [key: string]: Literal | null | undefined } = {};
+    const evaluatedValues: { [key: string]: ResolvedValue } = {};
     // Values are lazy loaded so only what is needed to display all of a templates options is
     // resolved. If more evaluations are needed by the sequence document call this:
     // this.visitTemplateNodes();
@@ -1067,7 +1066,7 @@ export class ConfigContext {
 
       if (addToResolvedValues) {
         const selectionPath = constructSelectionPath(optionPath, key);
-        evaluatedValues[selectionPath] = value;
+        evaluatedValues[selectionPath] = val;
       }
     });
     return evaluatedValues;

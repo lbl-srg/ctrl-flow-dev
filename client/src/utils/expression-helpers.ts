@@ -27,7 +27,7 @@ export function resolveValue(
 
     // This section checks if we have a selection to resolveValue
     // So we just check if we have the selection by using the selectionPath
-    selectionValue = selections[selectionPath];
+    selectionValue = selections[selectionPath]?.value;
 
     // If we have a selection we just need to return the selection
     if (selectionValue !== undefined) return selectionValue;
@@ -55,7 +55,7 @@ export function resolveValue(
       const valueSelectionPath: any = testPath ? `${value}-${testPath}` : value;
 
       if (valueSelectionPath in selections) {
-        selectionValue = selections[valueSelectionPath];
+        selectionValue = selections[valueSelectionPath].value;
         break;
       }
       splitScopePath.pop();
@@ -67,7 +67,7 @@ export function resolveValue(
 
       selectionKeys.every((key) => {
         if (key.includes(`-${value}`)) {
-          selectionValue = selections[key];
+          selectionValue = selections[key].value;
           return false;
         }
         return true;

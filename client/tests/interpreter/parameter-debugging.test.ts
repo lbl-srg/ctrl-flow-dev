@@ -12,7 +12,11 @@ import {
   FlatConfigOptionGroup,
 } from "../../src/interpreter/display-option";
 
-import { createTemplateContext, createSelections, TestTemplate } from "./utils";
+import {
+  createTemplateContext,
+  createSelections,
+  TestTemplate,
+} from "../utils";
 
 describe("Specific parameter debugging", () => {
   it("Visits coiHea", () => {
@@ -25,7 +29,7 @@ describe("Specific parameter debugging", () => {
     const optionInstance = context.getOptionInstance(instancePath);
     const selectionPath = constructSelectionPath(
       optionInstance?.option.modelicaPath as string,
-      instancePath
+      instancePath,
     );
     expect(selectionPath in evaluatedValues).toBeTruthy();
   });
@@ -33,7 +37,7 @@ describe("Specific parameter debugging", () => {
   it("Assigns null to secOutRel.secOut.damOut", () => {
     const { context } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
-      {}
+      {},
     );
 
     const path = "secOutRel.secOut.damOut";
@@ -45,7 +49,7 @@ describe("Specific parameter debugging", () => {
     const evaluatedValues = context.getEvaluatedValues();
     const selectionPath = constructSelectionPath(
       optionInstance?.option.modelicaPath as string,
-      path
+      path,
     );
     expect(path in evaluatedValues).toBeFalsy();
   });
@@ -68,13 +72,14 @@ describe("Specific parameter debugging", () => {
 
   it("coiCoo.typVal should NOT show for any selection of coiCoo", () => {
     const selections = {
-      "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo":
-        "Buildings.Templates.Components.Coils.WaterBasedCooling",
+      "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo": {
+        value: "Buildings.Templates.Components.Coils.WaterBasedCooling",
+      },
     };
 
     const { context: contextWithSelection } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
-      createSelections(selections)
+      createSelections(selections),
     );
 
     const { context } = createTemplateContext(TestTemplate.MultiZoneTemplate);
@@ -91,7 +96,7 @@ describe("Specific parameter debugging", () => {
       (o) =>
         "groupName" in o &&
         o.groupName ===
-          "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo.__group"
+          "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo.__group",
     ) as FlatConfigOptionGroup;
 
     expect(coiCooDisplayOption).toBeUndefined();
@@ -110,7 +115,7 @@ describe("ctl.have_CO2Sen enable expression", () => {
 
     const ctlTypeValue = context.getValue("typ", "ctl");
     expect(ctlTypeValue).toEqual(
-      "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone"
+      "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone",
     );
 
     const firstOperand = {
@@ -131,11 +136,11 @@ describe("ctl.have_CO2Sen enable expression", () => {
 
     const selections = {
       "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut-secOutRel.secOut":
-        secOutValue,
+        { value: secOutValue },
     };
     const { context: newContext } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
-      createSelections(selections)
+      createSelections(selections),
     );
 
     const secOutTyp = newContext.getValue("secOut.typ", "secOutRel");
@@ -144,14 +149,14 @@ describe("ctl.have_CO2Sen enable expression", () => {
     // ctl.typSecOut -> secOutRel.typSecOut -> secOutRel.secOut.typ -> <secOut selection>.typ
     const typSecOut = newContext.getValue("typSecOut", "ctl"); // secOutRel.typSecOut -> secOut.typ
     expect(typSecOut).toEqual(
-      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow"
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow",
     );
   });
 
   it("Second operand", () => {
     const { context } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
-      createSelections()
+      createSelections(),
     );
 
     const secondOperand = {
@@ -164,7 +169,7 @@ describe("ctl.have_CO2Sen enable expression", () => {
     let secOutRelTypSecOut = context.getValue("secOutRel.typSecOut", "ctl");
     let typSecOut = context.getValue("typSecOut", "ctl"); // ctl.typSecOut = secOutRel.typSecout
     expect(typSecOut).toEqual(
-      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper",
     );
 
     let secondEvaluation = evaluate(secondOperand, context, "ctl");
@@ -173,18 +178,21 @@ describe("ctl.have_CO2Sen enable expression", () => {
     // make a context after selection for DedicatedDampersPressure for secOut
     const selections = {
       "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut-secOutRel.secOut":
-        "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersAirflow",
+        {
+          value:
+            "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersAirflow",
+        },
     };
 
     const { context: newContext } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
-      createSelections(selections)
+      createSelections(selections),
     );
 
     secOutRelTypSecOut = newContext.getValue("secOutRel.typSecOut", "ctl");
     typSecOut = newContext.getValue("typSecOut", "ctl"); // ctl.typSecOut = secOutRel.typSecout
     expect(typSecOut).toEqual(
-      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow"
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow",
     );
 
     secondEvaluation = evaluate(secondOperand, newContext, "ctl");
@@ -194,7 +202,7 @@ describe("ctl.have_CO2Sen enable expression", () => {
   it("Third Operand - includes a datAll param", () => {
     const { context } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
-      createSelections()
+      createSelections(),
     );
 
     const stdVenValue =
@@ -210,7 +218,7 @@ describe("ctl.have_CO2Sen enable expression", () => {
 
     const stdVen = context.getValue("ctl.stdVen");
     expect(stdVen).toEqual(
-      "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
     );
 
     const thirdEvaluation = evaluate(thirdOperand, context);
@@ -222,20 +230,20 @@ describe("Scope tests", () => {
   it("Gets value for ctl.typSecOut", () => {
     const { context } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
-      createSelections()
+      createSelections(),
     );
 
     // falls back to original
     const typSecOut = context.getValue("ctl.typSecOut"); // ctl.typSecOut = secOutRel.typSecOut
     expect(typSecOut).toEqual(
-      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper",
     );
   });
 
   it("Evaluates the expression at mod secOutRel.secOut.dat", () => {
     const { context } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
-      createSelections()
+      createSelections(),
     );
     const path = "secOutRel.secOut.dat"; // secOut.dat = dat
     const val = evaluate(context.mods[path]?.expression, context, "secOutRel");
@@ -245,7 +253,7 @@ describe("Scope tests", () => {
   it("Able to resolve secOutRel.secOut.dat without going into an infinite loop due to bad scope", () => {
     const { context } = createTemplateContext(
       TestTemplate.MultiZoneTemplate,
-      createSelections()
+      createSelections(),
     );
     const path = "secOutRel.secOut.dat";
     const expectedVal =
@@ -259,7 +267,7 @@ describe("Scope tests", () => {
     // test modifier value
     // modifier points to the correct parameter definition (secOutRel.dat location)
     expect(context.mods["secOutRel.secOut.dat"].expression.operands[0]).toEqual(
-      "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.dat"
+      "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.dat",
     );
 
     // scope is wrong when we attempt to get value
