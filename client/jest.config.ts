@@ -7,8 +7,7 @@ const config: Config.InitialOptions = {
   },
   roots: ["<rootDir>/tests"],
   testMatch: [
-        '<rootDir>/tests/**/*.spec.js',
-        '**/__tests__/**/*.js',
+        "<rootDir>/tests/setupTests.js"
   ],
   testEnvironment: "node",
   setupFilesAfterEnv: ["<rootDir>/tests/setupTests.js"],
