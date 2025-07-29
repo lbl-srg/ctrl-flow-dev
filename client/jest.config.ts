@@ -7,7 +7,6 @@ const config: Config.InitialOptions = {
   },
   roots: ["<rootDir>/tests"],
   testMatch: [
-        '<rootDir>/src/**/*.test.js',
         '<rootDir>/tests/**/*.spec.js',
         '**/__tests__/**/*.js',
   ],
