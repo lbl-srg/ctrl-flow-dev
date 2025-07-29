@@ -34,7 +34,4 @@ jobs:
     - name: Install Dependencies
       run: npm ci
     - name: Run tests
-      run: |
-        npm run start &
-        sleep 5 # wait for server to start
-        npm run test:ci
+      run: CI=true npm test
