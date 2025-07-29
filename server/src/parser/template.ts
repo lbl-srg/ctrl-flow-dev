@@ -194,6 +194,7 @@ function _mapInputToOption(input: parser.TemplateInput): Option {
 export interface SystemTypeN {
   description: string;
   modelicaPath: string; // Modelica fully qualified class name
+  parent: string;
 }
 
 export interface SystemTemplateN {
@@ -235,26 +236,41 @@ export class Template {
   _extractSystemTypes(element: parser.Element) {
     const path = element.modelicaPath.split(".");
     path.pop();
+    let curPath: string[] = [];
+    const systemTypes: SystemTypeN[] = [];
 
-    // Fix for https://github.com/lbl-srg/ctrl-flow-dev/issues/422
-    // Currently the UI does not support nested system types.
-    // Therefore, we only add the Modelica class name of the containing package.
-    const type = parser.findElement(path.join("."));
-    if (type && type.entryPoint) {
-      if (!type.description) {
-        console.error(
-          "Error: missing class description string in entry point " +
-            type.modelicaPath,
-        );
-        process.exit(1);
+    while (path.length > 0) {
+      const pathSegment = path.shift();
+      if (!pathSegment) {
+        break;
       }
-      const systemType = {
-        description: type.description,
-        modelicaPath: type.modelicaPath,
-      };
-      this.systemTypes.unshift(systemType);
-      systemTypeStore.set(type.modelicaPath, systemType);
+      curPath.push(pathSegment);
+      const type = parser.findElement(curPath.join("."));
+
+      if (type && type.entryPoint) {
+        if (!type.description) {
+          console.error(
+            "Error: missing class description string in entry point " +
+              type.modelicaPath,
+          );
+          process.exit(1);
+        }
+        const parent = systemTypes.at(-1);
+        const systemType = {
+          description: type.description,
+          modelicaPath: type.modelicaPath,
+          parent: parent?.modelicaPath || "",
+        };
+        systemTypes.push(systemType);
+      }
     }
+
+    // add all found system types to systemType store
+    systemTypes.forEach((systemType) =>
+      systemTypeStore.set(systemType.modelicaPath, systemType),
+    );
+    // set the systemType reference on the template
+    this.systemTypes.unshift(systemTypes.at(-1)!);
   }
 
   _findRedeclareTypesHelper(
