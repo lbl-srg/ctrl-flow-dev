@@ -6,9 +6,6 @@ const config: Config.InitialOptions = {
     "^.+\\.ts?$": "ts-jest",
   },
   roots: ["<rootDir>/tests"],
-  testMatch: [
-        "<rootDir>/tests/**/*.ts"
-  ],
   testEnvironment: "node",
   setupFilesAfterEnv: ["<rootDir>/tests/setupTests.js"],
 };
