@@ -56,6 +56,7 @@ export interface OptionInterface {
 export interface SystemTypeInterface {
   description: string;
   modelicaPath: string;
+  parent: string;
 }
 
 export interface TemplateDataInterface {

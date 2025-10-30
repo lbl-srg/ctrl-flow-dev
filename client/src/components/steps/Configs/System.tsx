@@ -3,7 +3,6 @@ import { useStores } from "../../../data";
 import { observer } from "mobx-react";
 
 import { SystemTypeInterface, TemplateInterface } from "../../../data/types";
-import { ConfigValues } from "../../../utils/modifier-helpers";
 
 export interface SystemProps {
   systemPath: string;
