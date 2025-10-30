@@ -1,8 +1,7 @@
-import { Fragment } from "react";
+import { Fragment, useMemo } from "react";
 import PageHeader from "../../PageHeader";
 import System from "./System";
 import { useStores } from "../../../data";
-
 import "../../../styles/steps/systems.scss";
 import { SystemTypeInterface } from "../../../data/types";
 
