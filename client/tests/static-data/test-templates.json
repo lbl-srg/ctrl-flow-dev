@@ -43,16 +43,39 @@
   ],
   "systemTypes": [
     {
+      "description": "Test Package for Modelica Templates",
+      "modelicaPath": "TestPackage",
+      "parent": ""
+    },
+    {
+      "description": "Nested Templates Package",
+      "modelicaPath": "TestPackage.NestedTemplate",
+      "parent": "TestPackage"
+    },
+    {
       "description": "Test Subcategory",
-      "modelicaPath": "TestPackage.NestedTemplate.Subcategory"
+      "modelicaPath": "TestPackage.NestedTemplate.Subcategory",
+      "parent": "TestPackage.NestedTemplate"
     },
     {
       "description": "Test Template Package",
-      "modelicaPath": "TestPackage.Template"
+      "modelicaPath": "TestPackage.Template",
+      "parent": "TestPackage"
+    },
+    {
+      "description": "Modelica mockup library for testing ctrl-flow's multi-template handling capability",
+      "modelicaPath": "SecondTestPackage",
+      "parent": ""
+    },
+    {
+      "description": "Package with templates",
+      "modelicaPath": "SecondTestPackage.Templates",
+      "parent": "SecondTestPackage"
     },
     {
       "description": "Central plants",
-      "modelicaPath": "SecondTestPackage.Templates.Plants"
+      "modelicaPath": "SecondTestPackage.Templates.Plants",
+      "parent": "SecondTestPackage.Templates"
     }
   ],
   "options": [
