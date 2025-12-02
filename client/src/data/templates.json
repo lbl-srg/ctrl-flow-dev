@@ -64,12 +64,19 @@
   ],
   "systemTypes": [
     {
+      "description": "Package with templates for various HVAC systems",
+      "modelicaPath": "Buildings.Templates",
+      "parent": ""
+    },
+    {
       "description": "Air handlers and fans",
-      "modelicaPath": "Buildings.Templates.AirHandlersFans"
+      "modelicaPath": "Buildings.Templates.AirHandlersFans",
+      "parent": "Buildings.Templates"
     },
     {
       "description": "Zone equipment",
-      "modelicaPath": "Buildings.Templates.ZoneEquipment"
+      "modelicaPath": "Buildings.Templates.ZoneEquipment",
+      "parent": "Buildings.Templates"
     }
   ],
   "options": [
