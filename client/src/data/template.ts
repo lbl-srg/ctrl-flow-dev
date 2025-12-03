@@ -29,6 +29,54 @@ const icons = [
   },
 ];
 
+export interface SystemTypeTreeNode {
+  id: string;
+  item: SystemTypeInterface;
+  children: SystemTypeTreeNode[];
+}
+
+/** Build a forest (array of root nodes) from a flat list. */
+export function buildSystemTypeForest(
+  items: SystemTypeInterface[],
+): SystemTypeTreeNode[] {
+  // Index items and prepare children buckets
+  const byId = new Map(items.map((it) => [it.modelicaPath, it]));
+  const buckets = new Map<string, SystemTypeInterface[]>();
+  items.forEach((it) => buckets.set(it.modelicaPath, []));
+
+  const roots: SystemTypeInterface[] = [];
+  for (const it of items) {
+    const pid = it.parent ?? undefined;
+    if (pid && byId.has(pid)) {
+      buckets.get(pid)!.push(it);
+    } else {
+      roots.push(it);
+    }
+  }
+
+  // Deterministic order helps debugging
+  const sortByDesc = (a: SystemTypeInterface, b: SystemTypeInterface) =>
+    a.description.localeCompare(b.description);
+  roots.sort(sortByDesc);
+  for (const arr of buckets.values()) arr.sort(sortByDesc);
+
+  // DFS with cycle guard (prevents infinite recursion if data has loops)
+  const visiting = new Set<string>();
+  const toNode = (it: SystemTypeInterface): SystemTypeTreeNode => {
+    const id = it.modelicaPath;
+    if (visiting.has(id)) {
+      // Break the cycle: show the node but stop descending.
+      return { id, item: it, children: [] };
+    }
+    visiting.add(id);
+    const kids = (buckets.get(id) ?? []).map((child) => toNode(child));
+    visiting.delete(id);
+    return { id, item: it, children: kids };
+  };
+
+  return roots.map(toNode);
+}
+
 export default class Template {
   _mods: Modifiers | undefined; // internal cache so we don't recompute... doesn't help
   templates: TemplateInterface[];
@@ -71,6 +119,10 @@ export default class Template {
     return this.systemTypes.find(
       (systemType) => systemType.modelicaPath === path,
     );
+  }
+
+  getSystemTypeForest() {
+    return buildSystemTypeForest(this.systemTypes);
   }
 
   get nestedOptions(): OptionInterface[] {

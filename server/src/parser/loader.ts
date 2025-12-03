@@ -128,9 +128,9 @@ export function findPackageEntryPoints(
       // Iterate over all template files up to the root package and populate
       // templateNodes, TEMPLATE_LIST, PACKAGE_LIST and entryPoints.
 
-      for (let templateJson of [...templateNodes.map(({json}) => json)]) {
+      for (let templateJson of [...templateNodes.map(({ json }) => json)]) {
         let packageName = (templateJson as any).within;
-        while (packageName && packageName !== rootPackageName) {
+        while (packageName) {
           const packagePath = getPathFromClassName(packageName, dir);
           if (!packagePath) {
             break;
@@ -157,7 +157,9 @@ export function findPackageEntryPoints(
     }
   });
 
-  return templateNodes.map(({ className, json }) => { return { className, json }; });
+  return templateNodes.map(({ className, json }) => {
+    return { className, json };
+  });
 }
 
 /**
