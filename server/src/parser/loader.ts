@@ -190,13 +190,6 @@ function getPathFromClassName(
   let jsonFile = path.resolve(dirPath, filePath.dir, `${filePath.name}.json`);
 
   while (!fs.existsSync(jsonFile) && filePath.name) {
-    // check if definition already exists
-    // TODO - construct this path correctly...
-    const curPath = path.relative(filePath.dir, filePath.name);
-    const modelicaPath = getClassNameFromRelativePath(curPath);
-    if (typeStore.has(modelicaPath)) {
-      break;
-    }
     // package definitions break the typical modelica path to file mapping that
     // is used. A typical modelica path to file path look like:
     //   'Template.AirHandlerFans.VAVMultizone' -> 'Template/AirhandlerFans/VAVMultizone.json'
@@ -209,6 +202,13 @@ function getPathFromClassName(
       "package.json",
     );
     if (fs.existsSync(jsonFile)) {
+      break;
+    }
+    // check if definition already exists
+    // TODO - construct this path correctly...
+    const curPath = path.relative(filePath.dir, filePath.name);
+    const modelicaPath = getClassNameFromRelativePath(curPath);
+    if (typeStore.has(modelicaPath)) {
       break;
     }
     filePath = path.parse(filePath.dir);
