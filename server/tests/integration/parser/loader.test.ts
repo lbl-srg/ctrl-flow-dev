@@ -21,17 +21,38 @@ describe("Parser file loading", () => {
     expect(file.package).toBe("TestPackage");
   });
 
-  it("Finds package entry points", () => {
+  it("Finds package entry points in single package", () => {
     const packageName = "TestPackage";
     const entryPointNames = findPackageEntryPoints(packageName)
-      .map(({className}) => className)
+      .map(({ className }) => className)
       .sort();
     expect(entryPointNames).toEqual([
-      'TestPackage.NestedTemplate',
-      'TestPackage.NestedTemplate.Subcategory',
-      'TestPackage.NestedTemplate.Subcategory.SecondTemplate',
-      'TestPackage.Template',
-      'TestPackage.Template.TestTemplate'
+      "TestPackage",
+      "TestPackage.NestedTemplate",
+      "TestPackage.NestedTemplate.Subcategory",
+      "TestPackage.NestedTemplate.Subcategory.SecondTemplate",
+      "TestPackage.Template",
+      "TestPackage.Template.TestTemplate",
+    ]);
+  });
+
+  it("Finds package entry points in two packages", () => {
+    const firstPackageName = "TestPackage";
+    const secondPackageName = "SecondTestPackage";
+    findPackageEntryPoints(firstPackageName);
+    const entryPointNames = findPackageEntryPoints(secondPackageName)
+      .map(({ className }) => className)
+      .sort();
+    expect(entryPointNames).toEqual([
+      "SecondTestPackage.Templates",
+      "SecondTestPackage.Templates.Plants",
+      "SecondTestPackage.Templates.Plants.Chiller",
+      "TestPackage",
+      "TestPackage.NestedTemplate",
+      "TestPackage.NestedTemplate.Subcategory",
+      "TestPackage.NestedTemplate.Subcategory.SecondTemplate",
+      "TestPackage.Template",
+      "TestPackage.Template.TestTemplate",
     ]);
   });
 
@@ -45,7 +66,8 @@ describe("Parser file loading", () => {
 
   it("Is able to load the second test package", () => {
     const packageName = "SecondTestPackage";
-    const secondPackageTestParam = "SecondTestPackage.Templates.Plants.Chiller.testParam";
+    const secondPackageTestParam =
+      "SecondTestPackage.Templates.Plants.Chiller.testParam";
     parser.loadPackage(packageName);
     const projectOptionElement = parser.typeStore.find(secondPackageTestParam);
     expect(projectOptionElement).toBeDefined();

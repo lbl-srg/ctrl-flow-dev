@@ -112,6 +112,13 @@ export function findPackageEntryPoints(
       templatePaths?.forEach((p) => {
         const templateJson = loader(p);
         const templateNode = createTemplateNode(templateJson);
+        if (
+          templateNodes.some(
+            ({ className }) => className === templateNode.className,
+          )
+        ) {
+          return;
+        }
         TEMPLATE_LIST.push(templateNode.className);
         templateNodes.push(templateNode);
       });
@@ -138,9 +145,9 @@ export function findPackageEntryPoints(
           const packageJson = loader(packagePath);
           // If the package is already in the templateNodes array, its parents have also been added.
           if (
-            templateNodes
-              .map(({ className }) => className)
-              .includes(packageName)
+            templateNodes.some(
+              ({ className }) => className === packageName,
+            )
           ) {
             break;
           }
@@ -150,6 +157,10 @@ export function findPackageEntryPoints(
           const packageNode = createTemplateNode(packageJson);
           PACKAGE_LIST.push(packageNode.className);
           templateNodes.push(packageNode);
+
+          if (packageName === rootPackageName) {
+            break;
+          }
 
           packageName = (packageJson as any).within;
         }
