@@ -112,6 +112,13 @@ export function findPackageEntryPoints(
       templatePaths?.forEach((p) => {
         const templateJson = loader(p);
         const templateNode = createTemplateNode(templateJson);
+        if (
+          templateNodes.some(
+            ({ className }) => className === templateNode.className,
+          )
+        ) {
+          return;
+        }
         TEMPLATE_LIST.push(templateNode.className);
         templateNodes.push(templateNode);
       });
@@ -128,9 +135,9 @@ export function findPackageEntryPoints(
       // Iterate over all template files up to the root package and populate
       // templateNodes, TEMPLATE_LIST, PACKAGE_LIST and entryPoints.
 
-      for (let templateJson of [...templateNodes.map(({json}) => json)]) {
+      for (let templateJson of [...templateNodes.map(({ json }) => json)]) {
         let packageName = (templateJson as any).within;
-        while (packageName && packageName !== rootPackageName) {
+        while (packageName) {
           const packagePath = getPathFromClassName(packageName, dir);
           if (!packagePath) {
             break;
@@ -138,9 +145,9 @@ export function findPackageEntryPoints(
           const packageJson = loader(packagePath);
           // If the package is already in the templateNodes array, its parents have also been added.
           if (
-            templateNodes
-              .map(({ className }) => className)
-              .includes(packageName)
+            templateNodes.some(
+              ({ className }) => className === packageName,
+            )
           ) {
             break;
           }
@@ -151,13 +158,19 @@ export function findPackageEntryPoints(
           PACKAGE_LIST.push(packageNode.className);
           templateNodes.push(packageNode);
 
+          if (packageName === rootPackageName) {
+            break;
+          }
+
           packageName = (packageJson as any).within;
         }
       }
     }
   });
 
-  return templateNodes.map(({ className, json }) => { return { className, json }; });
+  return templateNodes.map(({ className, json }) => {
+    return { className, json };
+  });
 }
 
 /**
@@ -177,13 +190,6 @@ function getPathFromClassName(
   let jsonFile = path.resolve(dirPath, filePath.dir, `${filePath.name}.json`);
 
   while (!fs.existsSync(jsonFile) && filePath.name) {
-    // check if definition already exists
-    // TODO - construct this path correctly...
-    const curPath = path.relative(filePath.dir, filePath.name);
-    const modelicaPath = getClassNameFromRelativePath(curPath);
-    if (typeStore.has(modelicaPath)) {
-      break;
-    }
     // package definitions break the typical modelica path to file mapping that
     // is used. A typical modelica path to file path look like:
     //   'Template.AirHandlerFans.VAVMultizone' -> 'Template/AirhandlerFans/VAVMultizone.json'
@@ -196,6 +202,13 @@ function getPathFromClassName(
       "package.json",
     );
     if (fs.existsSync(jsonFile)) {
+      break;
+    }
+    // check if definition already exists
+    // TODO - construct this path correctly...
+    const curPath = path.relative(filePath.dir, filePath.name);
+    const modelicaPath = getClassNameFromRelativePath(curPath);
+    if (typeStore.has(modelicaPath)) {
       break;
     }
     filePath = path.parse(filePath.dir);
