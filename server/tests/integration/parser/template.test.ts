@@ -11,18 +11,40 @@ const TEMPLATE_PATH = "TestPackage.Template.TestTemplate";
 const NESTED_TEMPLATE_PATH =
   "TestPackage.NestedTemplate.Subcategory.SecondTemplate";
 
+describe("SystemType extraction", () => {
+    beforeAll(() => {
+    initializeTestModelicaJson();
+    loadPackage('TestPackage');
+  });
+
+  it("Extracts SystemTypes", () => {
+    const systemTypes = [...getSystemTypes()];
+    expect(systemTypes.length).toBeGreaterThan(0);
+  });
+
+  it("Sets the parent value as expected", () => {
+    const systemTypes = [...getSystemTypes()];
+    const testPackage = "TestPackage";
+    const nestedCategoryPath = "TestPackage.NestedTemplate";
+    const subCategory = systemTypes.find(s => s.modelicaPath === "TestPackage.NestedTemplate.Subcategory");
+    const nestedCategory = systemTypes.find(s => s.modelicaPath === nestedCategoryPath);
+    const templateCategory = systemTypes.find(s => s.modelicaPath === "TestPackage.Template");
+
+    expect(subCategory?.parent).toEqual(nestedCategoryPath);
+    expect(nestedCategory?.parent).toEqual(testPackage);
+    expect(templateCategory?.parent).toEqual(testPackage);
+  });
+});
+
 describe("Template wrapper class functionality", () => {
   beforeAll(() => {
     initializeTestModelicaJson();
     loadPackage('TestPackage');
   });
 
-  it("Extracts two templates and three Template types to be in stores", () => {
+  it("Extracts two templates", () => {
     const templates = [...getTemplates()];
     expect(templates.length).toBe(2);
-
-    const systemTypes = [...getSystemTypes()];
-    expect(systemTypes.length).toBe(2);
   });
 
   it("Templates have expected SystemTypes", () => {
