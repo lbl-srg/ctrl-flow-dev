@@ -248,7 +248,9 @@ function unpackModblock(props: ModificationProps) {
         ) as mj.ClassMod;
         // Additional modifiers can be attached to choice
         if (classModification) {
-          mods = getModificationList(classModification, basePath, value);
+          // Include component name in path for nested modifications
+          const nestedBasePath = [basePath, name].filter((s) => s).join(".");
+          mods = getModificationList(classModification, nestedBasePath, value);
           // TODO: getModificationList should handle redeclares but it is not
           // correctly unpacking nested modifiers - this is a bug
           // kludge: remove nested modifiers
@@ -264,7 +266,9 @@ function unpackModblock(props: ModificationProps) {
         const modType = modElement?.type;
         typePath = modType ? modType : baseType;
       }
-      mods = getModificationList(mod as mj.ClassMod, basePath, typePath); //mod.class_modification
+      // Include component name in path for nested modifications
+      const nestedBasePath = [basePath, name].filter((s) => s).join(".");
+      mods = getModificationList(mod as mj.ClassMod, nestedBasePath, typePath);
     }
   }
 
