@@ -18,19 +18,30 @@ export type Expression = {
   operands: Array<Literal | Expression>;
 };
 
-function expandOperand(
-  operand: any,
+function expandStringOperand(
+  operand: string,
   basePath: string,
   baseType: string,
 ): Literal | Expression {
-  if (typeof operand === "string") {
-    // Attempt to expand operand as a type
-    const element =
-      typeStore.get(operand, basePath) || typeStore.get(operand, baseType);
-    return element ? element.modelicaPath : operand;
+  let myoperand = operand;
+  try {
+    myoperand = JSON.parse(operand as string);
+  } catch {
+    /** deserialization failed */
   }
-  // If operand is not a string, process it as an expression
-  return getExpression(operand, basePath, baseType);
+  /*
+   * After try and catch above:
+   *   "Buildings.Type"      → "Buildings.Type"
+   *   "\"String literal\""  → "String literal"
+   *   "false"               → false
+   * Only attempt to expand as a type if still a string, and original operand not literal
+   */
+  if (typeof myoperand === "string" && !/^".*"$/.test(operand)) {
+    const element =
+      typeStore.get(myoperand, basePath) || typeStore.get(myoperand, baseType);
+    myoperand = element ? element.modelicaPath : myoperand;
+  }
+  return myoperand;
 }
 
 function buildArithmeticExpression(
@@ -41,10 +52,11 @@ function buildArithmeticExpression(
 ): Expression {
   const arithmetic_expression: Expression = {
     operator: operator === "<>" ? "!=" : operator,
-    operands: [
-      expandOperand(expression[0], basePath, baseType),
-      expandOperand(expression[1], basePath, baseType),
-    ],
+    operands: expression.map((operand: any) =>
+      typeof operand === "string"
+        ? expandStringOperand(operand, basePath, baseType)
+        : getExpression(operand, basePath, baseType),
+    ),
   };
 
   return arithmetic_expression;
@@ -429,17 +441,7 @@ function buildSimpleExpression(
   }
 
   if (typeof expression === "string") {
-    try {
-      operand = JSON.parse(expression as string);
-    } catch {
-      /** deserialization failed */
-    }
-    if (typeof operand === "string") {
-      // Attempt to expand string operand as a type
-      const element =
-        typeStore.get(operand, basePath) || typeStore.get(operand, baseType);
-      operand = element ? element.modelicaPath : operand;
-    }
+    operand = expandStringOperand(expression, basePath, baseType);
   }
 
   const simple_expression: Expression = {
