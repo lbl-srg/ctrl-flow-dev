@@ -284,6 +284,7 @@ export function resolvePaths(
 type Comparator = ">" | ">=" | "<" | "<=";
 export type OperatorType =
   | "none"
+  | "!"
   | "=="
   | "!="
   | "&&"
@@ -431,6 +432,17 @@ export const evaluate = (
       );
       const isEqual = allElementsEqual(resolvedOperands);
       val = expression.operator.includes("!") ? !isEqual : isEqual;
+      break;
+    }
+    case "!": {
+      if (expression.operands.length !== 1) {
+        throw new Error("Invalid number of operands for ! operator");
+      }
+      const operand = expression.operands[0];
+      const resolvedOperand = isExpression(operand)
+        ? evaluate(operand, context, scope)
+        : resolveToValue(operand, context, scope);
+      val = !resolvedOperand;
       break;
     }
     case "||": {
