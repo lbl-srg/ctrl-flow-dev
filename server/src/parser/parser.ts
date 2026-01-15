@@ -1021,7 +1021,7 @@ export class Import extends Element {
 /**
  * Given a list of elements, discovers and returns the formatted type
  *
- * @param definition - Object from class_definition array or from element_list array
+ * @param definition - Object from stored_class_definitions array or from element_list array
  * @param basePath - Class name from 'within' clause if parsing a class, or class name if parsing an element
  * @returns An Element instance or undefined if element type cannot be determined
  */
@@ -1074,7 +1074,7 @@ function _constructElement(
     case "record":
     case "package":
       const classSpecifier =
-        definition.class_specifier ?? // object from class_definition array
+        definition.class_specifier ?? // object from stored_class_definitions array
         definition.class_definition.class_specifier; // object from element_list array
       if (classSpecifier.hasOwnProperty("long_class_specifier")) {
         element = new LongClass(definition, basePath, elementType);
@@ -1126,7 +1126,7 @@ export class File {
       });
     }
 
-    obj.class_definition.map((cd: any) => {
+    obj.stored_class_definitions.map((cd: any) => {
       const element = _constructElement(cd, this.package);
       if (element) {
         this.elementList.push(element);

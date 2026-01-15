@@ -47,7 +47,7 @@ export function getClassNameFromRelativePath(filePath: string) {
 export function getClassNameFromJson(json: any): string {
   return (
     (json.within ? json.within + "." : "") +
-    json.class_definition[0].class_specifier.long_class_specifier.identifier
+    json.stored_class_definitions[0].class_specifier.long_class_specifier.identifier
   );
 }
 
@@ -57,7 +57,7 @@ export function getClassNameFromJson(json: any): string {
  * @returns A TemplateNode object with class information
  */
 function createTemplateNode(json: any): TemplateNode {
-  const classDefinition = json.class_definition[0];
+  const classDefinition = json.stored_class_definitions[0];
   return {
     className: getClassNameFromJson(json),
     description:
