@@ -1236,18 +1236,8 @@
       "value": {
         "operator": "^",
         "operands": [
-          {
-            "operator": "none",
-            "operands": [
-              "2/rho_default/k1*dpDamper_nominal"
-            ]
-          },
-          {
-            "operator": "none",
-            "operands": [
-              0.5
-            ]
-          }
+          "2/rho_default/k1*dpDamper_nominal",
+          0.5
         ]
       },
       "name": "Nominal face velocity",
@@ -1430,35 +1420,15 @@
           {
             "operator": "*",
             "operands": [
-              {
-                "operator": "none",
-                "operands": [
-                  2
-                ]
-              },
-              {
-                "operator": "none",
-                "operands": [
-                  "rho_default"
-                ]
-              }
+              2,
+              "rho_default"
             ]
           },
           {
             "operator": "^",
             "operands": [
-              {
-                "operator": "none",
-                "operands": [
-                  "A/kDamMin"
-                ]
-              },
-              {
-                "operator": "none",
-                "operands": [
-                  2
-                ]
-              }
+              "A/kDamMin",
+              2
             ]
           }
         ]
@@ -2581,27 +2551,12 @@
       "value": {
         "operator": "+",
         "operands": [
-          {
-            "operator": "none",
-            "operands": [
-              "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential.l"
-            ]
-          },
+          "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential.l",
           {
             "operator": "*",
             "operands": [
-              {
-                "operator": "none",
-                "operands": [
-                  "y_internal"
-                ]
-              },
-              {
-                "operator": "none",
-                "operands": [
-                  "1 -l"
-                ]
-              }
+              "y_internal",
+              "1 -l"
             ]
           }
         ]
@@ -6103,38 +6058,18 @@
               {
                 "operator": "-",
                 "operands": [
-                  {
-                    "operator": "none",
-                    "operands": [
-                      "pressure.V_flow[end]"
-                    ]
-                  },
+                  "pressure.V_flow[end]",
                   {
                     "operator": "*",
                     "operands": [
                       {
                         "operator": "/",
                         "operands": [
-                          {
-                            "operator": "none",
-                            "operands": [
-                              "pressure.V_flow[end] -pressure.V_flow[end -1]"
-                            ]
-                          },
-                          {
-                            "operator": "none",
-                            "operands": [
-                              "pressure.dp[end] -pressure.dp[end -1]"
-                            ]
-                          }
+                          "pressure.V_flow[end] -pressure.V_flow[end -1]",
+                          "pressure.dp[end] -pressure.dp[end -1]"
                         ]
                       },
-                      {
-                        "operator": "none",
-                        "operands": [
-                          "pressure.dp[end]"
-                        ]
-                      }
+                      "pressure.dp[end]"
                     ]
                   }
                 ]
@@ -6183,38 +6118,18 @@
               {
                 "operator": "-",
                 "operands": [
-                  {
-                    "operator": "none",
-                    "operands": [
-                      "pressure.dp[1]"
-                    ]
-                  },
+                  "pressure.dp[1]",
                   {
                     "operator": "*",
                     "operands": [
                       {
                         "operator": "/",
                         "operands": [
-                          {
-                            "operator": "none",
-                            "operands": [
-                              "pressure.dp[1] -pressure.dp[2]"
-                            ]
-                          },
-                          {
-                            "operator": "none",
-                            "operands": [
-                              "pressure.V_flow[1] -pressure.V_flow[2]"
-                            ]
-                          }
+                          "pressure.dp[1] -pressure.dp[2]",
+                          "pressure.V_flow[1] -pressure.V_flow[2]"
                         ]
                       },
-                      {
-                        "operator": "none",
-                        "operands": [
-                          "pressure.V_flow[1]"
-                        ]
-                      }
+                      "pressure.V_flow[1]"
                     ]
                   }
                 ]
@@ -26288,26 +26203,11 @@
           {
             "operator": "*",
             "operands": [
-              {
-                "operator": "none",
-                "operands": [
-                  "Buildings.Fluid.HeatExchangers.BaseClasses.HADryCoil.UA_nominal"
-                ]
-              },
-              {
-                "operator": "none",
-                "operands": [
-                  "r_nominal +1"
-                ]
-              }
+              "Buildings.Fluid.HeatExchangers.BaseClasses.HADryCoil.UA_nominal",
+              "r_nominal +1"
             ]
           },
-          {
-            "operator": "none",
-            "operands": [
-              "Buildings.Fluid.HeatExchangers.BaseClasses.HADryCoil.r_nominal"
-            ]
-          }
+          "Buildings.Fluid.HeatExchangers.BaseClasses.HADryCoil.r_nominal"
         ]
       },
       "name": "Water side convective heat transfer coefficient",
@@ -26977,12 +26877,7 @@
       "value": {
         "operator": "*",
         "operands": [
-          {
-            "operator": "none",
-            "operands": [
-              "abs(m1_flow)"
-            ]
-          },
+          "abs(m1_flow)",
           {
             "operator": "if_elseif",
             "operands": [
@@ -27045,12 +26940,7 @@
       "value": {
         "operator": "*",
         "operands": [
-          {
-            "operator": "none",
-            "operands": [
-              "abs(m2_flow)"
-            ]
-          },
+          "abs(m2_flow)",
           {
             "operator": "if_elseif",
             "operands": [
@@ -27149,18 +27039,8 @@
       "value": {
         "operator": "*",
         "operands": [
-          {
-            "operator": "none",
-            "operands": [
-              "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectiveness.CMin_flow"
-            ]
-          },
-          {
-            "operator": "none",
-            "operands": [
-              "T_in2 -T_in1"
-            ]
-          }
+          "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectiveness.CMin_flow",
+          "T_in2 -T_in1"
         ]
       },
       "name": "Maximum heat flow rate into medium 1",
@@ -28482,18 +28362,8 @@
           "expression": {
             "operator": "/",
             "operands": [
-              {
-                "operator": "none",
-                "operands": [
-                  1
-                ]
-              },
-              {
-                "operator": "none",
-                "operands": [
-                  "1/hA.hA_1 +1/hA.hA_2"
-                ]
-              }
+              1,
+              "1/hA.hA_1 +1/hA.hA_2"
             ]
           },
           "final": false,
@@ -30329,18 +30199,8 @@
           "expression": {
             "operator": "/",
             "operands": [
-              {
-                "operator": "none",
-                "operands": [
-                  1
-                ]
-              },
-              {
-                "operator": "none",
-                "operands": [
-                  "1/10 +1/20"
-                ]
-              }
+              1,
+              "1/10 +1/20"
             ]
           },
           "final": false,
@@ -40658,18 +40518,8 @@
           "expression": {
             "operator": "/",
             "operands": [
-              {
-                "operator": "none",
-                "operands": [
-                  "uHeaMax +uCooMin"
-                ]
-              },
-              {
-                "operator": "none",
-                "operands": [
-                  2
-                ]
-              }
+              "uHeaMax +uCooMin",
+              2
             ]
           },
           "final": true,
@@ -40679,18 +40529,8 @@
           "expression": {
             "operator": "/",
             "operands": [
-              {
-                "operator": "none",
-                "operands": [
-                  "uHeaMax +uCooMin"
-                ]
-              },
-              {
-                "operator": "none",
-                "operands": [
-                  2
-                ]
-              }
+              "uHeaMax +uCooMin",
+              2
             ]
           },
           "final": true,
@@ -41719,18 +41559,8 @@
       "value": {
         "operator": "/",
         "operands": [
-          {
-            "operator": "none",
-            "operands": [
-              "uHeaMax +uCooMin"
-            ]
-          },
-          {
-            "operator": "none",
-            "operands": [
-              2
-            ]
-          }
+          "uHeaMax +uCooMin",
+          2
         ]
       },
       "name": "Maximum loop signal for the OA damper to be fully open",
@@ -41768,18 +41598,8 @@
       "value": {
         "operator": "/",
         "operands": [
-          {
-            "operator": "none",
-            "operands": [
-              "uHeaMax +uCooMin"
-            ]
-          },
-          {
-            "operator": "none",
-            "operands": [
-              2
-            ]
-          }
+          "uHeaMax +uCooMin",
+          2
         ]
       },
       "name": "Minimum loop signal for the RA damper to be fully open",
@@ -47931,18 +47751,8 @@
       "value": {
         "operator": "/",
         "operands": [
-          {
-            "operator": "none",
-            "operands": [
-              "uMin +uMax"
-            ]
-          },
-          {
-            "operator": "none",
-            "operands": [
-              2
-            ]
-          }
+          "uMin +uMax",
+          2
         ]
       },
       "name": "Maximum loop signal for the OA damper to be fully open",
@@ -47962,18 +47772,8 @@
       "value": {
         "operator": "/",
         "operands": [
-          {
-            "operator": "none",
-            "operands": [
-              "uMin +uMax"
-            ]
-          },
-          {
-            "operator": "none",
-            "operands": [
-              2
-            ]
-          }
+          "uMin +uMax",
+          2
         ]
       },
       "name": "Minimum loop signal for the RA damper to be fully open",

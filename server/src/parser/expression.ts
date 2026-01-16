@@ -31,7 +31,7 @@ function expandStringOperand(
   }
   /*
    * After try and catch above:
-   *   "Buildings.Type"      → "Buildings.Type"
+   *   "Buildings.Type"      → "Buildings.Type" (deserialization failed)
    *   "\"String literal\""  → "String literal"
    *   "false"               → false
    * Only attempt to expand as a type if still a string, and original operand not literal
@@ -265,10 +265,10 @@ function buildTermExpression(
   term: any,
   basePath: string,
   baseType: string,
-): Expression {
-  // A term can be a string literal, or an object with operators and factors
+): Expression | Literal {
+  // A term can be a string, or an object with operators and factors
   if (typeof term === "string") {
-    return buildSimpleExpression(term, basePath, baseType);
+    return expandStringOperand(term, basePath, baseType);
   }
 
   if (typeof term === "object" && term.factors) {
@@ -305,11 +305,11 @@ function buildPrimaryExpression(
   primary: any,
   basePath: string,
   baseType: string,
-): Expression {
+): Expression | Literal {
   // primary can be a string or an array of expression objects
   // expression: { simple_expression?: ..., if_expression?: ... }
   if (typeof primary === "string") {
-    return buildSimpleExpression(primary, basePath, baseType);
+    return expandStringOperand(primary, basePath, baseType);
   }
 
   if (Array.isArray(primary)) {
@@ -321,10 +321,19 @@ function buildPrimaryExpression(
     });
 
     if (expressions.length === 1) {
-      return expressions[0];
+      if (expressions[0].operator === "none") {
+        // We avoid the additional nesting level
+        // { operator: 'none', operands: ['string'] }
+        return expressions[0].operands[0];
+      } else {
+        return expressions[0];
+      }
     }
 
     // Multiple expressions - return as array expression
+    // This construct is not well understood, probably used to cover the case
+    // PRIMARY = "[" expression-list { ";" expression-list } "]" from the grammar
+    // This is a noop in the client interpreter.
     return {
       operator: "primary_array",
       operands: expressions,
@@ -339,12 +348,12 @@ function buildFactorExpression(
   factor: any,
   basePath: string,
   baseType: string,
-): Expression {
+): Expression | Literal {
   // A factor can be:
-  // - a string literal
+  // - a string
   // - an object with { primary1, operator?, primary2? } for exponentiation
   if (typeof factor === "string") {
-    return buildSimpleExpression(factor, basePath, baseType);
+    return expandStringOperand(factor, basePath, baseType);
   }
 
   if (typeof factor === "object" && factor.primary1 !== undefined) {
@@ -401,7 +410,7 @@ function buildSimpleExpression(
       if (terms.length === 1 && hasLeadingOp) {
         // Single term with unary operator (e.g., "-x")
         return {
-          operator: addOps[0] === "-" ? "unary_minus" : "unary_plus",
+          operator: addOps[0],
           operands: [terms[0]],
         };
       }
@@ -414,7 +423,7 @@ function buildSimpleExpression(
         // First operator is unary
         if (addOps[0] === "-") {
           result = {
-            operator: "unary_minus",
+            operator: "-",
             operands: [terms[0]],
           };
         } else {
