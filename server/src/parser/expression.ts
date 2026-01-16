@@ -18,27 +18,46 @@ export type Expression = {
   operands: Array<Literal | Expression>;
 };
 
+function expandStringOperand(
+  operand: string,
+  basePath: string,
+  baseType: string,
+): Literal | Expression {
+  let myoperand = operand;
+  try {
+    myoperand = JSON.parse(operand as string);
+  } catch {
+    /** deserialization failed */
+  }
+  /*
+   * After try and catch above:
+   *   "Buildings.Type"      → "Buildings.Type" (deserialization failed)
+   *   "\"String literal\""  → "String literal"
+   *   "false"               → false
+   * Only attempt to expand as a type if still a string, and original operand not literal
+   */
+  if (typeof myoperand === "string" && !/^".*"$/.test(operand)) {
+    const element =
+      typeStore.get(myoperand, basePath) || typeStore.get(myoperand, baseType);
+    myoperand = element ? element.modelicaPath : myoperand;
+  }
+  return myoperand;
+}
+
 function buildArithmeticExpression(
   expression: any,
   operator: any,
   basePath: string,
   baseType: string,
 ): Expression {
-  // TODO: attempt to expand operands as types
   const arithmetic_expression: Expression = {
     operator: operator === "<>" ? "!=" : operator,
-    operands: [expression[0].name, expression[1].name],
+    operands: expression.map((operand: any) =>
+      typeof operand === "string"
+        ? expandStringOperand(operand, basePath, baseType)
+        : getExpression(operand, basePath, baseType),
+    ),
   };
-
-  // arithmetic_expression.operands = arithmetic_expression.operands.map((o, i) => {
-  //   // if (typeof o === "string") {
-  //   //   // left hand side of expression is most likely a variable reference - favor basePath first
-  //   //   const element = (i === 0) ? typeStore.get(o, basePath) || typeStore.get(o, baseType)
-  //   //     : typeStore.get(o, baseType) || typeStore.get(o, basePath);
-  //   //   return (element) ? element.modelicaPath : o;
-  //   // }
-  //   return o;
-  // });
 
   return arithmetic_expression;
 }
@@ -54,12 +73,33 @@ function buildLogicalExpression(
   };
 
   if (expression.arithmetic_expressions) {
-    return buildArithmeticExpression(
-      expression.arithmetic_expressions,
-      expression.relation_operator,
-      basePath,
-      baseType,
-    );
+    let result: Expression;
+    // Single arithmetic_expression without relation_operator is a boolean reference
+    if (
+      expression.arithmetic_expressions.length === 1 &&
+      !expression.relation_operator
+    ) {
+      result = buildSimpleExpression(
+        expression.arithmetic_expressions[0],
+        basePath,
+        baseType,
+      );
+    } else {
+      result = buildArithmeticExpression(
+        expression.arithmetic_expressions,
+        expression.relation_operator,
+        basePath,
+        baseType,
+      );
+    }
+    // Include ! operator if "not": true
+    if (expression.not) {
+      return {
+        operator: "!",
+        operands: [result],
+      };
+    }
+    return result;
   }
 
   if (expression.logical_or?.length === 1) {
@@ -221,6 +261,128 @@ function buildIfExpression(
   return if_expression;
 }
 
+function buildTermExpression(
+  term: any,
+  basePath: string,
+  baseType: string,
+): Expression | Literal {
+  // A term can be a string, or an object with operators and factors
+  if (typeof term === "string") {
+    return expandStringOperand(term, basePath, baseType);
+  }
+
+  if (typeof term === "object" && term.factors) {
+    // term: { operators: ["*", "/"], factors: [...] }
+    // operators may be absent if there's only one factor
+    // Build a nested expression for multiplication/division
+    const factors = term.factors.map((factor: any) =>
+      buildFactorExpression(factor, basePath, baseType),
+    );
+
+    if (factors.length === 1) {
+      return factors[0];
+    }
+
+    // Build left-associative expression: ((a * b) / c)
+    // Per grammar: term = factor { mul-operator factor }
+    // So operators.length === factors.length - 1
+    const operators: string[] = term.operators || [];
+    let result = factors[0];
+    for (let i = 0; i < operators.length; i++) {
+      result = {
+        operator: operators[i],
+        operands: [result, factors[i + 1]],
+      };
+    }
+    return result;
+  }
+
+  // Fallback: treat as simple expression
+  return buildSimpleExpression(term, basePath, baseType);
+}
+
+function buildPrimaryExpression(
+  primary: any,
+  basePath: string,
+  baseType: string,
+): Expression | Literal {
+  // primary can be a string or an array of expression objects
+  // expression: { simple_expression?: ..., if_expression?: ... }
+  if (typeof primary === "string") {
+    return expandStringOperand(primary, basePath, baseType);
+  }
+
+  if (Array.isArray(primary)) {
+    // Array of expression objects
+    const expressions = primary.map((expr: any) => {
+      // Each expr is an expression object with simple_expression and/or if_expression
+      // Use getExpression which handles both cases
+      return getExpression(expr, basePath, baseType);
+    });
+
+    if (expressions.length === 1) {
+      if (expressions[0].operator === "none") {
+        // We avoid the additional nesting level
+        // { operator: 'none', operands: ['string'] }
+        return expressions[0].operands[0];
+      } else {
+        return expressions[0];
+      }
+    }
+
+    // Multiple expressions - return as array expression
+    // This construct is not well understood, probably used to cover the case
+    // PRIMARY = "[" expression-list { ";" expression-list } "]" from the grammar
+    // This is a noop in the client interpreter.
+    return {
+      operator: "primary_array",
+      operands: expressions,
+    };
+  }
+
+  // Single object - use getExpression to handle simple_expression or if_expression
+  return getExpression(primary, basePath, baseType);
+}
+
+function buildFactorExpression(
+  factor: any,
+  basePath: string,
+  baseType: string,
+): Expression | Literal {
+  // A factor can be:
+  // - a string
+  // - an object with { primary1, operator?, primary2? } for exponentiation
+  if (typeof factor === "string") {
+    return expandStringOperand(factor, basePath, baseType);
+  }
+
+  if (typeof factor === "object" && factor.primary1 !== undefined) {
+    const primary1Expr = buildPrimaryExpression(
+      factor.primary1,
+      basePath,
+      baseType,
+    );
+
+    // Check for exponentiation: { primary1, operator: "^" or ".^", primary2 }
+    if (factor.operator && factor.primary2 !== undefined) {
+      const primary2Expr = buildPrimaryExpression(
+        factor.primary2,
+        basePath,
+        baseType,
+      );
+      return {
+        operator: factor.operator, // "^" or ".^"
+        operands: [primary1Expr, primary2Expr],
+      };
+    }
+
+    return primary1Expr;
+  }
+
+  // Fallback
+  return buildSimpleExpression(factor, basePath, baseType);
+}
+
 function buildSimpleExpression(
   expression: any,
   basePath: string,
@@ -228,20 +390,67 @@ function buildSimpleExpression(
 ): Expression {
   let operand = expression;
 
-  if (typeof expression === "object")
-    console.log("Unknown Expression: ", expression);
+  // Handle object-type simple_expression with terms and addOps
+  if (typeof expression === "object" && expression !== null) {
+    if (expression.terms) {
+      // simple_expression: { addOps: ["+", "-"], terms: [...] }
+      const terms = expression.terms.map((term: any) =>
+        buildTermExpression(term, basePath, baseType),
+      );
+
+      if (terms.length === 1 && !expression.addOps) {
+        return terms[0];
+      }
+
+      const addOps: string[] = expression.addOps || [];
+      // Determine if there's a leading unary operator
+      // If addOps.length === terms.length, the first addOp is a leading unary operator
+      const hasLeadingOp = addOps.length === terms.length;
+
+      if (terms.length === 1 && hasLeadingOp) {
+        // Single term with unary operator (e.g., "-x")
+        return {
+          operator: addOps[0],
+          operands: [terms[0]],
+        };
+      }
+
+      // Build left-associative expression for addition/subtraction
+      let result: Expression;
+      let opIndex = 0;
+
+      if (hasLeadingOp) {
+        // First operator is unary
+        if (addOps[0] === "-") {
+          result = {
+            operator: "-",
+            operands: [terms[0]],
+          };
+        } else {
+          result = terms[0];
+        }
+        opIndex = 1;
+      } else {
+        result = terms[0];
+      }
+
+      for (let i = 1; i < terms.length; i++) {
+        result = {
+          operator: addOps[opIndex],
+          operands: [result, terms[i]],
+        };
+        opIndex++;
+      }
+
+      return result;
+    }
+
+    // Unknown object structure - log for debugging
+    console.log("Unknown Expression: ", JSON.stringify(expression, null, 2));
+  }
+
   if (typeof expression === "string") {
-    try {
-      operand = JSON.parse(expression as string);
-    } catch {
-      /** deserialization failed */
-    }
-    if (typeof operand === "string") {
-      // Attempt to expand operand as a type
-      const element =
-        typeStore.get(operand, basePath) || typeStore.get(operand, baseType); // TODO: may only need to check basePath
-      operand = element ? element.modelicaPath : operand;
-    }
+    operand = expandStringOperand(expression, basePath, baseType);
   }
 
   const simple_expression: Expression = {

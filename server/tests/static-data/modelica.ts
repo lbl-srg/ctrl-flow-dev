@@ -23,7 +23,7 @@ end Bus;`;
 
 export const BUS_JSON = {
 	"within": "Buildings.BoundaryConditions.WeatherData",
-	"class_definition": [
+	"stored_class_definitions": [
 	  {
 		"class_prefixes": "expandable connector",
 		"class_specifier": {

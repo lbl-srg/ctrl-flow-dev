@@ -69,7 +69,6 @@ app.post("/api/modelicatojson", async (req, res) => {
     // To get around this read from the file that gets output during parsing
     parser.getJsons(
       [modelicaFile.name],
-      parseMode,
       format,
       tempDirPath,
       prettyPrint,

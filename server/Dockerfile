@@ -57,6 +57,10 @@ RUN npx webpack
 
 ARG PORT
 
+# Needed to keep rdflib (modelica-json dep) out of project's dependencies
+# but Node still requires it at runtime for some reason.
+ENV NODE_PATH=/dependencies/modelica-json/node_modules
+
 # For when image is run
 CMD ["node", "dist/index.js"]
 EXPOSE ${PORT}
