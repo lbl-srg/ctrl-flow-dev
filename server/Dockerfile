@@ -32,13 +32,8 @@ RUN npm run install-python-deps
 RUN apt-get -y install make curl git
 RUN npm run install-modelica-deps
 WORKDIR /dependencies
-# These files have typos that need to be fixed before we can bundle with webpack
-RUN sed -i 's/condition_attribute/conditionAttribute/g' ./modelica-json/json2mo/componentDeclaration.js
-RUN sed -i 's/for_indices/forIndices/g' ./modelica-json/json2mo/forStatement.js
-RUN sed -i 's/named_arguments/namedArguments/g' ./modelica-json/json2mo/functionArgument.js
 ENV MODELICAPATH=/dependencies/ModelicaStandardLibrary:/dependencies/modelica-buildings
 RUN mkdir template-json
-# This fails to run on amd64, must be arm64 platform
 RUN node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d template-json
 
 # Adds Modelica dependencies to the resulting image

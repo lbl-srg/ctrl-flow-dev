@@ -63749,9 +63749,10 @@
                         "operator": "if",
                         "operands": [
                           {
-                            "operator": "none",
+                            "operator": "==",
                             "operands": [
-                              "typCtlFanRet == Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowMeasured"
+                              "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.typCtlFanRet",
+                              "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowMeasured"
                             ]
                           },
                           {
@@ -63766,9 +63767,10 @@
                         "operator": "else_if",
                         "operands": [
                           {
-                            "operator": "none",
+                            "operator": "==",
                             "operands": [
-                              "typCtlFanRet == Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.BuildingPressure"
+                              "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.typCtlFanRet",
+                              "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.BuildingPressure"
                             ]
                           },
                           {
