@@ -60,7 +60,7 @@ const createSelections = (selections: ConfigValues = {}) => {
 const addNewConfig = (
   configName: string,
   template: TemplateInterface,
-  selections: { [key: string]: string },
+  selections: ConfigValues,
 ) => {
   store.configStore.add({
     name: configName,
