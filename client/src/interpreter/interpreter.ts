@@ -1,12 +1,9 @@
 import { ConfigInterface } from "../../src/data/config";
 import { TemplateInterface, OptionInterface } from "../../src/data/template";
 import { removeEmpty } from "../../src/utils/utils";
+import { ConfigValues } from "../utils/modifier-helpers";
 
 export type Literal = boolean | string | number;
-
-export interface ConfigValues {
-  [key: string]: string;
-}
 
 export type Expression = {
   operator: string;
@@ -149,7 +146,11 @@ const _instancePathToOption = (
     if (context.config?.selections) {
       Object.entries(context.selections).map(([key, value]) => {
         const [, instancePath] = key.split("-");
-        if (instancePath === curInstancePathList.join(".")) {
+        // Only string values (Modelica paths) can be used for option lookup
+        if (
+          instancePath === curInstancePathList.join(".") &&
+          typeof value === "string"
+        ) {
           option = context.options[value];
         }
       });
@@ -612,7 +613,11 @@ const buildModsHelper = (
         option.modelicaPath,
         newBase,
       );
-      redeclaredType = selections[selectionPath];
+      const selectionValue = selections[selectionPath];
+      // Only string values (Modelica paths) can be used for option lookup
+      if (typeof selectionValue === "string") {
+        redeclaredType = selectionValue;
+      }
     }
 
     if (option.choiceModifiers && redeclaredType) {
@@ -640,7 +645,13 @@ const buildModsHelper = (
     } else {
       // if this is a replaceable element, get the redeclared type
       // (this includes instances of replaceable short classes)
-      const typeOptionPath = getReplaceableType(newBase, option, mods, selections, options);
+      const typeOptionPath = getReplaceableType(
+        newBase,
+        option,
+        mods,
+        selections,
+        options,
+      );
       const typeOption = options[typeOptionPath as string];
 
       if (typeOption && typeOption.options) {
@@ -656,8 +667,7 @@ const buildModsHelper = (
 
         // Each parent class must also be visited
         // See https://github.com/lbl-srg/ctrl-flow-dev/issues/360
-        typeOption
-          .treeList
+        typeOption.treeList
           ?.filter((path) => path !== (typeOptionPath as string)) // Exclude current class from being visited again
           .map((oPath) => {
             const o = options[oPath];
@@ -669,7 +679,7 @@ const buildModsHelper = (
               selections,
               selectionModelicaPathsCache,
             );
-          })
+          });
 
         // Further populate `mods` with all options belonging to this class
         typeOption.options.map((path) => {
