@@ -219,6 +219,11 @@ describe("Test set", () => {
     expect(evaluate(buildExpression("<=", [5, 4]))).toBeFalsy();
   });
 
+  it("Handles !", () => {
+    expect(evaluate(buildExpression("!", [true]))).toBeFalsy();
+    expect(evaluate(buildExpression("!", [buildExpression(">=", [2, 3])]))).toBeTruthy();
+  });
+
   it("Handles == and !=", () => {
     expect(evaluate(buildExpression("==", [1, 1, 1, 1]))).toBeTruthy();
     expect(evaluate(buildExpression("==", [3]))).toBeTruthy();
