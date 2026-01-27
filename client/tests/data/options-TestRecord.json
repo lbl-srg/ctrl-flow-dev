@@ -169,7 +169,7 @@
         },
         "final": false,
         "redeclare": true,
-        "recordBinding": true
+        "recordBinding": false
       },
       "TestRecord.Mod1.rec": {
         "expression": {
@@ -180,7 +180,7 @@
         },
         "final": false,
         "redeclare": false,
-        "recordBinding": false
+        "recordBinding": true
       }
     },
     "options": [

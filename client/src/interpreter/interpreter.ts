@@ -33,6 +33,9 @@ interface Modifier {
   final: boolean;
   fromClassDefinition: boolean;
   redeclare: boolean;
+  recordBinding?: boolean;
+  /** For merged redeclare+binding modifiers, stores the binding expression separately */
+  bindingExpression?: Expression;
 }
 
 /**
@@ -111,6 +114,7 @@ const _instancePathToOption = (
   instancePath: string,
   context: ConfigContext,
   applyPathMods = true,
+  debug = false,
 ): {
   optionPath: string | null | undefined;
   instancePath: string;
@@ -129,6 +133,14 @@ const _instancePathToOption = (
   const curInstancePathList = [pathSegments.shift()]; // keep track of instance path for modifiers
   let curOptionPath: string | null | undefined =
     `${context.template.modelicaPath}.${curInstancePathList[0]}`;
+  if (debug)
+    console.log(
+      `[_instancePathToOption] START: instancePath=${instancePath}, modifiedPath=${modifiedPath}`,
+    );
+  if (debug)
+    console.log(
+      `[_instancePathToOption] initial: curOptionPath=${curOptionPath}, pathSegments=${JSON.stringify(pathSegments)}`,
+    );
   if (pathSegments.length === 0) {
     // special case: original type definition should be defined
     const rootOption = context.getRootOption();
@@ -140,6 +152,10 @@ const _instancePathToOption = (
 
   while (curInstancePathList && pathSegments.length > 0) {
     let option: OptionInterface | null = null;
+    if (debug)
+      console.log(
+        `[_instancePathToOption] LOOP: curInstancePathList=${JSON.stringify(curInstancePathList)}, pathSegments=${JSON.stringify(pathSegments)}`,
+      );
     // Option swap #1: selections
     // check if there is a selected path that specifies that option at
     // this instance path
@@ -163,6 +179,10 @@ const _instancePathToOption = (
     if (!option) {
       const curInstancePath = curInstancePathList.join(".");
       const instanceMod = context.mods[curInstancePath];
+      if (debug)
+        console.log(
+          `[_instancePathToOption] checking mods for ${curInstancePath}: ${instanceMod ? "FOUND" : "not found"}`,
+        );
       // resolve mod if present
       if (instanceMod) {
         const resolvedValue = evaluateModifier(
@@ -170,9 +190,52 @@ const _instancePathToOption = (
           context,
           curInstancePath,
         );
+        if (debug)
+          console.log(
+            `[_instancePathToOption] mod resolvedValue=${resolvedValue}, redeclare=${instanceMod.redeclare}, recordBinding=${(instanceMod as any).recordBinding}`,
+          );
         if (typeof resolvedValue === "string" && instanceMod.redeclare) {
           const potentialOption = context.options[resolvedValue as string];
+          if (debug)
+            console.log(
+              `[_instancePathToOption] redeclare option swap: ${potentialOption?.modelicaPath}`,
+            );
           option = potentialOption ? potentialOption : option;
+        }
+        // Handle record binding: redirect path resolution to follow the binding
+        // For merged redeclare+binding modifiers, use bindingExpression; for standalone bindings use expression
+        // Skip if this is a redeclare without bindingExpression (old data format where recordBinding was on redeclare)
+        if (
+          instanceMod.recordBinding &&
+          (!instanceMod.redeclare || instanceMod.bindingExpression)
+        ) {
+          const bindingExpr =
+            instanceMod.bindingExpression || instanceMod.expression;
+          let bindingPath: string | null = null;
+          if (
+            bindingExpr?.operator === "none" &&
+            typeof bindingExpr.operands[0] === "string"
+          ) {
+            bindingPath = bindingExpr.operands[0];
+          }
+
+          if (bindingPath) {
+            const remainingPath = pathSegments.join(".");
+            if (remainingPath) {
+              const redirectedPath = `${bindingPath}.${remainingPath}`;
+              if (debug)
+                console.log(
+                  `[_instancePathToOption] recordBinding redirect: ${curInstancePath}.${remainingPath} -> ${redirectedPath}`,
+                );
+              const redirectedResult = _instancePathToOption(
+                redirectedPath,
+                context,
+                applyPathMods,
+                debug,
+              );
+              return redirectedResult;
+            }
+          }
         }
       }
     }
@@ -190,17 +253,32 @@ const _instancePathToOption = (
     // by looking in options
     if (!option && curOptionPath) {
       const paramOption = context.options[curOptionPath];
+      if (debug)
+        console.log(
+          `[_instancePathToOption] normal lookup: curOptionPath=${curOptionPath}, paramOption.type=${paramOption?.type}`,
+        );
 
       if (!paramOption) {
+        if (debug)
+          console.log(`[_instancePathToOption] PUNCH-OUT: no paramOption`);
         break; // PUNCH-OUT!
       } else {
         option = context.options[paramOption.type];
         if (option === undefined) {
+          if (debug)
+            console.log(
+              `[_instancePathToOption] PUNCH-OUT: option undefined for type ${paramOption.type}`,
+            );
           curOptionPath = null;
           break;
         }
       }
     }
+
+    if (debug)
+      console.log(
+        `[_instancePathToOption] option=${option?.modelicaPath}, options=${JSON.stringify(option?.options)}`,
+      );
 
     // For short classes, the actual instance is within the options
     // of the type assigned to the short class identifier.
@@ -211,6 +289,8 @@ const _instancePathToOption = (
     }
 
     if (pathSegments.length === 0) {
+      if (debug)
+        console.log(`[_instancePathToOption] early break: pathSegments empty`);
       break;
     }
 
@@ -222,12 +302,20 @@ const _instancePathToOption = (
     curOptionPath = option?.options?.find(
       (o) => o.split(".").pop() === paramName,
     ) as string;
+    if (debug)
+      console.log(
+        `[_instancePathToOption] after shift: paramName=${paramName}, curOptionPath=${curOptionPath}`,
+      );
 
     if (pathSegments.length === 0) {
       // bottoming out - set a default path
       if (!curOptionPath) {
         curOptionPath = pathSegments.length === 0 ? option?.modelicaPath : null;
       }
+      if (debug)
+        console.log(
+          `[_instancePathToOption] final break: curOptionPath=${curOptionPath}`,
+        );
       break;
     }
   }
@@ -243,7 +331,14 @@ const _instancePathToOption = (
 // The backend expands all relative paths every 'option' path should begin with 'Modelica'
 // 'Modelica' or 'Buildings' it is a modelica path
 function isModelicaPath(path: string) {
-  return path.startsWith("Modelica") || path.startsWith("Buildings");
+  if (path.startsWith("Modelica") || path.startsWith("Buildings")) {
+    return true;
+  }
+  // Support test packages
+  if (path.startsWith("TestRecord") || path.startsWith("TestPackage")) {
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -262,14 +357,21 @@ export function resolvePaths(
   path: string,
   context: ConfigContext,
   scope = "",
+  debug = false,
 ): {
   optionPath: string | null;
   instancePath: string;
   outerOptionPath: string | null | undefined;
 } {
   const pathList = createPossiblePaths(scope, path);
+  if (debug)
+    console.log(
+      `[resolvePaths] path=${path}, scope=${scope}, pathList=${JSON.stringify(pathList)}`,
+    );
   for (const p of pathList) {
-    const paths = _instancePathToOption(p, context);
+    const paths = _instancePathToOption(p, context, true, debug);
+    if (debug)
+      console.log(`[resolvePaths] tried ${p}: optionPath=${paths.optionPath}`);
     if (paths.optionPath && paths.instancePath) {
       return {
         optionPath: paths.optionPath,
@@ -493,6 +595,7 @@ const addToModObject = (
       expression: Expression;
       final: boolean;
       redeclare: boolean;
+      recordBinding?: boolean;
     };
   },
   baseInstancePath: string,
@@ -514,6 +617,19 @@ const addToModObject = (
         ...mod,
         ...{ ["fromClassDefinition"]: fromClassDefinition },
       };
+    } else if (
+      // When a redeclare modifier exists and we encounter a record binding modifier
+      // for the same key, merge the binding info into the existing modifier.
+      // This handles "redeclare Rec rec = localRec" where the parser produces
+      // separate modifiers for the type change and the value binding.
+      mods[modKey].redeclare &&
+      !mod.redeclare &&
+      mod.recordBinding
+    ) {
+      // Store the binding path separately - the redeclare expression is the type,
+      // the binding expression is the value source
+      mods[modKey].recordBinding = true;
+      mods[modKey].bindingExpression = mod.expression;
     }
   });
 };

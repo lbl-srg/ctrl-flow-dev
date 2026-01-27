@@ -62,6 +62,8 @@ interface ModificationBasics {
   definition?: any;
   type?: string;
   final?: boolean;
+  /** Set to true when this modification is a binding to a record type component */
+  isRecordBinding?: boolean;
 }
 
 interface ModificationWithDefinition extends ModificationBasics {
@@ -149,27 +151,33 @@ function unpackRedeclaration(props: ModificationProps) {
     const redeclareDefinition =
       componentClause1.component_declaration1.declaration;
     const name = redeclareDefinition.identifier;
-    const childModProps = {
-      ...props,
-      name: element.type,
-      definition: redeclareDefinition,
-      baseType: element.type,
-      final,
-    };
-    // create child modifications
-    const redeclareMod = createModification(childModProps);
-    const childMods = redeclareMod ? [redeclareMod] : [];
 
-    // Check if the redeclared type is a record AND there's a binding (equal assignment)
+    // Check if there's a binding (equal assignment) to a record type
     // e.g., "redeclare Rec rec = localRec" where Rec is a record type
     const modification = redeclareDefinition.modification;
     const hasBinding =
       modification !== undefined &&
       "equal" in modification &&
       (modification as mj.Assignment).equal === true;
-    const recordBinding = hasBinding && isRecord(element);
+    const isRecordBinding = hasBinding && isRecord(element);
 
-    // create the redeclare modification
+    const childModProps = {
+      ...props,
+      name: element.type,
+      definition: redeclareDefinition,
+      baseType: element.type,
+      final,
+      isRecordBinding, // Pass down whether this is a record binding
+    };
+    // create child modifications
+    const redeclareMod = createModification(childModProps);
+    const childMods = redeclareMod ? [redeclareMod] : [];
+
+    // The redeclare modifier specifies the type change - it does not carry the binding.
+    // recordBinding should be false for the redeclare modifier itself.
+    // The binding (e.g., "= localRec") is captured as a separate child modifier with recordBinding=true.
+
+    // create the redeclare modification (recordBinding=false for redeclare itself)
     return new Modification(
       scope,
       name,
@@ -177,7 +185,7 @@ function unpackRedeclaration(props: ModificationProps) {
       childMods,
       final,
       true,
-      recordBinding,
+      false, // redeclare modifier does not carry recordBinding
     );
   } else if ("short_class_definition" in redeclaration) {
   }
@@ -196,6 +204,7 @@ function unpackModblock(props: ModificationProps) {
     baseType,
     name,
     final,
+    isRecordBinding: propsIsRecordBinding,
   } = props as ModificationWithDefinition;
 
   let modBlock = definition;
@@ -251,6 +260,7 @@ function unpackModblock(props: ModificationProps) {
   }
 
   // Track if this is a record binding (direct assignment to a record type)
+  // Use the prop if passed from unpackRedeclaration, otherwise detect from element type
   let recordBinding = false;
 
   if (mod) {
@@ -261,7 +271,9 @@ function unpackModblock(props: ModificationProps) {
         baseType,
       );
       // Check if this is a binding to a record type
-      recordBinding = isRecordType(element);
+      // Use propsIsRecordBinding if explicitly set (from redeclare context),
+      // otherwise fall back to checking the element type
+      recordBinding = propsIsRecordBinding ?? isRecordType(element);
     } else if (name == "choice") {
       const choiceMod = (mod as mj.ClassMod)
         .class_modification[0] as mj.RedeclareMod;

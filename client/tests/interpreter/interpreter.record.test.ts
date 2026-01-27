@@ -39,6 +39,9 @@ describe("Record Binding Interpreter Tests", () => {
       testRecordOptions,
       {},
     );
+
+    // Log context.mods for debugging
+    console.log("context.mods:", JSON.stringify(context.mods, null, 2));
   });
 
   it("Creates a valid context", () => {
@@ -58,9 +61,16 @@ describe("Record Binding Interpreter Tests", () => {
     expect(resolveToValue("localRec.p", context, "mod1")).toBe(1);
   });
 
-  it("resolveToValue handles composite (record) bindings", () => {
+  it("resolveToValue handles record redeclaration", () => {
+    expect(resolveToValue("rec.p", context, "mod")).toBe(0);
+  });
+
+  it("resolveToValue handles composite (record) binding", () => {
     expect(resolveToValue("localRec.p", context, "mod")).toBe(0);
-    expect(resolveToValue("rec.p", context, "mod2")).toBe(0);
     expect(resolveToValue("localRec.p", context, "mod2")).toBe(1);
+  });
+
+  it("resolveToValue handles composite (record) bindings with redeclaration", () => {
+    expect(resolveToValue("rec.p", context, "mod1")).toBe(1);
   });
 });

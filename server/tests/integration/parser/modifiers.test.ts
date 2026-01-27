@@ -169,8 +169,11 @@ describe("Record Binding Modifications", () => {
     expect(redeclareMod.recordBinding).toBe(false);
   });
 
-  it("Sets recordBinding=true for redeclare with binding to record instance", () => {
+  it("Sets recordBinding=true on value binding modifier, not on redeclare", () => {
     // Mod1: extends BaseModel with redeclare Rec rec = localRec
+    // This produces two modifiers:
+    // 1. redeclare modifier (type change) with recordBinding=false
+    // 2. value binding modifier (rec=localRec) with recordBinding=true
     const element = findElement("TestRecord.Mod1") as parser.LongClass;
     expect(element).toBeDefined();
 
@@ -178,10 +181,16 @@ describe("Record Binding Modifications", () => {
     expect(mods).toBeDefined();
     expect(mods!.length).toBeGreaterThan(0);
 
-    // The redeclare modifier should have both redeclare=true and recordBinding=true
+    // The redeclare modifier should have redeclare=true but recordBinding=false
     const redeclareMod = mods![0];
     expect(redeclareMod.redeclare).toBe(true);
-    expect(redeclareMod.recordBinding).toBe(true);
+    expect(redeclareMod.recordBinding).toBe(false);
+
+    // The child modifier (value binding) should have recordBinding=true
+    expect(redeclareMod.mods.length).toBeGreaterThan(0);
+    const bindingMod = redeclareMod.mods[0];
+    expect(bindingMod.redeclare).toBe(false);
+    expect(bindingMod.recordBinding).toBe(true);
   });
 
   it("Composite instance binding should have recordBinding=true", () => {
@@ -197,12 +206,17 @@ describe("Record Binding Modifications", () => {
     const element = findElement("TestRecord.Mod1") as parser.LongClass;
     const flatMods = flattenModifiers(element.mods);
 
-    // The modifier path should match where the redeclare is scoped
-    // Since BaseModel is in TestRecord, the path should be TestRecord.BaseModel.rec
-    const modPath = "TestRecord.BaseModel.rec";
-    expect(flatMods[modPath]).toBeDefined();
-    expect(flatMods[modPath].redeclare).toBe(true);
-    expect(flatMods[modPath].recordBinding).toBe(true);
+    // The redeclare modifier path should have recordBinding=false
+    const redeclarePath = "TestRecord.BaseModel.rec";
+    expect(flatMods[redeclarePath]).toBeDefined();
+    expect(flatMods[redeclarePath].redeclare).toBe(true);
+    expect(flatMods[redeclarePath].recordBinding).toBe(false);
+
+    // The value binding modifier path should have recordBinding=true
+    const bindingPath = "TestRecord.Mod1.rec";
+    expect(flatMods[bindingPath]).toBeDefined();
+    expect(flatMods[bindingPath].redeclare).toBe(false);
+    expect(flatMods[bindingPath].recordBinding).toBe(true);
   });
 
   afterAll(() => {
