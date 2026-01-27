@@ -29,4 +29,6 @@ model TestRecord
 
   Mod mod2(localRec=mod1.localRec);
 
+  Mod mod3(rec=Rec(p=2));
+
 end TestRecord;

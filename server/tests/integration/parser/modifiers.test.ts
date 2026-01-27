@@ -8,6 +8,8 @@ import { findElement } from "../../../src/parser/parser";
 import { loadPackage, Template } from "../../../src/parser/";
 import { evaluateExpression } from "../../../src/parser/expression";
 import * as parser from "../../../src/parser/parser";
+import * as fs from "fs";
+import * as path from "path";
 
 
 const templatePath = "TestPackage.Template.TestTemplate";
@@ -131,6 +133,26 @@ describe("Record Binding Modifications", () => {
     // Load the TestRecord.json file directly
     const jsonData = require("../../static-data/TestRecord.json");
     new parser.File(jsonData, "TestRecord");
+
+    // Log full templates.json equivalent for TestRecord
+    const testRecord = findElement("TestRecord") as parser.LongClass;
+    const inputs = testRecord.getInputs();
+    
+    // Build options similar to Template._extractOptions
+    const options: { [key: string]: any } = {};
+    Object.entries(inputs).forEach(([key, input]) => {
+      const flatMods = flattenModifiers(input.modifiers);
+      // Remove self-reference modifier
+      delete flatMods[input.modelicaPath];
+      options[key] = {
+        modelicaPath: input.modelicaPath,
+        name: input.name,
+        type: input.type,
+        modifiers: flatMods,
+      };
+    });
+    
+    console.log("TestRecord templates.json equivalent:", JSON.stringify(options, null, 2));
   });
 
   it("Sets recordBinding=false for redeclare without binding", () => {
@@ -181,5 +203,82 @@ describe("Record Binding Modifications", () => {
     expect(flatMods[modPath]).toBeDefined();
     expect(flatMods[modPath].redeclare).toBe(true);
     expect(flatMods[modPath].recordBinding).toBe(true);
+  });
+
+  afterAll(() => {
+    // Generate options-TestRecord.json for client tests
+    // This replicates the logic from Template._mapInputToOption
+    const testRecord = findElement("TestRecord") as parser.LongClass;
+    const inputs = testRecord.getInputs();
+
+    // Helper to compute treeList (same as template.ts _getTreeList)
+    const getTreeList = (option: any): string[] => {
+      const treeList: string[] = [option.type];
+      option.options?.forEach((o: string) => {
+        let treeElement: string;
+        if (option.shortExclType) {
+          treeElement = o;
+        } else {
+          treeElement = o.split(".").slice(0, -1).join(".");
+        }
+        if (!treeList.includes(treeElement)) {
+          treeList.push(treeElement);
+        }
+      });
+      return treeList;
+    };
+
+    // Build options similar to Template._extractOptions / _mapInputToOption
+    const options: { [key: string]: any } = {};
+    Object.entries(inputs).forEach(([key, input]) => {
+      const flatMods = flattenModifiers(input.modifiers);
+      // Remove self-reference modifier
+      delete flatMods[input.modelicaPath];
+
+      const isDefinition = parser.isDefinition(input.elementType);
+      const shortExclType = input.elementType.endsWith("-short");
+
+      const option: any = {
+        modelicaPath: input.modelicaPath,
+        name: input.name,
+        type: input.type,
+        visible: input.visible,
+        value: input.value,
+        enable: input.enable,
+        group: input.group,
+        tab: input.tab,
+        modifiers: flatMods,
+        options: input.inputs, // Child option paths for linking
+        definition: isDefinition,
+        shortExclType: shortExclType,
+        replaceable: input.replaceable || false,
+        treeList: [], // Will be computed below
+      };
+
+      // Compute treeList for definitions
+      if (isDefinition) {
+        option.treeList = getTreeList(option);
+      }
+
+      // Include choiceModifiers if present
+      if (input.choiceModifiers) {
+        const flattenedChoiceMods: { [key: string]: any } = {};
+        Object.entries(input.choiceModifiers).forEach(([choiceKey, modList]) => {
+          flattenedChoiceMods[choiceKey] = flattenModifiers(modList);
+        });
+        option.choiceModifiers = flattenedChoiceMods;
+      }
+
+      options[key] = option;
+    });
+
+    // Write to client/tests/data/options-TestRecord.json
+    const outputPath = path.resolve(
+      __dirname,
+      "../../../../client/tests/data/options-TestRecord.json"
+    );
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+    fs.writeFileSync(outputPath, JSON.stringify(options, null, 2));
+    console.log(`Generated: ${outputPath}`);
   });
 });

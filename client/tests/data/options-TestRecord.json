@@ -1,0 +1,317 @@
+{
+  "TestRecord.Rec.p": {
+    "modelicaPath": "TestRecord.Rec.p",
+    "name": "",
+    "type": "Real",
+    "visible": true,
+    "value": {
+      "operator": "none",
+      "operands": [
+        0
+      ]
+    },
+    "enable": true,
+    "group": "",
+    "tab": "",
+    "modifiers": {},
+    "options": [],
+    "definition": false,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": []
+  },
+  "TestRecord.Rec": {
+    "modelicaPath": "TestRecord.Rec",
+    "type": "TestRecord.Rec",
+    "visible": false,
+    "value": "TestRecord.Rec",
+    "modifiers": {},
+    "options": [
+      "TestRecord.Rec.p"
+    ],
+    "definition": true,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": [
+      "TestRecord.Rec"
+    ]
+  },
+  "TestRecord.BaseModel.rec": {
+    "modelicaPath": "TestRecord.BaseModel.rec",
+    "name": "",
+    "type": "TestRecord.BaseRecord",
+    "visible": true,
+    "value": "TestRecord.BaseRecord",
+    "enable": true,
+    "group": "",
+    "tab": "",
+    "modifiers": {},
+    "options": [
+      "TestRecord.BaseRecord"
+    ],
+    "definition": false,
+    "shortExclType": false,
+    "replaceable": true,
+    "treeList": [],
+    "choiceModifiers": {}
+  },
+  "TestRecord.BaseModel": {
+    "modelicaPath": "TestRecord.BaseModel",
+    "type": "TestRecord.BaseModel",
+    "visible": false,
+    "value": "TestRecord.BaseModel",
+    "modifiers": {},
+    "options": [
+      "TestRecord.BaseModel.rec"
+    ],
+    "definition": true,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": [
+      "TestRecord.BaseModel"
+    ]
+  },
+  "TestRecord.Mod.localRec": {
+    "modelicaPath": "TestRecord.Mod.localRec",
+    "name": "",
+    "type": "TestRecord.Rec",
+    "visible": false,
+    "value": {
+      "operator": "none",
+      "operands": [
+        "TestRecord.BaseModel.rec"
+      ]
+    },
+    "enable": true,
+    "group": "",
+    "tab": "",
+    "modifiers": {},
+    "options": [
+      "TestRecord.Rec.p"
+    ],
+    "definition": false,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": []
+  },
+  "TestRecord.Mod": {
+    "modelicaPath": "TestRecord.Mod",
+    "type": "TestRecord.Mod",
+    "visible": false,
+    "value": "TestRecord.Mod",
+    "modifiers": {
+      "TestRecord.BaseModel.rec": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            "TestRecord.Rec"
+          ]
+        },
+        "final": false,
+        "redeclare": true,
+        "recordBinding": false
+      }
+    },
+    "options": [
+      "TestRecord.Mod.localRec",
+      "TestRecord.BaseModel.rec"
+    ],
+    "definition": true,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": [
+      "TestRecord.Mod",
+      "TestRecord.BaseModel"
+    ]
+  },
+  "TestRecord.Mod1.localRec": {
+    "modelicaPath": "TestRecord.Mod1.localRec",
+    "name": "",
+    "type": "TestRecord.Rec",
+    "visible": false,
+    "value": "",
+    "enable": true,
+    "group": "",
+    "tab": "",
+    "modifiers": {
+      "TestRecord.Rec.p": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            1
+          ]
+        },
+        "final": false,
+        "redeclare": false,
+        "recordBinding": false
+      }
+    },
+    "options": [
+      "TestRecord.Rec.p"
+    ],
+    "definition": false,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": []
+  },
+  "TestRecord.Mod1": {
+    "modelicaPath": "TestRecord.Mod1",
+    "type": "TestRecord.Mod1",
+    "visible": false,
+    "value": "TestRecord.Mod1",
+    "modifiers": {
+      "TestRecord.BaseModel.rec": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            "TestRecord.Rec"
+          ]
+        },
+        "final": false,
+        "redeclare": true,
+        "recordBinding": true
+      },
+      "TestRecord.Mod1.rec": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            "localRec"
+          ]
+        },
+        "final": false,
+        "redeclare": false,
+        "recordBinding": false
+      }
+    },
+    "options": [
+      "TestRecord.Mod1.localRec",
+      "TestRecord.BaseModel.rec"
+    ],
+    "definition": true,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": [
+      "TestRecord.Mod1",
+      "TestRecord.BaseModel"
+    ]
+  },
+  "TestRecord.mod": {
+    "modelicaPath": "TestRecord.mod",
+    "name": "",
+    "type": "TestRecord.Mod",
+    "visible": false,
+    "enable": false,
+    "group": "",
+    "tab": "",
+    "modifiers": {},
+    "options": [],
+    "definition": false,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": []
+  },
+  "TestRecord.mod1": {
+    "modelicaPath": "TestRecord.mod1",
+    "name": "",
+    "type": "TestRecord.Mod1",
+    "visible": false,
+    "enable": false,
+    "group": "",
+    "tab": "",
+    "modifiers": {},
+    "options": [],
+    "definition": false,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": []
+  },
+  "TestRecord.mod2": {
+    "modelicaPath": "TestRecord.mod2",
+    "name": "",
+    "type": "TestRecord.Mod",
+    "visible": false,
+    "value": "",
+    "enable": false,
+    "group": "",
+    "tab": "",
+    "modifiers": {
+      "TestRecord.Mod.localRec": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            "mod1.localRec"
+          ]
+        },
+        "final": false,
+        "redeclare": false,
+        "recordBinding": true
+      }
+    },
+    "options": [],
+    "definition": false,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": []
+  },
+  "TestRecord.mod3": {
+    "modelicaPath": "TestRecord.mod3",
+    "name": "",
+    "type": "TestRecord.Mod",
+    "visible": false,
+    "value": "",
+    "enable": false,
+    "group": "",
+    "tab": "",
+    "modifiers": {
+      "TestRecord.BaseModel.rec": {
+        "expression": {
+          "operator": "function_call",
+          "operands": [
+            {
+              "operator": "Rec",
+              "operands": [
+                {
+                  "operator": "none",
+                  "operands": [
+                    "TestRecord.Rec"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "final": false,
+        "redeclare": false,
+        "recordBinding": true
+      }
+    },
+    "options": [],
+    "definition": false,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": []
+  },
+  "TestRecord": {
+    "modelicaPath": "TestRecord",
+    "type": "TestRecord",
+    "visible": false,
+    "value": "TestRecord",
+    "modifiers": {},
+    "options": [
+      "TestRecord.Rec",
+      "TestRecord.BaseModel",
+      "TestRecord.Mod",
+      "TestRecord.Mod1",
+      "TestRecord.mod",
+      "TestRecord.mod1",
+      "TestRecord.mod2",
+      "TestRecord.mod3"
+    ],
+    "definition": true,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": [
+      "TestRecord"
+    ]
+  }
+}
