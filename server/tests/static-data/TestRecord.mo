@@ -23,6 +23,15 @@ model TestRecord
     parameter Rec localRec(p=1);
   end Mod1;
 
+  model Nested
+    parameter Rec localRec(p=3);
+    Mod mod(rec=localRec);
+  end Nested;
+
+  model NestedExtended
+    extends Nested(
+      localRec(p=4));
+  end NestedExtended;
   Mod mod;
 
   Mod1 mod1;
@@ -30,5 +39,9 @@ model TestRecord
   Mod mod2(localRec=mod1.localRec);
 
   Mod mod3(rec=Rec(p=2));
+
+  Nested nes;
+
+  NestedExtended nesExt;
 
 end TestRecord;

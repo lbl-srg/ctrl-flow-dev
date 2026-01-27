@@ -195,6 +195,111 @@
       "TestRecord.BaseModel"
     ]
   },
+  "TestRecord.Nested.localRec": {
+    "modelicaPath": "TestRecord.Nested.localRec",
+    "name": "",
+    "type": "TestRecord.Rec",
+    "visible": false,
+    "value": "",
+    "enable": true,
+    "group": "",
+    "tab": "",
+    "modifiers": {
+      "TestRecord.Rec.p": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            3
+          ]
+        },
+        "final": false,
+        "redeclare": false,
+        "recordBinding": false
+      }
+    },
+    "options": [
+      "TestRecord.Rec.p"
+    ],
+    "definition": false,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": []
+  },
+  "TestRecord.Nested.mod": {
+    "modelicaPath": "TestRecord.Nested.mod",
+    "name": "",
+    "type": "TestRecord.Mod",
+    "visible": false,
+    "value": "",
+    "enable": false,
+    "group": "",
+    "tab": "",
+    "modifiers": {
+      "TestRecord.BaseModel.rec": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            "TestRecord.Nested.localRec"
+          ]
+        },
+        "final": false,
+        "redeclare": false,
+        "recordBinding": true
+      }
+    },
+    "options": [],
+    "definition": false,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": []
+  },
+  "TestRecord.Nested": {
+    "modelicaPath": "TestRecord.Nested",
+    "type": "TestRecord.Nested",
+    "visible": false,
+    "value": "TestRecord.Nested",
+    "modifiers": {},
+    "options": [
+      "TestRecord.Nested.localRec",
+      "TestRecord.Nested.mod"
+    ],
+    "definition": true,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": [
+      "TestRecord.Nested"
+    ]
+  },
+  "TestRecord.NestedExtended": {
+    "modelicaPath": "TestRecord.NestedExtended",
+    "type": "TestRecord.NestedExtended",
+    "visible": false,
+    "value": "TestRecord.NestedExtended",
+    "modifiers": {
+      "TestRecord.Rec.p": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            4
+          ]
+        },
+        "final": false,
+        "redeclare": false,
+        "recordBinding": false
+      }
+    },
+    "options": [
+      "TestRecord.Nested.localRec",
+      "TestRecord.Nested.mod"
+    ],
+    "definition": true,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": [
+      "TestRecord.NestedExtended",
+      "TestRecord.Nested"
+    ]
+  },
   "TestRecord.mod": {
     "modelicaPath": "TestRecord.mod",
     "name": "",
@@ -291,6 +396,36 @@
     "replaceable": false,
     "treeList": []
   },
+  "TestRecord.nes": {
+    "modelicaPath": "TestRecord.nes",
+    "name": "",
+    "type": "TestRecord.Nested",
+    "visible": false,
+    "enable": false,
+    "group": "",
+    "tab": "",
+    "modifiers": {},
+    "options": [],
+    "definition": false,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": []
+  },
+  "TestRecord.nesExt": {
+    "modelicaPath": "TestRecord.nesExt",
+    "name": "",
+    "type": "TestRecord.NestedExtended",
+    "visible": false,
+    "enable": false,
+    "group": "",
+    "tab": "",
+    "modifiers": {},
+    "options": [],
+    "definition": false,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": []
+  },
   "TestRecord": {
     "modelicaPath": "TestRecord",
     "type": "TestRecord",
@@ -302,10 +437,14 @@
       "TestRecord.BaseModel",
       "TestRecord.Mod",
       "TestRecord.Mod1",
+      "TestRecord.Nested",
+      "TestRecord.NestedExtended",
       "TestRecord.mod",
       "TestRecord.mod1",
       "TestRecord.mod2",
-      "TestRecord.mod3"
+      "TestRecord.mod3",
+      "TestRecord.nes",
+      "TestRecord.nesExt"
     ],
     "definition": true,
     "shortExclType": false,

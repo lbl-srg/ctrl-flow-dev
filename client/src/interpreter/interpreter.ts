@@ -939,13 +939,16 @@ export class ConfigContext {
 
     if (isModelicaPath(path)) {
       const option = this.options[path];
-      if (option.definition) {
-        this._previousInstancePath = null;
-        this.addToCache(path, optionPath, path);
-        return path;
+      if (option) {
+        if (option.definition) {
+          this._previousInstancePath = null;
+          this.addToCache(path, optionPath, path);
+          return path;
+        }
+        optionPath = path;
       }
-      optionPath = path;
-    } else {
+    }
+    if (!optionPath) {
       // instance path to original option
       const paths = resolvePaths(path, this, scope);
       optionPath = paths.optionPath;
