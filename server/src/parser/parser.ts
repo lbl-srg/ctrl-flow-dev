@@ -575,7 +575,7 @@ export class LongClass extends Element {
     this.description = specifier.description_string;
 
     this.elementList =
-      specifier.composition.element_list
+      specifier.composition?.element_list
         ?.map((e: any) => {
           const element = _constructElement(e, this.modelicaPath);
           if (element?.elementType === "extends_clause") {
@@ -593,7 +593,7 @@ export class LongClass extends Element {
         ?.filter((e: Element | undefined) => e !== undefined)
         ?.filter((e: Element) => e.elementType !== "extends_clause") || [];
 
-    this.annotation = specifier.composition.annotation?.map(
+    this.annotation = specifier.composition?.annotation?.map(
       (m: mj.Mod | mj.WrappedMod) => createModification({ definition: m }),
     );
     this.deadEnd = this.getLinkageKeywordValue() === false;

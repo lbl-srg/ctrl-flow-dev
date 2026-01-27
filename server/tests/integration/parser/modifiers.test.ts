@@ -9,6 +9,7 @@ import { loadPackage, Template } from "../../../src/parser/";
 import { evaluateExpression } from "../../../src/parser/expression";
 import * as parser from "../../../src/parser/parser";
 
+
 const templatePath = "TestPackage.Template.TestTemplate";
 
 let tOptions: { [key: string]: Option } = {};
@@ -122,5 +123,63 @@ describe("Modifications", () => {
     const mod = option.modifiers[path];
 
     expect(mod).toBeUndefined();
+  });
+});
+
+describe("Record Binding Modifications", () => {
+  beforeAll(() => {
+    // Load the TestRecord.json file directly
+    const jsonData = require("../../static-data/TestRecord.json");
+    new parser.File(jsonData, "TestRecord");
+  });
+
+  it("Sets recordBinding=false for redeclare without binding", () => {
+    // Mod: extends BaseModel with redeclare Rec rec (no binding)
+    const element = findElement("TestRecord.Mod") as parser.LongClass;
+    expect(element).toBeDefined();
+
+    const mods = element.mods;
+    expect(mods).toBeDefined();
+    expect(mods!.length).toBeGreaterThan(0);
+
+    const redeclareMod = mods![0];
+    expect(redeclareMod.redeclare).toBe(true);
+    expect(redeclareMod.recordBinding).toBe(false);
+  });
+
+  it("Sets recordBinding=true for redeclare with binding to record instance", () => {
+    // Mod1: extends BaseModel with redeclare Rec rec = localRec
+    const element = findElement("TestRecord.Mod1") as parser.LongClass;
+    expect(element).toBeDefined();
+
+    const mods = element.mods;
+    expect(mods).toBeDefined();
+    expect(mods!.length).toBeGreaterThan(0);
+
+    // The redeclare modifier should have both redeclare=true and recordBinding=true
+    const redeclareMod = mods![0];
+    expect(redeclareMod.redeclare).toBe(true);
+    expect(redeclareMod.recordBinding).toBe(true);
+  });
+
+  it("Composite instance binding should have recordBinding=true", () => {
+    // Mod mod2(localRec=mod1.localRec);
+    const element = findElement("TestRecord.mod2") as any;
+    expect(element).toBeDefined();
+
+    const localMod = element?.mod?.mods[0];
+    expect(localMod.recordBinding).toBe(true);
+  });
+
+  it("Includes recordBinding in flattened modifiers", () => {
+    const element = findElement("TestRecord.Mod1") as parser.LongClass;
+    const flatMods = flattenModifiers(element.mods);
+
+    // The modifier path should match where the redeclare is scoped
+    // Since BaseModel is in TestRecord, the path should be TestRecord.BaseModel.rec
+    const modPath = "TestRecord.BaseModel.rec";
+    expect(flatMods[modPath]).toBeDefined();
+    expect(flatMods[modPath].redeclare).toBe(true);
+    expect(flatMods[modPath].recordBinding).toBe(true);
   });
 });

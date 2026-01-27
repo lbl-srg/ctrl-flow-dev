@@ -27,6 +27,33 @@ import { evaluateExpression, Expression, getExpression } from "./expression";
 
 const modStore: Map<string, Modification> = new Map();
 
+/**
+ * Helper to check if an element is a record class definition.
+ * Returns true if the element's elementType is "record" or "record-short".
+ */
+function isRecord(element: Element | undefined): boolean {
+  if (!element) {
+    return false;
+  }
+  return (
+    element.elementType === "record" || element.elementType === "record-short"
+  );
+}
+
+/**
+ * Helper to check if an element's type is a record.
+ * Returns true if the element's type resolves to a record class.
+ */
+function isRecordType(element: Element | undefined): boolean {
+  if (!element) {
+    return false;
+  }
+
+  // Get the type of the element and look it up in the store
+  const typeElement = typeStore.get(element.type, "", false);
+  return isRecord(typeElement);
+}
+
 interface ModificationBasics {
   basePath?: string;
   baseType?: string;
@@ -132,6 +159,16 @@ function unpackRedeclaration(props: ModificationProps) {
     // create child modifications
     const redeclareMod = createModification(childModProps);
     const childMods = redeclareMod ? [redeclareMod] : [];
+
+    // Check if the redeclared type is a record AND there's a binding (equal assignment)
+    // e.g., "redeclare Rec rec = localRec" where Rec is a record type
+    const modification = redeclareDefinition.modification;
+    const hasBinding =
+      modification !== undefined &&
+      "equal" in modification &&
+      (modification as mj.Assignment).equal === true;
+    const recordBinding = hasBinding && isRecord(element);
+
     // create the redeclare modification
     return new Modification(
       scope,
@@ -140,6 +177,7 @@ function unpackRedeclaration(props: ModificationProps) {
       childMods,
       final,
       true,
+      recordBinding,
     );
   } else if ("short_class_definition" in redeclaration) {
   }
@@ -212,6 +250,9 @@ function unpackModblock(props: ModificationProps) {
     mod = (modBlock as mj.Mod).modification;
   }
 
+  // Track if this is a record binding (direct assignment to a record type)
+  let recordBinding = false;
+
   if (mod) {
     if ("equal" in mod) {
       value = getExpression(
@@ -219,6 +260,8 @@ function unpackModblock(props: ModificationProps) {
         basePath,
         baseType,
       );
+      // Check if this is a binding to a record type
+      recordBinding = isRecordType(element);
     } else if (name == "choice") {
       const choiceMod = (mod as mj.ClassMod)
         .class_modification[0] as mj.RedeclareMod;
@@ -272,7 +315,7 @@ function unpackModblock(props: ModificationProps) {
     }
   }
 
-  return new Modification(scope, name, value, mods, final);
+  return new Modification(scope, name, value, mods, final, false, recordBinding);
 }
 
 export function getModificationList(
@@ -310,6 +353,7 @@ export class Modification {
     public mods: Modification[] = [],
     public final = false,
     public redeclare = false,
+    public recordBinding = false,
   ) {
     this.modelicaPath = [basePath, name].filter((s) => s !== "").join(".");
     if (this.modelicaPath) {

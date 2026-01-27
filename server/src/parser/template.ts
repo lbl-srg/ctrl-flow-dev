@@ -70,7 +70,7 @@ export interface Option {
   value?: any;
   enable?: any;
   treeList?: string[]; // Only defined if (option.definition)
-  modifiers: { [key: string]: { expression: Expression; final: boolean } };
+  modifiers: { [key: string]: { expression: Expression; final: boolean; redeclare: boolean; recordBinding: boolean } };
   choiceModifiers?: { [key: string]: Mods };
   replaceable: boolean;
   elementType: string;
@@ -87,7 +87,7 @@ export interface ScheduleOption extends Option {
 }
 
 export interface Mods {
-  [key: string]: { expression: Expression; final: boolean };
+  [key: string]: { expression: Expression; final: boolean; redeclare: boolean; recordBinding: boolean };
 }
 
 /**
@@ -100,6 +100,7 @@ export function flattenModifiers(
       expression: Expression;
       final: boolean;
       redeclare: boolean;
+      recordBinding: boolean;
     };
   } = {},
 ) {
@@ -115,6 +116,7 @@ export function flattenModifiers(
           expression: mod.value,
           final: mod.final,
           redeclare: mod.redeclare,
+          recordBinding: mod.recordBinding,
         };
       }
 
