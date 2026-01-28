@@ -306,21 +306,26 @@ function initializeReplaceable(
   instance.choiceMods = {};
   instance.mods = [];
 
-  // For replaceable ***components*** the default value is the instance type
+  // Unified schema for replaceable elements:
+  // - 'type' stores the actual/aliased type
+  // - 'value' is "" if no binding (=) is provided, or the binding value for components
+  //
+  // For replaceable components:
+  // - 'type' = declared type (already set by Component constructor)
+  // - 'value' = "" if no binding, or the binding value if present
+  //
+  // For short class definitions:
+  // - 'type' = aliased type (already set by ShortClass constructor)
+  // - 'value' = ""
   if (instance.elementType === "component_clause") {
-    instance.value = instance.type;
+    // instance.type already contains the actual type
+    // instance.value should be "" if there's no binding
+    // (value is set to the mod value in Component constructor if there is a binding)
+    if (instance.value === undefined) {
+      instance.value = "";
+    }
   }
-
-  const mod = createModification({
-    name: instance.name,
-    value: getExpression(instance.value, basePath),
-    basePath: basePath,
-    baseType: instance.type,
-  });
-
-  if (mod) {
-    instance.mods.push(mod);
-  }
+  // For short classes: type contains the aliased type, value is "" (set in ShortClass constructor)
 
   // Handle constraining-clause clause if present
   if (definition.constraining_clause) {
@@ -491,7 +496,7 @@ export abstract class Element {
 
 export class ShortClass extends Element {
   mods?: Modification[];
-  value = ""; // Type specifier assigned to the short class identifier
+  value = ""; // Always "" for short class definitions
   constructor(
     definition: any,
     basePath: string,
@@ -502,9 +507,13 @@ export class ShortClass extends Element {
       .class_specifier.short_class_specifier;
     const specifierType = typeStore.get(specifier.value?.name, basePath);
     this.name = specifier.identifier;
-    this.value = specifierType?.modelicaPath || specifier.value?.name;
+    // For short class definitions:
+    // - modelicaPath: the short class name (e.g., Parent.Medium)
+    // - type: the aliased type (e.g., SomeMedium)
+    // - value: "" (no binding for class definitions)
     this.modelicaPath = `${basePath}.${this.name}`;
-    this.type = this.modelicaPath;
+    this.type = specifierType?.modelicaPath || specifier.value?.name;
+    this.value = ""; // No binding for short class definitions
     const registered = this.registerPath(this.modelicaPath, this.type);
     if (!registered) {
       return; // PUNCH-OUT!
@@ -519,15 +528,15 @@ export class ShortClass extends Element {
   }
 
   getChildElements(): Element[] {
-    // Retrieve the child elements from the type specifier assigned to the short class
-    const typeSpecifier = typeStore.get(this.value) as LongClass;
+    // Retrieve the child elements from the aliased type (stored in this.type)
+    const typeSpecifier = typeStore.get(this.type) as LongClass;
 
     return typeSpecifier == null ? [] : typeSpecifier.getChildElements();
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
-    // Retrieve the inputs from the type specifier assigned to the short class
-    const typeSpecifier = typeStore.get(this.value) as LongClass;
+    // Retrieve the inputs from the aliased type (stored in this.type)
+    const typeSpecifier = typeStore.get(this.type) as LongClass;
 
     if (typeSpecifier == null) {
       return inputs;
