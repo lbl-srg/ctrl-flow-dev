@@ -131,6 +131,19 @@ const _instancePathToOption = (
   const curInstancePathList = [pathSegments.shift()]; // keep track of instance path for modifiers
   let curOptionPath: string | null | undefined =
     `${context.template.modelicaPath}.${curInstancePathList[0]}`;
+
+  // If the constructed option path doesn't exist, look for the option in the template's
+  // child list (which includes inherited options from treeList base classes)
+  if (!context.options[curOptionPath]) {
+    const rootOption = context.getRootOption();
+    const foundOption = rootOption.options?.find((childPath) =>
+      childPath.endsWith("." + curInstancePathList[0]),
+    );
+    if (foundOption) {
+      curOptionPath = foundOption;
+    }
+  }
+
   if (debug)
     console.log(
       `[_instancePathToOption] START: instancePath=${instancePath}, modifiedPath=${modifiedPath}`,
@@ -203,7 +216,91 @@ const _instancePathToOption = (
         if (bindingPath) {
           const remainingPath = pathSegments.join(".");
           if (remainingPath) {
-            const redirectedPath = `${bindingPath}.${remainingPath}`;
+            // If bindingPath is a Modelica path (e.g., TestRecord.Nested.localRec),
+            // we need to convert it to an instance path relative to the current scope.
+            // The binding was defined in a class, so we need to find which ancestor
+            // instance corresponds to that class and replace the class prefix.
+            let resolvedBindingPath = bindingPath;
+            if (isModelicaPath(bindingPath)) {
+              // Walk up the current instance path to find an ancestor whose type
+              // (or inherited type via treeList) matches the class prefix of the binding path.
+              // For example: curInstancePath="nesExt.mod.rec", bindingPath="TestRecord.Nested.localRec"
+              // - "nesExt" has type "TestRecord.NestedExtended" with treeList including "TestRecord.Nested"
+              // - bindingPath starts with "TestRecord.Nested."
+              // - So replace "TestRecord.Nested" with "nesExt" -> "nesExt.localRec"
+              const instanceSegments = curInstancePath.split(".");
+
+              outerLoop: for (let i = instanceSegments.length; i >= 1; i--) {
+                const ancestorInstancePath = instanceSegments
+                  .slice(0, i)
+                  .join(".");
+                const ancestorOptionKey = `${context.template.modelicaPath}.${ancestorInstancePath}`;
+                const ancestorOption = context.options[ancestorOptionKey];
+
+                // Check direct type match
+                const ancestorType = ancestorOption?.type;
+                if (
+                  ancestorType &&
+                  bindingPath.startsWith(ancestorType + ".")
+                ) {
+                  const suffix = bindingPath.slice(ancestorType.length + 1);
+                  resolvedBindingPath = `${ancestorInstancePath}.${suffix}`;
+                  if (debug)
+                    console.log(
+                      `[_instancePathToOption] resolved binding: ${bindingPath} -> ${resolvedBindingPath} (via ${ancestorInstancePath} of type ${ancestorType})`,
+                    );
+                  break;
+                }
+
+                // Check inherited types via treeList
+                const typeOption = ancestorType
+                  ? context.options[ancestorType]
+                  : null;
+                if (typeOption?.treeList) {
+                  for (const inheritedType of typeOption.treeList) {
+                    if (bindingPath.startsWith(inheritedType + ".")) {
+                      const suffix = bindingPath.slice(inheritedType.length + 1);
+                      resolvedBindingPath = `${ancestorInstancePath}.${suffix}`;
+                      if (debug)
+                        console.log(
+                          `[_instancePathToOption] resolved binding: ${bindingPath} -> ${resolvedBindingPath} (via ${ancestorInstancePath} inheriting ${inheritedType})`,
+                        );
+                      break outerLoop;
+                    }
+                  }
+                }
+              }
+
+              // If still a Modelica path, check if it starts with template path
+              // or any class in the template's treeList (for bindings to base classes)
+              if (isModelicaPath(resolvedBindingPath)) {
+                const templatePath = context.template.modelicaPath;
+                if (bindingPath.startsWith(templatePath + ".")) {
+                  resolvedBindingPath = bindingPath.slice(
+                    templatePath.length + 1,
+                  );
+                } else {
+                  // Check if binding path starts with any class in template's treeList
+                  const templateOption = context.options[templatePath];
+                  if (templateOption?.treeList) {
+                    for (const baseClass of templateOption.treeList) {
+                      if (bindingPath.startsWith(baseClass + ".")) {
+                        resolvedBindingPath = bindingPath.slice(
+                          baseClass.length + 1,
+                        );
+                        if (debug)
+                          console.log(
+                            `[_instancePathToOption] resolved binding via template treeList: ${bindingPath} -> ${resolvedBindingPath} (base class: ${baseClass})`,
+                          );
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            const redirectedPath = `${resolvedBindingPath}.${remainingPath}`;
             if (debug)
               console.log(
                 `[_instancePathToOption] recordBinding redirect: ${curInstancePath}.${remainingPath} -> ${redirectedPath}`,
@@ -286,6 +383,49 @@ const _instancePathToOption = (
       console.log(
         `[_instancePathToOption] after shift: paramName=${paramName}, curOptionPath=${curOptionPath}`,
       );
+
+    // Check if the current option has a value binding to another record
+    // If so, and we have remaining path segments, follow the binding
+    // BUT only if there's no recordBinding modifier that overrides this default
+    if (curOptionPath && pathSegments.length > 0) {
+      const curInstancePath = curInstancePathList.join(".");
+      const instanceMod = context.mods[curInstancePath];
+
+      // Skip if there's a recordBinding modifier - that takes precedence
+      if (!instanceMod?.recordBinding) {
+        const curOption = context.options[curOptionPath];
+        if (curOption?.value && typeof curOption.value !== "string") {
+          const valueExpr = curOption.value as Expression;
+          if (
+            valueExpr.operator === "none" &&
+            typeof valueExpr.operands[0] === "string"
+          ) {
+            const bindingTarget = valueExpr.operands[0];
+            // Check if binding target is another record path (not a literal)
+            if (isModelicaPath(bindingTarget) || !bindingTarget.includes(".")) {
+              const remainingPath = pathSegments.join(".");
+              // Resolve the binding in the current scope, then continue with remaining path
+              const bindingInstancePath = isModelicaPath(bindingTarget)
+                ? bindingTarget.split(".").pop() // Get just the param name
+                : bindingTarget;
+              const redirectedPath = `${bindingInstancePath}.${remainingPath}`;
+              const scopePath = curInstancePath.split(".").slice(0, -1).join(".");
+              if (debug)
+                console.log(
+                  `[_instancePathToOption] value binding redirect: ${curInstancePath}.${remainingPath} -> ${scopePath ? scopePath + "." : ""}${redirectedPath}`,
+                );
+              const redirectedResult = _instancePathToOption(
+                scopePath ? `${scopePath}.${redirectedPath}` : redirectedPath,
+                context,
+                applyPathMods,
+                debug,
+              );
+              return redirectedResult;
+            }
+          }
+        }
+      }
+    }
 
     if (pathSegments.length === 0) {
       // bottoming out - set a default path
@@ -592,10 +732,40 @@ const addToModObject = (
   mods: {
     [key: string]: Modifier;
   },
+  options?: { [key: string]: OptionInterface },
+  childOptionPaths?: string[],
 ) => {
   Object.entries(newMods).forEach(([k, mod]) => {
-    const instanceName = k.split(".").pop();
-    const modKey = [baseInstancePath, instanceName]
+    // k is a Modelica path like "TestRecord.Rec.p" or "TestRecord.BaseModel.rec"
+    // We need to convert it to an instance path relative to baseInstancePath
+    const modPathSegments = k.split(".");
+    const instanceName = modPathSegments.pop(); // e.g., "p" or "rec" or "cfg"
+    const modTypePath = modPathSegments.join("."); // e.g., "TestRecord.Rec" or "TestRecord.BaseModel"
+
+    // Try to find a child option whose type matches modTypePath
+    // This handles extends clauses where modifiers target nested types (e.g., localRec.p where localRec is of type Rec)
+    // Only add instancePrefix if we find a matching child by type
+    // BUT skip if modTypePath is itself one of the childOptionPaths (meaning it's a class in the inheritance hierarchy)
+    let instancePrefix = "";
+    if (options && childOptionPaths && modTypePath) {
+      // Skip if modTypePath is a class in the hierarchy (not a component type)
+      const isClassInHierarchy = childOptionPaths.includes(modTypePath);
+      if (!isClassInHierarchy) {
+        for (const childPath of childOptionPaths) {
+          const childOption = options[childPath];
+          if (childOption?.type === modTypePath) {
+            // Found a child with matching type - use its name as prefix
+            instancePrefix = childOption.modelicaPath.split(".").pop() || "";
+            break;
+          }
+        }
+      }
+    }
+
+    // Build the modifier key
+    // If instancePrefix is set, we found a child by type match (e.g., nesExt.localRec.p)
+    // Otherwise, use the original behavior of just appending instanceName (e.g., ctl.cfg)
+    const modKey = [baseInstancePath, instancePrefix, instanceName]
       .filter((segment) => segment !== "")
       .join(".");
 
@@ -622,7 +792,13 @@ const addToModObject = (
 const getReplaceableType = (
   instancePath: string,
   option: OptionInterface,
-  mods: { [key: string]: { expression: Expression; final: boolean; redeclare: string } },
+  mods: {
+    [key: string]: {
+      expression: Expression;
+      final: boolean;
+      redeclare: string;
+    };
+  },
   selections: ConfigValues,
   options: { [key: string]: OptionInterface },
 ) => {
@@ -707,7 +883,7 @@ const buildModsHelper = (
     const o = options[oPath];
     const oMods = o.modifiers;
     if (oMods) {
-      addToModObject(oMods, newBase, option.definition, mods);
+      addToModObject(oMods, newBase, option.definition, mods, options, childOptions);
     }
   });
 
@@ -733,7 +909,7 @@ const buildModsHelper = (
     if (option.choiceModifiers && redeclaredType) {
       const choiceMods = option.choiceModifiers[redeclaredType];
       if (choiceMods) {
-        addToModObject(choiceMods, newBase, option.definition, mods);
+        addToModObject(choiceMods, newBase, option.definition, mods, options, childOptions);
       }
     }
   }
@@ -772,6 +948,8 @@ const buildModsHelper = (
             newBase,
             typeOption.definition,
             mods,
+            options,
+            typeOption.options,
           );
         }
 
@@ -955,7 +1133,7 @@ export class ConfigContext {
     const mod = this.mods[instancePath];
     if (mod) {
       val = evaluateModifier(this.mods[instancePath], this, instancePath);
-      if (val) {
+      if (val !== undefined && val !== null) {
         this._previousInstancePath = null;
         this.addToCache(path, optionPath, val);
         return val;
@@ -968,7 +1146,8 @@ export class ConfigContext {
     // With unified schema:
     // - For replaceable elements: value is "" if no binding, use type instead
     // - For non-replaceable elements: use value directly
-    const optionValue = option?.replaceable && !option?.value ? option?.type : option?.value;
+    const optionValue =
+      option?.replaceable && !option?.value ? option?.type : option?.value;
     val = evaluate(optionValue, this, optionScope);
     this.addToCache(path, optionPath, val);
     this._previousInstancePath = null;

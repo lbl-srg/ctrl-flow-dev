@@ -105,7 +105,8 @@ describe("Record Binding Interpreter Tests", () => {
     const recModifier = modOption.modifiers["TestRecord.BaseModel.rec"];
 
     expect(recModifier).toBeDefined();
-    expect(recModifier.redeclare).toBe(true);
+    // After refactoring: redeclare stores the actual type, not a boolean
+    expect(recModifier.redeclare).toBe("TestRecord.Rec");
     expect(recModifier.recordBinding).toBe(false);
   });
 
@@ -129,6 +130,12 @@ describe("Record Binding Interpreter Tests", () => {
   it("resolveToValue handles nested record bindings", () => {
     expect(resolveToValue("mod.rec.p", context, "nes")).toBe(3);
   });
+
+  it("resolveToValue handles nested record bindings in extends clause", () => {
+    expect(resolveToValue("localRec.p", context, "nesExt")).toBe(4);
+    expect(resolveToValue("mod.rec.p", context, "nesExt")).toBe(4);
+    expect(resolveToValue("mod.localRec.p", context, "nesExt")).toBe(4);
+  });
 });
 
 describe("Test plant template", () => {
@@ -142,7 +149,6 @@ describe("Test plant template", () => {
 
     // Verify enable expression evaluates to true when have_chiWat is true (default)
     expect(resolveToValue("cfg.have_chiWat", context, "ctl")).toBe(true);
-    // expect(evaluate('have_chiWat', context, 'cfg')).toBe(true);
 
     const configName = "HP Plant - heating only";
     const selections = {
