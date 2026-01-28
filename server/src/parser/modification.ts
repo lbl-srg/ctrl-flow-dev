@@ -183,17 +183,6 @@ function unpackRedeclaration(props: ModificationProps) {
       }
     }
 
-    const childModProps = {
-      ...props,
-      name: element.type,
-      definition: redeclareDefinition,
-      baseType: element.type,
-      final,
-      isRecordBinding, // Pass down whether this is a record binding
-    };
-    // create child modifications
-    const redeclareMod = createModification(childModProps);
-
     // The redeclared type is stored under 'redeclare' property
     const redeclaredType = element.type;
 
@@ -379,7 +368,7 @@ function unpackModblock(props: ModificationProps) {
     }
   }
 
-  return new Modification(scope, name, value, mods, final, false, recordBinding);
+  return new Modification(scope, name, value, mods, final, "", recordBinding);
 }
 
 export function getModificationList(

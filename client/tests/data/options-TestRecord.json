@@ -41,7 +41,7 @@
     "name": "",
     "type": "TestRecord.BaseRecord",
     "visible": true,
-    "value": "TestRecord.BaseRecord",
+    "value": "",
     "enable": true,
     "group": "",
     "tab": "",
@@ -101,14 +101,8 @@
     "value": "TestRecord.Mod",
     "modifiers": {
       "TestRecord.BaseModel.rec": {
-        "expression": {
-          "operator": "none",
-          "operands": [
-            "TestRecord.Rec"
-          ]
-        },
         "final": false,
-        "redeclare": true,
+        "redeclare": "TestRecord.Rec",
         "recordBinding": false
       }
     },
@@ -142,7 +136,7 @@
           ]
         },
         "final": false,
-        "redeclare": false,
+        "redeclare": "",
         "recordBinding": false
       }
     },
@@ -164,22 +158,11 @@
         "expression": {
           "operator": "none",
           "operands": [
-            "TestRecord.Rec"
-          ]
-        },
-        "final": false,
-        "redeclare": true,
-        "recordBinding": false
-      },
-      "TestRecord.Mod1.rec": {
-        "expression": {
-          "operator": "none",
-          "operands": [
             "localRec"
           ]
         },
         "final": false,
-        "redeclare": false,
+        "redeclare": "TestRecord.Rec",
         "recordBinding": true
       }
     },
@@ -213,7 +196,7 @@
           ]
         },
         "final": false,
-        "redeclare": false,
+        "redeclare": "",
         "recordBinding": false
       }
     },
@@ -243,7 +226,7 @@
           ]
         },
         "final": false,
-        "redeclare": false,
+        "redeclare": "",
         "recordBinding": true
       }
     },
@@ -284,7 +267,7 @@
           ]
         },
         "final": false,
-        "redeclare": false,
+        "redeclare": "",
         "recordBinding": false
       }
     },
@@ -348,7 +331,7 @@
           ]
         },
         "final": false,
-        "redeclare": false,
+        "redeclare": "",
         "recordBinding": true
       }
     },
@@ -386,7 +369,7 @@
           ]
         },
         "final": false,
-        "redeclare": false,
+        "redeclare": "",
         "recordBinding": true
       }
     },

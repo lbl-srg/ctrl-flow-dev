@@ -11,7 +11,6 @@ import * as parser from "../../../src/parser/parser";
 import * as fs from "fs";
 import * as path from "path";
 
-
 const templatePath = "TestPackage.Template.TestTemplate";
 
 let tOptions: { [key: string]: Option } = {};
@@ -25,7 +24,7 @@ const isExpression = (obj: any) =>
 describe("Modifications", () => {
   beforeAll(() => {
     initializeTestModelicaJson();
-    loadPackage('TestPackage');
+    loadPackage("TestPackage");
     const templates = getTemplates();
     const template = templates.find(
       (t) => t.modelicaPath === templatePath,
@@ -85,12 +84,13 @@ describe("Modifications", () => {
 
     expect(
       "TestPackage.Template.Data.TestTemplate.container_selectable_component" in
-      datMods,
+        datMods,
     ).toBeTruthy();
 
     const templateInput = inputs[templatePath];
     const templateMods = flattenModifiers(templateInput.modifiers);
-    const nestedParamPath = "TestPackage.Interface.NestedExtendInterface.nested_interface_param";
+    const nestedParamPath =
+      "TestPackage.Interface.NestedExtendInterface.nested_interface_param";
     expect(nestedParamPath in templateMods).toBeTruthy();
   });
 
@@ -117,7 +117,7 @@ describe("Modifications", () => {
     expect(mod).toBeDefined();
     expect(mod.final).toBeTruthy();
     // For redeclare modifications: 'redeclare' stores the type, 'expression' is only set if there's a binding (=)
-    expect(mod.redeclare).toEqual('TestPackage.Component.SecondComponent');
+    expect(mod.redeclare).toEqual("TestPackage.Component.SecondComponent");
     expect(mod.expression).toBeUndefined();
   });
 
@@ -139,22 +139,6 @@ describe("Record Binding Modifications", () => {
     // Log full templates.json equivalent for TestRecord
     const testRecord = findElement("TestRecord") as parser.LongClass;
     const inputs = testRecord.getInputs();
-    
-    // Build options similar to Template._extractOptions
-    const options: { [key: string]: any } = {};
-    Object.entries(inputs).forEach(([key, input]) => {
-      const flatMods = flattenModifiers(input.modifiers);
-      // Remove self-reference modifier
-      delete flatMods[input.modelicaPath];
-      options[key] = {
-        modelicaPath: input.modelicaPath,
-        name: input.name,
-        type: input.type,
-        modifiers: flatMods,
-      };
-    });
-    
-    console.log("TestRecord templates.json equivalent:", JSON.stringify(options, null, 2));
   });
 
   it("Sets recordBinding=false for redeclare without binding", () => {
@@ -167,15 +151,13 @@ describe("Record Binding Modifications", () => {
     expect(mods!.length).toBeGreaterThan(0);
 
     const redeclareMod = mods![0];
-    expect(redeclareMod.redeclare).toBe(true);
     expect(redeclareMod.recordBinding).toBe(false);
   });
 
-  it("Sets recordBinding=true on value binding modifier, not on redeclare", () => {
+  it("Sets recordBinding=true on redeclare with value binding", () => {
     // Mod1: extends BaseModel with redeclare Rec rec = localRec
-    // This produces two modifiers:
-    // 1. redeclare modifier (type change) with recordBinding=false
-    // 2. value binding modifier (rec=localRec) with recordBinding=true
+    // redeclare stores the type, and if there's a binding (=),
+    // the value is stored on the same modifier with recordBinding=true
     const element = findElement("TestRecord.Mod1") as parser.LongClass;
     expect(element).toBeDefined();
 
@@ -183,16 +165,14 @@ describe("Record Binding Modifications", () => {
     expect(mods).toBeDefined();
     expect(mods!.length).toBeGreaterThan(0);
 
-    // The redeclare modifier should have redeclare=true but recordBinding=false
+    // The modifier should have redeclare=type AND recordBinding=true (because there's a binding)
     const redeclareMod = mods![0];
-    expect(redeclareMod.redeclare).toBe(true);
-    expect(redeclareMod.recordBinding).toBe(false);
-
-    // The child modifier (value binding) should have recordBinding=true
-    expect(redeclareMod.mods.length).toBeGreaterThan(0);
-    const bindingMod = redeclareMod.mods[0];
-    expect(bindingMod.redeclare).toBe(false);
-    expect(bindingMod.recordBinding).toBe(true);
+    expect(redeclareMod.redeclare).toBe("TestRecord.Rec");
+    expect(redeclareMod.recordBinding).toBe(true);
+    expect(redeclareMod.value).toEqual({
+      operator: "none",
+      operands: ["localRec"],
+    });
   });
 
   it("Composite instance binding should have recordBinding=true", () => {
@@ -208,17 +188,17 @@ describe("Record Binding Modifications", () => {
     const element = findElement("TestRecord.Mod1") as parser.LongClass;
     const flatMods = flattenModifiers(element.mods);
 
-    // The redeclare modifier path should have recordBinding=false
+    // redeclare with binding is a single modifier with both
+    // redeclare (the type) and expression (the binding), with recordBinding=true
     const redeclarePath = "TestRecord.BaseModel.rec";
     expect(flatMods[redeclarePath]).toBeDefined();
-    expect(flatMods[redeclarePath].redeclare).toBe(true);
-    expect(flatMods[redeclarePath].recordBinding).toBe(false);
-
-    // The value binding modifier path should have recordBinding=true
-    const bindingPath = "TestRecord.Mod1.rec";
-    expect(flatMods[bindingPath]).toBeDefined();
-    expect(flatMods[bindingPath].redeclare).toBe(false);
-    expect(flatMods[bindingPath].recordBinding).toBe(true);
+    expect(flatMods[redeclarePath].redeclare).toBe("TestRecord.Rec");
+    expect(flatMods[redeclarePath].recordBinding).toBe(true);
+    // The expression should contain the binding value
+    expect(flatMods[redeclarePath].expression).toEqual({
+      operator: "none",
+      operands: ["localRec"],
+    });
   });
 
   afterAll(() => {
@@ -279,9 +259,11 @@ describe("Record Binding Modifications", () => {
       // Include choiceModifiers if present
       if (input.choiceModifiers) {
         const flattenedChoiceMods: { [key: string]: any } = {};
-        Object.entries(input.choiceModifiers).forEach(([choiceKey, modList]) => {
-          flattenedChoiceMods[choiceKey] = flattenModifiers(modList);
-        });
+        Object.entries(input.choiceModifiers).forEach(
+          ([choiceKey, modList]) => {
+            flattenedChoiceMods[choiceKey] = flattenModifiers(modList);
+          },
+        );
         option.choiceModifiers = flattenedChoiceMods;
       }
 
@@ -291,7 +273,7 @@ describe("Record Binding Modifications", () => {
     // Write to client/tests/data/options-TestRecord.json
     const outputPath = path.resolve(
       __dirname,
-      "../../../../client/tests/data/options-TestRecord.json"
+      "../../../../client/tests/data/options-TestRecord.json",
     );
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, JSON.stringify(options, null, 2));
