@@ -32,10 +32,8 @@ interface Modifier {
   expression: Expression;
   final: boolean;
   fromClassDefinition: boolean;
-  redeclare: boolean;
+  redeclare: string; // "" if not a redeclare, otherwise the redeclared type path
   recordBinding?: boolean;
-  /** For merged redeclare+binding modifiers, stores the binding expression separately */
-  bindingExpression?: Expression;
 }
 
 /**
@@ -184,57 +182,39 @@ const _instancePathToOption = (
           `[_instancePathToOption] checking mods for ${curInstancePath}: ${instanceMod ? "FOUND" : "not found"}`,
         );
       // resolve mod if present
-      if (instanceMod) {
-        const resolvedValue = evaluateModifier(
-          instanceMod,
-          context,
-          curInstancePath,
-        );
-        if (debug)
-          console.log(
-            `[_instancePathToOption] mod resolvedValue=${resolvedValue}, redeclare=${instanceMod.redeclare}, recordBinding=${(instanceMod as any).recordBinding}`,
-          );
-        if (typeof resolvedValue === "string" && instanceMod.redeclare) {
-          const potentialOption = context.options[resolvedValue as string];
-          if (debug)
-            console.log(
-              `[_instancePathToOption] redeclare option swap: ${potentialOption?.modelicaPath}`,
-            );
-          option = potentialOption ? potentialOption : option;
-        }
-        // Handle record binding: redirect path resolution to follow the binding
-        // For merged redeclare+binding modifiers, use bindingExpression; for standalone bindings use expression
-        // Skip if this is a redeclare without bindingExpression (old data format where recordBinding was on redeclare)
+      if (instanceMod && instanceMod.redeclare) {
+        // For redeclare modifiers, the type is stored directly in the 'redeclare' property
+        const potentialOption = context.options[instanceMod.redeclare];
+        option = potentialOption ? potentialOption : option;
+      }
+      // Handle record binding: redirect path resolution to follow the binding
+      // For merged redeclare+binding modifiers, use bindingExpression; for standalone bindings use expression
+      // Skip if this is a redeclare without bindingExpression (old data format where recordBinding was on redeclare)
+      if (instanceMod && instanceMod.recordBinding) {
+        const bindingExpr = instanceMod.expression;
+        let bindingPath: string | null = null;
         if (
-          instanceMod.recordBinding &&
-          (!instanceMod.redeclare || instanceMod.bindingExpression)
+          bindingExpr?.operator === "none" &&
+          typeof bindingExpr.operands[0] === "string"
         ) {
-          const bindingExpr =
-            instanceMod.bindingExpression || instanceMod.expression;
-          let bindingPath: string | null = null;
-          if (
-            bindingExpr?.operator === "none" &&
-            typeof bindingExpr.operands[0] === "string"
-          ) {
-            bindingPath = bindingExpr.operands[0];
-          }
+          bindingPath = bindingExpr.operands[0];
+        }
 
-          if (bindingPath) {
-            const remainingPath = pathSegments.join(".");
-            if (remainingPath) {
-              const redirectedPath = `${bindingPath}.${remainingPath}`;
-              if (debug)
-                console.log(
-                  `[_instancePathToOption] recordBinding redirect: ${curInstancePath}.${remainingPath} -> ${redirectedPath}`,
-                );
-              const redirectedResult = _instancePathToOption(
-                redirectedPath,
-                context,
-                applyPathMods,
-                debug,
+        if (bindingPath) {
+          const remainingPath = pathSegments.join(".");
+          if (remainingPath) {
+            const redirectedPath = `${bindingPath}.${remainingPath}`;
+            if (debug)
+              console.log(
+                `[_instancePathToOption] recordBinding redirect: ${curInstancePath}.${remainingPath} -> ${redirectedPath}`,
               );
-              return redirectedResult;
-            }
+            const redirectedResult = _instancePathToOption(
+              redirectedPath,
+              context,
+              applyPathMods,
+              debug,
+            );
+            return redirectedResult;
           }
         }
       }
@@ -281,11 +261,11 @@ const _instancePathToOption = (
       );
 
     // For short classes, the actual instance is within the options
-    // of the type assigned to the short class identifier.
+    // of the aliased type (stored in option.type).
     // (If this type is modified by the user selection, this has already been caught by
     // the selection check above.)
     if (option?.shortExclType) {
-      option = context.options[option?.value as string];
+      option = context.options[option?.type as string];
     }
 
     if (pathSegments.length === 0) {
@@ -468,12 +448,21 @@ export const resolveToValue = (
  *
  * If the modifier came from a param, scope has to be kicked back
  * by 2, if it was defined on a class, by 1
+ *
+ * For redeclare modifiers:
+ * - 'redeclare' contains the redeclared type path
+ * - 'expression' contains the binding value (only if there's an assignment =)
+ * If it's a redeclare without a binding, return the redeclare type directly
  */
 export const evaluateModifier = (
   mod: Modifier,
   context: ConfigContext,
   instancePath = "",
 ) => {
+  // For redeclare modifiers without a binding, return the redeclare type directly
+  if (mod?.redeclare && !mod?.expression) {
+    return mod.redeclare;
+  }
   const sliceAmount = mod?.fromClassDefinition ? -1 : -2;
   const expressionScope = instancePath
     .split(".")
@@ -594,7 +583,7 @@ const addToModObject = (
     [key: string]: {
       expression: Expression;
       final: boolean;
-      redeclare: boolean;
+      redeclare: string;
       recordBinding?: boolean;
     };
   },
@@ -617,19 +606,6 @@ const addToModObject = (
         ...mod,
         ...{ ["fromClassDefinition"]: fromClassDefinition },
       };
-    } else if (
-      // When a redeclare modifier exists and we encounter a record binding modifier
-      // for the same key, merge the binding info into the existing modifier.
-      // This handles "redeclare Rec rec = localRec" where the parser produces
-      // separate modifiers for the type change and the value binding.
-      mods[modKey].redeclare &&
-      !mod.redeclare &&
-      mod.recordBinding
-    ) {
-      // Store the binding path separately - the redeclare expression is the type,
-      // the binding expression is the value source
-      mods[modKey].recordBinding = true;
-      mods[modKey].bindingExpression = mod.expression;
     }
   });
 };
@@ -646,7 +622,7 @@ const addToModObject = (
 const getReplaceableType = (
   instancePath: string,
   option: OptionInterface,
-  mods: { [key: string]: { expression: Expression; final: boolean } },
+  mods: { [key: string]: { expression: Expression; final: boolean; redeclare: string } },
   selections: ConfigValues,
   options: { [key: string]: OptionInterface },
 ) => {
@@ -683,15 +659,18 @@ const getReplaceableType = (
   }
 
   // Check if there is a modifier for this option, if so use it:
+  // For redeclare modifiers, the type is stored directly in the 'redeclare' property
   let newType = null;
-  const redeclaredType = instancePath in mods ? mods[instancePath] : null;
-  if (redeclaredType) {
-    // not using 'evaluateModifier' as that relies on context
-    // This evaluation COULD mess up if operand anything but 'none'
-    newType = evaluate(redeclaredType.expression);
+  const mod = instancePath in mods ? mods[instancePath] : null;
+  if (mod && mod.redeclare) {
+    // The redeclare property contains the type path directly
+    newType = mod.redeclare;
   }
 
-  // Otherwise just definition type
+  // Otherwise use definition type
+  // With unified schema, 'type' always contains the actual/aliased type for both:
+  // - Replaceable short classes: type = aliased type, value = ""
+  // - Replaceable components: type = declared type, value = "" or binding
   return newType ? newType : option.type;
 };
 
@@ -735,7 +714,10 @@ const buildModsHelper = (
   // check for redeclare in selections or use default type
   // to grab the correct modifiers
   if (option.replaceable) {
-    let redeclaredType = option.value as string | null | undefined;
+    // With unified schema, 'type' always contains the actual/aliased type
+    // - Replaceable short classes: type = aliased type, value = ""
+    // - Replaceable components: type = declared type, value = "" or binding
+    let redeclaredType: string | null | undefined = option.type;
     if (option.modelicaPath in selectionModelicaPathsCache) {
       const selectionPath = constructSelectionPath(
         option.modelicaPath,
@@ -982,7 +964,12 @@ export class ConfigContext {
 
     // return whatever value is present on the original option definition
     const optionScope = instancePath.split(".").slice(0, -1).join(".");
-    val = evaluate(this.options[optionPath]?.value, this, optionScope);
+    const option = this.options[optionPath];
+    // With unified schema:
+    // - For replaceable elements: value is "" if no binding, use type instead
+    // - For non-replaceable elements: use value directly
+    const optionValue = option?.replaceable && !option?.value ? option?.type : option?.value;
+    val = evaluate(optionValue, this, optionScope);
     this.addToCache(path, optionPath, val);
     this._previousInstancePath = null;
     return val;
@@ -1073,8 +1060,9 @@ export class ConfigContext {
       value = undefined;
     }
     const option = this.options[optionPath as string];
+    // For replaceable components, value is "" if no binding, so we fallback to type
     const type =
-      option && "replaceable" in option ? (value as string) : option?.["type"];
+      option?.replaceable && value ? (value as string) : option?.["type"];
     const castValue = value as Literal | null | undefined;
     const optionInstance = {
       value: castValue,

@@ -116,7 +116,9 @@ describe("Modifications", () => {
 
     expect(mod).toBeDefined();
     expect(mod.final).toBeTruthy();
-    expect(evaluateExpression(mod.expression)).toEqual('TestPackage.Component.SecondComponent');
+    // For redeclare modifications: 'redeclare' stores the type, 'expression' is only set if there's a binding (=)
+    expect(mod.redeclare).toEqual('TestPackage.Component.SecondComponent');
+    expect(mod.expression).toBeUndefined();
   });
 
   it("Doesn't have a modifier that matches the option path (the 'default mod')", () => {

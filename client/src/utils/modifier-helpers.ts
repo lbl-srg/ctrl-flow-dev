@@ -13,7 +13,7 @@ export interface ConfigValues {
 }
 
 export type Modifiers = {
-  [key: string]: { expression: Expression; final: boolean; redeclare: boolean };
+  [key: string]: { expression: Expression; final: boolean; redeclare: string };
 };
 
 function addToModObject(

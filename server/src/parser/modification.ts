@@ -111,8 +111,14 @@ export function createModification(
  * Redeclaration Mods need to be unpacked slightly differently:
  *
  * 1. The JSON structure needs to be unpacked to get to the mod definition
- * 2. The modification type needs to updated to the redeclared type
+ * 2. The redeclared type is stored under 'redeclare' property (for both component and class redeclarations)
+ * 3. The 'value' only contains the binding expression if there's an assignment (=) for components
+ *    (class redeclarations never have a binding value)
  *
+ * Examples:
+ * - `redeclare NewType myParam` -> redeclare="NewType", value=undefined
+ * - `redeclare NewType myParam = someValue` -> redeclare="NewType", value="someValue"
+ * - `redeclare package Medium = NewMedium` -> redeclare="NewMedium", value=undefined
  */
 function unpackRedeclaration(props: ModificationProps) {
   let { basePath, definition, baseType } = props;
@@ -152,14 +158,30 @@ function unpackRedeclaration(props: ModificationProps) {
       componentClause1.component_declaration1.declaration;
     const name = redeclareDefinition.identifier;
 
-    // Check if there's a binding (equal assignment) to a record type
-    // e.g., "redeclare Rec rec = localRec" where Rec is a record type
-    const modification = redeclareDefinition.modification;
-    const hasBinding =
-      modification !== undefined &&
-      "equal" in modification &&
-      (modification as mj.Assignment).equal === true;
-    const isRecordBinding = hasBinding && isRecord(element);
+    let bindingValue: Expression | string | undefined = undefined;
+    const childMods: Modification[] = [];
+    let isRecordBinding = false;
+
+    if (redeclareDefinition.modification) {
+      const mod = redeclareDefinition.modification;
+      if ("equal" in mod && (mod as mj.Assignment).equal) {
+        // There's a binding (=), extract the value
+        bindingValue = getExpression(
+          (mod as mj.Assignment).expression,
+          basePath,
+          baseType,
+        );
+        isRecordBinding = isRecord(element);
+      } else if ("class_modification" in mod) {
+        // There are nested modifications but no direct binding
+        const nestedMods = getModificationList(
+          mod as mj.ClassMod,
+          [basePath, name].filter((s) => s).join("."),
+          element.type,
+        );
+        childMods.push(...nestedMods);
+      }
+    }
 
     const childModProps = {
       ...props,
@@ -171,23 +193,53 @@ function unpackRedeclaration(props: ModificationProps) {
     };
     // create child modifications
     const redeclareMod = createModification(childModProps);
-    const childMods = redeclareMod ? [redeclareMod] : [];
 
-    // The redeclare modifier specifies the type change - it does not carry the binding.
-    // recordBinding should be false for the redeclare modifier itself.
-    // The binding (e.g., "= localRec") is captured as a separate child modifier with recordBinding=true.
+    // The redeclared type is stored under 'redeclare' property
+    const redeclaredType = element.type;
 
-    // create the redeclare modification (recordBinding=false for redeclare itself)
+    // create the redeclare modification
     return new Modification(
       scope,
       name,
-      getExpression(element.type, basePath, baseType),
+      bindingValue, // only set if there's a binding (=)
       childMods,
       final,
-      true,
-      false, // redeclare modifier does not carry recordBinding
+      redeclaredType, // the redeclared type path
+      isRecordBinding, // Pass down whether this is a record binding
     );
   } else if ("short_class_definition" in redeclaration) {
+    // Short class definition redeclaration: `redeclare package Medium = NewMedium`
+    // The aliased type (NewMedium) is stored under 'redeclare' property
+    // 'value' is undefined (no binding for class redeclarations)
+    const shortClassDef = redeclaration.short_class_definition as mj.ShortClassDefinition;
+    const specifier = shortClassDef.short_class_specifier;
+    const name = specifier.identifier;
+
+    // Get the aliased type from the RHS - this goes in 'redeclare'
+    const aliasedTypeName = specifier.value?.name;
+    const aliasedType = aliasedTypeName
+      ? typeStore.get(aliasedTypeName, basePath)
+      : undefined;
+    const redeclaredType = aliasedType?.modelicaPath || aliasedTypeName || "";
+
+    // Get any nested modifications from class_modification
+    let childMods: Modification[] = [];
+    if (specifier.value?.class_modification) {
+      childMods = getModificationList(
+        { class_modification: specifier.value.class_modification } as mj.ClassMod,
+        [basePath, name].filter((s) => s).join("."),
+        redeclaredType,
+      );
+    }
+
+    return new Modification(
+      basePath,
+      name,
+      undefined, // no binding for class redeclarations
+      childMods,
+      final,
+      redeclaredType, // the aliased type goes in redeclare
+    );
   }
 }
 
@@ -354,6 +406,14 @@ export function getModificationList(
  *  (e.g. a redeclare statement)
  *
  * The mod 'name' can be explicitly provided instead of discovered
+ *
+ * For redeclare modifications:
+ * - 'redeclare' stores the redeclared type (string), e.g., "Package.NewType", or "" if not a redeclare
+ * - 'value' stores the binding expression only if there's an assignment (=), otherwise undefined
+ *   Example: `redeclare NewRecordType record = localRecordInstance`
+ *            -> redeclare = "NewRecordType", value = "localRecordInstance"
+ *   Example: `redeclare NewType myParam`
+ *            -> redeclare = "NewType", value = undefined
  */
 export class Modification {
   empty = false;
@@ -364,8 +424,8 @@ export class Modification {
     public value: any,
     public mods: Modification[] = [],
     public final = false,
-    public redeclare = false,
-    public recordBinding = false,
+    public redeclare: string = "", // "" if not a redeclare, otherwise the redeclared type path
+    public recordBinding = false, // true if this modification is a binding to a record type
   ) {
     this.modelicaPath = [basePath, name].filter((s) => s !== "").join(".");
     if (this.modelicaPath) {

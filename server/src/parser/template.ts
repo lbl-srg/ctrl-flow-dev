@@ -70,7 +70,7 @@ export interface Option {
   value?: any;
   enable?: any;
   treeList?: string[]; // Only defined if (option.definition)
-  modifiers: { [key: string]: { expression: Expression; final: boolean; redeclare: boolean; recordBinding: boolean } };
+  modifiers: { [key: string]: { expression: Expression; final: boolean; redeclare: string; recordBinding: boolean } };
   choiceModifiers?: { [key: string]: Mods };
   replaceable: boolean;
   elementType: string;
@@ -87,11 +87,15 @@ export interface ScheduleOption extends Option {
 }
 
 export interface Mods {
-  [key: string]: { expression: Expression; final: boolean; redeclare: boolean; recordBinding: boolean };
+  [key: string]: { expression: Expression; final: boolean; redeclare: string; recordBinding: boolean };
 }
 
 /**
  * Maps the nested modifier structure into a flat dictionary
+ *
+ * For redeclare modifications:
+ * - 'redeclare' is the redeclared type path (string) or "" if not a redeclare
+ * - 'expression' is the binding value if there's an assignment (=), otherwise undefined
  */
 export function flattenModifiers(
   modList: (Modification | undefined | null)[] | undefined,
@@ -99,7 +103,7 @@ export function flattenModifiers(
     [key: string]: {
       expression: Expression;
       final: boolean;
-      redeclare: boolean;
+      redeclare: string;
       recordBinding: boolean;
     };
   } = {},
@@ -111,7 +115,10 @@ export function flattenModifiers(
   modList
     .filter((m) => m !== undefined || m !== null)
     .map((mod) => {
-      if (mod?.value) {
+      // Include modifiers with truthy value, OR redeclare modifiers (even without a binding)
+      // The original check was `mod?.value` (truthy) - we keep that for regular modifiers
+      // but also include redeclare modifiers since the type itself is meaningful
+      if (mod?.value || mod?.redeclare) {
         mods[mod.modelicaPath] = {
           expression: mod.value,
           final: mod.final,
@@ -265,8 +272,8 @@ export class Template {
   ) {
     mods.map((m) => {
       if (m.redeclare) {
-        const redeclareType = evaluateExpression(m.value);
-        redeclareTypes[redeclareType] = null;
+        // m.redeclare now contains the redeclared type path directly (string)
+        redeclareTypes[m.redeclare] = null;
       }
       if (m.mods) {
         this._findRedeclareTypesHelper(m.mods, redeclareTypes);

@@ -148,10 +148,7 @@ export function _formatDisplayItem(
     return [];
   }
   const displayList: DisplayItem[] = [];
-  const optionType =
-    option && option["replaceable"] && !optionInstance.value
-      ? optionInstance.value
-      : option.type;
+  const optionType = option.type;
 
   if (displayOptionFilter(optionInstance, optionType as string)) {
     return [];
@@ -164,10 +161,15 @@ export function _formatDisplayItem(
     );
   }
   // check if the type needs to be rendered
+  // Use optionInstance.value for type lookup to preserve original behavior:
+  // - For non-replaceable components with value="" (no binding), lookup fails -> no nested components rendered
+  // - For replaceable components with value="" (no binding), use option.type instead
   const type =
-    optionInstance.value !== undefined && optionInstance.value !== null
-      ? optionInstance.value
-      : option.type;
+    option["replaceable"] && !optionInstance.value
+      ? option.type
+      : (optionInstance.value !== undefined && optionInstance.value !== null
+          ? optionInstance.value
+          : option.type);
   const typeOption = context.options[type as string];
   if (typeOption === undefined) {
     return displayList;
