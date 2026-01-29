@@ -99,7 +99,7 @@
     "visible": false,
     "value": "TestRecord.Mod",
     "modifiers": {
-      "TestRecord.BaseModel.rec": {
+      "TestRecord.Mod.rec": {
         "final": false,
         "redeclare": "TestRecord.Rec",
         "recordBinding": false
@@ -126,7 +126,7 @@
     "group": "",
     "tab": "",
     "modifiers": {
-      "TestRecord.Rec.p": {
+      "TestRecord.Mod1.localRec.p": {
         "expression": {
           "operator": "none",
           "operands": [
@@ -152,7 +152,7 @@
     "visible": false,
     "value": "TestRecord.Mod1",
     "modifiers": {
-      "TestRecord.BaseModel.rec": {
+      "TestRecord.Mod1.rec": {
         "expression": {
           "operator": "none",
           "operands": [
@@ -185,7 +185,7 @@
     "group": "",
     "tab": "",
     "modifiers": {
-      "TestRecord.Rec.p": {
+      "TestRecord.Nested.localRecFirst.p": {
         "expression": {
           "operator": "none",
           "operands": [
@@ -214,7 +214,7 @@
     "group": "",
     "tab": "",
     "modifiers": {
-      "TestRecord.Rec.p": {
+      "TestRecord.Nested.localRec.p": {
         "expression": {
           "operator": "none",
           "operands": [
@@ -243,7 +243,7 @@
     "group": "",
     "tab": "",
     "modifiers": {
-      "TestRecord.BaseModel.rec": {
+      "TestRecord.Nested.mod.rec": {
         "expression": {
           "operator": "none",
           "operands": [
@@ -285,7 +285,18 @@
     "visible": false,
     "value": "TestRecord.NestedExtended",
     "modifiers": {
-      "TestRecord.Rec.p": {
+      "TestRecord.NestedExtended.localRec.p": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            4
+          ]
+        },
+        "final": false,
+        "redeclare": "",
+        "recordBinding": false
+      },
+      "TestRecord.NestedExtended.localRecFirst.p": {
         "expression": {
           "operator": "none",
           "operands": [
@@ -349,7 +360,7 @@
     "group": "",
     "tab": "",
     "modifiers": {
-      "TestRecord.Mod.localRec": {
+      "TestRecord.mod2.localRec": {
         "expression": {
           "operator": "none",
           "operands": [
@@ -376,7 +387,7 @@
     "group": "",
     "tab": "",
     "modifiers": {
-      "TestRecord.BaseModel.rec": {
+      "TestRecord.mod3.rec": {
         "expression": {
           "operator": "function_call",
           "operands": [

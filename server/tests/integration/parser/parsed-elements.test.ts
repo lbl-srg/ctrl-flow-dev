@@ -138,7 +138,8 @@ describe("Expected elements are extracted", () => {
       const choiceMods = input.choiceModifiers[choice3];
       expect(choiceMods).toBeDefined();
       const [choiceMod] = choiceMods;
-      expect(choiceMod.modelicaPath).toEqual('TestPackage.Component.FourthComponent.replaceable_param');
+      // Modifier paths are now instance-based, not type-based
+      expect(choiceMod.modelicaPath).toEqual('TestPackage.Template.TestTemplate.selectable_component.replaceable_param');
       // For redeclare modifications: 'redeclare' stores the type, 'value' is only set if there's a binding (=)
       expect(choiceMod.redeclare).toEqual('TestPackage.Component.SecondComponent');
       expect(choiceMod.value).toBeUndefined();

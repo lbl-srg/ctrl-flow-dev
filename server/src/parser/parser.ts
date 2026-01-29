@@ -340,9 +340,11 @@ function initializeReplaceable(
     if (constraintDef?.class_modification) {
       instance.mods = [
         ...instance.mods,
+        // Use instance.modelicaPath (the component's full path) for modifier keys,
+        // not basePath (the parent class path)
         ...getModificationList(
           constraintDef,
-          basePath,
+          instance.modelicaPath,
           instance.constraint.modelicaPath,
         ),
       ];

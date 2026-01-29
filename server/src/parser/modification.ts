@@ -188,8 +188,9 @@ function unpackRedeclaration(props: ModificationProps) {
     const redeclaredType = element.type;
 
     // create the redeclare modification
+    // Use basePath (instance path) for the modifier key, not scope (type path)
     return new Modification(
-      scope,
+      basePath,
       name,
       bindingValue, // only set if there's a binding (=)
       childMods,
@@ -345,8 +346,23 @@ function unpackModblock(props: ModificationProps) {
         ) as mj.ClassMod;
         // Additional modifiers can be attached to choice
         if (classModification) {
-          // Include component name in path for nested modifications
-          const nestedBasePath = [basePath, name].filter((s) => s).join(".");
+          // Extract the actual component name from the redeclaration
+          // (e.g., "selectable_component" from "redeclare ... selectable_component(...)")
+          const componentName =
+            "component_clause1" in replaceable
+              ? (clause as mj.ComponentClause1).component_declaration1
+                  .declaration.identifier
+              : (clause as mj.ShortClassDefinition).short_class_specifier
+                  .identifier;
+          // basePath here includes "choices" (e.g., "TestPackage.Template.TestTemplate.choices")
+          // Strip the trailing ".choices" to get the parent class path for the instance path
+          const parentPath = basePath.endsWith(".choices")
+            ? basePath.slice(0, -".choices".length)
+            : basePath;
+          // Use instance path (parentPath + componentName), not type path
+          const nestedBasePath = [parentPath, componentName]
+            .filter((s) => s)
+            .join(".");
           mods = getModificationList(classModification, nestedBasePath, value);
           // TODO: getModificationList should handle redeclares but it is not
           // correctly unpacking nested modifiers - this is a bug
@@ -369,7 +385,10 @@ function unpackModblock(props: ModificationProps) {
     }
   }
 
-  return new Modification(scope, name, value, mods, final, "", recordBinding);
+  // Use basePath (instance path) for the modifier key, not scope (type path).
+  // This ensures modifiers like `extends Nested(localRec(p=4))` produce keys like
+  // "TestRecord.Nested.localRec.p" instead of "TestRecord.Rec.p".
+  return new Modification(basePath, name, value, mods, final, "", recordBinding);
 }
 
 export function getModificationList(

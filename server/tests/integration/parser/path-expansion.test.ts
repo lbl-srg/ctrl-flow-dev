@@ -42,13 +42,11 @@ describe("Path Expansion", () => {
 
   it("Constrain modifier types are expanded", () => {
     const { options } = getOptions();
-    const expectedRootPackage = "TestPackage";
-    const modPath = "TestPackage.Interface.PartialComponent.container";
-    const shortModOption = options.find(
-      (o) =>
-        o.modelicaPath ===
-        "TestPackage.Template.TestTemplate.selectable_component_with_relative_paths",
-    );
+    const optionPath =
+      "TestPackage.Template.TestTemplate.selectable_component_with_relative_paths";
+    // Modifier paths are now instance-based, not type-based
+    const modPath = `${optionPath}.container`;
+    const shortModOption = options.find((o) => o.modelicaPath === optionPath);
 
     const mods = shortModOption?.modifiers;
     expect(mods).toBeDefined();
@@ -60,15 +58,12 @@ describe("Path Expansion", () => {
   it("Redeclare modifier paths are expanded", () => {
     const { options } = getOptions();
     const expectedValue = "TestPackage.Component.FifthComponent";
+    const optionPath = "TestPackage.Template.TestTemplate.short_path_component";
     const shortPathComponent = options.find(
-      (o) =>
-        o.modelicaPath ===
-        "TestPackage.Template.TestTemplate.short_path_component",
+      (o) => o.modelicaPath === optionPath,
     );
-    const mod =
-      shortPathComponent?.modifiers[
-        "TestPackage.Component.FourthComponent.replaceable_param"
-      ];
+    // Modifier paths are now instance-based, not type-based
+    const mod = shortPathComponent?.modifiers[`${optionPath}.replaceable_param`];
     expect(mod).toBeDefined();
     if (mod) {
       // For redeclare modifications: 'redeclare' stores the type, 'expression' is only set if there's a binding (=)

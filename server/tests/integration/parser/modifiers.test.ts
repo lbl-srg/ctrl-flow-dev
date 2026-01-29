@@ -53,8 +53,8 @@ describe("Modifications", () => {
     };
     const input = inputs[path];
     const mod = flattenModifiers(input.modifiers);
-    const extendElement = element.extendElement;
-    const modPath = `${extendElement?.type}.interface_param`;
+    // Modifier paths are now instance-based, not type-based
+    const modPath = `${path}.interface_param`;
     expect(evaluateExpression(mod[modPath].expression)).toEqual(
       "Updated Value",
     );
@@ -82,15 +82,16 @@ describe("Modifications", () => {
     const datInput = inputs[`${templatePath}.dat`];
     const datMods = flattenModifiers(datInput.modifiers);
 
+    // Modifier paths are instance-based: templatePath.dat.fieldName
     expect(
-      "TestPackage.Template.Data.TestTemplate.container_selectable_component" in
+      "TestPackage.Template.TestTemplate.dat.container_selectable_component" in
         datMods,
     ).toBeTruthy();
 
     const templateInput = inputs[templatePath];
     const templateMods = flattenModifiers(templateInput.modifiers);
-    const nestedParamPath =
-      "TestPackage.Interface.NestedExtendInterface.nested_interface_param";
+    // Modifier paths are now instance-based, not type-based
+    const nestedParamPath = `${templatePath}.nested_interface_param`;
     expect(nestedParamPath in templateMods).toBeTruthy();
   });
 
@@ -99,7 +100,8 @@ describe("Modifications", () => {
    */
   it("Finds 'constrainby' modifiers", () => {
     const path = "TestPackage.Template.TestTemplate.selectable_component";
-    const modPath = "TestPackage.Interface.PartialComponent.container";
+    // Modifier paths are now instance-based, not type-based
+    const modPath = `${path}.container`;
     const expected = "TestPackage.Types.Container.Cone";
     const option = tOptions[path];
     const mods = option.modifiers;
@@ -110,7 +112,8 @@ describe("Modifications", () => {
 
   it("Creates redeclare modifiers", () => {
     const path = "TestPackage.Template.TestTemplate.redeclare_param_01";
-    const modPath = "TestPackage.Component.FourthComponent.replaceable_param";
+    // Modifier paths are now instance-based, not type-based
+    const modPath = `${path}.replaceable_param`;
     const option = tOptions[path];
     const mod = option.modifiers[modPath];
 
@@ -190,7 +193,8 @@ describe("Record Binding Modifications", () => {
 
     // redeclare with binding is a single modifier with both
     // redeclare (the type) and expression (the binding), with recordBinding=true
-    const redeclarePath = "TestRecord.BaseModel.rec";
+    // Modifier paths are instance-based: Mod1 extends BaseModel, so rec is at Mod1.rec
+    const redeclarePath = "TestRecord.Mod1.rec";
     expect(flatMods[redeclarePath]).toBeDefined();
     expect(flatMods[redeclarePath].redeclare).toBe("TestRecord.Rec");
     expect(flatMods[redeclarePath].recordBinding).toBe(true);

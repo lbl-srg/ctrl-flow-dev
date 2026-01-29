@@ -552,16 +552,64 @@ export const resolveToValue = (
   if (isModelicaPath(operand)) {
     const option = _context.options[operand];
     if (option === undefined) {
-      // console.log(`undefined path: ${operand}`);
-      // TODO: these are modelica paths that should
-      // be extracted!
-      return operand;
-    }
-    if (option?.definition) {
+      // Option not found by full type path - this can happen when expressions
+      // contain type-based paths but options are keyed by instance paths.
+      // E.g., operand = "Buildings.Templates...PartialControllerVAVMultizone.stdVen"
+      // We need to find the instance with type "Buildings.Templates...PartialControllerVAVMultizone"
+      // and then look up "stdVen" on that instance.
+      const pathSegments = operand.split(".");
+      const name = pathSegments.pop() as string; // e.g., "stdVen"
+      const typePath = pathSegments.join("."); // e.g., "Buildings.Templates...PartialControllerVAVMultizone"
+
+      // Find an instance whose type matches the typePath
+      let instanceScope = "";
+      for (const optKey of Object.keys(_context.options)) {
+        const opt = _context.options[optKey];
+        if (opt?.type === typePath && !opt.definition) {
+          // Found an instance with matching type - use its name as scope
+          instanceScope = opt.modelicaPath.split(".").pop() || "";
+          break;
+        }
+      }
+
+      // If we found a matching instance, use it as scope; otherwise just use the name
+      if (instanceScope && !scope) {
+        scope = instanceScope;
+      }
+      operand = name;
+    } else if (option?.definition) {
       return operand;
     } else {
-      // Update the operand with just the param name
+      // Option exists but is not a definition - extract the param name
+      // and try to infer the scope from the option's parent type
       const name = operand.split(".").pop() as string;
+      
+      // If no scope provided, try to find an instance with the parent type
+      if (!scope) {
+        const pathSegments = operand.split(".");
+        pathSegments.pop(); // remove the param name
+        const typePath = pathSegments.join(".");
+        
+        // Find an instance whose type matches the typePath (directly or via inheritance)
+        for (const optKey of Object.keys(_context.options)) {
+          const opt = _context.options[optKey];
+          if (!opt || opt.definition) continue;
+          
+          // Check direct type match
+          if (opt.type === typePath) {
+            scope = opt.modelicaPath.split(".").pop() || "";
+            break;
+          }
+          
+          // Check inherited types via treeList
+          const typeOption = opt.type ? _context.options[opt.type] : null;
+          if (typeOption?.treeList?.includes(typePath)) {
+            scope = opt.modelicaPath.split(".").pop() || "";
+            break;
+          }
+        }
+      }
+      
       operand = name;
     }
   }
@@ -741,40 +789,25 @@ const addToModObject = (
   },
   options?: { [key: string]: OptionInterface },
   childOptionPaths?: string[],
+  optionModelicaPath?: string, // The modelica path of the option whose modifiers we're processing
 ) => {
   Object.entries(newMods).forEach(([k, mod]) => {
-    // k is a Modelica path like "TestRecord.Rec.p" or "TestRecord.BaseModel.rec"
-    // We need to convert it to an instance path relative to baseInstancePath
-    const modPathSegments = k.split(".");
-    const instanceName = modPathSegments.pop(); // e.g., "p" or "rec" or "cfg"
-    const modTypePath = modPathSegments.join("."); // e.g., "TestRecord.Rec" or "TestRecord.BaseModel"
-
-    // Handle extends clause modifiers that target nested components.
-    // Example: `extends Nested(localRec(p=4))` in NestedExtended
-    //   - The modifier key from parsing is "TestRecord.Rec.p" (type path + param name)
-    //   - We need to find which child component has type "TestRecord.Rec" (it's "localRec")
-    //   - Then build the instance path as "nesExt.localRec.p"
-    // Skip this if modTypePath is a class in the inheritance tree (not a component type).
-    // LIMITATION: If multiple components share the same type, only the first match is used.
-    let instancePrefix = "";
-    if (options && childOptionPaths && modTypePath) {
-      const isClassInTree = childOptionPaths.includes(modTypePath);
-      if (!isClassInTree) {
-        for (const childPath of childOptionPaths) {
-          const childOption = options[childPath];
-          if (childOption?.type === modTypePath) {
-            // Found a child with matching type - use its name as prefix
-            instancePrefix = childOption.modelicaPath.split(".").pop() || "";
-            break;
-          }
-        }
-      }
+    // k is a Modelica path like "TestRecord.NestedExtended.localRec.p"
+    // We need to convert it to an instance path relative to baseInstancePath.
+    //
+    // If optionModelicaPath is provided, strip it from k to get the relative instance path.
+    // e.g., k = "TestRecord.NestedExtended.localRec.p", optionModelicaPath = "TestRecord.NestedExtended"
+    //       -> relativeInstancePath = "localRec.p"
+    let relativeInstancePath: string;
+    if (optionModelicaPath && k.startsWith(optionModelicaPath + ".")) {
+      relativeInstancePath = k.slice(optionModelicaPath.length + 1);
+    } else {
+      // Fallback: use last segment (original behavior for type-based paths)
+      relativeInstancePath = k.split(".").pop() || "";
     }
 
-    // Build the modifier key
-    // If instancePrefix is set, we found a child by type match (e.g., nesExt.localRec.p)
-    // Otherwise, use the original behavior of just appending instanceName (e.g., ctl.cfg)
-    const modKey = [baseInstancePath, instancePrefix, instanceName]
+    // Build the modifier key by appending the relative instance path to the base instance path
+    const modKey = [baseInstancePath, relativeInstancePath]
       .filter((segment) => segment !== "")
       .join(".");
 
@@ -898,6 +931,7 @@ const buildModsHelper = (
         mods,
         options,
         childOptions,
+        o.modelicaPath,
       );
     }
   });
@@ -930,6 +964,7 @@ const buildModsHelper = (
           mods,
           options,
           childOptions,
+          redeclaredType,
         );
       }
     }
@@ -971,6 +1006,7 @@ const buildModsHelper = (
             mods,
             options,
             typeOption.options,
+            typeOption.modelicaPath,
           );
         }
 
