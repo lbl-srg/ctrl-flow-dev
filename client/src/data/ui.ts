@@ -20,10 +20,12 @@ export default class Ui {
 
     makeAutoObservable(this);
 
-    makePersistable(this, {
-      name: this.rootStore.getStorageKey("ui"),
-      properties: ["leftColWidth"],
-    });
+    if (process.env.NODE_ENV !== "test") {
+      makePersistable(this, {
+        name: this.rootStore.getStorageKey("ui"),
+        properties: ["leftColWidth"],
+      });
+    }
   }
 
   // actions
