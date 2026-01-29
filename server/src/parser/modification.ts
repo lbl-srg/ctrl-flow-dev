@@ -1,4 +1,5 @@
 import { typeStore, isInputGroup, LongClass, Element } from "./parser";
+import { Literal } from "./expression";
 import * as mj from "./mj-types";
 
 /**
@@ -208,7 +209,7 @@ function unpackRedeclaration(props: ModificationProps) {
  */
 function unpackModblock(props: ModificationProps) {
   let mods: Modification[] = [];
-  let value: Expression | string = ""; // value can be 'type'
+  let value: Expression | Literal | undefined;
   let {
     definition,
     basePath = "",
@@ -294,7 +295,7 @@ function unpackModblock(props: ModificationProps) {
                 ?.name;
         const constrainingClause = replaceable.constraining_clause;
         const replaceableType = typeStore.get(typeSpecifier, basePath);
-        value = replaceableType?.modelicaPath || ""; // modelicaPath is the replaceable type
+        value = replaceableType?.modelicaPath; // modelicaPath is the replaceable type
         // get selection mods
         const classModification = (
           "component_clause1" in replaceable
