@@ -2,7 +2,6 @@ import RootStore from "../../src/data";
 import { ConfigInterface } from "../../src/data/config";
 import { ConfigValues } from "../../src/utils/modifier-helpers";
 import { TemplateInterface, OptionInterface } from "../../src/data/template";
-import { extractSimpleDisplayList } from "../../src/utils/utils";
 import {
   FlatConfigOption,
   FlatConfigOptionGroup,
@@ -28,16 +27,13 @@ import {
   _formatDisplayItem,
 } from "../../src/interpreter/display-option";
 
+import {
+  createSelections,
+  addNewConfig as addNewConfigUtil,
+} from "./interpreter.test-utils";
+
 // initialize global test dependencies
 const store = new RootStore();
-const projectSelections = {
-  "Buildings.Templates.Data.AllSystems.stdEne":
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
-  "Buildings.Templates.Data.AllSystems.stdVen":
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
-  "Buildings.Templates.Data.AllSystems.ashCliZon":
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
-};
 
 const mzTemplatePath = "Buildings.Templates.AirHandlersFans.VAVMultiZone";
 const zoneTemplatePath = "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly";
@@ -50,36 +46,12 @@ const mzTemplate: TemplateInterface = allTemplates[mzTemplatePath];
 const zoneTemplate = allTemplates[zoneTemplatePath];
 const zoneReheatTemplate = allTemplates[zoneReheatTemplatePath];
 
-const createSelections = (selections: ConfigValues = {}) => {
-  return {
-    ...projectSelections,
-    ...selections,
-  };
-};
-
+// Local wrapper that uses the module-level store
 const addNewConfig = (
   configName: string,
   template: TemplateInterface,
   selections: ConfigValues,
-) => {
-  store.configStore.add({
-    name: configName,
-    templatePath: template.modelicaPath,
-  });
-
-  const configWithSelections = store.configStore.configs.find(
-    (c) => c.name === configName,
-  ) as ConfigInterface;
-
-  const selectionsWithProjectSelections = createSelections(selections);
-
-  store.configStore.setSelections(
-    configWithSelections.id,
-    selectionsWithProjectSelections,
-  );
-
-  return configWithSelections;
-};
+) => addNewConfigUtil(configName, template, selections, store);
 
 const mzConfig = addNewConfig("VAVMultiZone Config", mzTemplate, {});
 const zoneConfig = addNewConfig("VAV Box Cooling Only", zoneTemplate, {});
@@ -221,7 +193,9 @@ describe("Test set", () => {
 
   it("Handles !", () => {
     expect(evaluate(buildExpression("!", [true]))).toBeFalsy();
-    expect(evaluate(buildExpression("!", [buildExpression(">=", [2, 3])]))).toBeTruthy();
+    expect(
+      evaluate(buildExpression("!", [buildExpression(">=", [2, 3])])),
+    ).toBeTruthy();
   });
 
   it("Handles == and !=", () => {

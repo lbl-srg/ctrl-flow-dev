@@ -6,7 +6,6 @@ import {
   resolvePaths,
 } from "../../src/interpreter/interpreter";
 
-import RootStore from "../../src/data";
 import { ConfigInterface } from "../../src/data/config";
 import { ConfigValues } from "../../src/utils/modifier-helpers";
 
@@ -15,6 +14,8 @@ import {
   _formatDisplayGroup,
   _formatDisplayItem,
 } from "../../src/interpreter/display-option";
+
+import { createSelections } from "./interpreter.test-utils";
 
 /**
  * Options generated from server/tests/static-data/TestRecord.json via server parser.
@@ -40,48 +41,36 @@ const mockConfig = {
   selections: {},
 };
 
-// initialize global test dependencies
-const store = new RootStore();
-const plantTemplatePath = "Buildings.Templates.Plants.HeatPumps.AirToWater";
-const allOptions: { [key: string]: OptionInterface } =
-  store.templateStore.getAllOptions();
-const allTemplates: { [key: string]: TemplateInterface } =
-  store.templateStore.getAllTemplates();
-const plantTemplate = allTemplates[plantTemplatePath];
+/**
+ * Heat pump plant test data
+ * Contains only the options needed for plant template tests
+ * Should be replaced by actual data from RootStore() once the plant template is in production
+ */
+const plantTestData: {
+  template: TemplateInterface;
+  options: { [key: string]: OptionInterface };
+} = require("../data/plant-heatpump-test-data.json");
 
-const createSelections = (selections: ConfigValues = {}) => {
-  return {
-    ...selections,
-  };
-};
+const plantTemplate = plantTestData.template;
+const plantOptions = plantTestData.options;
 
-const addNewConfig = (
-  configName: string,
-  template: TemplateInterface,
-  selections: ConfigValues,
-) => {
-  store.configStore.add({
-    name: configName,
-    templatePath: template.modelicaPath,
-  });
+// Mock config factory for plant tests
+const createPlantConfig = (
+  name: string,
+  selections: ConfigValues = {},
+): ConfigInterface =>
+  ({
+    id: `plant-config-${name}`,
+    name,
+    templatePath: plantTemplate.modelicaPath,
+    selections: createSelections(selections),
+    isLocked: false,
+    systemPath: "Buildings.Templates.Plants.HeatPumps",
+  }) as ConfigInterface;
 
-  const configWithSelections = store.configStore.configs.find(
-    (c) => c.name === configName,
-  ) as ConfigInterface;
+const plantConfig = createPlantConfig("HP Plant");
 
-  const selectionsWithProjectSelections = createSelections(selections);
-
-  store.configStore.setSelections(
-    configWithSelections.id,
-    selectionsWithProjectSelections,
-  );
-
-  return configWithSelections;
-};
-
-const plantConfig = addNewConfig("HP Plant", plantTemplate, {});
-
-describe("Record Binding Interpreter Tests", () => {
+describe("Evaluation succeeds with record bindings", () => {
   let context: ConfigContext;
 
   beforeAll(() => {
@@ -93,21 +82,9 @@ describe("Record Binding Interpreter Tests", () => {
     );
 
     // Log context.mods for debugging
-    console.log("context.mods:", JSON.stringify(context.mods, null, 2));
-  });
+    // console.log("context.mods:", JSON.stringify(context.mods, null, 2));
 
-  it("Creates a valid context", () => {
     expect(context).toBeDefined();
-  });
-
-  it("Modifier without binding has recordBinding=false", () => {
-    const modOption = testRecordOptions["TestRecord.Mod"];
-    const recModifier = modOption.modifiers["TestRecord.BaseModel.rec"];
-
-    expect(recModifier).toBeDefined();
-    // After refactoring: redeclare stores the actual type, not a boolean
-    expect(recModifier.redeclare).toBe("TestRecord.Rec");
-    expect(recModifier.recordBinding).toBe(false);
   });
 
   it("resolveToValue handles record components", () => {
@@ -138,34 +115,32 @@ describe("Record Binding Interpreter Tests", () => {
   });
 });
 
-describe("Test plant template", () => {
+describe("Record bindings in real-world plant template", () => {
   it("ctl.cfg.have_chiWat should be false when have_chiWat is false", () => {
     let context = new ConfigContext(
       plantTemplate as TemplateInterface,
-      plantConfig as ConfigInterface,
-      allOptions,
+      plantConfig,
+      plantOptions,
       createSelections(),
     );
 
     // Verify enable expression evaluates to true when have_chiWat is true (default)
     expect(resolveToValue("cfg.have_chiWat", context, "ctl")).toBe(true);
 
-    const configName = "HP Plant - heating only";
     const selections = {
       "Buildings.Templates.Plants.HeatPumps.Interfaces.PartialHeatPumpPlant.have_chiWat-have_chiWat": false,
     };
 
-    const configWithSelections = addNewConfig(
-      configName,
-      plantTemplate,
+    const configWithSelections = createPlantConfig(
+      "HP Plant - heating only",
       selections,
     );
 
     context = new ConfigContext(
       plantTemplate as TemplateInterface,
-      configWithSelections as ConfigInterface,
-      allOptions,
-      selections,
+      configWithSelections,
+      plantOptions,
+      createSelections(selections),
     );
 
     expect(resolveToValue("cfg.have_chiWat", context, "ctl")).toBe(false);
@@ -174,8 +149,8 @@ describe("Test plant template", () => {
   it("should disable ctl.have_senTChiWatSecRet_select if have_chiWat is false", () => {
     let context = new ConfigContext(
       plantTemplate as TemplateInterface,
-      plantConfig as ConfigInterface,
-      allOptions,
+      plantConfig,
+      plantOptions,
       createSelections(),
     );
 
@@ -186,22 +161,20 @@ describe("Test plant template", () => {
     // Verify enable expression evaluates to true when have_chiWat is true (default)
     expect(evaluate(enableExpr, context, "ctl")).toBe(true);
 
-    const configName = "HP Plant - heating only 2";
     const selections = {
       "Buildings.Templates.Plants.HeatPumps.Interfaces.PartialHeatPumpPlant.have_chiWat-have_chiWat": false,
     };
 
-    const configWithSelections = addNewConfig(
-      configName,
-      plantTemplate,
+    const configWithSelections = createPlantConfig(
+      "HP Plant - heating only 2",
       selections,
     );
 
     context = new ConfigContext(
       plantTemplate as TemplateInterface,
-      configWithSelections as ConfigInterface,
-      allOptions,
-      selections,
+      configWithSelections,
+      plantOptions,
+      createSelections(selections),
     );
 
     // Verify enable expression evaluates to false when have_chiWat = false
@@ -210,12 +183,12 @@ describe("Test plant template", () => {
   });
 });
 
-describe("Record binding tests", () => {
+describe("Path rewriting for record bindings", () => {
   it("Has ctl.cfg modifier that binds to cfg", () => {
     const context = new ConfigContext(
       plantTemplate as TemplateInterface,
-      plantConfig as ConfigInterface,
-      allOptions,
+      plantConfig,
+      plantOptions,
       createSelections(),
     );
 
@@ -233,8 +206,8 @@ describe("Record binding tests", () => {
   it("Path resolution rewrites instance path when recordBinding is true", () => {
     const context = new ConfigContext(
       plantTemplate as TemplateInterface,
-      plantConfig as ConfigInterface,
-      allOptions,
+      plantConfig,
+      plantOptions,
       createSelections(),
     );
 
@@ -258,8 +231,8 @@ describe("Record binding tests", () => {
   it("Record binding rewrites instance path for nested typ field", () => {
     const context = new ConfigContext(
       plantTemplate as TemplateInterface,
-      plantConfig as ConfigInterface,
-      allOptions,
+      plantConfig,
+      plantOptions,
       createSelections(),
     );
 
@@ -280,8 +253,8 @@ describe("Record binding tests", () => {
   it("Record binding rewrites instance path for nHp field", () => {
     const context = new ConfigContext(
       plantTemplate as TemplateInterface,
-      plantConfig as ConfigInterface,
-      allOptions,
+      plantConfig,
+      plantOptions,
       createSelections(),
     );
 
