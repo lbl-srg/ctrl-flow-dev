@@ -85,8 +85,8 @@ describe("Path Expansion", () => {
         "TestPackage.Template.TestTemplate.selectable_component_with_relative_paths",
     );
 
-    // For replaceable components: 'type' stores the declared type, 'value' is "" if no binding
+    // For replaceable components: 'type' stores the declared type, 'value' is undefined if no binding
     expect(replaceableComponent?.type).toBe(expectedType);
-    expect(replaceableComponent?.value).toBe("");
+    expect(replaceableComponent?.value).toBeUndefined();
   });
 });

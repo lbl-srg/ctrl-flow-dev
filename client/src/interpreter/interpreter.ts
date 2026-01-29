@@ -844,9 +844,8 @@ const getReplaceableType = (
   }
 
   // Otherwise use definition type
-  // With unified schema, 'type' always contains the actual/aliased type for both:
-  // - Replaceable short classes: type = aliased type, value = ""
-  // - Replaceable components: type = declared type, value = "" or binding
+  // - Replaceable short classes: type = aliased type, value = undefined
+  // - Replaceable components: type = declared type, value = undefined or binding
   return newType ? newType : option.type;
 };
 
@@ -890,9 +889,8 @@ const buildModsHelper = (
   // check for redeclare in selections or use default type
   // to grab the correct modifiers
   if (option.replaceable) {
-    // With unified schema, 'type' always contains the actual/aliased type
-    // - Replaceable short classes: type = aliased type, value = ""
-    // - Replaceable components: type = declared type, value = "" or binding
+    // - Replaceable short classes: type = aliased type, value = undefined
+    // - Replaceable components: type = declared type, value = undefined or binding
     let redeclaredType: string | null | undefined = option.type;
     if (option.modelicaPath in selectionModelicaPathsCache) {
       const selectionPath = constructSelectionPath(
@@ -1143,7 +1141,6 @@ export class ConfigContext {
     // return whatever value is present on the original option definition
     const optionScope = instancePath.split(".").slice(0, -1).join(".");
     const option = this.options[optionPath];
-    // With unified schema:
     // - For replaceable elements: value is "" if no binding, use type instead
     // - For non-replaceable elements: use value directly
     const optionValue =
@@ -1303,7 +1300,7 @@ export class ConfigContext {
       const { optionPath, value } = val;
       const option = this.options[optionPath];
       const addToResolvedValues =
-        value !== "" || (value === "" && option.type === "String");
+        value !== undefined || option.type === "String";
 
       if (addToResolvedValues) {
         const selectionPath = constructSelectionPath(optionPath, key);
