@@ -201,8 +201,6 @@ const _instancePathToOption = (
         option = potentialOption ? potentialOption : option;
       }
       // Handle record binding: redirect path resolution to follow the binding
-      // For merged redeclare+binding modifiers, use bindingExpression; for standalone bindings use expression
-      // Skip if this is a redeclare without bindingExpression (old data format where recordBinding was on redeclare)
       if (instanceMod && instanceMod.recordBinding) {
         const bindingExpr = instanceMod.expression;
         let bindingPath: string | null = null;
@@ -259,7 +257,9 @@ const _instancePathToOption = (
                 if (typeOption?.treeList) {
                   for (const inheritedType of typeOption.treeList) {
                     if (bindingPath.startsWith(inheritedType + ".")) {
-                      const suffix = bindingPath.slice(inheritedType.length + 1);
+                      const suffix = bindingPath.slice(
+                        inheritedType.length + 1,
+                      );
                       resolvedBindingPath = `${ancestorInstancePath}.${suffix}`;
                       if (debug)
                         console.log(
@@ -384,14 +384,15 @@ const _instancePathToOption = (
         `[_instancePathToOption] after shift: paramName=${paramName}, curOptionPath=${curOptionPath}`,
       );
 
-    // Check if the current option has a value binding to another record
-    // If so, and we have remaining path segments, follow the binding
-    // BUT only if there's no recordBinding modifier that overrides this default
+    // Check if the current option has a default value binding in the class definition
+    // (e.g., `parameter Rec localRec = rec` in Mod).
+    // If so, follow the binding to resolve the remaining path segments.
+    // Skip this if there's a recordBinding modifier from instantiation (e.g., `Mod mod(rec=localRec)`),
+    // which is handled separately and takes precedence.
     if (curOptionPath && pathSegments.length > 0) {
       const curInstancePath = curInstancePathList.join(".");
       const instanceMod = context.mods[curInstancePath];
 
-      // Skip if there's a recordBinding modifier - that takes precedence
       if (!instanceMod?.recordBinding) {
         const curOption = context.options[curOptionPath];
         if (curOption?.value && typeof curOption.value !== "string") {
@@ -409,7 +410,10 @@ const _instancePathToOption = (
                 ? bindingTarget.split(".").pop() // Get just the param name
                 : bindingTarget;
               const redirectedPath = `${bindingInstancePath}.${remainingPath}`;
-              const scopePath = curInstancePath.split(".").slice(0, -1).join(".");
+              const scopePath = curInstancePath
+                .split(".")
+                .slice(0, -1)
+                .join(".");
               if (debug)
                 console.log(
                   `[_instancePathToOption] value binding redirect: ${curInstancePath}.${remainingPath} -> ${scopePath ? scopePath + "." : ""}${redirectedPath}`,
@@ -455,7 +459,10 @@ function isModelicaPath(path: string) {
     return true;
   }
   // Support test packages
-  if (path.startsWith("TestRecord") || path.startsWith("TestPackage")) {
+  if (
+    process.env.NODE_ENV === "test" &&
+    (path.startsWith("TestRecord") || path.startsWith("TestPackage"))
+  ) {
     return true;
   }
   return false;
@@ -742,15 +749,17 @@ const addToModObject = (
     const instanceName = modPathSegments.pop(); // e.g., "p" or "rec" or "cfg"
     const modTypePath = modPathSegments.join("."); // e.g., "TestRecord.Rec" or "TestRecord.BaseModel"
 
-    // Try to find a child option whose type matches modTypePath
-    // This handles extends clauses where modifiers target nested types (e.g., localRec.p where localRec is of type Rec)
-    // Only add instancePrefix if we find a matching child by type
-    // BUT skip if modTypePath is itself one of the childOptionPaths (meaning it's a class in the inheritance hierarchy)
+    // Handle extends clause modifiers that target nested components.
+    // Example: `extends Nested(localRec(p=4))` in NestedExtended
+    //   - The modifier key from parsing is "TestRecord.Rec.p" (type path + param name)
+    //   - We need to find which child component has type "TestRecord.Rec" (it's "localRec")
+    //   - Then build the instance path as "nesExt.localRec.p"
+    // Skip this if modTypePath is a class in the inheritance tree (not a component type).
+    // LIMITATION: If multiple components share the same type, only the first match is used.
     let instancePrefix = "";
     if (options && childOptionPaths && modTypePath) {
-      // Skip if modTypePath is a class in the hierarchy (not a component type)
-      const isClassInHierarchy = childOptionPaths.includes(modTypePath);
-      if (!isClassInHierarchy) {
+      const isClassInTree = childOptionPaths.includes(modTypePath);
+      if (!isClassInTree) {
         for (const childPath of childOptionPaths) {
           const childOption = options[childPath];
           if (childOption?.type === modTypePath) {
@@ -882,7 +891,14 @@ const buildModsHelper = (
     const o = options[oPath];
     const oMods = o.modifiers;
     if (oMods) {
-      addToModObject(oMods, newBase, option.definition, mods, options, childOptions);
+      addToModObject(
+        oMods,
+        newBase,
+        option.definition,
+        mods,
+        options,
+        childOptions,
+      );
     }
   });
 
@@ -907,7 +923,14 @@ const buildModsHelper = (
     if (option.choiceModifiers && redeclaredType) {
       const choiceMods = option.choiceModifiers[redeclaredType];
       if (choiceMods) {
-        addToModObject(choiceMods, newBase, option.definition, mods, options, childOptions);
+        addToModObject(
+          choiceMods,
+          newBase,
+          option.definition,
+          mods,
+          options,
+          childOptions,
+        );
       }
     }
   }

@@ -41,7 +41,6 @@
     "name": "",
     "type": "TestRecord.BaseRecord",
     "visible": true,
-    "value": "",
     "enable": true,
     "group": "",
     "tab": "",
@@ -123,7 +122,6 @@
     "name": "",
     "type": "TestRecord.Rec",
     "visible": false,
-    "value": "",
     "enable": true,
     "group": "",
     "tab": "",
@@ -178,12 +176,40 @@
       "TestRecord.BaseModel"
     ]
   },
+  "TestRecord.Nested.localRecFirst": {
+    "modelicaPath": "TestRecord.Nested.localRecFirst",
+    "name": "",
+    "type": "TestRecord.Rec",
+    "visible": false,
+    "enable": true,
+    "group": "",
+    "tab": "",
+    "modifiers": {
+      "TestRecord.Rec.p": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            -1
+          ]
+        },
+        "final": false,
+        "redeclare": "",
+        "recordBinding": false
+      }
+    },
+    "options": [
+      "TestRecord.Rec.p"
+    ],
+    "definition": false,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": []
+  },
   "TestRecord.Nested.localRec": {
     "modelicaPath": "TestRecord.Nested.localRec",
     "name": "",
     "type": "TestRecord.Rec",
     "visible": false,
-    "value": "",
     "enable": true,
     "group": "",
     "tab": "",
@@ -213,7 +239,6 @@
     "name": "",
     "type": "TestRecord.Mod",
     "visible": false,
-    "value": "",
     "enable": false,
     "group": "",
     "tab": "",
@@ -243,6 +268,7 @@
     "value": "TestRecord.Nested",
     "modifiers": {},
     "options": [
+      "TestRecord.Nested.localRecFirst",
       "TestRecord.Nested.localRec",
       "TestRecord.Nested.mod"
     ],
@@ -263,7 +289,7 @@
         "expression": {
           "operator": "none",
           "operands": [
-            4
+            -2
           ]
         },
         "final": false,
@@ -272,6 +298,7 @@
       }
     },
     "options": [
+      "TestRecord.Nested.localRecFirst",
       "TestRecord.Nested.localRec",
       "TestRecord.Nested.mod"
     ],
@@ -318,7 +345,6 @@
     "name": "",
     "type": "TestRecord.Mod",
     "visible": false,
-    "value": "",
     "enable": false,
     "group": "",
     "tab": "",
@@ -346,7 +372,6 @@
     "name": "",
     "type": "TestRecord.Mod",
     "visible": false,
-    "value": "",
     "enable": false,
     "group": "",
     "tab": "",
