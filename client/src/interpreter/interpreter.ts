@@ -221,121 +221,44 @@ const _instancePathToOption = (
         if (bindingPath) {
           const remainingPath = pathSegments.join(".");
           if (remainingPath) {
-            // If bindingPath is a Modelica path (e.g., TestRecord.Nested.localRec),
-            // we need to convert it to an instance path relative to the current scope.
-            // The binding was defined in a class, so we need to find which ancestor
-            // instance corresponds to that class and replace the class prefix.
             let resolvedBindingPath = bindingPath;
-            if (isModelicaPath(bindingPath)) {
-              // Walk up the current instance path to find an ancestor whose type
-              // (or inherited type via treeList) matches the class prefix of the binding path.
-              // For example: curInstancePath="nesExt.mod.rec", bindingPath="TestRecord.Nested.localRec"
-              // - "nesExt" has type "TestRecord.NestedExtended" with treeList including "TestRecord.Nested"
-              // - bindingPath starts with "TestRecord.Nested."
-              // - So replace "TestRecord.Nested" with "nesExt" -> "nesExt.localRec"
-              const instanceSegments = curInstancePath.split(".");
-
-              outerLoop: for (let i = instanceSegments.length; i >= 1; i--) {
-                const ancestorInstancePath = instanceSegments
-                  .slice(0, i)
-                  .join(".");
-                const ancestorOptionKey = `${context.template.modelicaPath}.${ancestorInstancePath}`;
-                const ancestorOption = context.options[ancestorOptionKey];
-
-                // Check direct type match
-                const ancestorType = ancestorOption?.type;
-                if (
-                  ancestorType &&
-                  bindingPath.startsWith(ancestorType + ".")
-                ) {
-                  const suffix = bindingPath.slice(ancestorType.length + 1);
-                  resolvedBindingPath = `${ancestorInstancePath}.${suffix}`;
-                  if (debug)
-                    console.log(
-                      `[_instancePathToOption] resolved binding: ${bindingPath} -> ${resolvedBindingPath} (via ${ancestorInstancePath} of type ${ancestorType})`,
-                    );
-                  break;
-                }
-
-                // Check inherited types via treeList
-                const typeOption = ancestorType
-                  ? context.options[ancestorType]
-                  : null;
-                if (typeOption?.treeList) {
-                  for (const inheritedType of typeOption.treeList) {
-                    if (bindingPath.startsWith(inheritedType + ".")) {
-                      const suffix = bindingPath.slice(
-                        inheritedType.length + 1,
-                      );
-                      resolvedBindingPath = `${ancestorInstancePath}.${suffix}`;
-                      if (debug)
-                        console.log(
-                          `[_instancePathToOption] resolved binding: ${bindingPath} -> ${resolvedBindingPath} (via ${ancestorInstancePath} inheriting ${inheritedType})`,
-                        );
-                      break outerLoop;
-                    }
-                  }
-                }
-              }
-
-              // If still a Modelica path, check if it starts with template path
-              // or any class in the template's treeList (for bindings to base classes)
-              if (isModelicaPath(resolvedBindingPath)) {
-                const templatePath = context.template.modelicaPath;
-                if (bindingPath.startsWith(templatePath + ".")) {
-                  resolvedBindingPath = bindingPath.slice(
-                    templatePath.length + 1,
-                  );
-                } else {
-                  // Check if binding path starts with any class in template's treeList
-                  const templateOption = context.options[templatePath];
-                  if (templateOption?.treeList) {
-                    for (const baseClass of templateOption.treeList) {
-                      if (bindingPath.startsWith(baseClass + ".")) {
-                        resolvedBindingPath = bindingPath.slice(
-                          baseClass.length + 1,
-                        );
-                        if (debug)
-                          console.log(
-                            `[_instancePathToOption] resolved binding via template treeList: ${bindingPath} -> ${resolvedBindingPath} (base class: ${baseClass})`,
-                          );
-                        break;
-                      }
-                    }
-                  }
-                }
-              }
-            } else {
-              // Relative path (e.g., "localRec", "rec", "mod1.localRec")
-              // The binding target is resolved in the scope where the binding was defined.
-              //
-              // We use modificationDepth to determine how many segments to slice off:
-              // - modificationDepth is the number of segments in the nested modification path
-              //   (e.g., "eff.per.pressure" has depth 3)
-              // - For fromClassDefinition=true, the scope is the instance of the class,
-              //   so we slice off modificationDepth segments
-              // - For fromClassDefinition=false, the scope is where the component was
-              //   instantiated with the modifier, so we slice off modificationDepth + 1 segments
-              //
-              // Example: curInstancePath="fan.eff.per.pressure", modificationDepth=3
-              // - fromClassDefinition=true: scope="fan" (slice -3), binding resolves at "fan.X"
-              // - fromClassDefinition=false: scope="" (slice -4), binding resolves at root "X"
-              const depth = instanceMod.modificationDepth || 1;
-              const sliceAmount = instanceMod.fromClassDefinition
-                ? -depth
-                : -(depth + 1);
-              const scopePath = curInstancePath
-                .split(".")
-                .slice(0, sliceAmount)
-                .join(".");
-              resolvedBindingPath = scopePath
-                ? `${scopePath}.${bindingPath}`
-                : bindingPath;
-              if (debug)
-                console.log(
-                  `[_instancePathToOption] resolved relative binding: ${bindingPath} -> ${resolvedBindingPath} (scope: ${scopePath}, depth: ${depth}, fromClassDefinition: ${instanceMod.fromClassDefinition})`,
-                );
-            }
+            // The binding path (e.g., "localRec") is written in Modelica relative to the
+            // class namespace where the binding was defined. We need to resolve it to an
+            // instance path by prepending the appropriate scope.
+            //
+            // modificationDepth = number of segments in the modification's relative instance path
+            // (e.g., modifier key "nes.mod.rec" with base "nes" has relativeInstancePath="mod.rec", depth=2)
+            //
+            // - fromClassDefinition=true: binding defined in class definition.
+            //   Scope is the instance of that class: slice off modificationDepth segments.
+            // - fromClassDefinition=false: binding defined at instantiation site.
+            //   Scope is where the component was instantiated: slice off modificationDepth + 1 segments.
+            //
+            // Example 1 (fromClassDefinition=true):
+            //   class Nested { Rec localRec; Mod mod(rec=localRec); }
+            //   For instance "nes" of type Nested, modifier "nes.mod.rec" has bindingPath="localRec", depth=2.
+            //   Scope = "nes" (slice -2 from "nes.mod.rec"), binding resolves to "nes.localRec".
+            //
+            // Example 2 (fromClassDefinition=false):
+            //   model TestRecord { Mod1 mod1; Mod mod2(localRec=mod1.localRec); }
+            //   curInstancePath="mod2.localRec", bindingPath="mod1.localRec", depth=1.
+            //   Scope = "" (slice -2 from "mod2.localRec"), binding resolves to "mod1.localRec".
+            //   This is correct: the binding was written in TestRecord (root scope).
+            const depth = instanceMod.modificationDepth || 1;
+            const sliceAmount = instanceMod.fromClassDefinition
+              ? -depth
+              : -(depth + 1);
+            const scopePath = curInstancePath
+              .split(".")
+              .slice(0, sliceAmount)
+              .join(".");
+            resolvedBindingPath = scopePath
+              ? `${scopePath}.${bindingPath}`
+              : bindingPath;
+            if (debug)
+              console.log(
+                `[_instancePathToOption] resolved relative binding: ${bindingPath} -> ${resolvedBindingPath} (scope: ${scopePath}, depth: ${depth}, fromClassDefinition: ${instanceMod.fromClassDefinition})`,
+              );
 
             const redirectedPath = `${resolvedBindingPath}.${remainingPath}`;
             if (debug)
@@ -421,16 +344,20 @@ const _instancePathToOption = (
         `[_instancePathToOption] after shift: paramName=${paramName}, curOptionPath=${curOptionPath}`,
       );
 
-    // Check if the current option has a default value binding in the class definition
-    // (e.g., `parameter Rec localRec = rec` in Mod).
-    // If so, follow the binding to resolve the remaining path segments.
-    // Skip this if there's a recordBinding modifier from instantiation (e.g., `Mod mod(rec=localRec)`),
-    // which is handled separately and takes precedence.
+    // Handle composite bindings declared in class definitions.
+    //
+    // E.g., in `Mod`: `Rec localRec = rec;`
+    // To resolve "mod.localRec.p", we need to redirect to "mod.rec.p".
+    // The check `pathSegments.length > 0` ensures we only do this when accessing a field
+    // inside the record (like .p), not when resolving a simple parameter.
+    //
+    // Skip if there's a recordBinding modifier from instantiation (e.g., `Mod mod(rec=localRec)`),
+    // which takes precedence and is handled in the modifier logic above.
     if (curOptionPath && pathSegments.length > 0) {
       const curInstancePath = curInstancePathList.join(".");
       const instanceMod = context.mods[curInstancePath];
 
-      if (!instanceMod?.recordBinding) {
+      if (!instanceMod?.recordBinding) { // No recordBinding modifier from instantiation
         const curOption = context.options[curOptionPath];
         if (curOption?.value && typeof curOption.value !== "string") {
           const valueExpr = curOption.value as Expression;
@@ -439,30 +366,24 @@ const _instancePathToOption = (
             typeof valueExpr.operands[0] === "string"
           ) {
             const bindingTarget = valueExpr.operands[0];
-            // Check if binding target is another record path (not a literal)
-            if (isModelicaPath(bindingTarget) || !bindingTarget.includes(".")) {
-              const remainingPath = pathSegments.join(".");
-              // Resolve the binding in the current scope, then continue with remaining path
-              const bindingInstancePath = isModelicaPath(bindingTarget)
-                ? bindingTarget.split(".").pop() // Get just the param name
-                : bindingTarget;
-              const redirectedPath = `${bindingInstancePath}.${remainingPath}`;
-              const scopePath = curInstancePath
-                .split(".")
-                .slice(0, -1)
-                .join(".");
-              if (debug)
-                console.log(
-                  `[_instancePathToOption] value binding redirect: ${curInstancePath}.${remainingPath} -> ${scopePath ? scopePath + "." : ""}${redirectedPath}`,
-                );
-              const redirectedResult = _instancePathToOption(
-                scopePath ? `${scopePath}.${redirectedPath}` : redirectedPath,
-                context,
-                applyPathMods,
-                debug,
+            const remainingPath = pathSegments.join(".");
+            // Resolve the binding in the current scope, then continue with remaining path
+            const redirectedPath = `${bindingTarget}.${remainingPath}`;
+            const scopePath = curInstancePath
+              .split(".")
+              .slice(0, -1)
+              .join(".");
+            if (debug)
+              console.log(
+                `[_instancePathToOption] value binding redirect: ${curInstancePath}.${remainingPath} -> ${scopePath ? scopePath + "." : ""}${redirectedPath}`,
               );
-              return redirectedResult;
-            }
+            const redirectedResult = _instancePathToOption(
+              scopePath ? `${scopePath}.${redirectedPath}` : redirectedPath,
+              context,
+              applyPathMods,
+              debug,
+            );
+            return redirectedResult;
           }
         }
       }
@@ -620,24 +541,24 @@ export const resolveToValue = (
       // Option exists but is not a definition - extract the param name
       // and try to infer the scope from the option's parent type
       const name = operand.split(".").pop() as string;
-      
+
       // If no scope provided, try to find an instance with the parent type
       if (!scope) {
         const pathSegments = operand.split(".");
         pathSegments.pop(); // remove the param name
         const typePath = pathSegments.join(".");
-        
+
         // Find an instance whose type matches the typePath (directly or via inheritance)
         for (const optKey of Object.keys(_context.options)) {
           const opt = _context.options[optKey];
           if (!opt || opt.definition) continue;
-          
+
           // Check direct type match
           if (opt.type === typePath) {
             scope = opt.modelicaPath.split(".").pop() || "";
             break;
           }
-          
+
           // Check inherited types via treeList
           const typeOption = opt.type ? _context.options[opt.type] : null;
           if (typeOption?.treeList?.includes(typePath)) {
@@ -646,7 +567,7 @@ export const resolveToValue = (
           }
         }
       }
-      
+
       operand = name;
     }
   }

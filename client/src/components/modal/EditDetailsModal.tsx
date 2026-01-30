@@ -10,12 +10,11 @@ import OptionSelect from "../steps/Configs/OptionSelect";
 import { useDebouncedCallback } from "use-debounce";
 import { removeEmpty } from "../../utils/utils";
 import { SystemTypeInterface, TemplateInterface } from "../../data/template";
-
 import {
   applyValueModifiers,
   applyVisibilityModifiers,
+  ConfigValues,
 } from "../../utils/modifier-helpers";
-import { ConfigValues } from "../../utils/modifier-helpers";
 
 interface EditDetailsModalProps extends ModalInterface {
   afterSubmit?: () => void;
