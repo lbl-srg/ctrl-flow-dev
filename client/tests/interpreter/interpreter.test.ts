@@ -759,8 +759,9 @@ describe("Scope tests", () => {
     expect(path).toEqual(instancePath); // instance path should not change
     // test modifier value
     // modifier points to the correct parameter definition (secOutRel.dat location)
+    // After parser refactoring, instance references are stored as relative paths
     expect(context.mods["secOutRel.secOut.dat"].expression.operands[0]).toEqual(
-      "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.dat",
+      "dat",
     );
 
     // scope is wrong when we attempt to get value

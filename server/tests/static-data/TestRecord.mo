@@ -33,6 +33,7 @@ model TestRecord
     extends Nested(
       localRec(p=4),
       localRecFirst(p=-2));
+    Mod1 mod1;
   end NestedExtended;
   Mod mod;
 
@@ -45,5 +46,7 @@ model TestRecord
   Nested nes;
 
   NestedExtended nesExt;
+
+  NestedExtended nesExt1(mod1(localRec(p=-3)));
 
 end TestRecord;

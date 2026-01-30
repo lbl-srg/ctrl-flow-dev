@@ -34,6 +34,13 @@ interface Modifier {
   fromClassDefinition: boolean;
   redeclare: string; // "" if not a redeclare, otherwise the redeclared type path
   recordBinding?: boolean;
+  /**
+   * The depth of the nested modification path (number of segments).
+   * For a modifier key like "fan.eff.per.pressure" where baseInstancePath="fan",
+   * the relativeInstancePath is "eff.per.pressure" with depth 3.
+   * Used to determine the correct scope when resolving relative binding paths.
+   */
+  modificationDepth?: number;
 }
 
 /**
@@ -298,6 +305,36 @@ const _instancePathToOption = (
                   }
                 }
               }
+            } else {
+              // Relative path (e.g., "localRec", "rec", "mod1.localRec")
+              // The binding target is resolved in the scope where the binding was defined.
+              //
+              // We use modificationDepth to determine how many segments to slice off:
+              // - modificationDepth is the number of segments in the nested modification path
+              //   (e.g., "eff.per.pressure" has depth 3)
+              // - For fromClassDefinition=true, the scope is the instance of the class,
+              //   so we slice off modificationDepth segments
+              // - For fromClassDefinition=false, the scope is where the component was
+              //   instantiated with the modifier, so we slice off modificationDepth + 1 segments
+              //
+              // Example: curInstancePath="fan.eff.per.pressure", modificationDepth=3
+              // - fromClassDefinition=true: scope="fan" (slice -3), binding resolves at "fan.X"
+              // - fromClassDefinition=false: scope="" (slice -4), binding resolves at root "X"
+              const depth = instanceMod.modificationDepth || 1;
+              const sliceAmount = instanceMod.fromClassDefinition
+                ? -depth
+                : -(depth + 1);
+              const scopePath = curInstancePath
+                .split(".")
+                .slice(0, sliceAmount)
+                .join(".");
+              resolvedBindingPath = scopePath
+                ? `${scopePath}.${bindingPath}`
+                : bindingPath;
+              if (debug)
+                console.log(
+                  `[_instancePathToOption] resolved relative binding: ${bindingPath} -> ${resolvedBindingPath} (scope: ${scopePath}, depth: ${depth}, fromClassDefinition: ${instanceMod.fromClassDefinition})`,
+                );
             }
 
             const redirectedPath = `${resolvedBindingPath}.${remainingPath}`;
@@ -811,12 +848,19 @@ const addToModObject = (
       .filter((segment) => segment !== "")
       .join(".");
 
+    // Calculate the modification depth (number of segments in the nested path)
+    // e.g., "eff.per.pressure" has depth 3
+    const modificationDepth = relativeInstancePath
+      ? relativeInstancePath.split(".").length
+      : 0;
+
     // Do not add a key that is already present. The assumption is that
     // the first time an instance path is present is the most up-to-date
     if (!(modKey in mods)) {
       mods[modKey] = {
         ...mod,
         ...{ ["fromClassDefinition"]: fromClassDefinition },
+        ...{ ["modificationDepth"]: modificationDepth },
       };
     }
   });
@@ -902,6 +946,7 @@ const buildModsHelper = (
   options: { [key: string]: OptionInterface },
   selections: ConfigValues,
   selectionModelicaPathsCache: { [key: string]: null }, // cache of just selection Modelica path keys
+  isRootTemplate = false, // true only for the initial template option
 ) => {
   if (option === undefined) {
     return; // PUNCH-OUT! references to 'Medium' fail here
@@ -973,6 +1018,15 @@ const buildModsHelper = (
   // if this is a long class definition visit all child options and grab modifiers
   if (childOptions) {
     if (option.definition && !option.shortExclType) {
+      // Only visit children of class definitions that are at the root level
+      // (i.e., the template itself). Nested class definitions within the template
+      // should not have their component children added as root-level instance paths.
+      // Those will be handled when actual instances of those classes are visited.
+      if (!isRootTemplate) {
+        // This is a nested class definition - skip visiting its children
+        // as they would incorrectly be added at the wrong instance path
+        return;
+      }
       childOptions.map((path) => {
         const childOption = options[path];
         buildModsHelper(
@@ -982,6 +1036,7 @@ const buildModsHelper = (
           options,
           selections,
           selectionModelicaPathsCache,
+          false, // children are not the root template
         );
       });
     } else {
@@ -1023,6 +1078,7 @@ const buildModsHelper = (
               options,
               selections,
               selectionModelicaPathsCache,
+              false,
             );
           });
 
@@ -1037,6 +1093,7 @@ const buildModsHelper = (
             options,
             selections,
             selectionModelicaPathsCache,
+            false,
           );
         });
       }
@@ -1063,6 +1120,7 @@ export const buildMods = (
     /* options */ options,
     /* selections */ selections,
     /* selectionModelicaPathsCache */ selectionModelicaPaths,
+    /* isRootTemplate */ true,
   );
 
   return mods;

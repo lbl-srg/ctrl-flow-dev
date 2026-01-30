@@ -78,7 +78,7 @@
     "value": {
       "operator": "none",
       "operands": [
-        "TestRecord.BaseModel.rec"
+        "rec"
       ]
     },
     "enable": true,
@@ -247,7 +247,7 @@
         "expression": {
           "operator": "none",
           "operands": [
-            "TestRecord.Nested.localRec"
+            "localRec"
           ]
         },
         "final": false,
@@ -279,6 +279,21 @@
       "TestRecord.Nested"
     ]
   },
+  "TestRecord.NestedExtended.mod1": {
+    "modelicaPath": "TestRecord.NestedExtended.mod1",
+    "name": "",
+    "type": "TestRecord.Mod1",
+    "visible": false,
+    "enable": false,
+    "group": "",
+    "tab": "",
+    "modifiers": {},
+    "options": [],
+    "definition": false,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": []
+  },
   "TestRecord.NestedExtended": {
     "modelicaPath": "TestRecord.NestedExtended",
     "type": "TestRecord.NestedExtended",
@@ -309,6 +324,7 @@
       }
     },
     "options": [
+      "TestRecord.NestedExtended.mod1",
       "TestRecord.Nested.localRecFirst",
       "TestRecord.Nested.localRec",
       "TestRecord.Nested.mod"
@@ -445,6 +461,33 @@
     "replaceable": false,
     "treeList": []
   },
+  "TestRecord.nesExt1": {
+    "modelicaPath": "TestRecord.nesExt1",
+    "name": "",
+    "type": "TestRecord.NestedExtended",
+    "visible": false,
+    "enable": false,
+    "group": "",
+    "tab": "",
+    "modifiers": {
+      "TestRecord.nesExt1.mod1.localRec.p": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            -3
+          ]
+        },
+        "final": false,
+        "redeclare": "",
+        "recordBinding": false
+      }
+    },
+    "options": [],
+    "definition": false,
+    "shortExclType": false,
+    "replaceable": false,
+    "treeList": []
+  },
   "TestRecord": {
     "modelicaPath": "TestRecord",
     "type": "TestRecord",
@@ -463,7 +506,8 @@
       "TestRecord.mod2",
       "TestRecord.mod3",
       "TestRecord.nes",
-      "TestRecord.nesExt"
+      "TestRecord.nesExt",
+      "TestRecord.nesExt1"
     ],
     "definition": true,
     "shortExclType": false,

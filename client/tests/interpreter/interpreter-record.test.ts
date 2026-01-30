@@ -42,17 +42,31 @@ const mockConfig = {
 };
 
 /**
- * Heat pump plant test data
- * Contains only the options needed for plant template tests
- * Should be replaced by actual data from RootStore() once the plant template is in production
+ * Heat pump plant test data loaded from gzipped templates.json.
+ * This file includes the plant template (Buildings.Templates.Plants.HeatPumps.AirToWater)
+ * which is not yet in production but needed for testing record binding functionality.
+ * Should be replaced by actual data from client/src/data/templates.json once the plant template is in production
  */
-const plantTestData: {
-  template: TemplateInterface;
-  options: { [key: string]: OptionInterface };
-} = require("../data/plant-heatpump-test-data.json");
+import * as zlib from "zlib";
+import * as fs from "fs";
+import * as path from "path";
 
-const plantTemplate = plantTestData.template;
-const plantOptions = plantTestData.options;
+const templatesData = JSON.parse(
+  zlib
+    .gunzipSync(
+      fs.readFileSync(path.join(__dirname, "../data/templates.json.gz")),
+    )
+    .toString(),
+);
+
+const plantTemplatePath = "Buildings.Templates.Plants.HeatPumps.AirToWater";
+const plantTemplate = templatesData.templates.find(
+  (t: TemplateInterface) => t.modelicaPath === plantTemplatePath,
+);
+const plantOptions: { [key: string]: OptionInterface } = {};
+templatesData.options.forEach(
+  (o: OptionInterface) => (plantOptions[o.modelicaPath] = o),
+);
 
 // Mock config factory for plant tests
 const createPlantConfig = (
@@ -112,6 +126,11 @@ describe("Evaluation succeeds with record bindings", () => {
     expect(resolveToValue("localRec.p", context, "nesExt")).toBe(4);
     expect(resolveToValue("mod.rec.p", context, "nesExt")).toBe(4);
     expect(resolveToValue("mod.localRec.p", context, "nesExt")).toBe(4);
+  });
+
+  it("resolveToValue handles deep-nested bindings in extends clause", () => {
+    expect(resolveToValue("mod1.localRec.p", context, "nesExt1")).toBe(-3);
+    expect(resolveToValue("mod1.rec.p", context, "nesExt1")).toBe(-3);
   });
 });
 
@@ -197,10 +216,8 @@ describe("Path rewriting for record bindings", () => {
     const ctlCfgMod = context.mods["ctl.cfg"];
     expect(ctlCfgMod).toBeDefined();
     expect(ctlCfgMod.expression.operator).toBe("none");
-    // The binding points to PartialHeatPumpPlant.cfg which resolves to the cfg instance
-    expect(ctlCfgMod.expression.operands[0]).toBe(
-      "Buildings.Templates.Plants.HeatPumps.Interfaces.PartialHeatPumpPlant.cfg",
-    );
+    // The binding points to cfg
+    expect(ctlCfgMod.expression.operands[0]).toBe("cfg");
   });
 
   it("Path resolution rewrites instance path when recordBinding is true", () => {
