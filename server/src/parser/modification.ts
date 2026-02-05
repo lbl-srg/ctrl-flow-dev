@@ -202,7 +202,8 @@ function unpackRedeclaration(props: ModificationProps) {
     // Short class definition redeclaration: `redeclare package Medium = NewMedium`
     // The aliased type (NewMedium) is stored under 'redeclare' property
     // 'value' is undefined (no binding for class redeclarations)
-    const shortClassDef = redeclaration.short_class_definition as mj.ShortClassDefinition;
+    const shortClassDef =
+      redeclaration.short_class_definition as mj.ShortClassDefinition;
     const specifier = shortClassDef.short_class_specifier;
     const name = specifier.identifier;
 
@@ -217,7 +218,9 @@ function unpackRedeclaration(props: ModificationProps) {
     let childMods: Modification[] = [];
     if (specifier.value?.class_modification) {
       childMods = getModificationList(
-        { class_modification: specifier.value.class_modification } as mj.ClassMod,
+        {
+          class_modification: specifier.value.class_modification,
+        } as mj.ClassMod,
         [basePath, name].filter((s) => s).join("."),
         redeclaredType,
       );
@@ -397,9 +400,20 @@ function unpackModblock(props: ModificationProps) {
   }
 
   // Use basePath (instance path) for the modifier key, not scope (type path).
-  // This ensures modifiers like `extends Nested(localRec(p=4))` produce keys like
-  // "TestRecord.Nested.localRec.p" instead of "TestRecord.Rec.p".
-  return new Modification(basePath, name, value, mods, final, undefined, recordBinding);
+  // For example, for `extends Nested(localRec(p=4))` in NestedExtended,
+  // the nested modification for 'p' uses basePath "TestRecord.NestedExtended.localRec"
+  // to produce the key "TestRecord.NestedExtended.localRec.p",
+  // instead of using the type path which would yield "TestRecord.Rec.p"
+  // where TestRecord.Rec is the type of localRec
+  return new Modification(
+    basePath,
+    name,
+    value,
+    mods,
+    final,
+    undefined,
+    recordBinding,
+  );
 }
 
 export function getModificationList(

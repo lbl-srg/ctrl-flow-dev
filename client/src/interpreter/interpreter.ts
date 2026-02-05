@@ -139,8 +139,8 @@ const _instancePathToOption = (
   let curOptionPath: string | null | undefined =
     `${context.template.modelicaPath}.${curInstancePathList[0]}`;
 
-  // If the constructed option path doesn't exist, look for the option in the template's
-  // child list (which includes inherited options from treeList base classes)
+  // If the constructed option path doesn't exist, look for the option in the
+  // options inherited from treeList classes (parent classes)
   if (!context.options[curOptionPath]) {
     const rootOption = context.getRootOption();
     const foundOption = rootOption.options?.find((childPath) =>
@@ -456,31 +456,10 @@ export const resolveToValue = (
   if (isModelicaPath(operand)) {
     const option = _context.options[operand];
     if (option === undefined) {
-      // Option not found by full type path - this can happen when expressions
-      // contain type-based paths but options are keyed by instance paths.
-      // E.g., operand = "Buildings.Templates...PartialControllerVAVMultizone.stdVen"
-      // We need to find the instance with type "Buildings.Templates...PartialControllerVAVMultizone"
-      // and then look up "stdVen" on that instance.
-      const pathSegments = operand.split(".");
-      const name = pathSegments.pop() as string; // e.g., "stdVen"
-      const typePath = pathSegments.join("."); // e.g., "Buildings.Templates...PartialControllerVAVMultizone"
-
-      // Find an instance whose type matches the typePath
-      let instanceScope = "";
-      for (const optKey of Object.keys(_context.options)) {
-        const opt = _context.options[optKey];
-        if (opt?.type === typePath && !opt.definition) {
-          // Found an instance with matching type - use its name as scope
-          instanceScope = opt.modelicaPath.split(".").pop() || "";
-          break;
-        }
-      }
-
-      // If we found a matching instance, use it as scope; otherwise just use the name
-      if (instanceScope && !scope) {
-        scope = instanceScope;
-      }
-      operand = name;
+      // console.log(`undefined path: ${operand}`);
+      // TODO: these are modelica paths that should
+      // be extracted!
+      return operand;
     } else if (option?.definition) {
       return operand;
     } else {
@@ -882,15 +861,15 @@ const buildModsHelper = (
     }
   }
 
-  // if this is a long class definition visit all child options and grab modifiers
+  // if this is a long class definition visit all elements and grab modifiers
   if (childOptions) {
     if (option.definition && !option.shortExclType) {
-      // Only visit children of class definitions that are at the root level
+      // Only visit elements of class definitions that are at the root level
       // (i.e., the template itself). Nested class definitions within the template
-      // should not have their component children added as root-level instance paths.
+      // should not have their elements added as root-level instance paths.
       // Those will be handled when actual instances of those classes are visited.
       if (!isRootTemplate) {
-        // This is a nested class definition - skip visiting its children
+        // This is a nested class definition - skip visiting its elements
         // as they would incorrectly be added at the wrong instance path
         return;
       }
@@ -903,7 +882,7 @@ const buildModsHelper = (
           options,
           selections,
           selectionModelicaPathsCache,
-          false, // children are not the root template
+          false, // elements are not the root template
         );
       });
     } else {
