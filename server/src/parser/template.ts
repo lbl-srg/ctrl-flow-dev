@@ -70,12 +70,21 @@ export interface Option {
   value?: any;
   enable?: any;
   treeList?: string[]; // Only defined if (option.definition)
-  modifiers: { [key: string]: { expression: Expression; final: boolean; redeclare: string; recordBinding: boolean } };
+  modifiers: {
+    [key: string]: {
+      expression: Expression;
+      final: boolean;
+      redeclare?: string;
+      recordBinding?: boolean;
+    };
+  };
   choiceModifiers?: { [key: string]: Mods };
   replaceable: boolean;
   elementType: string;
   definition: boolean;
   shortExclType: boolean; // Short class definition excluding `type` definition
+  /** True if value is a binding to a record type component */
+  recordBinding?: boolean;
 }
 
 export interface Project {
@@ -87,14 +96,19 @@ export interface ScheduleOption extends Option {
 }
 
 export interface Mods {
-  [key: string]: { expression: Expression; final: boolean; redeclare: string; recordBinding: boolean };
+  [key: string]: {
+    expression: Expression;
+    final: boolean;
+    redeclare?: string;
+    recordBinding?: boolean;
+  };
 }
 
 /**
  * Maps the nested modifier structure into a flat dictionary
  *
  * For redeclare modifications:
- * - 'redeclare' is the redeclared type path (string) or "" if not a redeclare
+ * - 'redeclare' is the redeclared type path (string), undefined if not a redeclare
  * - 'expression' is the binding value if there's an assignment (=), otherwise undefined
  */
 export function flattenModifiers(
@@ -103,8 +117,8 @@ export function flattenModifiers(
     [key: string]: {
       expression: Expression;
       final: boolean;
-      redeclare: string;
-      recordBinding: boolean;
+      redeclare?: string;
+      recordBinding?: boolean;
     };
   } = {},
 ) {
@@ -115,15 +129,15 @@ export function flattenModifiers(
   modList
     .filter((m) => m !== undefined || m !== null)
     .map((mod) => {
-      // Include modifiers with truthy value, OR redeclare modifiers (even without a binding)
+      // Include modifiers with truthy value, OR redeclare modifiers
       // The original check was `mod?.value` (truthy) - we keep that for regular modifiers
       // but also include redeclare modifiers since the type itself is meaningful
       if (mod?.value || mod?.redeclare) {
         mods[mod.modelicaPath] = {
           expression: mod.value,
           final: mod.final,
-          redeclare: mod.redeclare,
-          recordBinding: mod.recordBinding,
+          ...(mod.redeclare && { redeclare: mod.redeclare }),
+          ...(mod.recordBinding && { recordBinding: true }),
         };
       }
 
@@ -165,12 +179,17 @@ function _getTreeList(option: Option) {
  * Maps an input to the expected 'option' shape for the front end
  */
 function _mapInputToOption(input: parser.TemplateInput): Option {
-  const keysToRemove = ["elementType", "inputs"];
+  const keysToRemove = ["elementType", "inputs", "recordBinding"];
   const options = input.inputs;
 
   const option = Object.fromEntries(
     Object.entries(input).filter(([key]) => !keysToRemove.includes(key)),
   ) as Option;
+
+  // Only include recordBinding when true
+  if (input.recordBinding) {
+    option.recordBinding = true;
+  }
 
   if (input.modifiers) {
     const flattenedMods = flattenModifiers(input.modifiers);

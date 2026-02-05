@@ -32,7 +32,7 @@ interface Modifier {
   expression: Expression;
   final: boolean;
   fromClassDefinition: boolean;
-  redeclare: string; // "" if not a redeclare, otherwise the redeclared type path
+  redeclare?: string; // the redeclared type path, undefined if not a redeclare
   recordBinding?: boolean;
   /**
    * The depth of the nested modification path (number of segments).
@@ -736,7 +736,7 @@ const addToModObject = (
     [key: string]: {
       expression: Expression;
       final: boolean;
-      redeclare: string;
+      redeclare?: string;
       recordBinding?: boolean;
     };
   },
@@ -803,7 +803,7 @@ const getReplaceableType = (
     [key: string]: {
       expression: Expression;
       final: boolean;
-      redeclare: string;
+      redeclare?: string;
     };
   },
   selections: ConfigValues,

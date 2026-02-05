@@ -284,6 +284,8 @@ export interface TemplateInput {
   choiceModifiers?: { [key: string]: Modification[] };
   elementType: ElementType;
   replaceable?: boolean;
+  /** True if value is a binding to a record type component */
+  recordBinding?: boolean;
 }
 
 // Additional properties for replaceable elements
@@ -748,6 +750,8 @@ export class Component extends Element implements Replaceable {
   value: any; // assigned value (as object) for parameter, type for replaceable component
   description = "";
   connectorSizing = false;
+  /** True if value is a binding to a record type component */
+  recordBinding?: boolean;
   // Optional properties for replaceable elements
   choices?: string[];
   choiceMods?: { [key: string]: Modification[] };
@@ -787,6 +791,9 @@ export class Component extends Element implements Replaceable {
       : null;
     if (this.mod && !this.mod.empty) {
       this.value = this.mod.value;
+      if (this.mod.recordBinding) {
+        this.recordBinding = true;
+      }
     }
 
     // From MLS: description of non-replaceable components is within component-clause
@@ -847,6 +854,7 @@ export class Component extends Element implements Replaceable {
       modifiers: this.mod ? [this.mod as Modification] : [],
       elementType: this.elementType,
       replaceable: this.replaceable,
+      recordBinding: this.recordBinding,
     };
 
     if (recursive) {

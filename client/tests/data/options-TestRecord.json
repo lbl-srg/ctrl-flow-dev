@@ -91,7 +91,8 @@
     "definition": false,
     "shortExclType": false,
     "replaceable": false,
-    "treeList": []
+    "treeList": [],
+    "recordBinding": true
   },
   "TestRecord.Mod": {
     "modelicaPath": "TestRecord.Mod",
@@ -101,8 +102,7 @@
     "modifiers": {
       "TestRecord.Mod.rec": {
         "final": false,
-        "redeclare": "TestRecord.Rec",
-        "recordBinding": false
+        "redeclare": "TestRecord.Rec"
       }
     },
     "options": [
@@ -133,9 +133,7 @@
             1
           ]
         },
-        "final": false,
-        "redeclare": "",
-        "recordBinding": false
+        "final": false
       }
     },
     "options": [
@@ -192,9 +190,7 @@
             -1
           ]
         },
-        "final": false,
-        "redeclare": "",
-        "recordBinding": false
+        "final": false
       }
     },
     "options": [
@@ -221,9 +217,7 @@
             3
           ]
         },
-        "final": false,
-        "redeclare": "",
-        "recordBinding": false
+        "final": false
       }
     },
     "options": [
@@ -251,7 +245,6 @@
           ]
         },
         "final": false,
-        "redeclare": "",
         "recordBinding": true
       }
     },
@@ -307,9 +300,7 @@
             4
           ]
         },
-        "final": false,
-        "redeclare": "",
-        "recordBinding": false
+        "final": false
       },
       "TestRecord.NestedExtended.localRecFirst.p": {
         "expression": {
@@ -318,9 +309,7 @@
             -2
           ]
         },
-        "final": false,
-        "redeclare": "",
-        "recordBinding": false
+        "final": false
       }
     },
     "options": [
@@ -384,7 +373,6 @@
           ]
         },
         "final": false,
-        "redeclare": "",
         "recordBinding": true
       }
     },
@@ -421,7 +409,6 @@
           ]
         },
         "final": false,
-        "redeclare": "",
         "recordBinding": true
       }
     },
@@ -477,9 +464,7 @@
             -3
           ]
         },
-        "final": false,
-        "redeclare": "",
-        "recordBinding": false
+        "final": false
       }
     },
     "options": [],

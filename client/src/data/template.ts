@@ -29,6 +29,8 @@ export interface OptionInterface {
   definition: boolean;
   shortExclType: boolean; // Short class definition excluding `type` definition
   replaceable: boolean;
+  /** True if value is a binding to a record type component */
+  recordBinding?: boolean;
 }
 
 export interface SystemTypeInterface {

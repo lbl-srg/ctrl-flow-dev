@@ -315,8 +315,19 @@ function unpackModblock(props: ModificationProps) {
       );
       // Check if this is a binding to a record type
       // Use propsIsRecordBinding if explicitly set (from redeclare context),
-      // otherwise fall back to checking the element type
-      recordBinding = propsIsRecordBinding ?? isRecordType(element);
+      // otherwise check if the element's type or baseType itself is a record.
+      // - For nested modifications like `mod2(localRec=...)`, element is the modified
+      //   component (localRec) and we check if its type is a record.
+      // - For direct declarations like `Rec localRec = rec`, element may not be found
+      //   via the lookup, so we check if baseType (the component's type) is a record.
+      if (propsIsRecordBinding !== undefined) {
+        recordBinding = propsIsRecordBinding;
+      } else if (element) {
+        recordBinding = isRecordType(element);
+      } else if (baseType) {
+        const baseTypeElement = typeStore.get(baseType, "", false);
+        recordBinding = isRecord(baseTypeElement);
+      }
     } else if (name == "choice") {
       const choiceMod = (mod as mj.ClassMod)
         .class_modification[0] as mj.RedeclareMod;
@@ -388,7 +399,7 @@ function unpackModblock(props: ModificationProps) {
   // Use basePath (instance path) for the modifier key, not scope (type path).
   // This ensures modifiers like `extends Nested(localRec(p=4))` produce keys like
   // "TestRecord.Nested.localRec.p" instead of "TestRecord.Rec.p".
-  return new Modification(basePath, name, value, mods, final, "", recordBinding);
+  return new Modification(basePath, name, value, mods, final, undefined, recordBinding);
 }
 
 export function getModificationList(
@@ -417,7 +428,7 @@ export function getModificationList(
  * The mod 'name' can be explicitly provided instead of discovered
  *
  * For redeclare modifications:
- * - 'redeclare' stores the redeclared type (string), e.g., "Package.NewType", or "" if not a redeclare
+ * - 'redeclare' stores the redeclared type (string), e.g., "Package.NewType", or undefined if not a redeclare
  * - 'value' stores the binding expression only if there's an assignment (=), otherwise undefined
  *   Example: `redeclare NewRecordType record = localRecordInstance`
  *            -> redeclare = "NewRecordType", value = "localRecordInstance"
@@ -433,7 +444,7 @@ export class Modification {
     public value: any,
     public mods: Modification[] = [],
     public final = false,
-    public redeclare: string = "", // "" if not a redeclare, otherwise the redeclared type path
+    public redeclare?: string, // the redeclared type path, undefined if not a redeclare
     public recordBinding = false, // true if this modification is a binding to a record type
   ) {
     this.modelicaPath = [basePath, name].filter((s) => s !== "").join(".");

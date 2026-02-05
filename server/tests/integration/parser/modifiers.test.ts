@@ -253,6 +253,7 @@ describe("Record Binding Modifications", () => {
         shortExclType: shortExclType,
         replaceable: input.replaceable || false,
         treeList: [], // Will be computed below
+        ...(input.recordBinding && { recordBinding: true }),
       };
 
       // Compute treeList for definitions
