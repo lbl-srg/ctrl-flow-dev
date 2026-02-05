@@ -650,7 +650,6 @@ export class LongClass extends Element {
       modelicaPath: this.modelicaPath,
       type: this.type,
       name: this.description,
-      value: this.modelicaPath,
       visible: false,
       inputs: children,
       elementType: this.elementType,
@@ -747,7 +746,7 @@ function setInputVisible(
 export class Component extends Element implements Replaceable {
   mod?: Modification | null;
   type = ""; // modelica path
-  value: any; // assigned value (as object) for parameter, type for replaceable component
+  value: any; // assigned value (as Expression) if there's a binding (=), otherwise undefined
   description = "";
   connectorSizing = false;
   /** True if value is a binding to a record type component */
@@ -945,7 +944,6 @@ export class Enumeration extends Element {
 export class Extend extends Element {
   mods: Modification[] = [];
   type: string = "";
-  value: string = "";
   annotation: Modification[] = [];
 
   constructor(
@@ -979,7 +977,6 @@ export class Extend extends Element {
       return; // PUNCH-OUT!
     }
 
-    this.value = this.type;
     if (definition.extends_clause.class_modification) {
       this.mods = getModificationList(
         definition.extends_clause,
