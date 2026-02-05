@@ -207,74 +207,6 @@ const _instancePathToOption = (
         const potentialOption = context.options[instanceMod.redeclare];
         option = potentialOption ? potentialOption : option;
       }
-      // Handle record binding: redirect path resolution to follow the binding
-      if (instanceMod && instanceMod.recordBinding) {
-        const bindingExpr = instanceMod.expression;
-        let bindingPath: string | null = null;
-        if (
-          bindingExpr?.operator === "none" &&
-          typeof bindingExpr.operands[0] === "string"
-        ) {
-          bindingPath = bindingExpr.operands[0];
-        }
-
-        if (bindingPath) {
-          const remainingPath = pathSegments.join(".");
-          if (remainingPath) {
-            let resolvedBindingPath = bindingPath;
-            // The binding path (e.g., "localRec") is written in Modelica relative to the
-            // class namespace where the binding was defined. We need to resolve it to an
-            // instance path by prepending the appropriate scope.
-            //
-            // modificationDepth = number of segments in the modification's relative instance path
-            // (e.g., modifier key "nes.mod.rec" with base "nes" has relativeInstancePath="mod.rec", depth=2)
-            //
-            // - fromClassDefinition=true: binding defined in class definition.
-            //   Scope is the instance of that class: slice off modificationDepth segments.
-            // - fromClassDefinition=false: binding defined at instantiation site.
-            //   Scope is where the component was instantiated: slice off modificationDepth + 1 segments.
-            //
-            // Example 1 (fromClassDefinition=true):
-            //   class Nested { Rec localRec; Mod mod(rec=localRec); }
-            //   For instance "nes" of type Nested, modifier "nes.mod.rec" has bindingPath="localRec", depth=2.
-            //   Scope = "nes" (slice -2 from "nes.mod.rec"), binding resolves to "nes.localRec".
-            //
-            // Example 2 (fromClassDefinition=false):
-            //   model TestRecord { Mod1 mod1; Mod mod2(localRec=mod1.localRec); }
-            //   curInstancePath="mod2.localRec", bindingPath="mod1.localRec", depth=1.
-            //   Scope = "" (slice -2 from "mod2.localRec"), binding resolves to "mod1.localRec".
-            //   This is correct: the binding was written in TestRecord (root scope).
-            const depth = instanceMod.modificationDepth || 1;
-            const sliceAmount = instanceMod.fromClassDefinition
-              ? -depth
-              : -(depth + 1);
-            const scopePath = curInstancePath
-              .split(".")
-              .slice(0, sliceAmount)
-              .join(".");
-            resolvedBindingPath = scopePath
-              ? `${scopePath}.${bindingPath}`
-              : bindingPath;
-            if (debug)
-              console.log(
-                `[_instancePathToOption] resolved relative binding: ${bindingPath} -> ${resolvedBindingPath} (scope: ${scopePath}, depth: ${depth}, fromClassDefinition: ${instanceMod.fromClassDefinition})`,
-              );
-
-            const redirectedPath = `${resolvedBindingPath}.${remainingPath}`;
-            if (debug)
-              console.log(
-                `[_instancePathToOption] recordBinding redirect: ${curInstancePath}.${remainingPath} -> ${redirectedPath}`,
-              );
-            const redirectedResult = _instancePathToOption(
-              redirectedPath,
-              context,
-              applyPathMods,
-              debug,
-            );
-            return redirectedResult;
-          }
-        }
-      }
     }
 
     // special 'datAll' case
@@ -344,47 +276,61 @@ const _instancePathToOption = (
         `[_instancePathToOption] after shift: paramName=${paramName}, curOptionPath=${curOptionPath}`,
       );
 
-    // Handle composite bindings declared in class definitions.
-    //
-    // E.g., in `Mod`: `Rec localRec = rec;`
-    // To resolve "mod.localRec.p", we need to redirect to "mod.rec.p".
-    // The check `pathSegments.length > 0` ensures we only do this when accessing a field
-    // inside the record (like .p), not when resolving a simple parameter.
-    //
-    // Skip if there's a recordBinding modifier from instantiation (e.g., `Mod mod(rec=localRec)`),
-    // which takes precedence and is handled in the modifier logic above.
+    // Handle record binding: redirect path resolution to follow the binding.
+    // Record bindings can come from a modifier (instantiation-site, e.g., `Mod mod(rec=localRec)`)
+    // or from a class definition (it is then an "option" value, e.g., `Rec localRec = rec;`).
+    // Modifier bindings take precedence over class-definition bindings.
+    // The guard `pathSegments.length > 0` ensures we only redirect when accessing a nested parameter
+    // (like .p), not when resolving the record parameter itself.
     if (curOptionPath && pathSegments.length > 0) {
       const curInstancePath = curInstancePathList.join(".");
+      const curOption = context.options[curOptionPath];
       const instanceMod = context.mods[curInstancePath];
+      const modBinding = instanceMod?.recordBinding ? instanceMod : null;
+      const optionBinding = !modBinding && curOption?.recordBinding ? curOption : null;
 
-      if (!instanceMod?.recordBinding) { // No recordBinding modifier from instantiation
-        const curOption = context.options[curOptionPath];
-        if (curOption?.value && typeof curOption.value !== "string") {
-          const valueExpr = curOption.value as Expression;
-          if (
-            valueExpr.operator === "none" &&
-            typeof valueExpr.operands[0] === "string"
-          ) {
-            const bindingTarget = valueExpr.operands[0];
-            const remainingPath = pathSegments.join(".");
-            // Resolve the binding in the current scope, then continue with remaining path
-            const redirectedPath = `${bindingTarget}.${remainingPath}`;
-            const scopePath = curInstancePath
-              .split(".")
-              .slice(0, -1)
-              .join(".");
-            if (debug)
-              console.log(
-                `[_instancePathToOption] value binding redirect: ${curInstancePath}.${remainingPath} -> ${scopePath ? scopePath + "." : ""}${redirectedPath}`,
-              );
-            const redirectedResult = _instancePathToOption(
-              scopePath ? `${scopePath}.${redirectedPath}` : redirectedPath,
-              context,
-              applyPathMods,
-              debug,
-            );
-            return redirectedResult;
+      if (modBinding || optionBinding) {
+        const bindingSource = modBinding
+          ? modBinding.expression
+          : curOption.value as Expression | undefined;
+        let bindingPath: string | null = null;
+        if (
+          bindingSource?.operator === "none" &&
+          typeof bindingSource.operands[0] === "string"
+        ) {
+          bindingPath = bindingSource.operands[0];
+        }
+
+        if (bindingPath) {
+          const remainingPath = pathSegments.join(".");
+          // Compute scope to resolve the relative binding path.
+          // Modifier bindings use modificationDepth/fromClassDefinition;
+          // class-definition bindings scope to the parent instance (slice -1).
+          let scopePath: string;
+          if (modBinding) {
+            const depth = modBinding.modificationDepth || 1;
+            const sliceAmount = modBinding.fromClassDefinition ? -depth : -(depth + 1);
+            scopePath = curInstancePath.split(".").slice(0, sliceAmount).join(".");
+          } else {
+            scopePath = curInstancePath.split(".").slice(0, -1).join(".");
           }
+
+          const resolvedBindingPath = scopePath
+            ? `${scopePath}.${bindingPath}`
+            : bindingPath;
+
+          if (debug)
+            console.log(
+              `[_instancePathToOption] recordBinding redirect: ${curInstancePath}.${remainingPath} -> ${resolvedBindingPath}.${remainingPath}`,
+            );
+
+          const redirectedResult = _instancePathToOption(
+            `${resolvedBindingPath}.${remainingPath}`,
+            context,
+            applyPathMods,
+            debug,
+          );
+          return redirectedResult;
         }
       }
     }
