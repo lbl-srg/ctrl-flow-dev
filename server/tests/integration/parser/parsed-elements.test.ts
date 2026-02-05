@@ -139,7 +139,9 @@ describe("Expected elements are extracted", () => {
       expect(choiceMods).toBeDefined();
       const [choiceMod] = choiceMods;
       expect(choiceMod.modelicaPath).toEqual('TestPackage.Component.FourthComponent.replaceable_param');
-      expect(evaluateExpression(choiceMod.value)).toEqual('TestPackage.Component.SecondComponent');
+      // For redeclare modifications: 'redeclare' stores the type, 'value' is only set if there's a binding (=)
+      expect(choiceMod.redeclare).toEqual('TestPackage.Component.SecondComponent');
+      expect(choiceMod.value).toBeUndefined();
     }
   });
 

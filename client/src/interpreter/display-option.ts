@@ -27,7 +27,11 @@ export interface FlatConfigOption {
 
 type DisplayItem = FlatConfigOptionGroup | FlatConfigOption;
 
-export const MLS_PREDEFINED_TYPES_TO_NOT_DISPLAY = ["String", "Real", "Integer"];
+export const MLS_PREDEFINED_TYPES_TO_NOT_DISPLAY = [
+  "String",
+  "Real",
+  "Integer",
+];
 
 const displayOptionFilter = (
   optionInstance: OptionInstance,
@@ -104,7 +108,11 @@ export function _formatDisplayGroup(
     ?.flatMap((o) => {
       const childOption = context.options[o];
       // Long class definitions with child options form a "group" of inputs in the configuration panel
-      if (childOption.definition && !childOption.shortExclType && childOption?.options?.length) {
+      if (
+        childOption.definition &&
+        !childOption.shortExclType &&
+        childOption?.options?.length
+      ) {
         return _formatDisplayGroup(childOption, paramInstance, context);
       } else {
         const paramName = o.split(".").pop();
@@ -148,10 +156,7 @@ export function _formatDisplayItem(
     return [];
   }
   const displayList: DisplayItem[] = [];
-  const optionType =
-    option && option["replaceable"] && !optionInstance.value
-      ? optionInstance.value
-      : option.type;
+  const optionType = option.type;
 
   if (displayOptionFilter(optionInstance, optionType as string)) {
     return [];
@@ -164,10 +169,13 @@ export function _formatDisplayItem(
     );
   }
   // check if the type needs to be rendered
+  // Use optionInstance.value for type lookup:
+  // - For non-replaceable components with no binding (value is undefined), lookup fails -> no nested components rendered
+  // - For replaceable components with no binding (value is undefined), use option.type instead
   const type =
-    optionInstance.value !== undefined && optionInstance.value !== null
-      ? optionInstance.value
-      : option.type;
+    option["replaceable"] && !optionInstance.value
+      ? option.type
+      : optionInstance.value;
   const typeOption = context.options[type as string];
   if (typeOption === undefined) {
     return displayList;

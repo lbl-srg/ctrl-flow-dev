@@ -239,7 +239,6 @@ export function createProjectInputs(): { [key: string]: TemplateInput } {
     modelicaPath: PROJECT_INSTANCE_PATH,
     name: PROJECT_INSTANCE_PATH,
     type: PROJECT_PATH,
-    value: PROJECT_PATH,
     visible: false,
     modifiers: spoofedModList,
     inputs: [PROJECT_PATH],
@@ -306,21 +305,18 @@ function initializeReplaceable(
   instance.choiceMods = {};
   instance.mods = [];
 
-  // For replaceable ***components*** the default value is the instance type
-  if (instance.elementType === "component_clause") {
-    instance.value = instance.type;
-  }
-
-  const mod = createModification({
-    name: instance.name,
-    value: getExpression(instance.value, basePath),
-    basePath: basePath,
-    baseType: instance.type,
-  });
-
-  if (mod) {
-    instance.mods.push(mod);
-  }
+  // Schema for replaceable elements:
+  // - 'type' stores the actual/aliased type
+  // - 'value' is "" if no binding (=) is provided, or the binding value for components
+  //
+  // For replaceable components:
+  // - 'type' = declared type (already set by Component constructor)
+  // - 'value' = undefined if no binding, or the binding value if present
+  //
+  // For short class definitions:
+  // - 'type' = aliased type (already set by ShortClass constructor)
+  // - 'value' = undefined
+  // For short classes: type contains the aliased type, value is undefined (set in ShortClass constructor)
 
   // Handle constraining-clause clause if present
   if (definition.constraining_clause) {
@@ -491,7 +487,7 @@ export abstract class Element {
 
 export class ShortClass extends Element {
   mods?: Modification[];
-  value = ""; // Type specifier assigned to the short class identifier
+  value?: string; // undefined for short class definitions (no binding)
   constructor(
     definition: any,
     basePath: string,
@@ -502,9 +498,13 @@ export class ShortClass extends Element {
       .class_specifier.short_class_specifier;
     const specifierType = typeStore.get(specifier.value?.name, basePath);
     this.name = specifier.identifier;
-    this.value = specifierType?.modelicaPath || specifier.value?.name;
+    // For short class definitions:
+    // - modelicaPath: the short class name (e.g., Parent.Medium)
+    // - type: the aliased type (e.g., SomeMedium)
+    // - value: undefined (no binding for class definitions)
     this.modelicaPath = `${basePath}.${this.name}`;
-    this.type = this.modelicaPath;
+    this.type = specifierType?.modelicaPath || specifier.value?.name;
+    // value remains undefined - no binding for short class definitions
     const registered = this.registerPath(this.modelicaPath, this.type);
     if (!registered) {
       return; // PUNCH-OUT!
@@ -519,15 +519,15 @@ export class ShortClass extends Element {
   }
 
   getChildElements(): Element[] {
-    // Retrieve the child elements from the type specifier assigned to the short class
-    const typeSpecifier = typeStore.get(this.value) as LongClass;
+    // Retrieve the child elements from the aliased type (stored in this.type)
+    const typeSpecifier = typeStore.get(this.type) as LongClass;
 
     return typeSpecifier == null ? [] : typeSpecifier.getChildElements();
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
-    // Retrieve the inputs from the type specifier assigned to the short class
-    const typeSpecifier = typeStore.get(this.value) as LongClass;
+    // Retrieve the inputs from the aliased type (stored in this.type)
+    const typeSpecifier = typeStore.get(this.type) as LongClass;
 
     if (typeSpecifier == null) {
       return inputs;
@@ -646,7 +646,6 @@ export class LongClass extends Element {
       modelicaPath: this.modelicaPath,
       type: this.type,
       name: this.description,
-      value: this.modelicaPath,
       visible: false,
       inputs: children,
       elementType: this.elementType,
@@ -743,7 +742,7 @@ function setInputVisible(
 export class Component extends Element implements Replaceable {
   mod?: Modification | null;
   type = ""; // modelica path
-  value: any; // assigned value (as object) for parameter, type for replaceable component
+  value: any; // assigned value (as Expression) if there's a binding (=), otherwise undefined
   description = "";
   connectorSizing = false;
   // Optional properties for replaceable elements
@@ -935,7 +934,6 @@ export class Enumeration extends Element {
 export class Extend extends Element {
   mods: Modification[] = [];
   type: string = "";
-  value: string = "";
   annotation: Modification[] = [];
 
   constructor(
@@ -969,7 +967,6 @@ export class Extend extends Element {
       return; // PUNCH-OUT!
     }
 
-    this.value = this.type;
     if (definition.extends_clause.class_modification) {
       this.mods = getModificationList(
         definition.extends_clause,
@@ -1021,7 +1018,7 @@ export class Import extends Element {
 /**
  * Given a list of elements, discovers and returns the formatted type
  *
- * @param definition - Object from class_definition array or from element_list array
+ * @param definition - Object from stored_class_definitions array or from element_list array
  * @param basePath - Class name from 'within' clause if parsing a class, or class name if parsing an element
  * @returns An Element instance or undefined if element type cannot be determined
  */
@@ -1074,7 +1071,7 @@ function _constructElement(
     case "record":
     case "package":
       const classSpecifier =
-        definition.class_specifier ?? // object from class_definition array
+        definition.class_specifier ?? // object from stored_class_definitions array
         definition.class_definition.class_specifier; // object from element_list array
       if (classSpecifier.hasOwnProperty("long_class_specifier")) {
         element = new LongClass(definition, basePath, elementType);
@@ -1126,7 +1123,7 @@ export class File {
       });
     }
 
-    obj.class_definition.map((cd: any) => {
+    obj.stored_class_definitions.map((cd: any) => {
       const element = _constructElement(cd, this.package);
       if (element) {
         this.elementList.push(element);

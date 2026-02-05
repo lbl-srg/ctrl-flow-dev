@@ -9,7 +9,7 @@ import {
 } from "./expression-helpers";
 
 export type Modifiers = {
-  [key: string]: { expression: Expression; final: boolean; redeclare: boolean };
+  [key: string]: { expression: Expression; final: boolean; redeclare: string };
 };
 
 export interface ConfigValues {

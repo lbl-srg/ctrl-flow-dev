@@ -219,6 +219,11 @@ describe("Test set", () => {
     expect(evaluate(buildExpression("<=", [5, 4]))).toBeFalsy();
   });
 
+  it("Handles !", () => {
+    expect(evaluate(buildExpression("!", [true]))).toBeFalsy();
+    expect(evaluate(buildExpression("!", [buildExpression(">=", [2, 3])]))).toBeTruthy();
+  });
+
   it("Handles == and !=", () => {
     expect(evaluate(buildExpression("==", [1, 1, 1, 1]))).toBeTruthy();
     expect(evaluate(buildExpression("==", [3]))).toBeTruthy();
@@ -471,18 +476,15 @@ describe("resolveToValue tests using context and evaluation", () => {
 });
 
 describe("Testing context getValue", () => {
-  it("Components (parameter that have a type of a class/model) that are not replaceables have no value assigned", () => {
+  it("Components that have a type of a class/model have no value assigned", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
     );
 
-    // TODO: expected behavior for components that are not replaceables?
-    // Currently returns an empty string
-    const expectedVal = "";
     const val = context.getValue("TAirCoiCooLvg");
-    expect(val).toEqual(expectedVal);
+    expect(val).toBeUndefined();
   });
 
   it("Fetches the correct value for a replaceable type without a selection made", () => {
@@ -732,7 +734,7 @@ describe("Scope tests", () => {
     );
     const path = "secOutRel.secOut.dat"; // secOut.dat = dat
     const val = evaluate(context.mods[path]?.expression, context, "secOutRel");
-    expect(val).toEqual("");
+    expect(val).toEqual(undefined);
   });
 
   it("Able to resolve secOutRel.secOut.dat without going into an infinite loop due to bad scope", () => {
@@ -1108,7 +1110,7 @@ describe("Specific parameter debugging", () => {
     );
   });
 
-  it("Assigns null to secOutRel.secOut.damOut", () => {
+  it("secOutRel.secOut.damOut has undefined value and is excluded from evaluatedValues", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
@@ -1119,8 +1121,8 @@ describe("Specific parameter debugging", () => {
     const path = "secOutRel.secOut.damOut";
     // fill in cache by generating display options
     const displayOptions = mapToDisplayOptions(context);
-    const { value } = context._resolvedValues[path];
-    expect(value).toEqual("");
+    // With no binding, value is undefined and not added to _resolvedValues cache
+    expect(context._resolvedValues[path]).toBeUndefined();
     const optionInstance = context.getOptionInstance(path);
     const evaluatedValues = context.getEvaluatedValues();
     const selectionPath = constructSelectionPath(

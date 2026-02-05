@@ -35,7 +35,7 @@ interface Modifier {
   expression: Expression;
   final: boolean;
   fromClassDefinition: boolean;
-  redeclare: boolean;
+  redeclare: string; // "" if not a redeclare, otherwise the redeclared type path
 }
 
 /**
@@ -163,16 +163,10 @@ const _instancePathToOption = (
       const curInstancePath = curInstancePathList.join(".");
       const instanceMod = context.mods[curInstancePath];
       // resolve mod if present
-      if (instanceMod) {
-        const resolvedValue = evaluateModifier(
-          instanceMod,
-          context,
-          curInstancePath,
-        );
-        if (typeof resolvedValue === "string" && instanceMod.redeclare) {
-          const potentialOption = context.options[resolvedValue as string];
-          option = potentialOption ? potentialOption : option;
-        }
+      if (instanceMod && instanceMod.redeclare) {
+        // For redeclare modifiers, the type is stored directly in the 'redeclare' property
+        const potentialOption = context.options[instanceMod.redeclare];
+        option = potentialOption ? potentialOption : option;
       }
     }
 
@@ -202,11 +196,11 @@ const _instancePathToOption = (
     }
 
     // For short classes, the actual instance is within the options
-    // of the type assigned to the short class identifier.
+    // of the aliased type (stored in option.type).
     // (If this type is modified by the user selection, this has already been caught by
     // the selection check above.)
     if (option?.shortExclType) {
-      option = context.options[option?.value as string];
+      option = context.options[option?.type as string];
     }
 
     if (pathSegments.length === 0) {
@@ -284,6 +278,7 @@ export function resolvePaths(
 type Comparator = ">" | ">=" | "<" | "<=";
 export type OperatorType =
   | "none"
+  | "!"
   | "=="
   | "!="
   | "&&"
@@ -364,12 +359,21 @@ export const resolveToValue = (
  *
  * If the modifier came from a param, scope has to be kicked back
  * by 2, if it was defined on a class, by 1
+ *
+ * For redeclare modifiers:
+ * - 'redeclare' contains the redeclared type path
+ * - 'expression' contains the binding value (only if there's an assignment =)
+ * If it's a redeclare without a binding, return the redeclare type directly
  */
 export const evaluateModifier = (
   mod: Modifier,
   context: ConfigContext,
   instancePath = "",
 ) => {
+  // For redeclare modifiers without a binding, return the redeclare type directly
+  if (mod?.redeclare && !mod?.expression) {
+    return mod.redeclare;
+  }
   const sliceAmount = mod?.fromClassDefinition ? -1 : -2;
   const expressionScope = instancePath
     .split(".")
@@ -433,6 +437,17 @@ export const evaluate = (
       val = expression.operator.includes("!") ? !isEqual : isEqual;
       break;
     }
+    case "!": {
+      if (expression.operands.length !== 1) {
+        throw new Error("Invalid number of operands for ! operator");
+      }
+      const operand = expression.operands[0];
+      const resolvedOperand = isExpression(operand)
+        ? evaluate(operand, context, scope)
+        : resolveToValue(operand, context, scope);
+      val = !resolvedOperand;
+      break;
+    }
     case "||": {
       val = expression.operands.reduce(
         (acc, cur) => !!(evaluate(cur, context, scope) || acc),
@@ -479,7 +494,7 @@ const addToModObject = (
     [key: string]: {
       expression: Expression;
       final: boolean;
-      redeclare: boolean;
+      redeclare: string;
     };
   },
   baseInstancePath: string,
@@ -517,7 +532,7 @@ const addToModObject = (
 const getReplaceableType = (
   instancePath: string,
   option: OptionInterface,
-  mods: { [key: string]: { expression: Expression; final: boolean } },
+  mods: { [key: string]: { expression: Expression; final: boolean; redeclare: string } },
   selections: ConfigValues,
   options: { [key: string]: OptionInterface },
 ) => {
@@ -554,15 +569,17 @@ const getReplaceableType = (
   }
 
   // Check if there is a modifier for this option, if so use it:
+  // For redeclare modifiers, the type is stored directly in the 'redeclare' property
   let newType = null;
-  const redeclaredType = instancePath in mods ? mods[instancePath] : null;
-  if (redeclaredType) {
-    // not using 'evaluateModifier' as that relies on context
-    // This evaluation COULD mess up if operand anything but 'none'
-    newType = evaluate(redeclaredType.expression);
+  const mod = instancePath in mods ? mods[instancePath] : null;
+  if (mod && mod.redeclare) {
+    // The redeclare property contains the type path directly
+    newType = mod.redeclare;
   }
 
-  // Otherwise just definition type
+  // Otherwise use definition type
+  // - Replaceable short classes: type = aliased type, value = undefined
+  // - Replaceable components: type = declared type, value = undefined or binding
   return newType ? newType : option.type;
 };
 
@@ -606,7 +623,9 @@ const buildModsHelper = (
   // check for redeclare in selections or use default type
   // to grab the correct modifiers
   if (option.replaceable) {
-    let redeclaredType = option.value as string | null | undefined;
+    // - Replaceable short classes: type = aliased type, value = undefined
+    // - Replaceable components: type = declared type, value = undefined or binding
+    let redeclaredType: string | null | undefined = option.type;
     if (option.modelicaPath in selectionModelicaPathsCache) {
       const selectionPath = constructSelectionPath(
         option.modelicaPath,
@@ -841,7 +860,11 @@ export class ConfigContext {
 
     // return whatever value is present on the original option definition
     const optionScope = instancePath.split(".").slice(0, -1).join(".");
-    val = evaluate(this.options[optionPath]?.value, this, optionScope);
+    const option = this.options[optionPath];
+    // - For replaceable elements: value is "" if no binding, use type instead
+    // - For non-replaceable elements: use value directly
+    const optionValue = option?.replaceable && !option?.value ? option?.type : option?.value;
+    val = evaluate(optionValue, this, optionScope);
     this.addToCache(path, optionPath, val);
     this._previousInstancePath = null;
     return val;
@@ -932,8 +955,9 @@ export class ConfigContext {
       value = undefined;
     }
     const option = this.options[optionPath as string];
+    // For replaceable components, value is "" if no binding, so we fallback to type
     const type =
-      option && "replaceable" in option ? (value as string) : option?.["type"];
+      option?.replaceable && value ? (value as string) : option?.["type"];
     const castValue = value as Literal | null | undefined;
     const optionInstance = {
       value: castValue,
@@ -995,7 +1019,7 @@ export class ConfigContext {
       const { optionPath, value } = val;
       const option = this.options[optionPath];
       const addToResolvedValues =
-        value !== "" || (value === "" && option.type === "String");
+        value !== undefined || option.type === "String";
 
       if (addToResolvedValues) {
         const selectionPath = constructSelectionPath(optionPath, key);

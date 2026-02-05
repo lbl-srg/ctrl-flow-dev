@@ -71,19 +71,22 @@ describe("Path Expansion", () => {
       ];
     expect(mod).toBeDefined();
     if (mod) {
-      expect(evaluateExpression(mod.expression)).toBe(expectedValue);
+      // For redeclare modifications: 'redeclare' stores the type, 'expression' is only set if there's a binding (=)
+      expect(mod.redeclare).toBe(expectedValue);
     }
   });
 
-  it("Default redeclare type value is assigned as expected", () => {
+  it("Default redeclare type is assigned as expected", () => {
     const { options } = getOptions();
-    const expectedValue = "TestPackage.Component.SecondComponent";
-    const shortPathComponent = options.find(
+    const expectedType = "TestPackage.Component.SecondComponent";
+    const replaceableComponent = options.find(
       (o) =>
         o.modelicaPath ===
         "TestPackage.Template.TestTemplate.selectable_component_with_relative_paths",
     );
 
-    expect(evaluateExpression(shortPathComponent?.value)).toBe(expectedValue);
+    // For replaceable components: 'type' stores the declared type, 'value' is undefined if no binding
+    expect(replaceableComponent?.type).toBe(expectedType);
+    expect(replaceableComponent?.value).toBeUndefined();
   });
 });
