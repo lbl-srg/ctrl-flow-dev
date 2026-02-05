@@ -569,7 +569,6 @@
       "modelicaPath": "Buildings.Templates.Components.Data.Damper",
       "type": "Buildings.Templates.Components.Data.Damper",
       "name": "Record for damper model",
-      "value": "Buildings.Templates.Components.Data.Damper",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -2121,7 +2120,6 @@
       "modelicaPath": "Buildings.Fluid.Interfaces.PartialTwoPort",
       "type": "Buildings.Fluid.Interfaces.PartialTwoPort",
       "name": "Partial component with two ports",
-      "value": "Buildings.Fluid.Interfaces.PartialTwoPort",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -2139,7 +2137,6 @@
       "modelicaPath": "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
       "type": "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
       "name": "Partial model with two ports and declaration of quantities that are used by many models",
-      "value": "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface.port_a.p.start": {
@@ -2185,7 +2182,6 @@
       "modelicaPath": "Buildings.Fluid.BaseClasses.PartialResistance",
       "type": "Buildings.Fluid.BaseClasses.PartialResistance",
       "name": "Partial model for a hydraulic resistance",
-      "value": "Buildings.Fluid.BaseClasses.PartialResistance",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.BaseClasses.PartialResistance.show_T": {
@@ -2311,7 +2307,6 @@
       "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential",
       "type": "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential",
       "name": "Partial model for air dampers with exponential opening characteristics",
-      "value": "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential.dp_nominal": {
@@ -2411,7 +2406,6 @@
       "modelicaPath": "Buildings.Fluid.Actuators.Dampers.Exponential",
       "type": "Buildings.Fluid.Actuators.Dampers.Exponential",
       "name": "Air damper with exponential opening characteristics",
-      "value": "Buildings.Fluid.Actuators.Dampers.Exponential",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -2642,7 +2636,6 @@
       "modelicaPath": "Buildings.Fluid.Actuators.Dampers.PressureIndependent",
       "type": "Buildings.Fluid.Actuators.Dampers.PressureIndependent",
       "name": "Model for an air damper whose mass flow is proportional to the input signal",
-      "value": "Buildings.Fluid.Actuators.Dampers.PressureIndependent",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Actuators.Dampers.PressureIndependent.linearized": {
@@ -2833,7 +2826,6 @@
       "modelicaPath": "Buildings.Templates.Components.Routing.PassThroughFluid",
       "type": "Buildings.Templates.Components.Routing.PassThroughFluid",
       "name": "Direct fluid pass-through",
-      "value": "Buildings.Templates.Components.Routing.PassThroughFluid",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -2955,7 +2947,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal",
       "type": "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal",
       "name": "Convert Boolean to Real signal",
-      "value": "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -3109,7 +3100,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.LessThreshold",
       "type": "Buildings.Controls.OBC.CDL.Reals.LessThreshold",
       "name": "Output y is true, if input u is less than threshold with hysteresis",
-      "value": "Buildings.Controls.OBC.CDL.Reals.LessThreshold",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -3250,7 +3240,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold",
       "type": "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold",
       "name": "Output y is true, if input u is greater than threshold with hysteresis",
-      "value": "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -3284,7 +3273,6 @@
       "modelicaPath": "Buildings.Templates.Components.Actuators.Damper",
       "type": "Buildings.Templates.Components.Actuators.Damper",
       "name": "Multiple-configuration damper",
-      "value": "Buildings.Templates.Components.Actuators.Damper",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.Components.Actuators.Damper.m_flow_nominal": {
@@ -3700,7 +3688,6 @@
       "modelicaPath": "Buildings.Fluid.Sensors.BaseClasses.PartialFlowSensor",
       "type": "Buildings.Fluid.Sensors.BaseClasses.PartialFlowSensor",
       "name": "Partial component to model sensors that measure flow properties",
-      "value": "Buildings.Fluid.Sensors.BaseClasses.PartialFlowSensor",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -3722,7 +3709,6 @@
       "modelicaPath": "Buildings.Fluid.Sensors.BaseClasses.PartialDynamicFlowSensor",
       "type": "Buildings.Fluid.Sensors.BaseClasses.PartialDynamicFlowSensor",
       "name": "Partial component to model sensors that measure flow properties using a dynamic model",
-      "value": "Buildings.Fluid.Sensors.BaseClasses.PartialDynamicFlowSensor",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -3747,7 +3733,6 @@
       "modelicaPath": "Buildings.Fluid.Sensors.VolumeFlowRate",
       "type": "Buildings.Fluid.Sensors.VolumeFlowRate",
       "name": "Ideal sensor for volume flow rate",
-      "value": "Buildings.Fluid.Sensors.VolumeFlowRate",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Sensors.VolumeFlowRate.tau": {
@@ -3940,7 +3925,6 @@
       "modelicaPath": "Buildings.Templates.Components.Interfaces.PartialSensor",
       "type": "Buildings.Templates.Components.Interfaces.PartialSensor",
       "name": "Interface class for sensor",
-      "value": "Buildings.Templates.Components.Interfaces.PartialSensor",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -3974,7 +3958,6 @@
       "modelicaPath": "Buildings.Templates.Components.Sensors.VolumeFlowRate",
       "type": "Buildings.Templates.Components.Sensors.VolumeFlowRate",
       "name": "Volume flow rate sensor",
-      "value": "Buildings.Templates.Components.Sensors.VolumeFlowRate",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.Components.Sensors.VolumeFlowRate.y.unit": {
@@ -4341,7 +4324,6 @@
       "modelicaPath": "Buildings.Fluid.Sensors.TemperatureTwoPort",
       "type": "Buildings.Fluid.Sensors.TemperatureTwoPort",
       "name": "Ideal two port temperature sensor",
-      "value": "Buildings.Fluid.Sensors.TemperatureTwoPort",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -4391,7 +4373,6 @@
       "modelicaPath": "Buildings.Templates.Components.Sensors.Temperature",
       "type": "Buildings.Templates.Components.Sensors.Temperature",
       "name": "Temperature sensor",
-      "value": "Buildings.Templates.Components.Sensors.Temperature",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.Components.Sensors.Temperature.y.unit": {
@@ -4625,7 +4606,6 @@
       "modelicaPath": "Buildings.Fluid.Sensors.SpecificEnthalpyTwoPort",
       "type": "Buildings.Fluid.Sensors.SpecificEnthalpyTwoPort",
       "name": "Ideal two port sensor for the specific enthalpy",
-      "value": "Buildings.Fluid.Sensors.SpecificEnthalpyTwoPort",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -4681,7 +4661,6 @@
       "modelicaPath": "Buildings.Templates.Components.Sensors.SpecificEnthalpy",
       "type": "Buildings.Templates.Components.Sensors.SpecificEnthalpy",
       "name": "Specific enthalpy sensor",
-      "value": "Buildings.Templates.Components.Sensors.SpecificEnthalpy",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.Components.Sensors.SpecificEnthalpy.y.unit": {
@@ -5997,7 +5976,6 @@
       "modelicaPath": "Buildings.Fluid.Movers.BaseClasses.Characteristics.flowParameters",
       "type": "Buildings.Fluid.Movers.BaseClasses.Characteristics.flowParameters",
       "name": "Record for flow parameters",
-      "value": "Buildings.Fluid.Movers.BaseClasses.Characteristics.flowParameters",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -6520,7 +6498,6 @@
       "modelicaPath": "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters",
       "type": "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters",
       "name": "Record for efficiency parameters vs. volumetric flow rate",
-      "value": "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -6670,7 +6647,6 @@
       "modelicaPath": "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters_yMot",
       "type": "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters_yMot",
       "name": "Record for efficiency parameters vs. motor part load ratio",
-      "value": "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters_yMot",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -6778,7 +6754,6 @@
       "modelicaPath": "Buildings.Fluid.Movers.BaseClasses.Characteristics.powerParameters",
       "type": "Buildings.Fluid.Movers.BaseClasses.Characteristics.powerParameters",
       "name": "Record for electrical power parameters",
-      "value": "Buildings.Fluid.Movers.BaseClasses.Characteristics.powerParameters",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -6925,7 +6900,6 @@
       "modelicaPath": "Buildings.Fluid.Movers.BaseClasses.Euler.peak",
       "type": "Buildings.Fluid.Movers.BaseClasses.Euler.peak",
       "name": "Record for the operation condition at peak efficiency",
-      "value": "Buildings.Fluid.Movers.BaseClasses.Euler.peak",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -7373,7 +7347,6 @@
       "modelicaPath": "Buildings.Fluid.Movers.Data.Generic",
       "type": "Buildings.Fluid.Movers.Data.Generic",
       "name": "Generic data record for movers",
-      "value": "Buildings.Fluid.Movers.Data.Generic",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -7410,7 +7383,6 @@
       "modelicaPath": "Buildings.Templates.Components.Data.Fan",
       "type": "Buildings.Templates.Components.Data.Fan",
       "name": "Record for fan model",
-      "value": "Buildings.Templates.Components.Data.Fan",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -7476,7 +7448,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection",
       "type": "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection",
       "name": "Record for outdoor/relief/return air section",
-      "value": "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -8029,7 +8000,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Interfaces.Bus",
       "type": "Buildings.Templates.AirHandlersFans.Interfaces.Bus",
       "name": "Control bus for air handler",
-      "value": "Buildings.Templates.AirHandlersFans.Interfaces.Bus",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -8054,7 +8024,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection",
       "type": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection",
       "name": "Interface class for outdoor air section",
-      "value": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -8082,7 +8051,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper",
       "type": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper",
       "name": "Single damper for ventilation and economizer, with airflow measurement station",
-      "value": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper.typ": {
@@ -8565,7 +8533,6 @@
       "modelicaPath": "Buildings.Fluid.Sensors.RelativePressure",
       "type": "Buildings.Fluid.Sensors.RelativePressure",
       "name": "Ideal relative pressure sensor",
-      "value": "Buildings.Fluid.Sensors.RelativePressure",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -8584,7 +8551,6 @@
       "modelicaPath": "Buildings.Templates.Components.Sensors.DifferentialPressure",
       "type": "Buildings.Templates.Components.Sensors.DifferentialPressure",
       "name": "Differential pressure sensor",
-      "value": "Buildings.Templates.Components.Sensors.DifferentialPressure",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.Components.Sensors.DifferentialPressure.y.unit": {
@@ -10282,7 +10248,6 @@
       "modelicaPath": "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations",
       "type": "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations",
       "name": "Declarations for lumped volumes",
-      "value": "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -10307,7 +10272,6 @@
       "modelicaPath": "Buildings.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume",
       "type": "Buildings.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume",
       "name": "Partial mixing volume with inlet and outlet ports (flow reversal is allowed)",
-      "value": "Buildings.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -10351,7 +10315,6 @@
       "modelicaPath": "Buildings.Fluid.MixingVolumes.MixingVolume",
       "type": "Buildings.Fluid.MixingVolumes.MixingVolume",
       "name": "Mixing volume with inlet and outlet ports (flow reversal is allowed)",
-      "value": "Buildings.Fluid.MixingVolumes.MixingVolume",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.MixingVolumes.MixingVolume.initialize_p": {
@@ -10432,7 +10395,6 @@
       "modelicaPath": "Buildings.Fluid.Delays.DelayFirstOrder",
       "type": "Buildings.Fluid.Delays.DelayFirstOrder",
       "name": "Delay element, approximated by a first order differential equation",
-      "value": "Buildings.Fluid.Delays.DelayFirstOrder",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Delays.DelayFirstOrder.V": {
@@ -10510,7 +10472,6 @@
       "modelicaPath": "Buildings.Fluid.BaseClasses.PartialThreeWayResistance",
       "type": "Buildings.Fluid.BaseClasses.PartialThreeWayResistance",
       "name": "Flow splitter with partial resistance model at each port",
-      "value": "Buildings.Fluid.BaseClasses.PartialThreeWayResistance",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.massDynamics": {
@@ -10571,7 +10532,6 @@
       "modelicaPath": "Buildings.Fluid.FixedResistances.Junction",
       "type": "Buildings.Fluid.FixedResistances.Junction",
       "name": "Flow splitter with fixed resistance at each port",
-      "value": "Buildings.Fluid.FixedResistances.Junction",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.FixedResistances.Junction.m_flow_small": {
@@ -10884,7 +10844,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSectionDedicatedDampers",
       "type": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSectionDedicatedDampers",
       "name": "Base class for modeling separate dampers for ventilation and economizer",
-      "value": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSectionDedicatedDampers",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -10922,7 +10881,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersAirflow",
       "type": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersAirflow",
       "name": "Separate dampers for ventilation and economizer, with airflow measurement station",
-      "value": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersAirflow",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersAirflow.typ": {
@@ -10971,7 +10929,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure",
       "type": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure",
       "name": "Separate dampers for ventilation and economizer, with differential pressure sensor",
-      "value": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure.typ": {
@@ -12086,7 +12043,6 @@
       "modelicaPath": "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine",
       "type": "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine",
       "name": "Partial model to interface fan or pump models with the medium",
-      "value": "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.massDynamics": {
@@ -12158,7 +12114,6 @@
       "modelicaPath": "Buildings.Fluid.Movers.SpeedControlled_y",
       "type": "Buildings.Fluid.Movers.SpeedControlled_y",
       "name": "Fan or pump with ideally controlled normalized speed y as input signal",
-      "value": "Buildings.Fluid.Movers.SpeedControlled_y",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Movers.SpeedControlled_y.preVar": {
@@ -12394,7 +12349,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.Multiply",
       "type": "Buildings.Controls.OBC.CDL.Reals.Multiply",
       "name": "Output product of the two inputs",
-      "value": "Buildings.Controls.OBC.CDL.Reals.Multiply",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -12818,7 +12772,6 @@
       "modelicaPath": "Buildings.Templates.Components.Interfaces.PartialFan",
       "type": "Buildings.Templates.Components.Interfaces.PartialFan",
       "name": "Interface class for fan",
-      "value": "Buildings.Templates.Components.Interfaces.PartialFan",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.Components.Interfaces.PartialFan.m_flow_nominal": {
@@ -12853,7 +12806,6 @@
       "modelicaPath": "Buildings.Templates.Components.Fans.SingleVariable",
       "type": "Buildings.Templates.Components.Fans.SingleVariable",
       "name": "Single fan - Variable speed",
-      "value": "Buildings.Templates.Components.Fans.SingleVariable",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.Components.Fans.SingleVariable.nFan": {
@@ -13163,7 +13115,6 @@
       "modelicaPath": "Buildings.Fluid.BaseClasses.MassFlowRateMultiplier",
       "type": "Buildings.Fluid.BaseClasses.MassFlowRateMultiplier",
       "name": "Model that multiplies the mass flow rate",
-      "value": "Buildings.Fluid.BaseClasses.MassFlowRateMultiplier",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -13450,7 +13401,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.MultiSum",
       "type": "Buildings.Controls.OBC.CDL.Reals.MultiSum",
       "name": "Sum of Reals, y = k[1]*u[1] + k[2]*u[2] + ... + k[n]*u[n]",
-      "value": "Buildings.Controls.OBC.CDL.Reals.MultiSum",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -13525,7 +13475,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.Max",
       "type": "Buildings.Controls.OBC.CDL.Reals.Max",
       "name": "Pass through the largest signal",
-      "value": "Buildings.Controls.OBC.CDL.Reals.Max",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -13595,7 +13544,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.Sources.Constant",
       "type": "Buildings.Controls.OBC.CDL.Reals.Sources.Constant",
       "name": "Output constant signal of type Real",
-      "value": "Buildings.Controls.OBC.CDL.Reals.Sources.Constant",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -13684,7 +13632,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Logical.MultiOr",
       "type": "Buildings.Controls.OBC.CDL.Logical.MultiOr",
       "name": "Logical MultiOr, y = u[1] or u[2] or u[3] or ...",
-      "value": "Buildings.Controls.OBC.CDL.Logical.MultiOr",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -13702,7 +13649,6 @@
       "modelicaPath": "Buildings.Templates.Components.Controls.MultipleCommands",
       "type": "Buildings.Templates.Components.Controls.MultipleCommands",
       "name": "Block that converts command signals for multiple units",
-      "value": "Buildings.Templates.Components.Controls.MultipleCommands",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -13813,7 +13759,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Routing.BooleanScalarReplicator",
       "type": "Buildings.Controls.OBC.CDL.Routing.BooleanScalarReplicator",
       "name": "Boolean signal replicator",
-      "value": "Buildings.Controls.OBC.CDL.Routing.BooleanScalarReplicator",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -13831,7 +13776,6 @@
       "modelicaPath": "Buildings.Templates.Components.Fans.ArrayVariable",
       "type": "Buildings.Templates.Components.Fans.ArrayVariable",
       "name": "Fan array - Variable speed",
-      "value": "Buildings.Templates.Components.Fans.ArrayVariable",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.Components.Fans.ArrayVariable.typ": {
@@ -15105,7 +15049,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection",
       "type": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection",
       "name": "Interface class for relief/return air section",
-      "value": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -15141,7 +15084,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan",
       "type": "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan",
       "name": "Return fan with modulating relief damper",
-      "value": "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.typ": {
@@ -15380,7 +15322,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan",
       "type": "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan",
       "name": "Relief fan with two-position relief damper",
-      "value": "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.typ": {
@@ -15550,7 +15491,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefDamper",
       "type": "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefDamper",
       "name": "Modulating relief damper without fan",
-      "value": "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefDamper",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefDamper.typ": {
@@ -16167,7 +16107,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialHeatRecovery",
       "type": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialHeatRecovery",
       "name": "Interface class for heat recovery",
-      "value": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialHeatRecovery",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -16188,7 +16127,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.HeatRecovery.None",
       "type": "Buildings.Templates.AirHandlersFans.Components.HeatRecovery.None",
       "name": "No heat recovery",
-      "value": "Buildings.Templates.AirHandlersFans.Components.HeatRecovery.None",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.HeatRecovery.None.typ": {
@@ -17253,7 +17191,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection",
       "type": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection",
       "name": "Interface class for outdoor/relief/return air section",
-      "value": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -17295,7 +17232,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper",
       "type": "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper",
       "name": "Mixed air system with return air damper",
-      "value": "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.typ": {
@@ -17585,7 +17521,6 @@
       "modelicaPath": "Buildings.Templates.Components.Fans.None",
       "type": "Buildings.Templates.Components.Fans.None",
       "name": "No fan",
-      "value": "Buildings.Templates.Components.Fans.None",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.Components.Fans.None.nFan": {
@@ -18521,7 +18456,6 @@
       "modelicaPath": "Buildings.BoundaryConditions.WeatherData.Bus",
       "type": "Buildings.BoundaryConditions.WeatherData.Bus",
       "name": "Data bus that stores weather data",
-      "value": "Buildings.BoundaryConditions.WeatherData.Bus",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -18712,7 +18646,6 @@
       "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialAirSource",
       "type": "Buildings.Fluid.Sources.BaseClasses.PartialAirSource",
       "name": "Partial component air source with one fluid connector",
-      "value": "Buildings.Fluid.Sources.BaseClasses.PartialAirSource",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -18730,7 +18663,6 @@
       "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.Outside",
       "type": "Buildings.Fluid.Sources.BaseClasses.Outside",
       "name": "Boundary that takes weather data, and optionally trace substances, as an input",
-      "value": "Buildings.Fluid.Sources.BaseClasses.Outside",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Sources.BaseClasses.Outside.verifyInputs": {
@@ -18764,7 +18696,6 @@
       "modelicaPath": "Buildings.Fluid.Sources.Outside",
       "type": "Buildings.Fluid.Sources.Outside",
       "name": "Boundary that takes weather data, and optionally trace substances, as an input",
-      "value": "Buildings.Fluid.Sources.Outside",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -19384,7 +19315,6 @@
       "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialSource",
       "type": "Buildings.Fluid.Sources.BaseClasses.PartialSource",
       "name": "Partial component source with one fluid connector",
-      "value": "Buildings.Fluid.Sources.BaseClasses.PartialSource",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -19402,7 +19332,6 @@
       "modelicaPath": "Buildings.Fluid.Sources.BaseClasses.PartialSource_Xi_C",
       "type": "Buildings.Fluid.Sources.BaseClasses.PartialSource_Xi_C",
       "name": "Partial component source with parameter definitions for Xi and C",
-      "value": "Buildings.Fluid.Sources.BaseClasses.PartialSource_Xi_C",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -19430,7 +19359,6 @@
       "modelicaPath": "Buildings.Fluid.Sources.Boundary_pT",
       "type": "Buildings.Fluid.Sources.Boundary_pT",
       "name": "Boundary with prescribed pressure, temperature, composition and trace substances",
-      "value": "Buildings.Fluid.Sources.Boundary_pT",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -20995,7 +20923,6 @@
       "modelicaPath": "Buildings.Templates.Components.Data.Coil",
       "type": "Buildings.Templates.Components.Data.Coil",
       "name": "Record for coil model",
-      "value": "Buildings.Templates.Components.Data.Coil",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -21364,7 +21291,6 @@
       "modelicaPath": "Buildings.Templates.Components.Interfaces.PartialCoil",
       "type": "Buildings.Templates.Components.Interfaces.PartialCoil",
       "name": "Interface class for coil",
-      "value": "Buildings.Templates.Components.Interfaces.PartialCoil",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.Components.Interfaces.PartialCoil.Medium": {
@@ -21414,7 +21340,6 @@
       "modelicaPath": "Buildings.Templates.Components.Coils.None",
       "type": "Buildings.Templates.Components.Coils.None",
       "name": "No coil",
-      "value": "Buildings.Templates.Components.Coils.None",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.Components.Coils.None.typ": {
@@ -22083,7 +22008,6 @@
       "modelicaPath": "Buildings.Fluid.Actuators.Valves.Data.Generic",
       "type": "Buildings.Fluid.Actuators.Valves.Data.Generic",
       "name": "Generic record for valve parameters",
-      "value": "Buildings.Fluid.Actuators.Valves.Data.Generic",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -22415,7 +22339,6 @@
       "modelicaPath": "Buildings.Templates.Components.Data.Valve",
       "type": "Buildings.Templates.Components.Data.Valve",
       "name": "Record for valve model",
-      "value": "Buildings.Templates.Components.Data.Valve",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -23335,7 +23258,6 @@
       "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve",
       "type": "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve",
       "name": "Partial model for a two way valve",
-      "value": "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve.dp_nominal": {
@@ -23403,7 +23325,6 @@
       "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValveKv",
       "type": "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValveKv",
       "name": "Partial model for a two way valve using a Kv characteristic",
-      "value": "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValveKv",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -23444,7 +23365,6 @@
       "modelicaPath": "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage",
       "type": "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage",
       "name": "Two way valve with equal percentage flow characteristics",
-      "value": "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Actuators.Valves.TwoWayEqualPercentage.phi": {
@@ -23640,7 +23560,6 @@
       "modelicaPath": "Buildings.Fluid.Actuators.Valves.TwoWayLinear",
       "type": "Buildings.Fluid.Actuators.Valves.TwoWayLinear",
       "name": "Two way valve with linear flow characteristics",
-      "value": "Buildings.Fluid.Actuators.Valves.TwoWayLinear",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Actuators.Valves.TwoWayLinear.phi": {
@@ -23865,7 +23784,6 @@
       "modelicaPath": "Buildings.Fluid.Actuators.Valves.TwoWayPressureIndependent",
       "type": "Buildings.Fluid.Actuators.Valves.TwoWayPressureIndependent",
       "name": "Model of a pressure-independent two way valve",
-      "value": "Buildings.Fluid.Actuators.Valves.TwoWayPressureIndependent",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Actuators.Valves.TwoWayPressureIndependent.linearized": {
@@ -24106,7 +24024,6 @@
       "modelicaPath": "Buildings.Fluid.Actuators.Valves.TwoWayTable",
       "type": "Buildings.Fluid.Actuators.Valves.TwoWayTable",
       "name": "Two way valve with table-specified flow characteristics",
-      "value": "Buildings.Fluid.Actuators.Valves.TwoWayTable",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Actuators.Valves.TwoWayTable.phi": {
@@ -24587,7 +24504,6 @@
       "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve",
       "type": "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve",
       "name": "Partial three way valve",
-      "value": "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.m_flow_small": {
@@ -24676,7 +24592,6 @@
       "modelicaPath": "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear",
       "type": "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear",
       "name": "Three way valve with equal percentage and linear characteristics",
-      "value": "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear.res1": {
@@ -25017,7 +24932,6 @@
       "modelicaPath": "Buildings.Fluid.Actuators.Valves.ThreeWayLinear",
       "type": "Buildings.Fluid.Actuators.Valves.ThreeWayLinear",
       "name": "Three way valve with linear characteristics",
-      "value": "Buildings.Fluid.Actuators.Valves.ThreeWayLinear",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Actuators.Valves.ThreeWayLinear.res1": {
@@ -25392,7 +25306,6 @@
       "modelicaPath": "Buildings.Fluid.Actuators.Valves.ThreeWayTable",
       "type": "Buildings.Fluid.Actuators.Valves.ThreeWayTable",
       "name": "Three way valve with table-specified characteristics",
-      "value": "Buildings.Fluid.Actuators.Valves.ThreeWayTable",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Actuators.Valves.ThreeWayTable.l": {
@@ -25482,7 +25395,6 @@
       "modelicaPath": "Buildings.Templates.Components.Actuators.Valve",
       "type": "Buildings.Templates.Components.Actuators.Valve",
       "name": "Multiple-configuration valve",
-      "value": "Buildings.Templates.Components.Actuators.Valve",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.Components.Actuators.Valve.m_flow_nominal": {
@@ -26131,7 +26043,6 @@
       "modelicaPath": "Buildings.Fluid.HeatExchangers.BaseClasses.HADryCoil",
       "type": "Buildings.Fluid.HeatExchangers.BaseClasses.HADryCoil",
       "name": "Sensible convective heat transfer model for air to water coil",
-      "value": "Buildings.Fluid.HeatExchangers.BaseClasses.HADryCoil",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -27728,7 +27639,6 @@
       "modelicaPath": "Buildings.Fluid.Interfaces.PartialFourPort",
       "type": "Buildings.Fluid.Interfaces.PartialFourPort",
       "name": "Partial model with four ports",
-      "value": "Buildings.Fluid.Interfaces.PartialFourPort",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -27749,7 +27659,6 @@
       "modelicaPath": "Buildings.Fluid.Interfaces.PartialFourPortInterface",
       "type": "Buildings.Fluid.Interfaces.PartialFourPortInterface",
       "name": "Partial model with four ports and declaration of quantities that are used by many models",
-      "value": "Buildings.Fluid.Interfaces.PartialFourPortInterface",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -27785,7 +27694,6 @@
       "modelicaPath": "Buildings.Fluid.Interfaces.StaticFourPortHeatMassExchanger",
       "type": "Buildings.Fluid.Interfaces.StaticFourPortHeatMassExchanger",
       "name": "Partial model transporting two fluid streams between four ports without storing mass or energy",
-      "value": "Buildings.Fluid.Interfaces.StaticFourPortHeatMassExchanger",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -27831,7 +27739,6 @@
       "modelicaPath": "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectiveness",
       "type": "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectiveness",
       "name": "Partial model to implement heat exchangers based on effectiveness model",
-      "value": "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectiveness",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectiveness.prescribedHeatFlowRate1": {
@@ -27912,7 +27819,6 @@
       "modelicaPath": "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU",
       "type": "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU",
       "name": "Partial model for heat exchanger with effectiveness - NTU relation and no moisture condensation",
-      "value": "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.sensibleOnly1": {
@@ -28032,7 +27938,6 @@
       "modelicaPath": "Buildings.Fluid.HeatExchangers.DryCoilEffectivenessNTU",
       "type": "Buildings.Fluid.HeatExchangers.DryCoilEffectivenessNTU",
       "name": "Heat exchanger with effectiveness - NTU relation and no moisture condensation",
-      "value": "Buildings.Fluid.HeatExchangers.DryCoilEffectivenessNTU",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.DryCoilEffectivenessNTU.UA": {
@@ -28309,7 +28214,6 @@
       "modelicaPath": "Buildings.Templates.Components.Coils.WaterBasedHeating",
       "type": "Buildings.Templates.Components.Coils.WaterBasedHeating",
       "name": "Hot water coil",
-      "value": "Buildings.Templates.Components.Coils.WaterBasedHeating",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.Components.Coils.WaterBasedHeating.typ": {
@@ -28967,7 +28871,6 @@
       "modelicaPath": "Buildings.Fluid.FixedResistances.PressureDrop",
       "type": "Buildings.Fluid.FixedResistances.PressureDrop",
       "name": "Fixed flow resistance with dp and m_flow as parameter",
-      "value": "Buildings.Fluid.FixedResistances.PressureDrop",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.FixedResistances.PressureDrop.m_flow_turbulent": {
@@ -29040,7 +28943,6 @@
       "modelicaPath": "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger",
       "type": "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger",
       "name": "Partial model transporting one fluid stream with storing mass or energy",
-      "value": "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.port_a.h_outflow.start": {
@@ -29096,7 +28998,6 @@
       "modelicaPath": "Buildings.Fluid.HeatExchangers.HeaterCooler_u",
       "type": "Buildings.Fluid.HeatExchangers.HeaterCooler_u",
       "name": "Heater or cooler with prescribed heat flow rate",
-      "value": "Buildings.Fluid.HeatExchangers.HeaterCooler_u",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol": {
@@ -29151,7 +29052,6 @@
       "modelicaPath": "Buildings.Templates.Components.Coils.ElectricHeating",
       "type": "Buildings.Templates.Components.Coils.ElectricHeating",
       "name": "Modulating electric heating coil",
-      "value": "Buildings.Templates.Components.Coils.ElectricHeating",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.Components.Coils.ElectricHeating.typ": {
@@ -30019,7 +29919,6 @@
       "modelicaPath": "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU",
       "type": "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU",
       "name": "Heat exchanger with effectiveness - NTU relation and with moisture condensation",
-      "value": "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU",
       "visible": false,
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.Medium2": {
@@ -30276,7 +30175,6 @@
       "modelicaPath": "Buildings.Templates.Components.Coils.WaterBasedCooling",
       "type": "Buildings.Templates.Components.Coils.WaterBasedCooling",
       "name": "Chilled water coil",
-      "value": "Buildings.Templates.Components.Coils.WaterBasedCooling",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.Components.Coils.WaterBasedCooling.typ": {
@@ -37314,7 +37212,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Integers.GreaterThreshold",
       "type": "Buildings.Controls.OBC.CDL.Integers.GreaterThreshold",
       "name": "Output y is true, if input u is greater than a threshold",
-      "value": "Buildings.Controls.OBC.CDL.Integers.GreaterThreshold",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -37402,7 +37299,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Integers.Switch",
       "type": "Buildings.Controls.OBC.CDL.Integers.Switch",
       "name": "Switch between two integer signals",
-      "value": "Buildings.Controls.OBC.CDL.Integers.Switch",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -39131,7 +39027,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection",
       "name": "Freeze protection sequence for multizone air handling unit",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -39557,7 +39452,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests",
       "name": "Output plant requests for multizone air handling unit",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -43002,7 +42896,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.Subtract",
       "type": "Buildings.Controls.OBC.CDL.Reals.Subtract",
       "name": "Output the difference of the two inputs",
-      "value": "Buildings.Controls.OBC.CDL.Reals.Subtract",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -43086,7 +42979,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter",
       "type": "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter",
       "name": "Output the product of a gain value with the input signal",
-      "value": "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -43233,7 +43125,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.IntegratorWithReset",
       "type": "Buildings.Controls.OBC.CDL.Reals.IntegratorWithReset",
       "name": "Output the integral of the input signal",
-      "value": "Buildings.Controls.OBC.CDL.Reals.IntegratorWithReset",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -43382,7 +43273,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.Derivative",
       "type": "Buildings.Controls.OBC.CDL.Reals.Derivative",
       "name": "Block that approximates the derivative of the input",
-      "value": "Buildings.Controls.OBC.CDL.Reals.Derivative",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -43547,7 +43437,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.Limiter",
       "type": "Buildings.Controls.OBC.CDL.Reals.Limiter",
       "name": "Limit the range of a signal",
-      "value": "Buildings.Controls.OBC.CDL.Reals.Limiter",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -43566,7 +43455,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.PIDWithReset",
       "type": "Buildings.Controls.OBC.CDL.Reals.PIDWithReset",
       "name": "P, PI, PD, and PID controller with output reset",
-      "value": "Buildings.Controls.OBC.CDL.Reals.PIDWithReset",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -43607,7 +43495,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithAFMS",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithAFMS",
       "name": "Outdoor air and return air damper position limits for units with separated minimum outdoor air damper and airflow measurement",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithAFMS",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -44632,7 +44519,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithDP",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithDP",
       "name": "Outdoor air and return air damper position limits for units with separated minimum outdoor air damper and differential pressure control",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithDP",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -45363,7 +45249,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.Common",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.Common",
       "name": "Outdoor air and return air damper position limits for units with common damper",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.Common",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -46195,7 +46080,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold",
       "type": "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold",
       "name": "Block that holds an output signal for at least a specified duration",
-      "value": "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -46270,7 +46154,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Logical.And",
       "type": "Buildings.Controls.OBC.CDL.Logical.And",
       "name": "Logical 'and': y = u1 and u2",
-      "value": "Buildings.Controls.OBC.CDL.Logical.And",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -46288,7 +46171,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Enable",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Enable",
       "name": "Multi zone VAV AHU economizer enable/disable switch",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Enable",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -46661,7 +46543,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Modulations.ReturnFan",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Modulations.ReturnFan",
       "name": "Modulates dampers of economizer in buildings using return fan to control the pressure",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Modulations.ReturnFan",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -47094,7 +46975,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Modulations.Reliefs",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Modulations.Reliefs",
       "name": "Modulates dampers of economizer in buildings using relief damper or fan to control the pressure",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Modulations.Reliefs",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -47447,7 +47327,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits",
       "name": "Specify the economizer high liimits",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -47470,7 +47349,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller",
       "name": "Multi zone VAV AHU economizer control sequence",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -48702,7 +48580,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Logical.TrueDelay",
       "type": "Buildings.Controls.OBC.CDL.Logical.TrueDelay",
       "name": "Delay a rising edge of the input, but do not delay a falling edge",
-      "value": "Buildings.Controls.OBC.CDL.Logical.TrueDelay",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -48805,7 +48682,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.Switch",
       "type": "Buildings.Controls.OBC.CDL.Reals.Switch",
       "name": "Switch between two Real signals",
-      "value": "Buildings.Controls.OBC.CDL.Reals.Switch",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -49013,7 +48889,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Discrete.UnitDelay",
       "type": "Buildings.Controls.OBC.CDL.Discrete.UnitDelay",
       "name": "Output the input signal with a unit delay",
-      "value": "Buildings.Controls.OBC.CDL.Discrete.UnitDelay",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -49182,7 +49057,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Discrete.Sampler",
       "type": "Buildings.Controls.OBC.CDL.Discrete.Sampler",
       "name": "Ideal sampler of a continuous signal",
-      "value": "Buildings.Controls.OBC.CDL.Discrete.Sampler",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -49266,7 +49140,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Generic.TrimAndRespond",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Generic.TrimAndRespond",
       "name": "Block to inplement trim and respond logic",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.Generic.TrimAndRespond",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -49391,7 +49264,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.SupplyFan",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.SupplyFan",
       "name": "Block to control multi zone VAV AHU supply fan",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.SupplyFan",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -50055,7 +49927,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.SupplySignals",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.SupplySignals",
       "name": "Multizone VAV AHU supply air temperature control loop and coil valves position",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.SupplySignals",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -50641,7 +50512,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.SupplyTemperature",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.SupplyTemperature",
       "name": "Supply air temperature setpoint for multi zone system",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.SupplyTemperature",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -51194,7 +51064,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.Add",
       "type": "Buildings.Controls.OBC.CDL.Reals.Add",
       "name": "Output the sum of the two inputs",
-      "value": "Buildings.Controls.OBC.CDL.Reals.Add",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -51268,7 +51137,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.Min",
       "type": "Buildings.Controls.OBC.CDL.Reals.Min",
       "name": "Pass through the smallest signal",
-      "value": "Buildings.Controls.OBC.CDL.Reals.Min",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -51342,7 +51210,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.Divide",
       "type": "Buildings.Controls.OBC.CDL.Reals.Divide",
       "name": "Output first input divided by second input",
-      "value": "Buildings.Controls.OBC.CDL.Reals.Divide",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -51426,7 +51293,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.AddParameter",
       "type": "Buildings.Controls.OBC.CDL.Reals.AddParameter",
       "name": "Output the sum of an input plus a parameter",
-      "value": "Buildings.Controls.OBC.CDL.Reals.AddParameter",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -51614,7 +51480,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.ASHRAE62_1.AHU",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.ASHRAE62_1.AHU",
       "name": "Outdoor airflow related calculations at the AHU level",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.ASHRAE62_1.AHU",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -51818,7 +51683,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReliefDamper",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReliefDamper",
       "name": "Relief damper control for AHUs using actuated dampers without fan",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReliefDamper",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -52527,7 +52391,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.MovingAverage",
       "type": "Buildings.Controls.OBC.CDL.Reals.MovingAverage",
       "name": "Block to output moving average",
-      "value": "Buildings.Controls.OBC.CDL.Reals.MovingAverage",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -53175,7 +53038,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.PID",
       "type": "Buildings.Controls.OBC.CDL.Reals.PID",
       "name": "P, PI, PD, and PID controller",
-      "value": "Buildings.Controls.OBC.CDL.Reals.PID",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -53352,7 +53214,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.Line",
       "type": "Buildings.Controls.OBC.CDL.Reals.Line",
       "name": "Output the value of the input x along a line specified by two points",
-      "value": "Buildings.Controls.OBC.CDL.Reals.Line",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -53459,7 +53320,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReturnFanDirectPressure",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReturnFanDirectPressure",
       "name": "Return fan control with direct building pressure control",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReturnFanDirectPressure",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -53995,7 +53855,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReturnFanAirflowTracking",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReturnFanAirflowTracking",
       "name": "Return fan control for AHUs using return fan with airflow tracking",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReturnFanAirflowTracking",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -54773,7 +54632,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.Title24.AHU",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.Title24.AHU",
       "name": "AHU level setpoint calculation",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.Title24.AHU",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -55406,7 +55264,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Logical.Timer",
       "type": "Buildings.Controls.OBC.CDL.Logical.Timer",
       "name": "Timer measuring the time from the time instant where the Boolean input became true",
-      "value": "Buildings.Controls.OBC.CDL.Logical.Timer",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -55495,7 +55352,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Logical.Latch",
       "type": "Buildings.Controls.OBC.CDL.Logical.Latch",
       "name": "Maintains a true signal until cleared",
-      "value": "Buildings.Controls.OBC.CDL.Logical.Latch",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -55697,7 +55553,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Logical.Or",
       "type": "Buildings.Controls.OBC.CDL.Logical.Or",
       "name": "Logical 'or': y = u1 or u2",
-      "value": "Buildings.Controls.OBC.CDL.Logical.Or",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -55757,7 +55612,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReliefFan",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReliefFan",
       "name": "Sequence for control of relief fan in AHU",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReliefFan",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -55801,7 +55655,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller",
       "name": "Multizone VAV air handling unit controller",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -56689,7 +56542,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.MatrixGain",
       "type": "Buildings.Controls.OBC.CDL.Reals.MatrixGain",
       "name": "Output the product of a gain matrix with the input signal vector",
-      "value": "Buildings.Controls.OBC.CDL.Reals.MatrixGain",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -57007,7 +56859,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.MultiMax",
       "type": "Buildings.Controls.OBC.CDL.Reals.MultiMax",
       "name": "Output the maximum element of the input vector",
-      "value": "Buildings.Controls.OBC.CDL.Reals.MultiMax",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -57093,7 +56944,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Integers.Sources.Constant",
       "type": "Buildings.Controls.OBC.CDL.Integers.Sources.Constant",
       "name": "Output constant signal of type Integer",
-      "value": "Buildings.Controls.OBC.CDL.Integers.Sources.Constant",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -57166,7 +57016,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Integers.Equal",
       "type": "Buildings.Controls.OBC.CDL.Integers.Equal",
       "name": "Output y is true, if input u1 is equal to input u2",
-      "value": "Buildings.Controls.OBC.CDL.Integers.Equal",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -57252,7 +57101,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.ASHRAE62_1.SumZone",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.ASHRAE62_1.SumZone",
       "name": "Calculate the sum of zone level setpoints",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.ASHRAE62_1.SumZone",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -57964,7 +57812,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.Title24.SumZone",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.Title24.SumZone",
       "name": "Sum of the zone level setpoints calculation",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.Title24.SumZone",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -59255,7 +59102,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneStatusDuplicator",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneStatusDuplicator",
       "name": "Duplicate zone status output",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneStatusDuplicator",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -60432,7 +60278,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Logical.Not",
       "type": "Buildings.Controls.OBC.CDL.Logical.Not",
       "name": "Logical not",
-      "value": "Buildings.Controls.OBC.CDL.Logical.Not",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -60449,7 +60294,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus",
       "name": "Block that outputs the zone group status",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -60903,7 +60747,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode",
       "name": "Block that outputs the operation mode",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -61009,7 +60852,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Routing.RealScalarReplicator",
       "type": "Buildings.Controls.OBC.CDL.Routing.RealScalarReplicator",
       "name": "Real signal replicator",
-      "value": "Buildings.Controls.OBC.CDL.Routing.RealScalarReplicator",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -61160,7 +61002,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Integers.MultiSum",
       "type": "Buildings.Controls.OBC.CDL.Integers.MultiSum",
       "name": "Sum of Integers, y = k[1]*u[1] + k[2]*u[2] + ... + k[n]*u[n]",
-      "value": "Buildings.Controls.OBC.CDL.Integers.MultiSum",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -61280,7 +61121,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
       "type": "Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
       "name": "Output constant signal of type Boolean",
-      "value": "Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -61470,7 +61310,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Routing.IntegerVectorReplicator",
       "type": "Buildings.Controls.OBC.CDL.Routing.IntegerVectorReplicator",
       "name": "Integer vector signal replicator",
-      "value": "Buildings.Controls.OBC.CDL.Routing.IntegerVectorReplicator",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -61616,7 +61455,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Conversions.IntegerToReal",
       "type": "Buildings.Controls.OBC.CDL.Conversions.IntegerToReal",
       "name": "Convert Integer to Real signals",
-      "value": "Buildings.Controls.OBC.CDL.Conversions.IntegerToReal",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -61705,7 +61543,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.MultiMin",
       "type": "Buildings.Controls.OBC.CDL.Reals.MultiMin",
       "name": "Output the minimum element of the input vector",
-      "value": "Buildings.Controls.OBC.CDL.Reals.MultiMin",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -61765,7 +61602,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
       "type": "Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
       "name": "Convert Real to Integer signal",
-      "value": "Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -61796,7 +61632,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneGroupSystem",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneGroupSystem",
       "name": "Compute the AHU operating mode from the group operating mode",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneGroupSystem",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -62585,7 +62420,6 @@
       "modelicaPath": "Buildings.Templates.Data.AllSystems",
       "type": "Buildings.Templates.Data.AllSystems",
       "name": "Top-level (whole building) system parameters",
-      "value": "Buildings.Templates.Data.AllSystems",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -62815,7 +62649,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Data.PartialController",
       "type": "Buildings.Templates.AirHandlersFans.Components.Data.PartialController",
       "name": "Record for controller interface class",
-      "value": "Buildings.Templates.AirHandlersFans.Components.Data.PartialController",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -62904,7 +62737,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.Bus",
       "type": "Buildings.Templates.ZoneEquipment.Interfaces.Bus",
       "name": "Control bus for zone equipment",
-      "value": "Buildings.Templates.ZoneEquipment.Interfaces.Bus",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -62922,7 +62754,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController",
       "type": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController",
       "name": "Interface class for AHU controller",
-      "value": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -62949,7 +62780,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone",
       "type": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone",
       "name": "Interface class for multiple-zone VAV controller",
-      "value": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.dat": {
@@ -63024,7 +62854,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone",
       "type": "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone",
       "name": "Guideline 36 controller",
-      "value": "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.typ": {
@@ -63526,7 +63355,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler",
       "type": "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler",
       "name": "Configuration parameters for air handler interface class",
-      "value": "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -63742,7 +63570,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler",
       "type": "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler",
       "name": "Record for air handler interface class",
-      "value": "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -64924,7 +64751,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler",
       "type": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler",
       "name": "Interface class for air handler",
-      "value": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -64971,7 +64797,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.VAVMultiZone",
       "type": "Buildings.Templates.AirHandlersFans.VAVMultiZone",
       "name": "Multiple-zone VAV",
-      "value": "Buildings.Templates.AirHandlersFans.VAVMultiZone",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.VAVMultiZone.nZon.min": {
@@ -65695,7 +65520,6 @@
       "modelicaPath": "Buildings.Fluid.FixedResistances.LosslessPipe",
       "type": "Buildings.Fluid.FixedResistances.LosslessPipe",
       "name": "Pipe with no flow friction and no heat transfer",
-      "value": "Buildings.Fluid.FixedResistances.LosslessPipe",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -66482,7 +66306,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController",
       "type": "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController",
       "name": "Record for multiple-zone VAV controller",
-      "value": "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -66797,7 +66620,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone",
       "type": "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone",
       "name": "Configuration parameters for multiple-zone VAV",
-      "value": "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -67098,7 +66920,6 @@
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone",
       "type": "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone",
       "name": "Record for multiple-zone VAV",
-      "value": "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.cfg": {
@@ -67683,7 +67504,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Data.PartialController",
       "type": "Buildings.Templates.ZoneEquipment.Components.Data.PartialController",
       "name": "Record for controller interface class",
-      "value": "Buildings.Templates.ZoneEquipment.Components.Data.PartialController",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -67737,7 +67557,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController",
       "type": "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController",
       "name": "Interface class for terminal unit controller",
-      "value": "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -67756,7 +67575,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox",
       "type": "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox",
       "name": "Interface class for VAV terminal unit controller",
-      "value": "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox.dat": {
@@ -67794,7 +67612,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Controls.OpenLoop",
       "type": "Buildings.Templates.ZoneEquipment.Components.Controls.OpenLoop",
       "name": "Open loop controller",
-      "value": "Buildings.Templates.ZoneEquipment.Components.Controls.OpenLoop",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.ZoneEquipment.Components.Controls.OpenLoop.typ": {
@@ -68155,7 +67972,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal",
       "type": "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal",
       "name": "Configuration parameters for air terminal unit interface class",
-      "value": "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -68402,7 +68218,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal",
       "type": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal",
       "name": "Record for air terminal unit interface class",
-      "value": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -69123,7 +68938,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal",
       "type": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal",
       "name": "Interface class for air terminal unit",
-      "value": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -69157,7 +68971,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox",
       "type": "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox",
       "name": "Interface class for VAV terminal unit",
-      "value": "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.cfg": {
@@ -69370,7 +69183,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly",
       "type": "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly",
       "name": "VAV terminal unit cooling only",
-      "value": "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.typ": {
@@ -69973,7 +69785,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Data.VAVBoxController",
       "type": "Buildings.Templates.ZoneEquipment.Components.Data.VAVBoxController",
       "name": "Record for VAV terminal unit controller",
-      "value": "Buildings.Templates.ZoneEquipment.Components.Data.VAVBoxController",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -70080,7 +69891,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Configuration.VAVBox",
       "type": "Buildings.Templates.ZoneEquipment.Configuration.VAVBox",
       "name": "Configuration parameters for VAV terminal unit",
-      "value": "Buildings.Templates.ZoneEquipment.Configuration.VAVBox",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -70215,7 +70025,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Data.VAVBox",
       "type": "Buildings.Templates.ZoneEquipment.Data.VAVBox",
       "name": "Record for VAV terminal unit",
-      "value": "Buildings.Templates.ZoneEquipment.Data.VAVBox",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.ZoneEquipment.Data.VAVBox.cfg": {
@@ -72883,7 +72692,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller",
       "name": "Controller for room VAV box with reheat",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -74934,7 +74742,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.ActiveAirFlow",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.ActiveAirFlow",
       "name": "Active maximum and minimum setpoints for cooling only terminal unit",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.ActiveAirFlow",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -75546,7 +75353,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.SystemRequests",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.SystemRequests",
       "name": "Output system requests for VAV cooling only terminal unit",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.SystemRequests",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -76100,7 +75906,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops",
       "name": "Heating and cooling control loops",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -76717,7 +76522,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.Less",
       "type": "Buildings.Controls.OBC.CDL.Reals.Less",
       "name": "Output y is true, if input u1 is less than input u2",
-      "value": "Buildings.Controls.OBC.CDL.Reals.Less",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -76900,7 +76704,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Reals.Greater",
       "type": "Buildings.Controls.OBC.CDL.Reals.Greater",
       "name": "Output y is true, if input u1 is greater than input u2 with hysteresis",
-      "value": "Buildings.Controls.OBC.CDL.Reals.Greater",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -77126,7 +76929,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger",
       "type": "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger",
       "name": "Convert Boolean to Integer signal",
-      "value": "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -77253,7 +77055,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Integers.Multiply",
       "type": "Buildings.Controls.OBC.CDL.Integers.Multiply",
       "name": "Output product of the two inputs",
-      "value": "Buildings.Controls.OBC.CDL.Integers.Multiply",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -77351,7 +77152,6 @@
       "modelicaPath": "Buildings.Controls.OBC.CDL.Utilities.Assert",
       "type": "Buildings.Controls.OBC.CDL.Utilities.Assert",
       "name": "Print a warning message when input becomes false",
-      "value": "Buildings.Controls.OBC.CDL.Utilities.Assert",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -77909,7 +77709,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.Alarms",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.Alarms",
       "name": "Generate alarms of cooling only terminal unit",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.Alarms",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -78230,7 +78029,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.Generic.TimeSuppression",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Generic.TimeSuppression",
       "name": "Calculate a time-delay period after change in set point",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.Generic.TimeSuppression",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -79160,7 +78958,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints",
       "name": "Specify zone minimum outdoor air and minimum airflow set points for compliance with ASHRAE standard 62.1",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -79872,7 +79669,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.Dampers",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.Dampers",
       "name": "Output signals for controlling VAV cooling only box damper position",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.Dampers",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -80003,7 +79799,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ZoneStates",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ZoneStates",
       "name": "Select the zone state",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ZoneStates",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -80748,7 +80543,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints",
       "name": "Specify zone minimum outdoor air and minimum airflow set points for compliance with California Title 24",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -80785,7 +80579,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Controller",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Controller",
       "name": "Controller for cooling only VAV box",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Controller",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -81746,7 +81539,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints",
       "name": "Block outputs thermal zone cooling and heating active setpoint",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -82337,7 +82129,6 @@
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneStatus",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneStatus",
       "name": "Block that outputs zone temperature status",
-      "value": "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneStatus",
       "visible": false,
       "replaceable": false,
       "options": [
@@ -82516,7 +82307,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox",
       "type": "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox",
       "name": "Guideline 36 controller for VAV terminal unit",
-      "value": "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox",
       "visible": false,
       "modifiers": {},
       "replaceable": false,
@@ -82565,7 +82355,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxCoolingOnly",
       "type": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxCoolingOnly",
       "name": "Guideline 36 controller for VAV terminal unit cooling only",
-      "value": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxCoolingOnly",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxCoolingOnly.typ": {
@@ -82625,7 +82414,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxReheat",
       "type": "Buildings.Templates.ZoneEquipment.VAVBoxReheat",
       "name": "VAV terminal unit with reheat",
-      "value": "Buildings.Templates.ZoneEquipment.VAVBoxReheat",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.ZoneEquipment.VAVBoxReheat.typ": {
@@ -82681,7 +82469,6 @@
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat",
       "type": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat",
       "name": "Guideline 36 controller",
-      "value": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat.typ": {
@@ -82909,10 +82696,6 @@
         },
         "Buildings.Templates.Data.AllSystems.Zone_16": {
           "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_16",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.AllSystems": {
-          "expression": "Buildings.Templates.Data.AllSystems",
           "final": false
         }
       },
