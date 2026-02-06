@@ -287,12 +287,13 @@ const _instancePathToOption = (
       const curOption = context.options[curOptionPath];
       const instanceMod = context.mods[curInstancePath];
       const modBinding = instanceMod?.recordBinding ? instanceMod : null;
-      const optionBinding = !modBinding && curOption?.recordBinding ? curOption : null;
+      const optionBinding =
+        !modBinding && curOption?.recordBinding ? curOption : null;
 
       if (modBinding || optionBinding) {
         const bindingSource = modBinding
           ? modBinding.expression
-          : curOption.value as Expression | undefined;
+          : (curOption.value as Expression | undefined);
         let bindingPath: string | null = null;
         if (
           bindingSource?.operator === "none" &&
@@ -309,8 +310,13 @@ const _instancePathToOption = (
           let scopePath: string;
           if (modBinding) {
             const depth = modBinding.modificationDepth || 1;
-            const sliceAmount = modBinding.fromClassDefinition ? -depth : -(depth + 1);
-            scopePath = curInstancePath.split(".").slice(0, sliceAmount).join(".");
+            const sliceAmount = modBinding.fromClassDefinition
+              ? -depth
+              : -(depth + 1);
+            scopePath = curInstancePath
+              .split(".")
+              .slice(0, sliceAmount)
+              .join(".");
           } else {
             scopePath = curInstancePath.split(".").slice(0, -1).join(".");
           }
@@ -463,36 +469,8 @@ export const resolveToValue = (
     } else if (option?.definition) {
       return operand;
     } else {
-      // Option exists but is not a definition - extract the param name
-      // and try to infer the scope from the option's parent type
+      // Update the operand with just the param name
       const name = operand.split(".").pop() as string;
-
-      // If no scope provided, try to find an instance with the parent type
-      if (!scope) {
-        const pathSegments = operand.split(".");
-        pathSegments.pop(); // remove the param name
-        const typePath = pathSegments.join(".");
-
-        // Find an instance whose type matches the typePath (directly or via inheritance)
-        for (const optKey of Object.keys(_context.options)) {
-          const opt = _context.options[optKey];
-          if (!opt || opt.definition) continue;
-
-          // Check direct type match
-          if (opt.type === typePath) {
-            scope = opt.modelicaPath.split(".").pop() || "";
-            break;
-          }
-
-          // Check inherited types via treeList
-          const typeOption = opt.type ? _context.options[opt.type] : null;
-          if (typeOption?.treeList?.includes(typePath)) {
-            scope = opt.modelicaPath.split(".").pop() || "";
-            break;
-          }
-        }
-      }
-
       operand = name;
     }
   }
@@ -685,7 +663,7 @@ const addToModObject = (
     if (optionModelicaPath && k.startsWith(optionModelicaPath + ".")) {
       relativeInstancePath = k.slice(optionModelicaPath.length + 1);
     } else {
-      // Fallback: use last segment (original behavior for type-based paths)
+      // Fallback: use last segment
       relativeInstancePath = k.split(".").pop() || "";
     }
 

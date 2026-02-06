@@ -698,17 +698,17 @@ describe("ctl.have_CO2Sen enable expression", () => {
     const thirdOperand = {
       operator: "==",
       operands: [
-        "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.stdVen",
+        "stdVen",
         stdVenValue,
       ],
     };
 
-    const stdVen = context.getValue("ctl.stdVen");
+    const stdVen = context.getValue("stdVen", "ctl");
     expect(stdVen).toEqual(
       "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
     );
 
-    const thirdEvaluation = evaluate(thirdOperand, context);
+    const thirdEvaluation = evaluate(thirdOperand, context, "ctl");
     expect(thirdEvaluation).toBeTruthy();
   });
 });

@@ -153,7 +153,7 @@ export function flattenModifiers(
  * Returns the classes containing the declaration of the class components
  * including the class itself.
  */
-function _getTreeList(option: Option) {
+export function _getTreeList(option: Option) {
   const treeList: string[] = [option.type];
 
   option.options?.map((o) => {
@@ -178,7 +178,7 @@ function _getTreeList(option: Option) {
 /**
  * Maps an input to the expected 'option' shape for the front end
  */
-function _mapInputToOption(input: parser.TemplateInput): Option {
+export function _mapInputToOption(input: parser.TemplateInput): Option {
   const keysToRemove = ["elementType", "inputs", "recordBinding"];
   const options = input.inputs;
 

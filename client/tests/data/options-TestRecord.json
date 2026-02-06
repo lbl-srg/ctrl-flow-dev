@@ -1,117 +1,109 @@
 {
   "TestRecord.Rec.p": {
     "modelicaPath": "TestRecord.Rec.p",
-    "name": "",
     "type": "Real",
-    "visible": true,
     "value": {
       "operator": "none",
       "operands": [
         0
       ]
     },
-    "enable": true,
+    "name": "",
     "group": "",
     "tab": "",
+    "visible": true,
+    "enable": true,
     "modifiers": {},
+    "replaceable": false,
     "options": [],
     "definition": false,
-    "shortExclType": false,
-    "replaceable": false,
-    "treeList": []
+    "shortExclType": false
   },
   "TestRecord.Rec": {
     "modelicaPath": "TestRecord.Rec",
     "type": "TestRecord.Rec",
     "visible": false,
-    "value": "TestRecord.Rec",
-    "modifiers": {},
+    "replaceable": false,
     "options": [
       "TestRecord.Rec.p"
     ],
     "definition": true,
     "shortExclType": false,
-    "replaceable": false,
     "treeList": [
       "TestRecord.Rec"
     ]
   },
   "TestRecord.BaseModel.rec": {
     "modelicaPath": "TestRecord.BaseModel.rec",
-    "name": "",
     "type": "TestRecord.BaseRecord",
-    "visible": true,
-    "enable": true,
+    "name": "",
     "group": "",
     "tab": "",
+    "visible": true,
     "modifiers": {},
+    "enable": true,
+    "choiceModifiers": {},
+    "replaceable": true,
     "options": [
       "TestRecord.BaseRecord"
     ],
     "definition": false,
-    "shortExclType": false,
-    "replaceable": true,
-    "treeList": [],
-    "choiceModifiers": {}
+    "shortExclType": false
   },
   "TestRecord.BaseModel": {
     "modelicaPath": "TestRecord.BaseModel",
     "type": "TestRecord.BaseModel",
     "visible": false,
-    "value": "TestRecord.BaseModel",
-    "modifiers": {},
+    "replaceable": false,
     "options": [
       "TestRecord.BaseModel.rec"
     ],
     "definition": true,
     "shortExclType": false,
-    "replaceable": false,
     "treeList": [
       "TestRecord.BaseModel"
     ]
   },
   "TestRecord.Mod.localRec": {
     "modelicaPath": "TestRecord.Mod.localRec",
-    "name": "",
     "type": "TestRecord.Rec",
-    "visible": false,
     "value": {
       "operator": "none",
       "operands": [
         "rec"
       ]
     },
-    "enable": true,
+    "name": "",
     "group": "",
     "tab": "",
+    "visible": false,
+    "enable": true,
     "modifiers": {},
+    "replaceable": false,
+    "recordBinding": true,
     "options": [
       "TestRecord.Rec.p"
     ],
     "definition": false,
-    "shortExclType": false,
-    "replaceable": false,
-    "treeList": [],
-    "recordBinding": true
+    "shortExclType": false
   },
   "TestRecord.Mod": {
     "modelicaPath": "TestRecord.Mod",
     "type": "TestRecord.Mod",
     "visible": false,
-    "value": "TestRecord.Mod",
     "modifiers": {
       "TestRecord.Mod.rec": {
         "final": false,
         "redeclare": "TestRecord.Rec"
       }
     },
+    "replaceable": false,
     "options": [
       "TestRecord.Mod.localRec",
       "TestRecord.BaseModel.rec"
     ],
     "definition": true,
     "shortExclType": false,
-    "replaceable": false,
     "treeList": [
       "TestRecord.Mod",
       "TestRecord.BaseModel"
@@ -119,12 +111,12 @@
   },
   "TestRecord.Mod1.localRec": {
     "modelicaPath": "TestRecord.Mod1.localRec",
-    "name": "",
     "type": "TestRecord.Rec",
-    "visible": false,
-    "enable": true,
+    "name": "",
     "group": "",
     "tab": "",
+    "visible": false,
+    "enable": true,
     "modifiers": {
       "TestRecord.Mod1.localRec.p": {
         "expression": {
@@ -136,19 +128,17 @@
         "final": false
       }
     },
+    "replaceable": false,
     "options": [
       "TestRecord.Rec.p"
     ],
     "definition": false,
-    "shortExclType": false,
-    "replaceable": false,
-    "treeList": []
+    "shortExclType": false
   },
   "TestRecord.Mod1": {
     "modelicaPath": "TestRecord.Mod1",
     "type": "TestRecord.Mod1",
     "visible": false,
-    "value": "TestRecord.Mod1",
     "modifiers": {
       "TestRecord.Mod1.rec": {
         "expression": {
@@ -162,13 +152,13 @@
         "recordBinding": true
       }
     },
+    "replaceable": false,
     "options": [
       "TestRecord.Mod1.localRec",
       "TestRecord.BaseModel.rec"
     ],
     "definition": true,
     "shortExclType": false,
-    "replaceable": false,
     "treeList": [
       "TestRecord.Mod1",
       "TestRecord.BaseModel"
@@ -176,12 +166,12 @@
   },
   "TestRecord.Nested.localRecFirst": {
     "modelicaPath": "TestRecord.Nested.localRecFirst",
-    "name": "",
     "type": "TestRecord.Rec",
-    "visible": false,
-    "enable": true,
+    "name": "",
     "group": "",
     "tab": "",
+    "visible": false,
+    "enable": true,
     "modifiers": {
       "TestRecord.Nested.localRecFirst.p": {
         "expression": {
@@ -193,22 +183,21 @@
         "final": false
       }
     },
+    "replaceable": false,
     "options": [
       "TestRecord.Rec.p"
     ],
     "definition": false,
-    "shortExclType": false,
-    "replaceable": false,
-    "treeList": []
+    "shortExclType": false
   },
   "TestRecord.Nested.localRec": {
     "modelicaPath": "TestRecord.Nested.localRec",
-    "name": "",
     "type": "TestRecord.Rec",
-    "visible": false,
-    "enable": true,
+    "name": "",
     "group": "",
     "tab": "",
+    "visible": false,
+    "enable": true,
     "modifiers": {
       "TestRecord.Nested.localRec.p": {
         "expression": {
@@ -220,22 +209,21 @@
         "final": false
       }
     },
+    "replaceable": false,
     "options": [
       "TestRecord.Rec.p"
     ],
     "definition": false,
-    "shortExclType": false,
-    "replaceable": false,
-    "treeList": []
+    "shortExclType": false
   },
   "TestRecord.Nested.mod": {
     "modelicaPath": "TestRecord.Nested.mod",
-    "name": "",
     "type": "TestRecord.Mod",
-    "visible": false,
-    "enable": false,
+    "name": "",
     "group": "",
     "tab": "",
+    "visible": false,
+    "enable": false,
     "modifiers": {
       "TestRecord.Nested.mod.rec": {
         "expression": {
@@ -248,18 +236,16 @@
         "recordBinding": true
       }
     },
+    "replaceable": false,
     "options": [],
     "definition": false,
-    "shortExclType": false,
-    "replaceable": false,
-    "treeList": []
+    "shortExclType": false
   },
   "TestRecord.Nested": {
     "modelicaPath": "TestRecord.Nested",
     "type": "TestRecord.Nested",
     "visible": false,
-    "value": "TestRecord.Nested",
-    "modifiers": {},
+    "replaceable": false,
     "options": [
       "TestRecord.Nested.localRecFirst",
       "TestRecord.Nested.localRec",
@@ -267,31 +253,28 @@
     ],
     "definition": true,
     "shortExclType": false,
-    "replaceable": false,
     "treeList": [
       "TestRecord.Nested"
     ]
   },
   "TestRecord.NestedExtended.mod1": {
     "modelicaPath": "TestRecord.NestedExtended.mod1",
-    "name": "",
     "type": "TestRecord.Mod1",
-    "visible": false,
-    "enable": false,
+    "name": "",
     "group": "",
     "tab": "",
+    "visible": false,
+    "enable": false,
     "modifiers": {},
+    "replaceable": false,
     "options": [],
     "definition": false,
-    "shortExclType": false,
-    "replaceable": false,
-    "treeList": []
+    "shortExclType": false
   },
   "TestRecord.NestedExtended": {
     "modelicaPath": "TestRecord.NestedExtended",
     "type": "TestRecord.NestedExtended",
     "visible": false,
-    "value": "TestRecord.NestedExtended",
     "modifiers": {
       "TestRecord.NestedExtended.localRec.p": {
         "expression": {
@@ -312,6 +295,7 @@
         "final": false
       }
     },
+    "replaceable": false,
     "options": [
       "TestRecord.NestedExtended.mod1",
       "TestRecord.Nested.localRecFirst",
@@ -320,7 +304,6 @@
     ],
     "definition": true,
     "shortExclType": false,
-    "replaceable": false,
     "treeList": [
       "TestRecord.NestedExtended",
       "TestRecord.Nested"
@@ -328,42 +311,40 @@
   },
   "TestRecord.mod": {
     "modelicaPath": "TestRecord.mod",
-    "name": "",
     "type": "TestRecord.Mod",
-    "visible": false,
-    "enable": false,
+    "name": "",
     "group": "",
     "tab": "",
+    "visible": false,
+    "enable": false,
     "modifiers": {},
+    "replaceable": false,
     "options": [],
     "definition": false,
-    "shortExclType": false,
-    "replaceable": false,
-    "treeList": []
+    "shortExclType": false
   },
   "TestRecord.mod1": {
     "modelicaPath": "TestRecord.mod1",
-    "name": "",
     "type": "TestRecord.Mod1",
-    "visible": false,
-    "enable": false,
+    "name": "",
     "group": "",
     "tab": "",
+    "visible": false,
+    "enable": false,
     "modifiers": {},
+    "replaceable": false,
     "options": [],
     "definition": false,
-    "shortExclType": false,
-    "replaceable": false,
-    "treeList": []
+    "shortExclType": false
   },
   "TestRecord.mod2": {
     "modelicaPath": "TestRecord.mod2",
-    "name": "",
     "type": "TestRecord.Mod",
-    "visible": false,
-    "enable": false,
+    "name": "",
     "group": "",
     "tab": "",
+    "visible": false,
+    "enable": false,
     "modifiers": {
       "TestRecord.mod2.localRec": {
         "expression": {
@@ -376,20 +357,19 @@
         "recordBinding": true
       }
     },
+    "replaceable": false,
     "options": [],
     "definition": false,
-    "shortExclType": false,
-    "replaceable": false,
-    "treeList": []
+    "shortExclType": false
   },
   "TestRecord.mod3": {
     "modelicaPath": "TestRecord.mod3",
-    "name": "",
     "type": "TestRecord.Mod",
-    "visible": false,
-    "enable": false,
+    "name": "",
     "group": "",
     "tab": "",
+    "visible": false,
+    "enable": false,
     "modifiers": {
       "TestRecord.mod3.rec": {
         "expression": {
@@ -412,50 +392,47 @@
         "recordBinding": true
       }
     },
+    "replaceable": false,
     "options": [],
     "definition": false,
-    "shortExclType": false,
-    "replaceable": false,
-    "treeList": []
+    "shortExclType": false
   },
   "TestRecord.nes": {
     "modelicaPath": "TestRecord.nes",
-    "name": "",
     "type": "TestRecord.Nested",
-    "visible": false,
-    "enable": false,
+    "name": "",
     "group": "",
     "tab": "",
+    "visible": false,
+    "enable": false,
     "modifiers": {},
+    "replaceable": false,
     "options": [],
     "definition": false,
-    "shortExclType": false,
-    "replaceable": false,
-    "treeList": []
+    "shortExclType": false
   },
   "TestRecord.nesExt": {
     "modelicaPath": "TestRecord.nesExt",
-    "name": "",
     "type": "TestRecord.NestedExtended",
-    "visible": false,
-    "enable": false,
+    "name": "",
     "group": "",
     "tab": "",
+    "visible": false,
+    "enable": false,
     "modifiers": {},
+    "replaceable": false,
     "options": [],
     "definition": false,
-    "shortExclType": false,
-    "replaceable": false,
-    "treeList": []
+    "shortExclType": false
   },
   "TestRecord.nesExt1": {
     "modelicaPath": "TestRecord.nesExt1",
-    "name": "",
     "type": "TestRecord.NestedExtended",
-    "visible": false,
-    "enable": false,
+    "name": "",
     "group": "",
     "tab": "",
+    "visible": false,
+    "enable": false,
     "modifiers": {
       "TestRecord.nesExt1.mod1.localRec.p": {
         "expression": {
@@ -467,18 +444,16 @@
         "final": false
       }
     },
+    "replaceable": false,
     "options": [],
     "definition": false,
-    "shortExclType": false,
-    "replaceable": false,
-    "treeList": []
+    "shortExclType": false
   },
   "TestRecord": {
     "modelicaPath": "TestRecord",
     "type": "TestRecord",
     "visible": false,
-    "value": "TestRecord",
-    "modifiers": {},
+    "replaceable": false,
     "options": [
       "TestRecord.Rec",
       "TestRecord.BaseModel",
@@ -496,7 +471,6 @@
     ],
     "definition": true,
     "shortExclType": false,
-    "replaceable": false,
     "treeList": [
       "TestRecord"
     ]

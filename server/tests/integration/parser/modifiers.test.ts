@@ -3,6 +3,7 @@ import {
   getTemplates,
   Option,
   flattenModifiers,
+  _mapInputToOption,
 } from "../../../src/parser/template";
 import { findElement } from "../../../src/parser/parser";
 import { loadPackage, Template } from "../../../src/parser/";
@@ -207,72 +208,12 @@ describe("Record Binding Modifications", () => {
 
   afterAll(() => {
     // Generate options-TestRecord.json for client tests
-    // This replicates the logic from Template._mapInputToOption
     const testRecord = findElement("TestRecord") as parser.LongClass;
     const inputs = testRecord.getInputs();
 
-    // Helper to compute treeList (same as template.ts _getTreeList)
-    const getTreeList = (option: any): string[] => {
-      const treeList: string[] = [option.type];
-      option.options?.forEach((o: string) => {
-        let treeElement: string;
-        if (option.shortExclType) {
-          treeElement = o;
-        } else {
-          treeElement = o.split(".").slice(0, -1).join(".");
-        }
-        if (!treeList.includes(treeElement)) {
-          treeList.push(treeElement);
-        }
-      });
-      return treeList;
-    };
-
-    // Build options similar to Template._extractOptions / _mapInputToOption
-    const options: { [key: string]: any } = {};
+    const options: { [key: string]: Option } = {};
     Object.entries(inputs).forEach(([key, input]) => {
-      const flatMods = flattenModifiers(input.modifiers);
-      // Remove self-reference modifier
-      delete flatMods[input.modelicaPath];
-
-      const isDefinition = parser.isDefinition(input.elementType);
-      const shortExclType = input.elementType.endsWith("-short");
-
-      const option: any = {
-        modelicaPath: input.modelicaPath,
-        name: input.name,
-        type: input.type,
-        visible: input.visible,
-        value: input.value,
-        enable: input.enable,
-        group: input.group,
-        tab: input.tab,
-        modifiers: flatMods,
-        options: input.inputs, // Child option paths for linking
-        definition: isDefinition,
-        shortExclType: shortExclType,
-        replaceable: input.replaceable || false,
-        treeList: [], // Will be computed below
-        ...(input.recordBinding && { recordBinding: true }),
-      };
-
-      // Compute treeList for definitions
-      if (isDefinition) {
-        option.treeList = getTreeList(option);
-      }
-
-      // Include choiceModifiers if present
-      if (input.choiceModifiers) {
-        const flattenedChoiceMods: { [key: string]: any } = {};
-        Object.entries(input.choiceModifiers).forEach(
-          ([choiceKey, modList]) => {
-            flattenedChoiceMods[choiceKey] = flattenModifiers(modList);
-          },
-        );
-        option.choiceModifiers = flattenedChoiceMods;
-      }
-
-      options[key] = option;
+      options[key] = _mapInputToOption(input);
     });
 
     // Write to client/tests/data/options-TestRecord.json
