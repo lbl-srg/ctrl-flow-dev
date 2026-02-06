@@ -1,12 +1,9 @@
 import { ConfigInterface } from "../../src/data/config";
 import { TemplateInterface, OptionInterface } from "../../src/data/template";
 import { removeEmpty } from "../../src/utils/utils";
+import { ConfigValues } from "../utils/modifier-helpers";
 
 export type Literal = boolean | string | number;
-
-export interface ConfigValues {
-  [key: string]: string;
-}
 
 export type Expression = {
   operator: string;
@@ -35,7 +32,15 @@ interface Modifier {
   expression: Expression;
   final: boolean;
   fromClassDefinition: boolean;
-  redeclare: boolean;
+  redeclare?: string; // the redeclared type path, undefined if not a redeclare
+  recordBinding?: boolean;
+  /**
+   * The depth of the nested modification path (number of segments).
+   * For a modifier key like "fan.eff.per.pressure" where baseInstancePath="fan",
+   * the relativeInstancePath is "eff.per.pressure" with depth 3.
+   * Used to determine the correct scope when resolving relative binding paths.
+   */
+  modificationDepth?: number;
 }
 
 /**
@@ -114,6 +119,7 @@ const _instancePathToOption = (
   instancePath: string,
   context: ConfigContext,
   applyPathMods = true,
+  debug = false,
 ): {
   optionPath: string | null | undefined;
   instancePath: string;
@@ -132,6 +138,27 @@ const _instancePathToOption = (
   const curInstancePathList = [pathSegments.shift()]; // keep track of instance path for modifiers
   let curOptionPath: string | null | undefined =
     `${context.template.modelicaPath}.${curInstancePathList[0]}`;
+
+  // If the constructed option path doesn't exist, look for the option in the
+  // options inherited from treeList classes (parent classes)
+  if (!context.options[curOptionPath]) {
+    const rootOption = context.getRootOption();
+    const foundOption = rootOption.options?.find((childPath) =>
+      childPath.endsWith("." + curInstancePathList[0]),
+    );
+    if (foundOption) {
+      curOptionPath = foundOption;
+    }
+  }
+
+  if (debug)
+    console.log(
+      `[_instancePathToOption] START: instancePath=${instancePath}, modifiedPath=${modifiedPath}`,
+    );
+  if (debug)
+    console.log(
+      `[_instancePathToOption] initial: curOptionPath=${curOptionPath}, pathSegments=${JSON.stringify(pathSegments)}`,
+    );
   if (pathSegments.length === 0) {
     // special case: original type definition should be defined
     const rootOption = context.getRootOption();
@@ -143,13 +170,21 @@ const _instancePathToOption = (
 
   while (curInstancePathList && pathSegments.length > 0) {
     let option: OptionInterface | null = null;
+    if (debug)
+      console.log(
+        `[_instancePathToOption] LOOP: curInstancePathList=${JSON.stringify(curInstancePathList)}, pathSegments=${JSON.stringify(pathSegments)}`,
+      );
     // Option swap #1: selections
     // check if there is a selected path that specifies that option at
     // this instance path
     if (context.config?.selections) {
       Object.entries(context.selections).map(([key, value]) => {
         const [, instancePath] = key.split("-");
-        if (instancePath === curInstancePathList.join(".")) {
+        // Only string values (Modelica paths) can be used for option lookup
+        if (
+          instancePath === curInstancePathList.join(".") &&
+          typeof value === "string"
+        ) {
           option = context.options[value];
         }
       });
@@ -162,17 +197,15 @@ const _instancePathToOption = (
     if (!option) {
       const curInstancePath = curInstancePathList.join(".");
       const instanceMod = context.mods[curInstancePath];
-      // resolve mod if present
-      if (instanceMod) {
-        const resolvedValue = evaluateModifier(
-          instanceMod,
-          context,
-          curInstancePath,
+      if (debug)
+        console.log(
+          `[_instancePathToOption] checking mods for ${curInstancePath}: ${instanceMod ? "FOUND" : "not found"}`,
         );
-        if (typeof resolvedValue === "string" && instanceMod.redeclare) {
-          const potentialOption = context.options[resolvedValue as string];
-          option = potentialOption ? potentialOption : option;
-        }
+      // resolve mod if present
+      if (instanceMod && instanceMod.redeclare) {
+        // For redeclare modifiers, the type is stored directly in the 'redeclare' property
+        const potentialOption = context.options[instanceMod.redeclare];
+        option = potentialOption ? potentialOption : option;
       }
     }
 
@@ -189,27 +222,44 @@ const _instancePathToOption = (
     // by looking in options
     if (!option && curOptionPath) {
       const paramOption = context.options[curOptionPath];
+      if (debug)
+        console.log(
+          `[_instancePathToOption] normal lookup: curOptionPath=${curOptionPath}, paramOption.type=${paramOption?.type}`,
+        );
 
       if (!paramOption) {
+        if (debug)
+          console.log(`[_instancePathToOption] PUNCH-OUT: no paramOption`);
         break; // PUNCH-OUT!
       } else {
         option = context.options[paramOption.type];
         if (option === undefined) {
+          if (debug)
+            console.log(
+              `[_instancePathToOption] PUNCH-OUT: option undefined for type ${paramOption.type}`,
+            );
           curOptionPath = null;
           break;
         }
       }
     }
 
+    if (debug)
+      console.log(
+        `[_instancePathToOption] option=${option?.modelicaPath}, options=${JSON.stringify(option?.options)}`,
+      );
+
     // For short classes, the actual instance is within the options
-    // of the type assigned to the short class identifier.
+    // of the aliased type (stored in option.type).
     // (If this type is modified by the user selection, this has already been caught by
     // the selection check above.)
     if (option?.shortExclType) {
-      option = context.options[option?.value as string];
+      option = context.options[option?.type as string];
     }
 
     if (pathSegments.length === 0) {
+      if (debug)
+        console.log(`[_instancePathToOption] early break: pathSegments empty`);
       break;
     }
 
@@ -221,12 +271,85 @@ const _instancePathToOption = (
     curOptionPath = option?.options?.find(
       (o) => o.split(".").pop() === paramName,
     ) as string;
+    if (debug)
+      console.log(
+        `[_instancePathToOption] after shift: paramName=${paramName}, curOptionPath=${curOptionPath}`,
+      );
+
+    // Handle record binding: redirect path resolution to follow the binding.
+    // Record bindings can come from a modifier (instantiation-site, e.g., `Mod mod(rec=localRec)`)
+    // or from a class definition (it is then an "option" value, e.g., `Rec localRec = rec;`).
+    // Modifier bindings take precedence over class-definition bindings.
+    // The guard `pathSegments.length > 0` ensures we only redirect when accessing a nested parameter
+    // (like .p), not when resolving the record parameter itself.
+    if (curOptionPath && pathSegments.length > 0) {
+      const curInstancePath = curInstancePathList.join(".");
+      const curOption = context.options[curOptionPath];
+      const instanceMod = context.mods[curInstancePath];
+      const modBinding = instanceMod?.recordBinding ? instanceMod : null;
+      const optionBinding =
+        !modBinding && curOption?.recordBinding ? curOption : null;
+
+      if (modBinding || optionBinding) {
+        const bindingSource = modBinding
+          ? modBinding.expression
+          : (curOption.value as Expression | undefined);
+        let bindingPath: string | null = null;
+        if (
+          bindingSource?.operator === "none" &&
+          typeof bindingSource.operands[0] === "string"
+        ) {
+          bindingPath = bindingSource.operands[0];
+        }
+
+        if (bindingPath) {
+          const remainingPath = pathSegments.join(".");
+          // Compute scope to resolve the relative binding path.
+          // Modifier bindings use modificationDepth/fromClassDefinition;
+          // class-definition bindings scope to the parent instance (slice -1).
+          let scopePath: string;
+          if (modBinding) {
+            const depth = modBinding.modificationDepth || 1;
+            const sliceAmount = modBinding.fromClassDefinition
+              ? -depth
+              : -(depth + 1);
+            scopePath = curInstancePath
+              .split(".")
+              .slice(0, sliceAmount)
+              .join(".");
+          } else {
+            scopePath = curInstancePath.split(".").slice(0, -1).join(".");
+          }
+
+          const resolvedBindingPath = scopePath
+            ? `${scopePath}.${bindingPath}`
+            : bindingPath;
+
+          if (debug)
+            console.log(
+              `[_instancePathToOption] recordBinding redirect: ${curInstancePath}.${remainingPath} -> ${resolvedBindingPath}.${remainingPath}`,
+            );
+
+          const redirectedResult = _instancePathToOption(
+            `${resolvedBindingPath}.${remainingPath}`,
+            context,
+            applyPathMods,
+            debug,
+          );
+          return redirectedResult;
+        }
+      }
+    }
 
     if (pathSegments.length === 0) {
       // bottoming out - set a default path
       if (!curOptionPath) {
         curOptionPath = pathSegments.length === 0 ? option?.modelicaPath : null;
       }
+      if (debug)
+        console.log(
+          `[_instancePathToOption] final break: curOptionPath=${curOptionPath}`,
+        );
       break;
     }
   }
@@ -242,7 +365,17 @@ const _instancePathToOption = (
 // The backend expands all relative paths every 'option' path should begin with 'Modelica'
 // 'Modelica' or 'Buildings' it is a modelica path
 function isModelicaPath(path: string) {
-  return path.startsWith("Modelica") || path.startsWith("Buildings");
+  if (path.startsWith("Modelica") || path.startsWith("Buildings")) {
+    return true;
+  }
+  // Support test packages
+  if (
+    process.env.NODE_ENV === "test" &&
+    (path.startsWith("TestRecord") || path.startsWith("TestPackage"))
+  ) {
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -261,14 +394,21 @@ export function resolvePaths(
   path: string,
   context: ConfigContext,
   scope = "",
+  debug = false,
 ): {
   optionPath: string | null;
   instancePath: string;
   outerOptionPath: string | null | undefined;
 } {
   const pathList = createPossiblePaths(scope, path);
+  if (debug)
+    console.log(
+      `[resolvePaths] path=${path}, scope=${scope}, pathList=${JSON.stringify(pathList)}`,
+    );
   for (const p of pathList) {
-    const paths = _instancePathToOption(p, context);
+    const paths = _instancePathToOption(p, context, true, debug);
+    if (debug)
+      console.log(`[resolvePaths] tried ${p}: optionPath=${paths.optionPath}`);
     if (paths.optionPath && paths.instancePath) {
       return {
         optionPath: paths.optionPath,
@@ -284,6 +424,7 @@ export function resolvePaths(
 type Comparator = ">" | ">=" | "<" | "<=";
 export type OperatorType =
   | "none"
+  | "!"
   | "=="
   | "!="
   | "&&"
@@ -325,8 +466,7 @@ export const resolveToValue = (
       // TODO: these are modelica paths that should
       // be extracted!
       return operand;
-    }
-    if (option?.definition) {
+    } else if (option?.definition) {
       return operand;
     } else {
       // Update the operand with just the param name
@@ -364,12 +504,21 @@ export const resolveToValue = (
  *
  * If the modifier came from a param, scope has to be kicked back
  * by 2, if it was defined on a class, by 1
+ *
+ * For redeclare modifiers:
+ * - 'redeclare' contains the redeclared type path
+ * - 'expression' contains the binding value (only if there's an assignment =)
+ * If it's a redeclare without a binding, return the redeclare type directly
  */
 export const evaluateModifier = (
   mod: Modifier,
   context: ConfigContext,
   instancePath = "",
 ) => {
+  // For redeclare modifiers without a binding, return the redeclare type directly
+  if (mod?.redeclare && !mod?.expression) {
+    return mod.redeclare;
+  }
   const sliceAmount = mod?.fromClassDefinition ? -1 : -2;
   const expressionScope = instancePath
     .split(".")
@@ -433,6 +582,17 @@ export const evaluate = (
       val = expression.operator.includes("!") ? !isEqual : isEqual;
       break;
     }
+    case "!": {
+      if (expression.operands.length !== 1) {
+        throw new Error("Invalid number of operands for ! operator");
+      }
+      const operand = expression.operands[0];
+      const resolvedOperand = isExpression(operand)
+        ? evaluate(operand, context, scope)
+        : resolveToValue(operand, context, scope);
+      val = !resolvedOperand;
+      break;
+    }
     case "||": {
       val = expression.operands.reduce(
         (acc, cur) => !!(evaluate(cur, context, scope) || acc),
@@ -479,7 +639,8 @@ const addToModObject = (
     [key: string]: {
       expression: Expression;
       final: boolean;
-      redeclare: boolean;
+      redeclare?: string;
+      recordBinding?: boolean;
     };
   },
   baseInstancePath: string,
@@ -487,12 +648,35 @@ const addToModObject = (
   mods: {
     [key: string]: Modifier;
   },
+  options?: { [key: string]: OptionInterface },
+  childOptionPaths?: string[],
+  optionModelicaPath?: string, // The modelica path of the option whose modifiers we're processing
 ) => {
   Object.entries(newMods).forEach(([k, mod]) => {
-    const instanceName = k.split(".").pop();
-    const modKey = [baseInstancePath, instanceName]
+    // k is a Modelica path like "TestRecord.NestedExtended.localRec.p"
+    // We need to convert it to an instance path relative to baseInstancePath.
+    //
+    // If optionModelicaPath is provided, strip it from k to get the relative instance path.
+    // e.g., k = "TestRecord.NestedExtended.localRec.p", optionModelicaPath = "TestRecord.NestedExtended"
+    //       -> relativeInstancePath = "localRec.p"
+    let relativeInstancePath: string;
+    if (optionModelicaPath && k.startsWith(optionModelicaPath + ".")) {
+      relativeInstancePath = k.slice(optionModelicaPath.length + 1);
+    } else {
+      // Fallback: use last segment
+      relativeInstancePath = k.split(".").pop() || "";
+    }
+
+    // Build the modifier key by appending the relative instance path to the base instance path
+    const modKey = [baseInstancePath, relativeInstancePath]
       .filter((segment) => segment !== "")
       .join(".");
+
+    // Calculate the modification depth (number of segments in the nested path)
+    // e.g., "eff.per.pressure" has depth 3
+    const modificationDepth = relativeInstancePath
+      ? relativeInstancePath.split(".").length
+      : 0;
 
     // Do not add a key that is already present. The assumption is that
     // the first time an instance path is present is the most up-to-date
@@ -500,6 +684,7 @@ const addToModObject = (
       mods[modKey] = {
         ...mod,
         ...{ ["fromClassDefinition"]: fromClassDefinition },
+        ...{ ["modificationDepth"]: modificationDepth },
       };
     }
   });
@@ -517,7 +702,13 @@ const addToModObject = (
 const getReplaceableType = (
   instancePath: string,
   option: OptionInterface,
-  mods: { [key: string]: { expression: Expression; final: boolean } },
+  mods: {
+    [key: string]: {
+      expression: Expression;
+      final: boolean;
+      redeclare?: string;
+    };
+  },
   selections: ConfigValues,
   options: { [key: string]: OptionInterface },
 ) => {
@@ -554,15 +745,17 @@ const getReplaceableType = (
   }
 
   // Check if there is a modifier for this option, if so use it:
+  // For redeclare modifiers, the type is stored directly in the 'redeclare' property
   let newType = null;
-  const redeclaredType = instancePath in mods ? mods[instancePath] : null;
-  if (redeclaredType) {
-    // not using 'evaluateModifier' as that relies on context
-    // This evaluation COULD mess up if operand anything but 'none'
-    newType = evaluate(redeclaredType.expression);
+  const mod = instancePath in mods ? mods[instancePath] : null;
+  if (mod && mod.redeclare) {
+    // The redeclare property contains the type path directly
+    newType = mod.redeclare;
   }
 
-  // Otherwise just definition type
+  // Otherwise use definition type
+  // - Replaceable short classes: type = aliased type, value = undefined
+  // - Replaceable components: type = declared type, value = undefined or binding
   return newType ? newType : option.type;
 };
 
@@ -577,6 +770,7 @@ const buildModsHelper = (
   options: { [key: string]: OptionInterface },
   selections: ConfigValues,
   selectionModelicaPathsCache: { [key: string]: null }, // cache of just selection Modelica path keys
+  isRootTemplate = false, // true only for the initial template option
 ) => {
   if (option === undefined) {
     return; // PUNCH-OUT! references to 'Medium' fail here
@@ -599,33 +793,64 @@ const buildModsHelper = (
     const o = options[oPath];
     const oMods = o.modifiers;
     if (oMods) {
-      addToModObject(oMods, newBase, option.definition, mods);
+      addToModObject(
+        oMods,
+        newBase,
+        option.definition,
+        mods,
+        options,
+        childOptions,
+        o.modelicaPath,
+      );
     }
   });
 
   // check for redeclare in selections or use default type
   // to grab the correct modifiers
   if (option.replaceable) {
-    let redeclaredType = option.value as string | null | undefined;
+    // - Replaceable short classes: type = aliased type, value = undefined
+    // - Replaceable components: type = declared type, value = undefined or binding
+    let redeclaredType: string | null | undefined = option.type;
     if (option.modelicaPath in selectionModelicaPathsCache) {
       const selectionPath = constructSelectionPath(
         option.modelicaPath,
         newBase,
       );
-      redeclaredType = selections[selectionPath];
+      const selectionValue = selections[selectionPath];
+      // Only string values (Modelica paths) can be used for option lookup
+      if (typeof selectionValue === "string") {
+        redeclaredType = selectionValue;
+      }
     }
 
     if (option.choiceModifiers && redeclaredType) {
       const choiceMods = option.choiceModifiers[redeclaredType];
       if (choiceMods) {
-        addToModObject(choiceMods, newBase, option.definition, mods);
+        addToModObject(
+          choiceMods,
+          newBase,
+          option.definition,
+          mods,
+          options,
+          childOptions,
+          redeclaredType,
+        );
       }
     }
   }
 
-  // if this is a long class definition visit all child options and grab modifiers
+  // if this is a long class definition visit all elements and grab modifiers
   if (childOptions) {
     if (option.definition && !option.shortExclType) {
+      // Only visit elements of class definitions that are at the root level
+      // (i.e., the template itself). Nested class definitions within the template
+      // should not have their elements added as root-level instance paths.
+      // Those will be handled when actual instances of those classes are visited.
+      if (!isRootTemplate) {
+        // This is a nested class definition - skip visiting its elements
+        // as they would incorrectly be added at the wrong instance path
+        return;
+      }
       childOptions.map((path) => {
         const childOption = options[path];
         buildModsHelper(
@@ -635,12 +860,19 @@ const buildModsHelper = (
           options,
           selections,
           selectionModelicaPathsCache,
+          false, // elements are not the root template
         );
       });
     } else {
       // if this is a replaceable element, get the redeclared type
       // (this includes instances of replaceable short classes)
-      const typeOptionPath = getReplaceableType(newBase, option, mods, selections, options);
+      const typeOptionPath = getReplaceableType(
+        newBase,
+        option,
+        mods,
+        selections,
+        options,
+      );
       const typeOption = options[typeOptionPath as string];
 
       if (typeOption && typeOption.options) {
@@ -651,13 +883,15 @@ const buildModsHelper = (
             newBase,
             typeOption.definition,
             mods,
+            options,
+            typeOption.options,
+            typeOption.modelicaPath,
           );
         }
 
         // Each parent class must also be visited
         // See https://github.com/lbl-srg/ctrl-flow-dev/issues/360
-        typeOption
-          .treeList
+        typeOption.treeList
           ?.filter((path) => path !== (typeOptionPath as string)) // Exclude current class from being visited again
           .map((oPath) => {
             const o = options[oPath];
@@ -668,8 +902,9 @@ const buildModsHelper = (
               options,
               selections,
               selectionModelicaPathsCache,
+              false,
             );
-          })
+          });
 
         // Further populate `mods` with all options belonging to this class
         typeOption.options.map((path) => {
@@ -682,6 +917,7 @@ const buildModsHelper = (
             options,
             selections,
             selectionModelicaPathsCache,
+            false,
           );
         });
       }
@@ -708,6 +944,7 @@ export const buildMods = (
     /* options */ options,
     /* selections */ selections,
     /* selectionModelicaPathsCache */ selectionModelicaPaths,
+    /* isRootTemplate */ true,
   );
 
   return mods;
@@ -801,13 +1038,16 @@ export class ConfigContext {
 
     if (isModelicaPath(path)) {
       const option = this.options[path];
-      if (option.definition) {
-        this._previousInstancePath = null;
-        this.addToCache(path, optionPath, path);
-        return path;
+      if (option) {
+        if (option.definition) {
+          this._previousInstancePath = null;
+          this.addToCache(path, optionPath, path);
+          return path;
+        }
+        optionPath = path;
       }
-      optionPath = path;
-    } else {
+    }
+    if (!optionPath) {
       // instance path to original option
       const paths = resolvePaths(path, this, scope);
       optionPath = paths.optionPath;
@@ -832,7 +1072,7 @@ export class ConfigContext {
     const mod = this.mods[instancePath];
     if (mod) {
       val = evaluateModifier(this.mods[instancePath], this, instancePath);
-      if (val) {
+      if (val !== undefined && val !== null) {
         this._previousInstancePath = null;
         this.addToCache(path, optionPath, val);
         return val;
@@ -841,7 +1081,12 @@ export class ConfigContext {
 
     // return whatever value is present on the original option definition
     const optionScope = instancePath.split(".").slice(0, -1).join(".");
-    val = evaluate(this.options[optionPath]?.value, this, optionScope);
+    const option = this.options[optionPath];
+    // - For replaceable elements: value is "" if no binding, use type instead
+    // - For non-replaceable elements: use value directly
+    const optionValue =
+      option?.replaceable && !option?.value ? option?.type : option?.value;
+    val = evaluate(optionValue, this, optionScope);
     this.addToCache(path, optionPath, val);
     this._previousInstancePath = null;
     return val;
@@ -932,8 +1177,9 @@ export class ConfigContext {
       value = undefined;
     }
     const option = this.options[optionPath as string];
+    // For replaceable components, value is "" if no binding, so we fallback to type
     const type =
-      option && "replaceable" in option ? (value as string) : option?.["type"];
+      option?.replaceable && value ? (value as string) : option?.["type"];
     const castValue = value as Literal | null | undefined;
     const optionInstance = {
       value: castValue,
@@ -995,7 +1241,7 @@ export class ConfigContext {
       const { optionPath, value } = val;
       const option = this.options[optionPath];
       const addToResolvedValues =
-        value !== "" || (value === "" && option.type === "String");
+        value !== undefined || option.type === "String";
 
       if (addToResolvedValues) {
         const selectionPath = constructSelectionPath(optionPath, key);

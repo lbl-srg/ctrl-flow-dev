@@ -33,10 +33,12 @@ export default class Config {
 
     makeAutoObservable(this);
 
-    makePersistable(this, {
-      name: this.rootStore.getStorageKey("config"),
-      properties: ["configs"],
-    });
+    if (process.env.NODE_ENV !== "test") {
+      makePersistable(this, {
+        name: this.rootStore.getStorageKey("config"),
+        properties: ["configs"],
+      });
+    }
   }
 
   add(config: ConfigProps) {

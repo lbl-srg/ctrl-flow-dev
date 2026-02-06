@@ -2,7 +2,6 @@ import RootStore from "../../src/data";
 import { ConfigInterface } from "../../src/data/config";
 import { ConfigValues } from "../../src/utils/modifier-helpers";
 import { TemplateInterface, OptionInterface } from "../../src/data/template";
-import { extractSimpleDisplayList } from "../../src/utils/utils";
 import {
   FlatConfigOption,
   FlatConfigOptionGroup,
@@ -28,16 +27,13 @@ import {
   _formatDisplayItem,
 } from "../../src/interpreter/display-option";
 
+import {
+  createSelections,
+  addNewConfig as addNewConfigUtil,
+} from "./interpreter.test-utils";
+
 // initialize global test dependencies
 const store = new RootStore();
-const projectSelections = {
-  "Buildings.Templates.Data.AllSystems.stdEne":
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
-  "Buildings.Templates.Data.AllSystems.stdVen":
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
-  "Buildings.Templates.Data.AllSystems.ashCliZon":
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
-};
 
 const mzTemplatePath = "Buildings.Templates.AirHandlersFans.VAVMultiZone";
 const zoneTemplatePath = "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly";
@@ -50,36 +46,12 @@ const mzTemplate: TemplateInterface = allTemplates[mzTemplatePath];
 const zoneTemplate = allTemplates[zoneTemplatePath];
 const zoneReheatTemplate = allTemplates[zoneReheatTemplatePath];
 
-const createSelections = (selections: ConfigValues = {}) => {
-  return {
-    ...projectSelections,
-    ...selections,
-  };
-};
-
+// Local wrapper that uses the module-level store
 const addNewConfig = (
   configName: string,
   template: TemplateInterface,
-  selections: { [key: string]: string },
-) => {
-  store.configStore.add({
-    name: configName,
-    templatePath: template.modelicaPath,
-  });
-
-  const configWithSelections = store.configStore.configs.find(
-    (c) => c.name === configName,
-  ) as ConfigInterface;
-
-  const selectionsWithProjectSelections = createSelections(selections);
-
-  store.configStore.setSelections(
-    configWithSelections.id,
-    selectionsWithProjectSelections,
-  );
-
-  return configWithSelections;
-};
+  selections: ConfigValues,
+) => addNewConfigUtil(configName, template, selections, store);
 
 const mzConfig = addNewConfig("VAVMultiZone Config", mzTemplate, {});
 const zoneConfig = addNewConfig("VAV Box Cooling Only", zoneTemplate, {});
@@ -217,6 +189,13 @@ describe("Test set", () => {
     expect(evaluate(buildExpression("<=", [2, 2]))).toBeTruthy();
     expect(evaluate(buildExpression("<=", [4, 5]))).toBeTruthy();
     expect(evaluate(buildExpression("<=", [5, 4]))).toBeFalsy();
+  });
+
+  it("Handles !", () => {
+    expect(evaluate(buildExpression("!", [true]))).toBeFalsy();
+    expect(
+      evaluate(buildExpression("!", [buildExpression(">=", [2, 3])])),
+    ).toBeTruthy();
   });
 
   it("Handles == and !=", () => {
@@ -433,6 +412,37 @@ describe("Path resolution", () => {
 });
 
 describe("resolveToValue tests using context and evaluation", () => {
+  it("Handles boolean selections via context", () => {
+    let config = addNewConfig(
+      "Config with false boolean selection",
+      mzTemplate,
+      createSelections({
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.have_senPreBui-have_senPreBui": false,
+      }),
+    );
+    let context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      config as ConfigInterface,
+      allOptions,
+      config.selections as ConfigValues,
+    );
+    expect(resolveToValue("have_senPreBui", context)).toBe(false);
+    config = addNewConfig(
+      "Config with true boolean selection",
+      mzTemplate,
+      createSelections({
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.have_senPreBui-have_senPreBui": true,
+      }),
+    );
+    context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      config as ConfigInterface,
+      allOptions,
+      config.selections as ConfigValues,
+    );
+    expect(resolveToValue("have_senPreBui", context)).toBe(true);
+  });
+
   it("Handles fanSupBlo.typ", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
@@ -463,26 +473,22 @@ describe("resolveToValue tests using context and evaluation", () => {
       config.selections as ConfigValues,
     );
 
-    const expectedVal =
-      "Buildings.Templates.Components.Fans.ArrayVariable";
+    const expectedVal = "Buildings.Templates.Components.Fans.ArrayVariable";
     const val = context.getValue(instancePath);
     expect(val).toEqual(expectedVal);
   });
 });
 
 describe("Testing context getValue", () => {
-  it("Components (parameter that have a type of a class/model) that are not replaceables have no value assigned", () => {
+  it("Components that have a type of a class/model have no value assigned", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
       allOptions,
     );
 
-    // TODO: expected behavior for components that are not replaceables?
-    // Currently returns an empty string
-    const expectedVal = "";
     const val = context.getValue("TAirCoiCooLvg");
-    expect(val).toEqual(expectedVal);
+    expect(val).toBeUndefined();
   });
 
   it("Fetches the correct value for a replaceable type without a selection made", () => {
@@ -692,17 +698,17 @@ describe("ctl.have_CO2Sen enable expression", () => {
     const thirdOperand = {
       operator: "==",
       operands: [
-        "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.stdVen",
+        "stdVen",
         stdVenValue,
       ],
     };
 
-    const stdVen = context.getValue("ctl.stdVen");
+    const stdVen = context.getValue("stdVen", "ctl");
     expect(stdVen).toEqual(
       "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
     );
 
-    const thirdEvaluation = evaluate(thirdOperand, context);
+    const thirdEvaluation = evaluate(thirdOperand, context, "ctl");
     expect(thirdEvaluation).toBeTruthy();
   });
 });
@@ -732,7 +738,7 @@ describe("Scope tests", () => {
     );
     const path = "secOutRel.secOut.dat"; // secOut.dat = dat
     const val = evaluate(context.mods[path]?.expression, context, "secOutRel");
-    expect(val).toEqual("");
+    expect(val).toEqual(undefined);
   });
 
   it("Able to resolve secOutRel.secOut.dat without going into an infinite loop due to bad scope", () => {
@@ -753,8 +759,9 @@ describe("Scope tests", () => {
     expect(path).toEqual(instancePath); // instance path should not change
     // test modifier value
     // modifier points to the correct parameter definition (secOutRel.dat location)
+    // After parser refactoring, instance references are stored as relative paths
     expect(context.mods["secOutRel.secOut.dat"].expression.operands[0]).toEqual(
-      "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.dat",
+      "dat",
     );
 
     // scope is wrong when we attempt to get value
@@ -1108,7 +1115,7 @@ describe("Specific parameter debugging", () => {
     );
   });
 
-  it("Assigns null to secOutRel.secOut.damOut", () => {
+  it("secOutRel.secOut.damOut has undefined value and is excluded from evaluatedValues", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
       mzConfig as ConfigInterface,
@@ -1119,8 +1126,8 @@ describe("Specific parameter debugging", () => {
     const path = "secOutRel.secOut.damOut";
     // fill in cache by generating display options
     const displayOptions = mapToDisplayOptions(context);
-    const { value } = context._resolvedValues[path];
-    expect(value).toEqual("");
+    // With no binding, value is undefined and not added to _resolvedValues cache
+    expect(context._resolvedValues[path]).toBeUndefined();
     const optionInstance = context.getOptionInstance(path);
     const evaluatedValues = context.getEvaluatedValues();
     const selectionPath = constructSelectionPath(

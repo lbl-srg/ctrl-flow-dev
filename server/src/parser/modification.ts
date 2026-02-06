@@ -1,4 +1,5 @@
 import { typeStore, isInputGroup, LongClass, Element } from "./parser";
+import { Literal } from "./expression";
 import * as mj from "./mj-types";
 
 /**
@@ -27,6 +28,33 @@ import { evaluateExpression, Expression, getExpression } from "./expression";
 
 const modStore: Map<string, Modification> = new Map();
 
+/**
+ * Helper to check if an element is a record class definition.
+ * Returns true if the element's elementType is "record" or "record-short".
+ */
+function isRecord(element: Element | undefined): boolean {
+  if (!element) {
+    return false;
+  }
+  return (
+    element.elementType === "record" || element.elementType === "record-short"
+  );
+}
+
+/**
+ * Helper to check if an element's type is a record.
+ * Returns true if the element's type resolves to a record class.
+ */
+function isRecordType(element: Element | undefined): boolean {
+  if (!element) {
+    return false;
+  }
+
+  // Get the type of the element and look it up in the store
+  const typeElement = typeStore.get(element.type, "", false);
+  return isRecord(typeElement);
+}
+
 interface ModificationBasics {
   basePath?: string;
   baseType?: string;
@@ -35,6 +63,8 @@ interface ModificationBasics {
   definition?: any;
   type?: string;
   final?: boolean;
+  /** Set to true when this modification is a binding to a record type component */
+  isRecordBinding?: boolean;
 }
 
 interface ModificationWithDefinition extends ModificationBasics {
@@ -82,8 +112,14 @@ export function createModification(
  * Redeclaration Mods need to be unpacked slightly differently:
  *
  * 1. The JSON structure needs to be unpacked to get to the mod definition
- * 2. The modification type needs to updated to the redeclared type
+ * 2. The redeclared type is stored under 'redeclare' property (for both component and class redeclarations)
+ * 3. The 'value' only contains the binding expression if there's an assignment (=) for components
+ *    (class redeclarations never have a binding value)
  *
+ * Examples:
+ * - `redeclare NewType myParam` -> redeclare="NewType", value=undefined
+ * - `redeclare NewType myParam = someValue` -> redeclare="NewType", value="someValue"
+ * - `redeclare package Medium = NewMedium` -> redeclare="NewMedium", value=undefined
  */
 function unpackRedeclaration(props: ModificationProps) {
   let { basePath, definition, baseType } = props;
@@ -122,26 +158,82 @@ function unpackRedeclaration(props: ModificationProps) {
     const redeclareDefinition =
       componentClause1.component_declaration1.declaration;
     const name = redeclareDefinition.identifier;
-    const childModProps = {
-      ...props,
-      name: element.type,
-      definition: redeclareDefinition,
-      baseType: element.type,
-      final,
-    };
-    // create child modifications
-    const redeclareMod = createModification(childModProps);
-    const childMods = redeclareMod ? [redeclareMod] : [];
+
+    let bindingValue: Expression | string | undefined = undefined;
+    const childMods: Modification[] = [];
+    let isRecordBinding = false;
+
+    if (redeclareDefinition.modification) {
+      const mod = redeclareDefinition.modification;
+      if ("equal" in mod && (mod as mj.Assignment).equal) {
+        // There's a binding (=), extract the value
+        bindingValue = getExpression(
+          (mod as mj.Assignment).expression,
+          basePath,
+          baseType,
+        );
+        isRecordBinding = isRecord(element);
+      } else if ("class_modification" in mod) {
+        // There are nested modifications but no direct binding
+        const nestedMods = getModificationList(
+          mod as mj.ClassMod,
+          [basePath, name].filter((s) => s).join("."),
+          element.type,
+        );
+        childMods.push(...nestedMods);
+      }
+    }
+
+    // The redeclared type is stored under 'redeclare' property
+    const redeclaredType = element.type;
+
     // create the redeclare modification
+    // Use basePath (instance path) for the modifier key, not scope (type path)
     return new Modification(
-      scope,
+      basePath,
       name,
-      getExpression(element.type, basePath, baseType),
+      bindingValue, // only set if there's a binding (=)
       childMods,
       final,
-      true,
+      redeclaredType, // the redeclared type path
+      isRecordBinding, // Pass down whether this is a record binding
     );
   } else if ("short_class_definition" in redeclaration) {
+    // Short class definition redeclaration: `redeclare package Medium = NewMedium`
+    // The aliased type (NewMedium) is stored under 'redeclare' property
+    // 'value' is undefined (no binding for class redeclarations)
+    const shortClassDef =
+      redeclaration.short_class_definition as mj.ShortClassDefinition;
+    const specifier = shortClassDef.short_class_specifier;
+    const name = specifier.identifier;
+
+    // Get the aliased type from the RHS - this goes in 'redeclare'
+    const aliasedTypeName = specifier.value?.name;
+    const aliasedType = aliasedTypeName
+      ? typeStore.get(aliasedTypeName, basePath)
+      : undefined;
+    const redeclaredType = aliasedType?.modelicaPath || aliasedTypeName || "";
+
+    // Get any nested modifications from class_modification
+    let childMods: Modification[] = [];
+    if (specifier.value?.class_modification) {
+      childMods = getModificationList(
+        {
+          class_modification: specifier.value.class_modification,
+        } as mj.ClassMod,
+        [basePath, name].filter((s) => s).join("."),
+        redeclaredType,
+      );
+    }
+
+    return new Modification(
+      basePath,
+      name,
+      undefined, // no binding for class redeclarations
+      childMods,
+      final,
+      redeclaredType, // the aliased type goes in redeclare
+    );
   }
 }
 
@@ -151,13 +243,14 @@ function unpackRedeclaration(props: ModificationProps) {
  */
 function unpackModblock(props: ModificationProps) {
   let mods: Modification[] = [];
-  let value: Expression | string = ""; // value can be 'type'
+  let value: Expression | Literal | undefined;
   let {
     definition,
     basePath = "",
     baseType,
     name,
     final,
+    isRecordBinding: propsIsRecordBinding,
   } = props as ModificationWithDefinition;
 
   let modBlock = definition;
@@ -212,6 +305,10 @@ function unpackModblock(props: ModificationProps) {
     mod = (modBlock as mj.Mod).modification;
   }
 
+  // Track if this is a record binding (direct assignment to a record type)
+  // Use the prop if passed from unpackRedeclaration, otherwise detect from element type
+  let recordBinding = false;
+
   if (mod) {
     if ("equal" in mod) {
       value = getExpression(
@@ -219,6 +316,21 @@ function unpackModblock(props: ModificationProps) {
         basePath,
         baseType,
       );
+      // Check if this is a binding to a record type
+      // Use propsIsRecordBinding if explicitly set (from redeclare context),
+      // otherwise check if the element's type or baseType itself is a record.
+      // - For nested modifications like `mod2(localRec=...)`, element is the modified
+      //   component (localRec) and we check if its type is a record.
+      // - For direct declarations like `Rec localRec = rec`, element may not be found
+      //   via the lookup, so we check if baseType (the component's type) is a record.
+      if (propsIsRecordBinding !== undefined) {
+        recordBinding = propsIsRecordBinding;
+      } else if (element) {
+        recordBinding = isRecordType(element);
+      } else if (baseType) {
+        const baseTypeElement = typeStore.get(baseType, "", false);
+        recordBinding = isRecord(baseTypeElement);
+      }
     } else if (name == "choice") {
       const choiceMod = (mod as mj.ClassMod)
         .class_modification[0] as mj.RedeclareMod;
@@ -237,7 +349,7 @@ function unpackModblock(props: ModificationProps) {
                 ?.name;
         const constrainingClause = replaceable.constraining_clause;
         const replaceableType = typeStore.get(typeSpecifier, basePath);
-        value = replaceableType?.modelicaPath || ""; // modelicaPath is the replaceable type
+        value = replaceableType?.modelicaPath; // modelicaPath is the replaceable type
         // get selection mods
         const classModification = (
           "component_clause1" in replaceable
@@ -248,7 +360,24 @@ function unpackModblock(props: ModificationProps) {
         ) as mj.ClassMod;
         // Additional modifiers can be attached to choice
         if (classModification) {
-          mods = getModificationList(classModification, basePath, value);
+          // Extract the actual component name from the redeclaration
+          // (e.g., "selectable_component" from "redeclare ... selectable_component(...)")
+          const componentName =
+            "component_clause1" in replaceable
+              ? (clause as mj.ComponentClause1).component_declaration1
+                  .declaration.identifier
+              : (clause as mj.ShortClassDefinition).short_class_specifier
+                  .identifier;
+          // basePath here includes "choices" (e.g., "TestPackage.Template.TestTemplate.choices")
+          // Strip the trailing ".choices" to get the parent class path for the instance path
+          const parentPath = basePath.endsWith(".choices")
+            ? basePath.slice(0, -".choices".length)
+            : basePath;
+          // Use instance path (parentPath + componentName), not type path
+          const nestedBasePath = [parentPath, componentName]
+            .filter((s) => s)
+            .join(".");
+          mods = getModificationList(classModification, nestedBasePath, value);
           // TODO: getModificationList should handle redeclares but it is not
           // correctly unpacking nested modifiers - this is a bug
           // kludge: remove nested modifiers
@@ -264,11 +393,27 @@ function unpackModblock(props: ModificationProps) {
         const modType = modElement?.type;
         typePath = modType ? modType : baseType;
       }
-      mods = getModificationList(mod as mj.ClassMod, basePath, typePath); //mod.class_modification
+      // Include component name in path for nested modifications
+      const nestedBasePath = [basePath, name].filter((s) => s).join(".");
+      mods = getModificationList(mod as mj.ClassMod, nestedBasePath, typePath);
     }
   }
 
-  return new Modification(scope, name, value, mods, final);
+  // Use basePath (instance path) for the modifier key, not scope (type path).
+  // For example, for `extends Nested(localRec(p=4))` in NestedExtended,
+  // the nested modification for 'p' uses basePath "TestRecord.NestedExtended.localRec"
+  // to produce the key "TestRecord.NestedExtended.localRec.p",
+  // instead of using the type path which would yield "TestRecord.Rec.p"
+  // where TestRecord.Rec is the type of localRec
+  return new Modification(
+    basePath,
+    name,
+    value,
+    mods,
+    final,
+    undefined,
+    recordBinding,
+  );
 }
 
 export function getModificationList(
@@ -295,6 +440,14 @@ export function getModificationList(
  *  (e.g. a redeclare statement)
  *
  * The mod 'name' can be explicitly provided instead of discovered
+ *
+ * For redeclare modifications:
+ * - 'redeclare' stores the redeclared type (string), e.g., "Package.NewType", or undefined if not a redeclare
+ * - 'value' stores the binding expression only if there's an assignment (=), otherwise undefined
+ *   Example: `redeclare NewRecordType record = localRecordInstance`
+ *            -> redeclare = "NewRecordType", value = "localRecordInstance"
+ *   Example: `redeclare NewType myParam`
+ *            -> redeclare = "NewType", value = undefined
  */
 export class Modification {
   empty = false;
@@ -305,7 +458,8 @@ export class Modification {
     public value: any,
     public mods: Modification[] = [],
     public final = false,
-    public redeclare = false,
+    public redeclare?: string, // the redeclared type path, undefined if not a redeclare
+    public recordBinding = false, // true if this modification is a binding to a record type
   ) {
     this.modelicaPath = [basePath, name].filter((s) => s !== "").join(".");
     if (this.modelicaPath) {

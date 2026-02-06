@@ -47,7 +47,7 @@ export function getClassNameFromRelativePath(filePath: string) {
 export function getClassNameFromJson(json: any): string {
   return (
     (json.within ? json.within + "." : "") +
-    json.class_definition[0].class_specifier.long_class_specifier.identifier
+    json.stored_class_definitions[0].class_specifier.long_class_specifier.identifier
   );
 }
 
@@ -57,7 +57,7 @@ export function getClassNameFromJson(json: any): string {
  * @returns A TemplateNode object with class information
  */
 function createTemplateNode(json: any): TemplateNode {
-  const classDefinition = json.class_definition[0];
+  const classDefinition = json.stored_class_definitions[0];
   return {
     className: getClassNameFromJson(json),
     description:
@@ -128,7 +128,7 @@ export function findPackageEntryPoints(
       // Iterate over all template files up to the root package and populate
       // templateNodes, TEMPLATE_LIST, PACKAGE_LIST and entryPoints.
 
-      for (let templateJson of [...templateNodes.map(({json}) => json)]) {
+      for (let templateJson of [...templateNodes.map(({ json }) => json)]) {
         let packageName = (templateJson as any).within;
         while (packageName && packageName !== rootPackageName) {
           const packagePath = getPathFromClassName(packageName, dir);
@@ -157,15 +157,15 @@ export function findPackageEntryPoints(
     }
   });
 
-  return templateNodes.map(({ className, json }) => { return { className, json }; });
+  return templateNodes.map(({ className, json }) => {
+    return { className, json };
+  });
 }
 
 /**
  * Gets the path to a Modelica JSON file based on the full class name.
- * - LIMITATION: This function requires that the library packages use
- *   [Directory Hierarchy Mapping](https://specification.modelica.org/maint/3.6/packages.html#directory-hierarchy-mapping)
  * @param className - The full Modelica class name (e.g. "Library.Package.Class")
- * @param dirPath - The directory path to search in
+ * @param dirPath - The directory path to search in (e.g. element of MODELICA_JSON_PATH)
  * @returns The file path if found, null otherwise
  */
 function getPathFromClassName(
@@ -177,18 +177,11 @@ function getPathFromClassName(
   let jsonFile = path.resolve(dirPath, filePath.dir, `${filePath.name}.json`);
 
   while (!fs.existsSync(jsonFile) && filePath.name) {
-    // check if definition already exists
-    // TODO - construct this path correctly...
-    const curPath = path.relative(filePath.dir, filePath.name);
-    const modelicaPath = getClassNameFromRelativePath(curPath);
-    if (typeStore.has(modelicaPath)) {
-      break;
-    }
-    // package definitions break the typical modelica path to file mapping that
-    // is used. A typical modelica path to file path look like:
-    //   'Template.AirHandlerFans.VAVMultizone' -> 'Template/AirhandlerFans/VAVMultizone.json'
-    // We need to support mapping like this as well:
-    //   'Template.AirHandlerFans -> Template/AirhandlerFans/package.json'
+    /* Typically modelica class name to file path looks like:
+     *   Templates.AirHandlerFans.VAVMultizone -> Templates/AirhandlerFans/VAVMultizone.json
+     * For directory mapping of packages, we need to support mapping like:
+     *   Templates.AirHandlerFans -> Templates/AirhandlerFans/package.json
+     */
     jsonFile = path.resolve(
       dirPath,
       filePath.dir,
@@ -198,6 +191,10 @@ function getPathFromClassName(
     if (fs.existsSync(jsonFile)) {
       break;
     }
+    /*
+     * We iterate and trim the file path to cover single file mapping of packages:
+     * e.g. Buildings.Types.Reset in Buildings/Types.json
+     */
     filePath = path.parse(filePath.dir);
     jsonFile = path.resolve(dirPath, filePath.dir, `${filePath.name}.json`);
   }
