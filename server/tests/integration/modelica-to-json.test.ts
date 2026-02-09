@@ -6,9 +6,9 @@ import { stripFilePaths, stripSpacing } from "../utilities";
 const PORT = process.env.PORT ? process.env.port : 3000;
 const req = request(`http://localhost:${PORT}`);
 
-describe.skip("JSON to Modelica", () => {
+describe("JSON to Modelica", () => {
   it("Converts Modelica to JSON", () => {
-    req
+    return req
       .post("/api/modelicatojson")
       .send({ format: "json", modelica: BUS_MODELICA, parseMode: "modelica" })
       .set("Accept", "application/json")
