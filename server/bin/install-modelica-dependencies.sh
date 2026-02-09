@@ -23,6 +23,5 @@ cd -
 git clone -b $MODELICA_STANDARD_TAG --single-branch --depth 1 https://github.com/modelica/ModelicaStandardLibrary.git
 
 cd modelica-json
-git apply $parent_path/bin/maven-install.patch
 make install
 make compile
