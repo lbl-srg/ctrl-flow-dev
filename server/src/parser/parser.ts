@@ -516,6 +516,14 @@ export class ShortClass extends Element {
     this.description = definition.description?.description_string;
     this.replaceable = definition.replaceable;
 
+    if (specifier.value?.class_modification) {
+      this.mods = getModificationList(
+        specifier.value,
+        this.modelicaPath,
+        this.type,
+      );
+    }
+
     if (this.replaceable) {
       initializeReplaceable(this, definition, basePath);
     }
@@ -1068,12 +1076,20 @@ function _constructElement(
   let element: Element | undefined;
 
   switch (elementType) {
-    case "type":
+    case "type": {
       // May only be predefined types, enumerations, array of type, or classes extending from type.
-      // Synctatically, these are short class definitions, but they need to be treated specifically
-      // as they define enumerations that are used in the parameter dialogs.
-      element = new Enumeration(definition, basePath, elementType);
+      // Route to Enumeration only if the short class specifier has an enum_list;
+      // otherwise it's a type alias (e.g. MassFlowRate = Real(...)) and goes to ShortClass.
+      const typeSpecifier =
+        (definition.class_definition ?? definition).class_specifier
+          .short_class_specifier;
+      if (typeSpecifier?.value?.enum_list) {
+        element = new Enumeration(definition, basePath, elementType);
+      } else {
+        element = new ShortClass(definition, basePath, elementType);
+      }
       break;
+    }
     case "class":
     case "connector":
     case "model":

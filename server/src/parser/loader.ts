@@ -208,13 +208,13 @@ function getPathFromClassName(
  * @returns The loaded JSON object or undefined if not found
  */
 export function loader(className: string): Object | undefined {
-  // TODO: allow modelica paths
-  if (!className.startsWith("Modelica")) {
-    for (const dir of MODELICA_JSON_PATH) {
-      const jsonFile = getPathFromClassName(className, dir);
-      if (jsonFile && fs.existsSync(jsonFile)) {
-        return require(jsonFile);
-      }
+  if (className.startsWith("Modelica") && !className.startsWith("Modelica.Units")) {
+    return undefined;
+  }
+  for (const dir of MODELICA_JSON_PATH) {
+    const jsonFile = getPathFromClassName(className, dir);
+    if (jsonFile && fs.existsSync(jsonFile)) {
+      return require(jsonFile);
     }
   }
 }
