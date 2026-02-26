@@ -722,7 +722,7 @@ function setUIInfo(instance: Element): void {
     instance.group = group ? evaluateExpression(group) : "";
     instance.tab = tab ? evaluateExpression(tab) : "";
     const _enable = isDisabledGroup ? false : true;
-    instance.enable = enable ? enable : _enable;
+    instance.enable = enable ? evaluateExpression(enable) : _enable;
   } else {
     instance.enable = isDisabledGroup ? instance.enable : true;
   }
