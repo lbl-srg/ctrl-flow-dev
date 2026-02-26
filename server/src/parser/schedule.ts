@@ -107,20 +107,13 @@ export interface GroupColumn {
 
 export type Column = LeafColumn | GroupColumn;
 
-// --- Cell value + conditional expression ---
+// --- Cell ---
 
 export interface Cell {
+  rowIndex: number;
+  columnKey: string; // matches a LeafColumn key; use table.columns to look up column.enable
   value: string | number | boolean | null;
-  /** Expression evaluated in the context of the current row's cells.
-   *  References sibling cells by their column key, e.g. "cooling_enabled === true"
-   *  When false, the cell is disabled/greyed out. */
-  enableWhen?: string; // or a parsed AST node if you want to avoid runtime eval
 }
-
-// --- Row ---
-
-/** Flat map from leaf column key → cell */
-export type Row = Record<string, Cell>;
 
 // --- Full table ---
 
@@ -128,7 +121,7 @@ export interface Table {
   modelicaPath: string; // fully-qualified class name of the record, e.g. "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone"
   configuration: string; // final type (after redeclare) of the component with instance name 'cfg'
   columns: Column[]; // tree of headers
-  rows: Row[];
+  cells: Cell[];
 }
 
 /**
@@ -142,7 +135,7 @@ export function buildParameterTable(className: string): Table {
     throw new Error(`Class ${className} not found in typeStore`);
   }
 
-  const columns = filterDisabledColumns(buildColumnsFromElement(element));
+  const columns = buildColumnsFromElement(element);
 
   // Find the 'cfg' component and resolve its effective type after any redeclare
   const childElements = (element as LongClass).getChildElements?.() ?? [];
@@ -158,7 +151,7 @@ export function buildParameterTable(className: string): Table {
     modelicaPath: className,
     configuration,
     columns,
-    rows: [], // Empty rows - to be filled at UI runtime
+    cells: [], // Empty cells - to be filled at UI runtime
   };
 }
 

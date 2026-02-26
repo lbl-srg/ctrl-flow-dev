@@ -67,13 +67,13 @@ describe("buildParameterTable", () => {
     );
   });
 
-  it("should return a table with columns and empty rows", () => {
+  it("should return a table with columns and empty cells", () => {
 expect(table).toBeDefined();
     expect(table.columns).toBeDefined();
     expect(Array.isArray(table.columns)).toBe(true);
-    expect(table.rows).toBeDefined();
-    expect(Array.isArray(table.rows)).toBe(true);
-    expect(table.rows.length).toBe(0);
+    expect(table.cells).toBeDefined();
+    expect(Array.isArray(table.cells)).toBe(true);
+    expect(table.cells.length).toBe(0);
   });
 
   it("should create leaf columns for predefined type parameters", () => {
