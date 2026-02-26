@@ -125,6 +125,8 @@ export type Row = Record<string, Cell>;
 // --- Full table ---
 
 export interface Table {
+  modelicaPath: string; // fully-qualified class name of the record, e.g. "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone"
+  configuration: string; // final type (after redeclare) of the component with instance name 'cfg'
   columns: Column[]; // tree of headers
   rows: Row[];
 }
@@ -142,7 +144,19 @@ export function buildParameterTable(className: string): Table {
 
   const columns = buildColumnsFromElement(element);
 
+  // Find the 'cfg' component and resolve its effective type after any redeclare
+  const childElements = (element as LongClass).getChildElements?.() ?? [];
+  const cfgComponent = childElements.find(
+    (c) => c.elementType === "component_clause" && (c as Component).name === "cfg",
+  ) as Component | undefined;
+  const redeclareMod = (element as LongClass).mods?.find(
+    (m) => m.name === "cfg" && m.redeclare,
+  );
+  const configuration = redeclareMod?.redeclare ?? cfgComponent?.type ?? "";
+
   return {
+    modelicaPath: className,
+    configuration,
     columns,
     rows: [], // Empty rows - to be filled at UI runtime
   };
