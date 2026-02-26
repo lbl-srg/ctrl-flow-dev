@@ -8,10 +8,6 @@
  *
  * ```typescript
  * import { buildParameterTable } from "./parser/schedule";
- * import * as parser from "./parser/parser";
- *
- * // Load the record class first (recursively loads all referenced types)
- * parser.getFile("Buildings.Templates.AirHandlersFans.Data.VAVMultiZone");
  *
  * // Build a parameter table for the record
  * const table = buildParameterTable("Buildings.Templates.AirHandlersFans.Data.VAVMultiZone");
@@ -30,17 +26,18 @@
  *   }
  * });
  *
- * // Add rows at runtime (keyed by the same relative instance paths as column keys)
- * table.rows.push({
- *   "ctl.k": { value: 1.5 },
- *   "coiHeaReh.dpAir_nominal": { value: 250 },
- * });
+ * // Add cells at runtime; rowIndex groups cells into logical rows.
+ * // To retrieve the enable expression for a cell, look up the LeafColumn by columnKey.
+ * table.cells.push(
+ *   { rowIndex: 0, columnKey: "ctl.k", value: 1.5 },
+ *   { rowIndex: 0, columnKey: "coiHeaReh.dpAir_nominal", value: 250 },
+ * );
  * ```
  *
  * ## Column Structure
  *
- * - **LeafColumn**: Represents a single parameter (predefined or type-alias types).
- *   - `key`: instance path relative to the top-level record (e.g. `"ctl.k"`, `"dpAir_nominal"`)
+ * - **LeafColumn**: Represents a single parameter
+ *   - `key`: instance path relative to the top-level record
  *   - `label`: description string or parameter name
  *   - `unit`, `displayUnit`: resolved by walking the type alias chain
  *     (e.g. `PressureDifference → Pressure → Real(unit="Pa")`)
@@ -52,22 +49,6 @@
  *   - Created from `Dialog(group=...)` or `Dialog(tab=...)` annotations
  *   - Created for record-typed component instances (children are the record's parameters)
  *   - Can be nested arbitrarily deep
- *
- * ## Attribute Extraction
- *
- * For each leaf parameter, attributes are resolved in this order:
- * 1. Component's own modifiers (declaration-level overrides)
- * 2. Type's TemplateInput modifiers
- * 3. Type chain: follows `ShortClass.type` aliases and `LongClass.extendElement`
- *    inheritance until a predefined MLS type is reached or all attributes are found
- *
- * ## Filtering
- *
- * The following parameters are excluded from the table:
- * - `outer` parameters (references to outer scope)
- * - `final` parameters (cannot be modified)
- * - Parameters marked with `__ctrlFlow(enable=false)` at the class level (`deadEnd`)
- * - Parameters with `connectorSizing=true`
  */
 
 import {
@@ -735,100 +716,4 @@ function nextInTypeChain(current: Element): Element | undefined {
     }
   }
   return undefined;
-}
-
-/**
- * Recursively extracts attributes from a type definition, walking up the inheritance chain
- */
-function extractAttributesFromType(element: Element): {
-  unit?: string;
-  displayUnit?: string;
-  min?: number | Expression;
-  max?: number | Expression;
-  start?: number | Expression;
-} {
-  const result: {
-    unit?: string;
-    displayUnit?: string;
-    min?: number | Expression;
-    max?: number | Expression;
-    start?: number | Expression;
-  } = {};
-
-  // Walk up the type chain, filling in missing attributes
-  let current: Element | undefined = element;
-  while (current) {
-    if ("mods" in current && (current as any).mods) {
-      const levelResult: typeof result = {};
-      extractAttributesFromModifiers(
-        current.modelicaPath,
-        { mods: (current as any).mods },
-        levelResult,
-      );
-      result.unit = result.unit ?? levelResult.unit;
-      result.displayUnit = result.displayUnit ?? levelResult.displayUnit;
-      result.min = result.min ?? levelResult.min;
-      result.max = result.max ?? levelResult.max;
-      result.start = result.start ?? levelResult.start;
-    }
-    current = nextInTypeChain(current);
-  }
-
-  return result;
-}
-
-/**
- * Checks if all attributes are empty/undefined
- */
-function hasEmptyAttributes(attrs: {
-  unit?: string;
-  displayUnit?: string;
-  min?: number | Expression;
-  max?: number | Expression;
-  start?: number | Expression;
-}): boolean {
-  return (
-    attrs.unit === undefined &&
-    attrs.displayUnit === undefined &&
-    attrs.min === undefined &&
-    attrs.max === undefined &&
-    attrs.start === undefined
-  );
-}
-
-/**
- * Returns true if an enable value is statically false:
- *   - the boolean false
- *   - an Expression { operator: "none", operands: [false] }
- */
-function isStaticallyDisabled(enable: boolean | Expression | undefined): boolean {
-  if (enable === false) return true;
-  if (
-    enable !== undefined &&
-    typeof enable === "object" &&
-    (enable as Expression).operator === "none" &&
-    (enable as Expression).operands.length === 1 &&
-    (enable as Expression).operands[0] === false
-  ) {
-    return true;
-  }
-  return false;
-}
-
-/**
- * Recursively removes columns that are statically disabled (enable===false or
- * {operator:"none",operands:[false]}). If a group column is disabled, it and
- * all its children are dropped. Otherwise its children are filtered recursively.
- */
-function filterDisabledColumns(columns: Column[]): Column[] {
-  const result: Column[] = [];
-  for (const col of columns) {
-    if (isStaticallyDisabled((col as any).enable)) continue;
-    if (col.kind === "group") {
-      result.push({ ...col, children: filterDisabledColumns(col.children) });
-    } else {
-      result.push(col);
-    }
-  }
-  return result;
 }
