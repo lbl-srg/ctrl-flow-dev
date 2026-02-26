@@ -95,13 +95,14 @@ export interface LeafColumn {
   min?: number | Expression;
   max?: number | Expression;
   start?: number | Expression;
-  enable?: boolean | Expression;
+  enable?: boolean | Expression; // __ctrlFlow.enable=false overrides Dialog.enable; otherwise use Dialog.enable
 }
 
 export interface GroupColumn {
   kind: "group";
   label: string; // e.g. "Cooling coil"
   children: Column[]; // can nest arbitrarily deep
+  enable?: boolean | Expression; // __ctrlFlow.enable=false overrides Dialog.enable; otherwise use Dialog.enable
 }
 
 export type Column = LeafColumn | GroupColumn;
@@ -199,7 +200,11 @@ function applyModifiers(
       }
       // Only prepend instance prefix for operands whose root name is a known
       // local component name in the enclosing record scope.
-      if (instancePrefix && localNames.has(topName) && !value.startsWith(instancePrefix)) {
+      if (
+        instancePrefix &&
+        localNames.has(topName) &&
+        !value.startsWith(instancePrefix)
+      ) {
         return `${instancePrefix}.${value}`;
       }
     }
@@ -217,8 +222,8 @@ function applyModifiers(
 /**
  * Rebase a component's modelicaPath from its type root to the instance path.
  * e.g. component.modelicaPath = "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal"
- *      typeRootPath             = "Buildings.Templates.Components.Data.Coil"
- *      instancePath             = "coiCoo"
+ *      typeRootPath           = "Buildings.Templates.Components.Data.Coil"
+ *      instancePath           = "coiCoo"
  *   -> "coiCoo.mAir_flow_nominal"
  */
 function rebasePath(
@@ -253,13 +258,19 @@ function buildColumnsFromElement(
   // Merge this element's extends mods (non-redeclare, value-bearing) into the modMap
   // so that e.g. `extends Parent(x=someValue)` overrides are visible to all child columns.
   for (const mod of (element as LongClass).mods ?? []) {
-    if (mod.value !== undefined && mod.name && !mod.redeclare && !modMap.has(mod.name)) {
+    if (
+      mod.value !== undefined &&
+      mod.name &&
+      !mod.redeclare &&
+      !modMap.has(mod.name)
+    ) {
       modMap.set(mod.name, mod.value);
     }
   }
 
   // Get all child elements (includes inherited elements)
-  const childElements = element.elementType === "record"
+  const childElements =
+    element.elementType === "record"
       ? (element as LongClass).getChildElements()
       : [];
 
@@ -299,7 +310,9 @@ function buildColumnsFromElement(
     // parent class), fall back to composing the key from component.name directly.
     const key = rebasedName.startsWith(instancePath)
       ? rebasedName
-      : instancePath ? `${instancePath}.${component.name}` : component.name;
+      : instancePath
+        ? `${instancePath}.${component.name}`
+        : component.name;
 
     // Check if this component is redeclared in the current element's extends mods.
     // e.g. VAVMultiZone extends PartialAirHandler(redeclare VAVMultiZoneController ctl(...))
@@ -319,7 +332,13 @@ function buildColumnsFromElement(
 
     if (isPredefinedType || !isRecordType) {
       // Create a leaf column for predefined types and non-record types
-      const attributes = extractAttributes(component, element, modMap, instancePath, localNames);
+      const attributes = extractAttributes(
+        component,
+        element,
+        modMap,
+        instancePath,
+        localNames,
+      );
       column = {
         kind: "leaf",
         key,
@@ -343,10 +362,20 @@ function buildColumnsFromElement(
         nestedInstancePath,
         nestedModMap,
       );
+      const groupAttributes = extractAttributes(
+        component,
+        element,
+        modMap,
+        instancePath,
+        localNames,
+      );
       column = {
         kind: "group",
         label: component.description || component.name,
         children: recordColumns,
+        ...(groupAttributes.enable !== undefined && {
+          enable: groupAttributes.enable,
+        }),
       };
     }
 
@@ -415,7 +444,12 @@ function extractAttributes(
   if (ctrlFlowEnable === false) {
     result.enable = false;
   } else if (component.enable !== undefined && component.enable !== true) {
-    result.enable = applyModifiersToAttr(component.enable, modMap, instancePrefix, localNames);
+    result.enable = applyModifiersToAttr(
+      component.enable,
+      modMap,
+      instancePrefix,
+      localNames,
+    );
   }
 
   // value: check modMap first (parent override), then component's own declaration binding.
@@ -423,7 +457,12 @@ function extractAttributes(
   const modMapValue = modMap.get(component.name);
   const rawValue = modMapValue !== undefined ? modMapValue : component.value;
   if (rawValue !== undefined) {
-    result.value = applyModifiersToAttr(rawValue, modMap, instancePrefix, localNames);
+    result.value = applyModifiersToAttr(
+      rawValue,
+      modMap,
+      instancePrefix,
+      localNames,
+    );
   }
 
   // final: true if component.mod is marked final, or if a modifier in element.mods
@@ -449,13 +488,21 @@ function extractAttributes(
     const typeInputs = typeElement.getInputs({}, false);
     const typeInput = typeInputs[component.type];
     if (typeInput && typeInput.modifiers) {
-      extractFromTemplateInputModifiers(component.modelicaPath, typeInput.modifiers, result);
+      extractFromTemplateInputModifiers(
+        component.modelicaPath,
+        typeInput.modifiers,
+        result,
+      );
     }
   }
 
   // Also check component's own modifiers
   if (component.mod) {
-    extractAttributesFromModifiers(component.modelicaPath, component.mod, result);
+    extractAttributesFromModifiers(
+      component.modelicaPath,
+      component.mod,
+      result,
+    );
   }
 
   // If type is not predefined and any attributes are still missing, walk up the
@@ -474,7 +521,11 @@ function extractAttributes(
       }
       if ("mods" in current && (current as any).mods) {
         const parentResult: typeof result = {};
-        extractAttributesFromModifiers(current.modelicaPath, { mods: (current as any).mods }, parentResult);
+        extractAttributesFromModifiers(
+          current.modelicaPath,
+          { mods: (current as any).mods },
+          parentResult,
+        );
         result.unit = result.unit ?? parentResult.unit;
         result.displayUnit = result.displayUnit ?? parentResult.displayUnit;
         result.min = result.min ?? parentResult.min;
@@ -487,13 +538,28 @@ function extractAttributes(
 
   // Apply modifier substitutions to numeric/expression attributes
   if (result.min !== undefined) {
-    result.min = applyModifiersToAttr(result.min, modMap, instancePrefix, localNames);
+    result.min = applyModifiersToAttr(
+      result.min,
+      modMap,
+      instancePrefix,
+      localNames,
+    );
   }
   if (result.max !== undefined) {
-    result.max = applyModifiersToAttr(result.max, modMap, instancePrefix, localNames);
+    result.max = applyModifiersToAttr(
+      result.max,
+      modMap,
+      instancePrefix,
+      localNames,
+    );
   }
   if (result.start !== undefined) {
-    result.start = applyModifiersToAttr(result.start, modMap, instancePrefix, localNames);
+    result.start = applyModifiersToAttr(
+      result.start,
+      modMap,
+      instancePrefix,
+      localNames,
+    );
   }
 
   return result;
@@ -511,7 +577,12 @@ function applyModifiersToAttr(
   if (typeof value !== "object") {
     return value;
   }
-  return applyModifiers(value as Expression, modMap, instancePrefix, localNames);
+  return applyModifiers(
+    value as Expression,
+    modMap,
+    instancePrefix,
+    localNames,
+  );
 }
 
 /**
@@ -521,7 +592,9 @@ function applyModifiersToAttr(
  *   so the client can evaluate it at runtime.
  * - Returns undefined for null/undefined values.
  */
-function resolveModValue(value: any): string | number | boolean | Expression | undefined {
+function resolveModValue(
+  value: any,
+): string | number | boolean | Expression | undefined {
   if (value === null || value === undefined) {
     return undefined;
   }
@@ -549,7 +622,7 @@ function extractAttributesFromModifiers(
     min?: number | Expression;
     max?: number | Expression;
     start?: number | Expression;
-  }
+  },
 ): void {
   if (!mod || !mod.mods) {
     return;
@@ -560,9 +633,17 @@ function extractAttributesFromModifiers(
     const modPath = nestedMod.modelicaPath || "";
     const raw = resolveModValue(nestedMod.value);
 
-    if (modPath.endsWith(".unit") && raw !== undefined && typeof raw !== "object") {
+    if (
+      modPath.endsWith(".unit") &&
+      raw !== undefined &&
+      typeof raw !== "object"
+    ) {
       result.unit = String(raw);
-    } else if (modPath.endsWith(".displayUnit") && raw !== undefined && typeof raw !== "object") {
+    } else if (
+      modPath.endsWith(".displayUnit") &&
+      raw !== undefined &&
+      typeof raw !== "object"
+    ) {
       result.displayUnit = String(raw);
     } else if (modPath.endsWith(".min") && raw !== undefined) {
       result.min = typeof raw === "object" ? raw : Number(raw);
@@ -586,7 +667,7 @@ function extractFromTemplateInputModifiers(
     min?: number | Expression;
     max?: number | Expression;
     start?: number | Expression;
-  }
+  },
 ): void {
   if (!modifiers || !Array.isArray(modifiers)) {
     return;
@@ -603,9 +684,17 @@ function extractFromTemplateInputModifiers(
       const modPath = nestedMod.modelicaPath || "";
       const raw = resolveModValue(nestedMod.value);
 
-      if (modPath.endsWith(".unit") && raw !== undefined && typeof raw !== "object") {
+      if (
+        modPath.endsWith(".unit") &&
+        raw !== undefined &&
+        typeof raw !== "object"
+      ) {
         result.unit = String(raw);
-      } else if (modPath.endsWith(".displayUnit") && raw !== undefined && typeof raw !== "object") {
+      } else if (
+        modPath.endsWith(".displayUnit") &&
+        raw !== undefined &&
+        typeof raw !== "object"
+      ) {
         result.displayUnit = String(raw);
       } else if (modPath.endsWith(".min") && raw !== undefined) {
         result.min = typeof raw === "object" ? raw : Number(raw);
@@ -630,7 +719,11 @@ function nextInTypeChain(current: Element): Element | undefined {
   }
   if (current instanceof ShortClass) {
     const aliasedType = current.type;
-    if (aliasedType && aliasedType !== current.modelicaPath && !MLS_PREDEFINED_TYPES.includes(aliasedType)) {
+    if (
+      aliasedType &&
+      aliasedType !== current.modelicaPath &&
+      !MLS_PREDEFINED_TYPES.includes(aliasedType)
+    ) {
       return typeStore.get(aliasedType) ?? undefined;
     }
   }
@@ -660,7 +753,11 @@ function extractAttributesFromType(element: Element): {
   while (current) {
     if ("mods" in current && (current as any).mods) {
       const levelResult: typeof result = {};
-      extractAttributesFromModifiers(current.modelicaPath, { mods: (current as any).mods }, levelResult);
+      extractAttributesFromModifiers(
+        current.modelicaPath,
+        { mods: (current as any).mods },
+        levelResult,
+      );
       result.unit = result.unit ?? levelResult.unit;
       result.displayUnit = result.displayUnit ?? levelResult.displayUnit;
       result.min = result.min ?? levelResult.min;
