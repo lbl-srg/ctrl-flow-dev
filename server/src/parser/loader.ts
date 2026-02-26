@@ -90,16 +90,15 @@ function systemGrep(regExp: string, dirPath: string): string[] | null {
  * Finds all entry points that contain the template identifier for a given package.
  * - LIMITATION: This function requires that the package uses
  *   [Directory Hierarchy Mapping](https://specification.modelica.org/maint/3.6/packages.html#directory-hierarchy-mapping)
- * - Currently, only entryPoints, TEMPLATE_LIST and PACKAGE_LIST are used.
- * - In the future, when the UI can handle nested packages, entryPoints should be removed
- *   and templateNodes should be used to create the file tree structure.
+ * - Currently, templateNodes is flattened before being returned.
+ * - In the future, when the UI can handle nested packages, templateNodes should be
+ *   used directly to create the file tree structure.
  * @param packageName - The Modelica class name of the package to search for entry points
  * @returns An array of objects containing the path and parsed JSON for each entry point found
  */
 export function findPackageEntryPoints(
   packageName: string,
 ): { className: string; json: Object | undefined }[] {
-  const entryPoints: { className: string; json: Object | undefined }[] = [];
   MODELICA_JSON_PATH.forEach((dir) => {
     // We can simply convert the class name to a relative path without adding any file extension
     // because we only need a top directory to look up for entry points.

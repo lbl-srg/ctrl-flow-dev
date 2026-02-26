@@ -99,7 +99,6 @@ export interface Cell {
 // --- Full table ---
 
 export interface Table {
-  modelicaPath: string; // fully-qualified class name of the record, e.g. "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone"
   configuration: string; // final type (after redeclare) of the component with instance name 'cfg'
   columns: Column[]; // tree of headers
   cells: Cell[];
@@ -129,7 +128,6 @@ export function buildParameterTable(className: string): Table {
   const configuration = redeclareMod?.redeclare ?? cfgComponent?.type ?? "";
 
   return {
-    modelicaPath: className,
     configuration,
     columns,
     cells: [], // Empty cells - to be filled at UI runtime

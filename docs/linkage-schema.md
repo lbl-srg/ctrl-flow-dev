@@ -12,8 +12,7 @@ Read-Only Data types (static data extracted from modelica packages)
 - `SystemType`: template category
 - `Template`: Modelica Template
 - `Option`: a node of info from the template that either specifies how to render a dropdown or bit of UI, or links to a list of child `Option`s
-- `ScheduleOption`: Like an `Option` but it also has a list of `ScheduleCategory`s
-- `ScheduleCategory`: Category for `ScheduleOption`
+- `ScheduleOption`: a `Table` object representing the column headers and cells of a schedule table derived from a Modelica record class
 
 Write Data types (data created from user input):
 
