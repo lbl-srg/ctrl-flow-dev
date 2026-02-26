@@ -2,19 +2,33 @@ import { buildParameterTable, Table } from "../../../src/parser/schedule";
 import * as parser from "../../../src/parser/parser";
 import { prependToModelicaJsonPath } from '../../../src/parser/loader';
 import * as fs from "fs";
+import * as path from "path";
+import { execSync } from "child_process";
 
+// Run with DEBUG_SCHEDULE=1 to log all schedule keys, operands and tables
 const DEBUG = !!process.env.DEBUG_SCHEDULE;
 
-const jsonRecordPath = "tests/static-data/json";
+const staticDataDir = "tests/static-data";
+const jsonRecordPath = path.join(staticDataDir, "json");
+const archivePath = path.join(staticDataDir, "json.tar.gz");
 const testRecordName = "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone";
 
 describe("buildParameterTable", () => {
   let table: Table;
 
   beforeAll(() => {
+    execSync(`tar -xzf ${archivePath} -C ${staticDataDir}`);
     prependToModelicaJsonPath([jsonRecordPath]);
     parser.getFile(testRecordName); // This populates parser.typeStore
     table = buildParameterTable(testRecordName);
+  });
+
+  afterAll(() => {
+    fs.rmSync(jsonRecordPath, { recursive: true, force: true });
+  });
+
+  // Kept as a separate block for DEBUG output
+  beforeAll(() => {
     if (DEBUG) {
       const keys: string[] = [];
       const operands: string[] = [];
