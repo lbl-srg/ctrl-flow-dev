@@ -142,7 +142,7 @@ export function buildParameterTable(className: string): Table {
     throw new Error(`Class ${className} not found in typeStore`);
   }
 
-  const columns = buildColumnsFromElement(element);
+  const columns = filterDisabledColumns(buildColumnsFromElement(element));
 
   // Find the 'cfg' component and resolve its effective type after any redeclare
   const childElements = (element as LongClass).getChildElements?.() ?? [];
@@ -801,4 +801,41 @@ function hasEmptyAttributes(attrs: {
     attrs.max === undefined &&
     attrs.start === undefined
   );
+}
+
+/**
+ * Returns true if an enable value is statically false:
+ *   - the boolean false
+ *   - an Expression { operator: "none", operands: [false] }
+ */
+function isStaticallyDisabled(enable: boolean | Expression | undefined): boolean {
+  if (enable === false) return true;
+  if (
+    enable !== undefined &&
+    typeof enable === "object" &&
+    (enable as Expression).operator === "none" &&
+    (enable as Expression).operands.length === 1 &&
+    (enable as Expression).operands[0] === false
+  ) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Recursively removes columns that are statically disabled (enable===false or
+ * {operator:"none",operands:[false]}). If a group column is disabled, it and
+ * all its children are dropped. Otherwise its children are filtered recursively.
+ */
+function filterDisabledColumns(columns: Column[]): Column[] {
+  const result: Column[] = [];
+  for (const col of columns) {
+    if (isStaticallyDisabled((col as any).enable)) continue;
+    if (col.kind === "group") {
+      result.push({ ...col, children: filterDisabledColumns(col.children) });
+    } else {
+      result.push(col);
+    }
+  }
+  return result;
 }
