@@ -151,24 +151,64 @@ export type Expression = {
 `Operator`: a string indicating which operation. `none` is a special operator indiciating the operand is a `Literal` that requires no evaluation.
 `Operands`: a list that can either be a literal value (like the number `4`) or another expression to resolve
 
-### Schedule Table reorganization
+### Schedule Table
 
-Inputs for the schedule table are generically extracted in the same option tree used for configurations. The parser needs to be updated to unpack the tree into more convenient format as well as include grouping information for the schedule table.
+Scheduled parameters are extracted from Modelica record classes specified for each template using the class annotation `__ctrlFlow(schedule={"modelica://..."})`.
 
-`ScheduleGroup`:
+The schedule parser transforms these records into a structured `Table` object that represents both the header structure (columns) and data cells.
+
+`LeafColumn` — a concrete parameter column:
 
 ```typescript
-interface ScheduleGroup {
-  modelicaPath: string;
-  name: string;
+interface LeafColumn {
+  kind: "leaf";
+  key: string;              // unique dotted path, e.g. "coiCoo.dat.mAir_flow"
+  label: string;            // display label, e.g. "Air flow rate"
+  value?: number | string | boolean | Expression; // default binding
+  final?: boolean;          // true if locked by a final modifier
+  unit?: string;
+  displayUnit?: string;
+  min?: number | Expression;
+  max?: number | Expression;
+  start?: number | Expression;
+  enable?: boolean | Expression;
 }
 ```
 
-`ScheduleOption`:
+`GroupColumn` — a named column group, nestable arbitrarily deep:
+- Created from `Dialog(group=...)` or `Dialog(tab=...)` annotations
+- Created for record-typed component instances (children are the record's parameters)
 
 ```typescript
-interface ScheduleOption extends OptionInterface {
-  ScheduleGroups: string[]; // in-order list of schedule groups
+interface GroupColumn {
+  kind: "group";
+  label: string;            // e.g. "Cooling coil"
+  children: Column[];       // nested LeafColumn or GroupColumn entries
+  enable?: boolean | Expression;
+}
+```
+
+```typescript
+type Column = LeafColumn | GroupColumn;
+```
+
+`Cell` — a single data value for a given row and column:
+
+```typescript
+interface Cell {
+  rowIndex: number;
+  columnKey: string;        // matches a LeafColumn key
+  value: string | number | boolean | null;
+}
+```
+
+`Table` — the complete schedule table:
+
+```typescript
+interface Table {
+  configuration: string;    // effective type path of the 'cfg' component
+  columns: Column[];        // tree of headers
+  cells: Cell[];            // data cells, filled at UI runtime
 }
 ```
 
@@ -177,15 +217,17 @@ From this example table:
 ```
                                    |              group1               |
                  |    subgroup1    |    subgroup2    |     subgroup3   |
-        |--------|-----------------|--------|--------|-----------------|
-        | param1 | param2 | param3 | param4 | param5 | param6 | param7 |
+  Row   |--------|-----------------|--------|--------|-----------------|
+  index | param1 | param2 | param3 | param4 | param5 | param6 | param7 |
 |-------|--------|--------|--------|--------|--------|--------|--------|
-| row1  |  val1  |  val2  |  val3  | val4   | val5   | val6   |  val7  |
-| row2  |  ...
+| 1     |  val1  |  val2  |  val3  | val4   | val5   | val6   |  val7  |
+| 2     |  ...
 ```
 
-- Each 'val' cell is its own `Option` with a unique modelica path
-- Each `Option` can be grouped in an arbitrary number of groups. `val1` is in no groups, `val2` in one ('subgroup1') and `val4` in two ('group1', 'subgroup2'). The `ScheduleGroups` array for `val4` would look as follows: `['group1', 'subgroup2']`
+- `param1` is a `LeafColumn` at the top level (`columns` array directly).
+- `param2` and `param3` are `LeafColumn` entries nested inside a `GroupColumn` with `label: "subgroup1"`.
+- `param4` and `param5` are `LeafColumn` entries nested inside a `GroupColumn` with `label: "subgroup2"`, which is itself nested inside a `GroupColumn` with `label: "group1"`.
+- Each 'val' cell is a `Cell` whose `columnKey` matches the corresponding `LeafColumn`'s `key`.
 
 ## Write Data - User Configurations
 
