@@ -16,7 +16,7 @@
  * table.columns.forEach(column => {
  *   if (column.kind === "leaf") {
  *     console.log(`Parameter: ${column.label}`);
- *     console.log(`  Key: ${column.key}`);         // relative instance path, e.g. "ctl.k"
+ *     console.log(`  Instance name: ${column.instanceName}`); // relative instance path, e.g. "ctl.k"
  *     console.log(`  Unit: ${column.unit}`);
  *     console.log(`  Display Unit: ${column.displayUnit}`);
  *     console.log(`  Min: ${column.min}, Max: ${column.max}`);
@@ -27,17 +27,17 @@
  * });
  *
  * // Add cells at runtime; rowIndex groups cells into logical rows.
- * // To retrieve the enable expression for a cell, look up the LeafColumn by columnKey.
+ * // To retrieve the enable expression for a cell, look up the LeafColumn by columnInstanceName.
  * table.cells.push(
- *   { rowIndex: 0, columnKey: "ctl.k", value: 1.5 },
- *   { rowIndex: 0, columnKey: "coiHeaReh.dpAir_nominal", value: 250 },
+ *   { rowIndex: 0, columnInstanceName: "ctl.k", value: 1.5 },
+ *   { rowIndex: 0, columnInstanceName: "coiHeaReh.dpAir_nominal", value: 250 },
  * );
  * ```
  *
  * ## Column Structure
  *
  * - **LeafColumn**: Represents a single parameter
- *   - `key`: instance path relative to the top-level record
+ *   - `instanceName`: instance path relative to the top-level record
  *   - `label`: description string or parameter name
  *   - `unit`, `displayUnit`: resolved by walking the type alias chain
  *     (e.g. `PressureDifference → Pressure → Real(unit="Pa")`)
@@ -67,8 +67,9 @@ import { evaluateExpression, Expression, Literal } from "./expression";
 
 export interface LeafColumn {
   kind: "leaf";
-  key: string; // unique identifier, e.g. "cooling_air_flow"
+  instanceName: string; // relative instance name, e.g. "ctl.k"
   label: string; // display label, e.g. "Air flow rate"
+  type: string;
   value?: number | string | boolean | Expression; // default binding; absent if unset
   final?: boolean; // true if the value is locked by a final modifier
   unit?: string;
@@ -82,6 +83,8 @@ export interface LeafColumn {
 export interface GroupColumn {
   kind: "group";
   label: string; // e.g. "Cooling coil"
+  instanceName?: string; // relative instance name, present only for record instances
+  type?: string;
   children: Column[]; // can nest arbitrarily deep
   enable?: boolean | Expression; // __ctrlFlow.enable=false overrides Dialog.enable; otherwise use Dialog.enable
 }
@@ -92,7 +95,7 @@ export type Column = LeafColumn | GroupColumn;
 
 export interface Cell {
   rowIndex: number;
-  columnKey: string; // matches a LeafColumn key; use table.columns to look up column.enable
+  columnInstanceName: string; // matches a LeafColumn instanceName; use table.columns to look up column.enable
   value: string | number | boolean | null;
 }
 
@@ -120,7 +123,8 @@ export function buildParameterTable(className: string): Table {
   // Find the 'cfg' component and resolve its effective type after any redeclare
   const childElements = (element as LongClass).getChildElements?.() ?? [];
   const cfgComponent = childElements.find(
-    (c) => c.elementType === "component_clause" && (c as Component).name === "cfg",
+    (c) =>
+      c.elementType === "component_clause" && (c as Component).name === "cfg",
   ) as Component | undefined;
   const redeclareMod = (element as LongClass).mods?.find(
     (m) => m.name === "cfg" && m.redeclare,
@@ -229,7 +233,7 @@ function rebasePath(
  *
  * @param element       - The record type definition to traverse
  * @param instancePath  - The dotted instance path relative to the top-level record
- *                        (e.g. "coiCoo" or "coiCoo.dat"). Used to rebase keys.
+ *                        (e.g. "coiCoo" or "coiCoo.dat"). Used to rebase instance names.
  * @param modMap        - Modifier overrides propagated from parent declarations
  *                        (e.g. coiCoo(typ=cfg.typCoiCoo) produces {typ -> cfg.typCoiCoo})
  */
@@ -283,18 +287,18 @@ function buildColumnsFromElement(
       continue;
     }
 
-    // Build the key as a relative path from the top-level record.
+    // Build the instance name as a relative path from the top-level record.
     // For nested records, rebasePath strips the type-root prefix and replaces it
     // with the instance path. For top-level components (instancePath="") and for
     // inherited components whose modelicaPath is rooted at a parent class (not
     // element.modelicaPath), we fall back to using component.name directly so
-    // the key is always a short relative name, never an absolute type path.
+    // the name is always a short relative name, never an absolute type path.
     const rebasedName = instancePath
       ? rebasePath(component.modelicaPath, element.modelicaPath, instancePath)
       : component.name;
     // If rebasePath couldn't strip the type prefix (inherited component from a
-    // parent class), fall back to composing the key from component.name directly.
-    const key = rebasedName.startsWith(instancePath)
+    // parent class), fall back to composing the name from component.name directly.
+    const instanceName = rebasedName.startsWith(instancePath)
       ? rebasedName
       : instancePath
         ? `${instancePath}.${component.name}`
@@ -327,8 +331,9 @@ function buildColumnsFromElement(
       );
       column = {
         kind: "leaf",
-        key,
+        instanceName: instanceName,
         label: component.description || component.name,
+        type: effectiveTypePath,
         ...attributes,
       };
     } else {
@@ -357,7 +362,9 @@ function buildColumnsFromElement(
       );
       column = {
         kind: "group",
+        instanceName: nestedInstancePath,
         label: component.description || component.name,
+        type: effectiveTypePath,
         children: recordColumns,
         ...(groupAttributes.enable !== undefined && {
           enable: groupAttributes.enable,

@@ -45,7 +45,7 @@ describe("Schedule builder", () => {
       const collect = (columns: any[]) => {
         for (const col of columns) {
           if (col.kind === "leaf") {
-            if (col.key) keys.push(col.key);
+            if (col.instanceName) keys.push(col.instanceName);
             const collectOperands = (val: any) => {
               if (val === null || val === undefined) return;
               if (typeof val === "object" && "operands" in val) {
@@ -105,8 +105,8 @@ describe("Schedule builder", () => {
     // Check structure of a leaf column
     const firstLeaf = leafColumns[0] as any;
     expect(firstLeaf.kind).toBe("leaf");
-    expect(firstLeaf.key).toBeDefined();
-    expect(typeof firstLeaf.key).toBe("string");
+    expect(firstLeaf.instanceName).toBeDefined();
+    expect(typeof firstLeaf.instanceName).toBe("string");
     expect(firstLeaf.label).toBeDefined();
     expect(typeof firstLeaf.label).toBe("string");
   });
@@ -180,9 +180,9 @@ describe("Schedule builder", () => {
     // String, Boolean, Integer types should not have unit/displayUnit/min/max set
     const nonRealColumns = leafColumns.filter(
       (col: any) =>
-        col.key.toLowerCase().includes("string") ||
-        col.key.toLowerCase().includes("bool") ||
-        col.key.toLowerCase().includes("integer"),
+        col.instanceName.toLowerCase().includes("string") ||
+        col.instanceName.toLowerCase().includes("bool") ||
+        col.instanceName.toLowerCase().includes("integer"),
     );
 
     nonRealColumns.forEach((col: any) => {
@@ -229,7 +229,7 @@ describe("Schedule builder", () => {
 
     // Check that no final parameters are included
     const hasFinalParam = leafColumns.some((col: any) =>
-      col.key.includes("should_ignore"),
+      col.instanceName.includes("should_ignore"),
     );
     expect(hasFinalParam).toBe(false);
   });
@@ -280,7 +280,7 @@ describe("Schedule builder", () => {
   it("creates unique keys for leaf columns", () => {
     const allColumns = getAllColumns(table.columns);
     const leafColumns = allColumns.filter((col: any) => col.kind === "leaf");
-    const keys = leafColumns.map((col: any) => col.key);
+    const keys = leafColumns.map((col: any) => col.instanceName);
 
     // All keys should be unique
     const uniqueKeys = new Set(keys);

@@ -162,8 +162,9 @@ The schedule parser transforms these records into a structured `Table` object th
 ```typescript
 interface LeafColumn {
   kind: "leaf";
-  key: string;              // unique dotted path, e.g. "coiCoo.dat.mAir_flow"
+  instanceName: string;     // relative instance name, e.g. "ctl.k"
   label: string;            // display label, e.g. "Air flow rate"
+  type: string;
   value?: number | string | boolean | Expression; // default binding
   final?: boolean;          // true if locked by a final modifier
   unit?: string;
@@ -183,6 +184,8 @@ interface LeafColumn {
 interface GroupColumn {
   kind: "group";
   label: string;            // e.g. "Cooling coil"
+  instanceName?: string;    // relative instance name, present only for record instances
+  type?: string;
   children: Column[];       // nested LeafColumn or GroupColumn entries
   enable?: boolean | Expression;
 }
@@ -197,7 +200,7 @@ type Column = LeafColumn | GroupColumn;
 ```typescript
 interface Cell {
   rowIndex: number;
-  columnKey: string;        // matches a LeafColumn key
+  columnInstanceName: string; // matches a LeafColumn instanceName
   value: string | number | boolean | null;
 }
 ```
@@ -227,7 +230,7 @@ From this example table:
 - `param1` is a `LeafColumn` at the top level (`columns` array directly).
 - `param2` and `param3` are `LeafColumn` entries nested inside a `GroupColumn` with `label: "subgroup1"`.
 - `param4` and `param5` are `LeafColumn` entries nested inside a `GroupColumn` with `label: "subgroup2"`, which is itself nested inside a `GroupColumn` with `label: "group1"`.
-- Each 'val' cell is a `Cell` whose `columnKey` matches the corresponding `LeafColumn`'s `key`.
+- Each 'val' cell is a `Cell` whose `columnInstanceName` matches the corresponding `LeafColumn`'s `instanceName`.
 
 ## Write Data - User Configurations
 
