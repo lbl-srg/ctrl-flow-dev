@@ -11,6 +11,7 @@
 import * as parser from "./parser";
 import { evaluateExpression, Expression, Literal } from "./expression";
 import { Modification } from "./modification";
+import { buildParameterTable, Table } from "./schedule";
 
 const templateStore = new Map<string, Template>();
 const systemTypeStore = new Map<string, SystemTypeN>();
@@ -29,16 +30,16 @@ export function getProject(): Project {
 }
 
 type Options = { [key: string]: Option };
-type ScheduleOptions = { [key: string]: ScheduleOption };
+type ScheduleOptions = { [key: string]: Table };
 
 export function getOptions(): {
   options: Option[];
-  scheduleOptions: ScheduleOption[];
+  scheduleOptions: Table[];
 } {
   const templates = [...templateStore.values()];
 
   let allConfigOptions = {};
-  let allScheduleOptions = {};
+  let allScheduleOptions: ScheduleOptions = {};
 
   templates.map((t) => {
     const { options, scheduleOptions } = t.getOptions();
@@ -70,12 +71,21 @@ export interface Option {
   value?: any;
   enable?: any;
   treeList?: string[]; // Only defined if (option.definition)
-  modifiers: { [key: string]: { expression: Expression; final: boolean } };
+  modifiers: {
+    [key: string]: {
+      expression: Expression;
+      final: boolean;
+      redeclare?: string;
+      recordBinding?: boolean;
+    };
+  };
   choiceModifiers?: { [key: string]: Mods };
   replaceable: boolean;
   elementType: string;
   definition: boolean;
   shortExclType: boolean; // Short class definition excluding `type` definition
+  /** True if value is a binding to a record type component */
+  recordBinding?: boolean;
 }
 
 export interface Project {
@@ -87,11 +97,20 @@ export interface ScheduleOption extends Option {
 }
 
 export interface Mods {
-  [key: string]: { expression: Expression; final: boolean };
+  [key: string]: {
+    expression: Expression;
+    final: boolean;
+    redeclare?: string;
+    recordBinding?: boolean;
+  };
 }
 
 /**
  * Maps the nested modifier structure into a flat dictionary
+ *
+ * For redeclare modifications:
+ * - 'redeclare' is the redeclared type path (string), undefined if not a redeclare
+ * - 'expression' is the binding value if there's an assignment (=), otherwise undefined
  */
 export function flattenModifiers(
   modList: (Modification | undefined | null)[] | undefined,
@@ -99,7 +118,8 @@ export function flattenModifiers(
     [key: string]: {
       expression: Expression;
       final: boolean;
-      redeclare: boolean;
+      redeclare?: string;
+      recordBinding?: boolean;
     };
   } = {},
 ) {
@@ -110,11 +130,15 @@ export function flattenModifiers(
   modList
     .filter((m) => m !== undefined || m !== null)
     .map((mod) => {
-      if (mod?.value) {
+      // Include modifiers with truthy value, OR redeclare modifiers
+      // The original check was `mod?.value` (truthy) - we keep that for regular modifiers
+      // but also include redeclare modifiers since the type itself is meaningful
+      if (mod?.value || mod?.redeclare) {
         mods[mod.modelicaPath] = {
           expression: mod.value,
           final: mod.final,
-          redeclare: mod.redeclare,
+          ...(mod.redeclare && { redeclare: mod.redeclare }),
+          ...(mod.recordBinding && { recordBinding: true }),
         };
       }
 
@@ -130,7 +154,7 @@ export function flattenModifiers(
  * Returns the classes containing the declaration of the class components
  * including the class itself.
  */
-function _getTreeList(option: Option) {
+export function _getTreeList(option: Option) {
   const treeList: string[] = [option.type];
 
   option.options?.map((o) => {
@@ -155,13 +179,18 @@ function _getTreeList(option: Option) {
 /**
  * Maps an input to the expected 'option' shape for the front end
  */
-function _mapInputToOption(input: parser.TemplateInput): Option {
-  const keysToRemove = ["elementType", "inputs"];
+export function _mapInputToOption(input: parser.TemplateInput): Option {
+  const keysToRemove = ["elementType", "inputs", "recordBinding"];
   const options = input.inputs;
 
   const option = Object.fromEntries(
     Object.entries(input).filter(([key]) => !keysToRemove.includes(key)),
   ) as Option;
+
+  // Only include recordBinding when true
+  if (input.recordBinding) {
+    option.recordBinding = true;
+  }
 
   if (input.modifiers) {
     const flattenedMods = flattenModifiers(input.modifiers);
@@ -212,7 +241,7 @@ export interface ModifiersN {
 export class Template {
   scheduleOptionPaths: string[] = [];
   options: Options = {};
-  scheduleOptions: ScheduleOptions = {};
+  scheduleOptions: { [key: string]: Table } = {};
   systemTypes: SystemTypeN[] = [];
   mods: { [key: string]: Expression } = {};
   pathMods: { [key: string]: string } = {};
@@ -263,8 +292,8 @@ export class Template {
   ) {
     mods.map((m) => {
       if (m.redeclare) {
-        const redeclareType = evaluateExpression(m.value);
-        redeclareTypes[redeclareType] = null;
+        // m.redeclare now contains the redeclared type path directly (string)
+        redeclareTypes[m.redeclare] = null;
       }
       if (m.mods) {
         this._findRedeclareTypesHelper(m.mods, redeclareTypes);
@@ -288,6 +317,44 @@ export class Template {
     return Object.keys(redeclaredTypes);
   }
 
+  /**
+   * Extracts schedule class paths from the `__ctrlFlow(schedule=...)` class annotation.
+   *
+   * The annotation value is a Modelica array literal of URI strings, e.g.
+   *   `{"modelica://Buildings/Templates/AirHandlersFans/Data/VAVMultiZone.mo"}`
+   *
+   * Each URI ending in ".mo" is converted to dot-notation:
+   *   `modelica://Buildings/Templates/AirHandlersFans/Data/VAVMultiZone.mo`
+   *   → `Buildings.Templates.AirHandlersFans.Data.VAVMultiZone`
+   */
+  _extractSchedulePaths(element: parser.Element): string[] {
+    const ctrlFlowAnnotation = element.annotation?.find(
+      (m) => m.name === "__ctrlFlow",
+    );
+    if (!ctrlFlowAnnotation) return [];
+
+    const scheduleMod = ctrlFlowAnnotation.mods.find(
+      (m) => m.name === "schedule",
+    );
+    if (!scheduleMod) return [];
+
+    const rawValue = evaluateExpression(scheduleMod.value);
+    if (typeof rawValue !== "string") return [];
+
+    // Parse the Modelica array literal: strip outer { } then split on commas
+    const inner = rawValue.trim().replace(/^\{|\}$/g, "");
+    return inner
+      .split(",")
+      .map((s) => s.trim().replace(/^"|"$/g, ""))
+      .filter((uri) => uri.endsWith(".mo"))
+      .map((uri) =>
+        uri
+          .replace(/^modelica:\/\//, "")
+          .replace(/\//g, ".")
+          .replace(/\.mo$/, ""),
+      );
+  }
+
   _extractOptions(element: parser.Element) {
     let inputs = element.getInputs();
     const redeclaredInputs = this._findRedeclareTypes(inputs)
@@ -299,11 +366,17 @@ export class Template {
 
     inputs = { ...inputs, ...redeclaredInputs };
 
-    const datEntryPoints = Object.values(inputs).filter((i) => {
-      return i.modelicaPath.endsWith(".dat");
-    });
+    this.scheduleOptionPaths = this._extractSchedulePaths(element);
 
-    this.scheduleOptionPaths = datEntryPoints.map((i) => i.modelicaPath);
+    this.scheduleOptions = {};
+    for (const classPath of this.scheduleOptionPaths) {
+      try {
+        const table = buildParameterTable(classPath);
+        this.scheduleOptions[classPath] = table;
+      } catch {
+        // class not yet loaded in typeStore; skip
+      }
+    }
 
     this.options = {};
     Object.entries(inputs).map(([key, input]) => {
@@ -313,7 +386,6 @@ export class Template {
     // kludge: 'Modelica.Icons.Record' is useful for schematics but
     // never for 'Options'
     const modelicaIconsPath = "Modelica.Icons.Record";
-    delete this.scheduleOptions[modelicaIconsPath];
     delete this.options[modelicaIconsPath];
   }
 
@@ -378,7 +450,7 @@ export class Template {
   }
 
   getOptions() {
-    return { options: this.options, scheduleOptions: {} };
+    return { options: this.options, scheduleOptions: this.scheduleOptions };
   }
 
   getSystemTypes() {

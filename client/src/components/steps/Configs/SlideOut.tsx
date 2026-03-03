@@ -6,7 +6,8 @@ import { OptionInterface } from "../../../data/template";
 import Modal from "../../modal/Modal";
 import OptionSelect from "./OptionSelect";
 import { mapToDisplayOptions as mapConfigContextToDisplayOptions } from "../../../interpreter/display-option";
-import { ConfigContext, ConfigValues } from "../../../interpreter/interpreter";
+import { ConfigContext } from "../../../interpreter/interpreter";
+import { ConfigValues } from "../../../utils/modifier-helpers";
 import { removeEmpty } from "../../../utils/utils";
 
 import "../../../styles/components/config-slide-out.scss";

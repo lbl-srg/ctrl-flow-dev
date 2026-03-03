@@ -2,7 +2,9 @@ import path from "path";
 import * as loader from "./loader";
 import * as parser from "./parser";
 import * as templates from "./template";
+import * as schedule from "./schedule";
 export { SystemTypeN as SystemType, Template } from "./template";
+export { buildParameterTable } from "./schedule";
 
 /**
  *
