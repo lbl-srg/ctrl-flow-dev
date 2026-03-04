@@ -61,36 +61,12 @@ export const BUS_JSON = {
 						  {
 							"element_modification_or_replaceable": {
 							  "element_modification": {
-								"name": "coordinateSystem",
-								"modification": {
-								  "class_modification": [
-									{
-									  "element_modification_or_replaceable": {
-										"element_modification": {
-										  "name": "preserveAspectRatio",
-										  "modification": {
-											"equal": true,
-											"expression": {
-											  "simple_expression": "true"
-											}
-										  }
-										}
-									  }
-									},
-									{
-									  "element_modification_or_replaceable": {
-										"element_modification": {
-										  "name": "extent",
-										  "modification": {
-											"equal": true,
-											"expression": {
-											  "simple_expression": "{{-100,-100},{100,100}}"
-											}
-										  }
-										}
-									  }
-									}
-								  ]
+								"coordinateSystem": {
+								  "extent": [
+									{ "x": -100, "y": -100 },
+									{ "x": 100, "y": 100 }
+								  ],
+								  "preserveAspectRatio": "true"
 								}
 							  }
 							}
@@ -98,13 +74,19 @@ export const BUS_JSON = {
 						  {
 							"element_modification_or_replaceable": {
 							  "element_modification": {
-								"name": "graphics",
-								"modification": {
-								  "equal": true,
-								  "expression": {
-									"simple_expression": "{Rectangle(extent={{-20,2},{22,-2}},lineColor={255,204,51},lineThickness=0.5)}"
+								"graphics": [
+								  {
+									"name": "Rectangle",
+									"attribute": {
+									  "extent": [
+										{ "x": -20, "y": 2 },
+										{ "x": 22, "y": -2 }
+									  ],
+									  "lineColor": { "r": 255, "g": 204, "b": 51 },
+									  "lineThickness": 0.5
+									}
 								  }
-								}
+								]
 							  }
 							}
 						  }
@@ -156,7 +138,5 @@ export const BUS_JSON = {
 		}
 	  }
 	],
-	"modelicaFile": "/tmp/tmp-31-7dGx3dsPp42p",
-	"fullMoFilePath": "/tmp/tmp-31-7dGx3dsPp42p",
 	"checksum": "0cb73b80efe3c8585fc451e4b3fd38c6"
   }
