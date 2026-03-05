@@ -8,13 +8,13 @@ import {
   resolveValue,
 } from "./expression-helpers";
 
+export interface ConfigValues {
+  [key: string]: boolean | string | number | null | undefined;
+}
+
 export type Modifiers = {
   [key: string]: { expression: Expression; final: boolean; redeclare: boolean };
 };
-
-export interface ConfigValues {
-  [key: string]: string;
-}
 
 function addToModObject(
   newModifiers: Modifiers,
@@ -122,7 +122,13 @@ export function buildModifiers(
     const datAll = options["datAll"]; // project settings
     updateModifiers(datAll, "", modifiers, "", options);
   }
-  updateModifiers(startOption, baseInstancePath, modifiers, selectedType, options);
+  updateModifiers(
+    startOption,
+    baseInstancePath,
+    modifiers,
+    selectedType,
+    options,
+  );
 
   return modifiers;
 }
@@ -275,15 +281,18 @@ export function getUpdatedModifiers(
   let updatedModifiers: Modifiers = deepCopy(modifiers);
 
   optionKeys.forEach((key) => {
-    if (values[key] !== null) {
-      const selectedType = values[key];
+    const value = values[key];
+    // Only string values (Modelica paths) can be used for option lookup
+    if (typeof value === "string") {
+      const selectedType = value;
       const modelicaPath = key.split("-")[0];
-      const instancePath = key.split("-")[1]?.split(".").slice(0, -1).join(".") || '';
+      const instancePath =
+        key.split("-")[1]?.split(".").slice(0, -1).join(".") || "";
       const option = allOptions[modelicaPath] as OptionInterface;
       let choiceModifiers = {};
 
       if (option?.choiceModifiers) {
-        choiceModifiers = option?.choiceModifiers[values[key]];
+        choiceModifiers = option?.choiceModifiers[value];
         // take modifiers and change to instace keys, instancePath above and add to updatedModifiers as the last item.
       }
 

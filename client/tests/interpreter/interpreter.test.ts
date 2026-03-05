@@ -60,7 +60,7 @@ const createSelections = (selections: ConfigValues = {}) => {
 const addNewConfig = (
   configName: string,
   template: TemplateInterface,
-  selections: { [key: string]: string },
+  selections: ConfigValues,
 ) => {
   store.configStore.add({
     name: configName,
@@ -438,6 +438,37 @@ describe("Path resolution", () => {
 });
 
 describe("resolveToValue tests using context and evaluation", () => {
+  it("Handles boolean selections via context", () => {
+    let config = addNewConfig(
+      "Config with false boolean selection",
+      mzTemplate,
+      createSelections({
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.have_senPreBui-have_senPreBui": false,
+      }),
+    );
+    let context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      config as ConfigInterface,
+      allOptions,
+      config.selections as ConfigValues,
+    );
+    expect(resolveToValue("have_senPreBui", context)).toBe(false);
+    config = addNewConfig(
+      "Config with true boolean selection",
+      mzTemplate,
+      createSelections({
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.have_senPreBui-have_senPreBui": true,
+      }),
+    );
+    context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      config as ConfigInterface,
+      allOptions,
+      config.selections as ConfigValues,
+    );
+    expect(resolveToValue("have_senPreBui", context)).toBe(true);
+  });
+
   it("Handles fanSupBlo.typ", () => {
     const context = new ConfigContext(
       mzTemplate as TemplateInterface,
@@ -468,8 +499,7 @@ describe("resolveToValue tests using context and evaluation", () => {
       config.selections as ConfigValues,
     );
 
-    const expectedVal =
-      "Buildings.Templates.Components.Fans.ArrayVariable";
+    const expectedVal = "Buildings.Templates.Components.Fans.ArrayVariable";
     const val = context.getValue(instancePath);
     expect(val).toEqual(expectedVal);
   });
