@@ -43,10 +43,12 @@ export default class Project {
 
     makeAutoObservable(this);
 
-    makePersistable(this, {
-      name: this.rootStore.getStorageKey("projects"),
-      properties: ["projects", "activeProjectId"],
-    });
+    if (process.env.NODE_ENV !== "test") {
+      makePersistable(this, {
+        name: this.rootStore.getStorageKey("projects"),
+        properties: ["projects", "activeProjectId"],
+      });
+    }
   }
 
   setActiveProjectId(id: string) {
