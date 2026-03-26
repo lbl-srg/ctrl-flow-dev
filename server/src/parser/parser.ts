@@ -284,6 +284,8 @@ export interface TemplateInput {
   choiceModifiers?: { [key: string]: Modification[] };
   elementType: ElementType;
   replaceable?: boolean;
+  /** True if value is a binding to a record type component */
+  recordBinding?: boolean;
 }
 
 // Additional properties for replaceable elements
@@ -340,9 +342,11 @@ function initializeReplaceable(
     if (constraintDef?.class_modification) {
       instance.mods = [
         ...instance.mods,
+        // Use instance.modelicaPath (the component's full path) for modifier keys,
+        // not basePath (the parent class path)
         ...getModificationList(
           constraintDef,
-          basePath,
+          instance.modelicaPath,
           instance.constraint.modelicaPath,
         ),
       ];
@@ -575,7 +579,7 @@ export class LongClass extends Element {
     this.description = specifier.description_string;
 
     this.elementList =
-      specifier.composition.element_list
+      specifier.composition?.element_list
         ?.map((e: any) => {
           const element = _constructElement(e, this.modelicaPath);
           if (element?.elementType === "extends_clause") {
@@ -593,7 +597,7 @@ export class LongClass extends Element {
         ?.filter((e: Element | undefined) => e !== undefined)
         ?.filter((e: Element) => e.elementType !== "extends_clause") || [];
 
-    this.annotation = specifier.composition.annotation?.map(
+    this.annotation = specifier.composition?.annotation?.map(
       (m: mj.Mod | mj.WrappedMod) => createModification({ definition: m }),
     );
     this.deadEnd = this.getLinkageKeywordValue() === false;
@@ -745,6 +749,8 @@ export class Component extends Element implements Replaceable {
   value: any; // assigned value (as Expression) if there's a binding (=), otherwise undefined
   description = "";
   connectorSizing = false;
+  /** True if value is a binding to a record type component */
+  recordBinding?: boolean;
   // Optional properties for replaceable elements
   choices?: string[];
   choiceMods?: { [key: string]: Modification[] };
@@ -784,6 +790,9 @@ export class Component extends Element implements Replaceable {
       : null;
     if (this.mod && !this.mod.empty) {
       this.value = this.mod.value;
+      if (this.mod.recordBinding) {
+        this.recordBinding = true;
+      }
     }
 
     // From MLS: description of non-replaceable components is within component-clause
@@ -844,6 +853,7 @@ export class Component extends Element implements Replaceable {
       modifiers: this.mod ? [this.mod as Modification] : [],
       elementType: this.elementType,
       replaceable: this.replaceable,
+      recordBinding: this.recordBinding,
     };
 
     if (recursive) {

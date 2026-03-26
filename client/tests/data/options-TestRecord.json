@@ -1,0 +1,478 @@
+{
+  "TestRecord.Rec.p": {
+    "modelicaPath": "TestRecord.Rec.p",
+    "type": "Real",
+    "value": {
+      "operator": "none",
+      "operands": [
+        0
+      ]
+    },
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": true,
+    "enable": true,
+    "modifiers": {},
+    "replaceable": false,
+    "options": [],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.Rec": {
+    "modelicaPath": "TestRecord.Rec",
+    "type": "TestRecord.Rec",
+    "visible": false,
+    "replaceable": false,
+    "options": [
+      "TestRecord.Rec.p"
+    ],
+    "definition": true,
+    "shortExclType": false,
+    "treeList": [
+      "TestRecord.Rec"
+    ]
+  },
+  "TestRecord.BaseModel.rec": {
+    "modelicaPath": "TestRecord.BaseModel.rec",
+    "type": "TestRecord.BaseRecord",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": true,
+    "modifiers": {},
+    "enable": true,
+    "choiceModifiers": {},
+    "replaceable": true,
+    "options": [
+      "TestRecord.BaseRecord"
+    ],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.BaseModel": {
+    "modelicaPath": "TestRecord.BaseModel",
+    "type": "TestRecord.BaseModel",
+    "visible": false,
+    "replaceable": false,
+    "options": [
+      "TestRecord.BaseModel.rec"
+    ],
+    "definition": true,
+    "shortExclType": false,
+    "treeList": [
+      "TestRecord.BaseModel"
+    ]
+  },
+  "TestRecord.Mod.localRec": {
+    "modelicaPath": "TestRecord.Mod.localRec",
+    "type": "TestRecord.Rec",
+    "value": {
+      "operator": "none",
+      "operands": [
+        "rec"
+      ]
+    },
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "enable": true,
+    "modifiers": {},
+    "replaceable": false,
+    "recordBinding": true,
+    "options": [
+      "TestRecord.Rec.p"
+    ],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.Mod": {
+    "modelicaPath": "TestRecord.Mod",
+    "type": "TestRecord.Mod",
+    "visible": false,
+    "modifiers": {
+      "TestRecord.Mod.rec": {
+        "final": false,
+        "redeclare": "TestRecord.Rec"
+      }
+    },
+    "replaceable": false,
+    "options": [
+      "TestRecord.Mod.localRec",
+      "TestRecord.BaseModel.rec"
+    ],
+    "definition": true,
+    "shortExclType": false,
+    "treeList": [
+      "TestRecord.Mod",
+      "TestRecord.BaseModel"
+    ]
+  },
+  "TestRecord.Mod1.localRec": {
+    "modelicaPath": "TestRecord.Mod1.localRec",
+    "type": "TestRecord.Rec",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "enable": true,
+    "modifiers": {
+      "TestRecord.Mod1.localRec.p": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            1
+          ]
+        },
+        "final": false
+      }
+    },
+    "replaceable": false,
+    "options": [
+      "TestRecord.Rec.p"
+    ],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.Mod1": {
+    "modelicaPath": "TestRecord.Mod1",
+    "type": "TestRecord.Mod1",
+    "visible": false,
+    "modifiers": {
+      "TestRecord.Mod1.rec": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            "localRec"
+          ]
+        },
+        "final": false,
+        "redeclare": "TestRecord.Rec",
+        "recordBinding": true
+      }
+    },
+    "replaceable": false,
+    "options": [
+      "TestRecord.Mod1.localRec",
+      "TestRecord.BaseModel.rec"
+    ],
+    "definition": true,
+    "shortExclType": false,
+    "treeList": [
+      "TestRecord.Mod1",
+      "TestRecord.BaseModel"
+    ]
+  },
+  "TestRecord.Nested.localRecFirst": {
+    "modelicaPath": "TestRecord.Nested.localRecFirst",
+    "type": "TestRecord.Rec",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "enable": true,
+    "modifiers": {
+      "TestRecord.Nested.localRecFirst.p": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            -1
+          ]
+        },
+        "final": false
+      }
+    },
+    "replaceable": false,
+    "options": [
+      "TestRecord.Rec.p"
+    ],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.Nested.localRec": {
+    "modelicaPath": "TestRecord.Nested.localRec",
+    "type": "TestRecord.Rec",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "enable": true,
+    "modifiers": {
+      "TestRecord.Nested.localRec.p": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            3
+          ]
+        },
+        "final": false
+      }
+    },
+    "replaceable": false,
+    "options": [
+      "TestRecord.Rec.p"
+    ],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.Nested.mod": {
+    "modelicaPath": "TestRecord.Nested.mod",
+    "type": "TestRecord.Mod",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "enable": false,
+    "modifiers": {
+      "TestRecord.Nested.mod.rec": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            "localRec"
+          ]
+        },
+        "final": false,
+        "recordBinding": true
+      }
+    },
+    "replaceable": false,
+    "options": [],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.Nested": {
+    "modelicaPath": "TestRecord.Nested",
+    "type": "TestRecord.Nested",
+    "visible": false,
+    "replaceable": false,
+    "options": [
+      "TestRecord.Nested.localRecFirst",
+      "TestRecord.Nested.localRec",
+      "TestRecord.Nested.mod"
+    ],
+    "definition": true,
+    "shortExclType": false,
+    "treeList": [
+      "TestRecord.Nested"
+    ]
+  },
+  "TestRecord.NestedExtended.mod1": {
+    "modelicaPath": "TestRecord.NestedExtended.mod1",
+    "type": "TestRecord.Mod1",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "enable": false,
+    "modifiers": {},
+    "replaceable": false,
+    "options": [],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.NestedExtended": {
+    "modelicaPath": "TestRecord.NestedExtended",
+    "type": "TestRecord.NestedExtended",
+    "visible": false,
+    "modifiers": {
+      "TestRecord.NestedExtended.localRec.p": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            4
+          ]
+        },
+        "final": false
+      },
+      "TestRecord.NestedExtended.localRecFirst.p": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            -2
+          ]
+        },
+        "final": false
+      }
+    },
+    "replaceable": false,
+    "options": [
+      "TestRecord.NestedExtended.mod1",
+      "TestRecord.Nested.localRecFirst",
+      "TestRecord.Nested.localRec",
+      "TestRecord.Nested.mod"
+    ],
+    "definition": true,
+    "shortExclType": false,
+    "treeList": [
+      "TestRecord.NestedExtended",
+      "TestRecord.Nested"
+    ]
+  },
+  "TestRecord.mod": {
+    "modelicaPath": "TestRecord.mod",
+    "type": "TestRecord.Mod",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "enable": false,
+    "modifiers": {},
+    "replaceable": false,
+    "options": [],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.mod1": {
+    "modelicaPath": "TestRecord.mod1",
+    "type": "TestRecord.Mod1",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "enable": false,
+    "modifiers": {},
+    "replaceable": false,
+    "options": [],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.mod2": {
+    "modelicaPath": "TestRecord.mod2",
+    "type": "TestRecord.Mod",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "enable": false,
+    "modifiers": {
+      "TestRecord.mod2.localRec": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            "mod1.localRec"
+          ]
+        },
+        "final": false,
+        "recordBinding": true
+      }
+    },
+    "replaceable": false,
+    "options": [],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.mod3": {
+    "modelicaPath": "TestRecord.mod3",
+    "type": "TestRecord.Mod",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "enable": false,
+    "modifiers": {
+      "TestRecord.mod3.rec": {
+        "expression": {
+          "operator": "function_call",
+          "operands": [
+            {
+              "operator": "Rec",
+              "operands": [
+                {
+                  "operator": "none",
+                  "operands": [
+                    "TestRecord.Rec"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "final": false,
+        "recordBinding": true
+      }
+    },
+    "replaceable": false,
+    "options": [],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.nes": {
+    "modelicaPath": "TestRecord.nes",
+    "type": "TestRecord.Nested",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "enable": false,
+    "modifiers": {},
+    "replaceable": false,
+    "options": [],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.nesExt": {
+    "modelicaPath": "TestRecord.nesExt",
+    "type": "TestRecord.NestedExtended",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "enable": false,
+    "modifiers": {},
+    "replaceable": false,
+    "options": [],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.nesExt1": {
+    "modelicaPath": "TestRecord.nesExt1",
+    "type": "TestRecord.NestedExtended",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "enable": false,
+    "modifiers": {
+      "TestRecord.nesExt1.mod1.localRec.p": {
+        "expression": {
+          "operator": "none",
+          "operands": [
+            -3
+          ]
+        },
+        "final": false
+      }
+    },
+    "replaceable": false,
+    "options": [],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord": {
+    "modelicaPath": "TestRecord",
+    "type": "TestRecord",
+    "visible": false,
+    "replaceable": false,
+    "options": [
+      "TestRecord.Rec",
+      "TestRecord.BaseModel",
+      "TestRecord.Mod",
+      "TestRecord.Mod1",
+      "TestRecord.Nested",
+      "TestRecord.NestedExtended",
+      "TestRecord.mod",
+      "TestRecord.mod1",
+      "TestRecord.mod2",
+      "TestRecord.mod3",
+      "TestRecord.nes",
+      "TestRecord.nesExt",
+      "TestRecord.nesExt1"
+    ],
+    "definition": true,
+    "shortExclType": false,
+    "treeList": [
+      "TestRecord"
+    ]
+  }
+}
