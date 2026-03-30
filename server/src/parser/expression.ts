@@ -34,12 +34,18 @@ function expandStringOperand(
    *   "Buildings.Type"      → "Buildings.Type" (deserialization failed)
    *   "\"String literal\""  → "String literal"
    *   "false"               → false
-   * Only attempt to expand as a type if still a string, and original operand not literal
+   * Only attempt to expand as a type if still a string, and original operand not literal.
+   * Only expand definitions (enum values, types, etc.), not instance parameters.
+   * Instance parameters like "typCtlFanRet" should stay as relative paths so the
+   * interpreter can resolve them against the appropriate instance scope.
    */
   if (typeof myoperand === "string" && !/^".*"$/.test(operand)) {
     const element =
       typeStore.get(myoperand, basePath) || typeStore.get(myoperand, baseType);
-    myoperand = element ? element.modelicaPath : myoperand;
+    // Only expand if it's a definition (enum, type, etc.), not an instance parameter
+    const isDefinition =
+      element && !["component_clause", "import_clause"].includes(element.elementType);
+    myoperand = isDefinition ? element.modelicaPath : myoperand;
   }
   return myoperand;
 }
