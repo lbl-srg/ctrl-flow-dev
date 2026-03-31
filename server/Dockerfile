@@ -50,6 +50,16 @@ RUN npm run parseTemplateJSON
 RUN npm run build
 RUN npx webpack
 
+# Workaround: webpack sets __dirname to the output bundle directory (/server/dist),
+# so modelica-json's jar lookup resolves to /server/java/moParser.jar instead of
+# /dependencies/modelica-json/java/moParser.jar.
+# TODO: Fix jar resolution upstream in modelica-json. modelicaToJSON.js resolves
+# moParser.jar via path.join(__dirname, '..', 'java', 'moParser.jar'), which breaks
+# when the code is bundled by webpack. The fix would be to support an env var
+# to explicitly set the modelica-json root directory,
+# falling back to the current __dirname-relative resolution as a default.
+RUN ln -s /dependencies/modelica-json/java /server/java
+
 ARG PORT
 
 # Needed to keep rdflib (modelica-json dep) out of project's dependencies
