@@ -2,17 +2,7 @@
   "templates": [
     {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.VAVMultiZone",
-      "scheduleOptionPaths": [
-        "Buildings.Templates.Components.Actuators.Damper.dat",
-        "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.dat",
-        "Buildings.Templates.Components.Interfaces.PartialFan.dat",
-        "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection.dat",
-        "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.dat",
-        "Buildings.Templates.Components.Interfaces.PartialCoil.dat",
-        "Buildings.Templates.Components.Actuators.Valve.dat",
-        "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.dat",
-        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.dat"
-      ],
+      "scheduleOptionPaths": [],
       "systemTypes": [
         "Buildings.Templates.AirHandlersFans"
       ],
@@ -27,13 +17,7 @@
     },
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly",
-      "scheduleOptionPaths": [
-        "Buildings.Templates.Components.Actuators.Valve.dat",
-        "Buildings.Templates.Components.Interfaces.PartialCoil.dat",
-        "Buildings.Templates.Components.Actuators.Damper.dat",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController.dat",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.dat"
-      ],
+      "scheduleOptionPaths": [],
       "systemTypes": [
         "Buildings.Templates.ZoneEquipment"
       ],
@@ -45,13 +29,7 @@
     },
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxReheat",
-      "scheduleOptionPaths": [
-        "Buildings.Templates.Components.Actuators.Valve.dat",
-        "Buildings.Templates.Components.Interfaces.PartialCoil.dat",
-        "Buildings.Templates.Components.Actuators.Damper.dat",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController.dat",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.dat"
-      ],
+      "scheduleOptionPaths": [],
       "systemTypes": [
         "Buildings.Templates.ZoneEquipment"
       ],
@@ -390,20 +368,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Damper.Modulating",
-        "Buildings.Templates.Components.Types.Damper.None",
-        "Buildings.Templates.Components.Types.Damper.PressureIndependent",
-        "Buildings.Templates.Components.Types.Damper.TwoPosition"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -553,12 +521,7 @@
       "group": "Mechanical",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -864,19 +827,10 @@
       "group": "",
       "tab": "Graphics",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.DamperBlades.Opposed",
-        "Buildings.Templates.Components.Types.DamperBlades.Parallel",
-        "Buildings.Templates.Components.Types.DamperBlades.VAV"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -950,12 +904,7 @@
       "group": "",
       "tab": "Graphics",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -975,12 +924,7 @@
       "group": "",
       "tab": "Graphics",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -1196,12 +1140,7 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "use_deltaM"
-        ]
-      },
+      "enable": "use_deltaM",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -2749,19 +2688,10 @@
       "group": "",
       "tab": "Graphics",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.IntegrationPoint.None",
-        "Buildings.Templates.Components.Types.IntegrationPoint.Return",
-        "Buildings.Templates.Components.Types.IntegrationPoint.Supply"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -3376,19 +3306,10 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.SensorVolumeFlowRate.AFMS",
-        "Buildings.Templates.Components.Types.SensorVolumeFlowRate.FlowCross",
-        "Buildings.Templates.Components.Types.SensorVolumeFlowRate.FlowMeter"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -3841,12 +3762,7 @@
       "group": "",
       "tab": "Graphics",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -3866,12 +3782,7 @@
       "group": "",
       "tab": "Graphics",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -3891,19 +3802,10 @@
       "group": "",
       "tab": "Graphics",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.IntegrationPoint.None",
-        "Buildings.Templates.Components.Types.IntegrationPoint.Return",
-        "Buildings.Templates.Components.Types.IntegrationPoint.Supply"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -4069,19 +3971,10 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.SensorTemperature.Standard",
-        "Buildings.Templates.Components.Types.SensorTemperature.Averaging",
-        "Buildings.Templates.Components.Types.SensorTemperature.InWell"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -4283,12 +4176,7 @@
       "group": "Heat transfer",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "transferHeat"
-        ]
-      },
+      "enable": "transferHeat",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -4308,12 +4196,7 @@
       "group": "Heat transfer",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "transferHeat"
-        ]
-      },
+      "enable": "transferHeat",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -5104,20 +4987,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Damper.Modulating",
-        "Buildings.Templates.Components.Types.Damper.None",
-        "Buildings.Templates.Components.Types.Damper.PressureIndependent",
-        "Buildings.Templates.Components.Types.Damper.TwoPosition"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -5128,20 +5001,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Damper.Modulating",
-        "Buildings.Templates.Components.Types.Damper.None",
-        "Buildings.Templates.Components.Types.Damper.PressureIndependent",
-        "Buildings.Templates.Components.Types.Damper.TwoPosition"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -5152,20 +5015,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Damper.Modulating",
-        "Buildings.Templates.Components.Types.Damper.None",
-        "Buildings.Templates.Components.Types.Damper.PressureIndependent",
-        "Buildings.Templates.Components.Types.Damper.TwoPosition"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -5176,20 +5029,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Damper.Modulating",
-        "Buildings.Templates.Components.Types.Damper.None",
-        "Buildings.Templates.Components.Types.Damper.PressureIndependent",
-        "Buildings.Templates.Components.Types.Damper.TwoPosition"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -5200,20 +5043,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Fan.None",
-        "Buildings.Templates.Components.Types.Fan.SingleConstant",
-        "Buildings.Templates.Components.Types.Fan.SingleVariable",
-        "Buildings.Templates.Components.Types.Fan.ArrayVariable"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -5295,20 +5128,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Fan.None",
-        "Buildings.Templates.Components.Types.Fan.SingleConstant",
-        "Buildings.Templates.Components.Types.Fan.SingleVariable",
-        "Buildings.Templates.Components.Types.Fan.ArrayVariable"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -5319,12 +5142,7 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.nFanRet.start": {
           "expression": {
@@ -5376,12 +5194,7 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.nFanRel.start": {
           "expression": {
@@ -5657,20 +5470,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Fan.None",
-        "Buildings.Templates.Components.Types.Fan.SingleConstant",
-        "Buildings.Templates.Components.Types.Fan.SingleVariable",
-        "Buildings.Templates.Components.Types.Fan.ArrayVariable"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -7213,19 +7016,11 @@
       "group": "",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
       "recordBinding": true,
-      "options": [
-        "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters_yMot.y",
-        "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters_yMot.eta"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -9285,12 +9080,7 @@
       "group": "",
       "tab": "Advanced",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "verifyFlowReversal"
-        ]
-      },
+      "enable": "verifyFlowReversal",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -11276,12 +11066,7 @@
       "group": "Motor speed",
       "tab": "Dynamics",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "use_riseTime"
-        ]
-      },
+      "enable": "use_riseTime",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -11569,12 +11354,7 @@
       "group": "Motor speed",
       "tab": "Dynamics",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "use_riseTime"
-        ]
-      },
+      "enable": "use_riseTime",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -11594,12 +11374,7 @@
       "group": "Motor speed",
       "tab": "Dynamics",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "use_riseTime"
-        ]
-      },
+      "enable": "use_riseTime",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -12493,19 +12268,10 @@
       "group": "",
       "tab": "Graphics",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.FanSingle.Housed",
-        "Buildings.Templates.Components.Types.FanSingle.Plug",
-        "Buildings.Templates.Components.Types.FanSingle.Propeller"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -12579,12 +12345,7 @@
       "group": "",
       "tab": "Graphics",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -12604,12 +12365,7 @@
       "group": "",
       "tab": "Graphics",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -19986,22 +19742,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Coil.ElectricHeating",
-        "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage",
-        "Buildings.Templates.Components.Types.Coil.EvaporatorVariableSpeed",
-        "Buildings.Templates.Components.Types.Coil.None",
-        "Buildings.Templates.Components.Types.Coil.WaterBasedCooling",
-        "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -20012,21 +19756,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Valve.None",
-        "Buildings.Templates.Components.Types.Valve.ThreeWayModulating",
-        "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition",
-        "Buildings.Templates.Components.Types.Valve.TwoWayModulating",
-        "Buildings.Templates.Components.Types.Valve.TwoWayTwoPosition"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -20225,12 +19958,7 @@
       "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_sou"
-        ]
-      },
+      "enable": "have_sou",
       "modifiers": {
         "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal.min": {
           "expression": {
@@ -20309,12 +20037,7 @@
       "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_sou"
-        ]
-      },
+      "enable": "have_sou",
       "modifiers": {
         "Buildings.Templates.Components.Data.Coil.dpWat_nominal.min": {
           "expression": {
@@ -20684,12 +20407,7 @@
       "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_sou"
-        ]
-      },
+      "enable": "have_sou",
       "modifiers": {
         "Buildings.Templates.Components.Data.Coil.TWatEnt_nominal.min": {
           "expression": {
@@ -20777,12 +20495,7 @@
       "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_sou"
-        ]
-      },
+      "enable": "have_sou",
       "modifiers": {
         "Buildings.Templates.Components.Data.Coil.TAirEnt_nominal.min": {
           "expression": {
@@ -22166,21 +21879,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Valve.None",
-        "Buildings.Templates.Components.Types.Valve.ThreeWayModulating",
-        "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition",
-        "Buildings.Templates.Components.Types.Valve.TwoWayModulating",
-        "Buildings.Templates.Components.Types.Valve.TwoWayTwoPosition"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -22640,12 +22342,7 @@
       "group": "",
       "tab": "Graphics",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -22665,12 +22362,7 @@
       "group": "",
       "tab": "Graphics",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -26135,12 +25827,7 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "use_Q_flow_nominal"
-        ]
-      },
+      "enable": "use_Q_flow_nominal",
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.Q_flow_nominal.fixed": {
           "expression": {
@@ -26164,12 +25851,7 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "use_Q_flow_nominal"
-        ]
-      },
+      "enable": "use_Q_flow_nominal",
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.T_a1_nominal.fixed": {
           "expression": {
@@ -26193,12 +25875,7 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "use_Q_flow_nominal"
-        ]
-      },
+      "enable": "use_Q_flow_nominal",
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.T_a2_nominal.fixed": {
           "expression": {
@@ -29579,12 +29256,7 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "use_Q_flow_nominal"
-        ]
-      },
+      "enable": "use_Q_flow_nominal",
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.Q_flow_nominal.fixed": {
           "expression": {
@@ -29608,12 +29280,7 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "use_Q_flow_nominal"
-        ]
-      },
+      "enable": "use_Q_flow_nominal",
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.T_a1_nominal.fixed": {
           "expression": {
@@ -29637,12 +29304,7 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "use_Q_flow_nominal"
-        ]
-      },
+      "enable": "use_Q_flow_nominal",
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.T_a2_nominal.fixed": {
           "expression": {
@@ -29666,12 +29328,7 @@
       "group": "Nominal thermal performance",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "use_Q_flow_nominal"
-        ]
-      },
+      "enable": "use_Q_flow_nominal",
       "modifiers": {
         "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.w_a2_nominal.start": {
           "expression": {
@@ -32798,12 +32455,7 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_frePro"
-        ]
-      },
+      "enable": "have_frePro",
       "modifiers": {},
       "replaceable": false,
       "options": [
@@ -34816,12 +34468,7 @@
       "group": "",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_frePro"
-        ]
-      },
+      "enable": "have_frePro",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -34841,12 +34488,7 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_frePro"
-        ]
-      },
+      "enable": "have_frePro",
       "modifiers": {},
       "replaceable": false,
       "options": [
@@ -34871,12 +34513,7 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_frePro"
-        ]
-      },
+      "enable": "have_frePro",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -34994,12 +34631,7 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_frePro"
-        ]
-      },
+      "enable": "have_frePro",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -35019,12 +34651,7 @@
       "group": "Heating coil PID Controller",
       "tab": "Freeze protection",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_frePro"
-        ]
-      },
+      "enable": "have_frePro",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -37487,12 +37114,7 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_frePro"
-        ]
-      },
+      "enable": "have_frePro",
       "modifiers": {},
       "replaceable": false,
       "options": [
@@ -37518,12 +37140,7 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_frePro"
-        ]
-      },
+      "enable": "have_frePro",
       "modifiers": {},
       "replaceable": false,
       "options": [
@@ -37547,12 +37164,7 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_frePro"
-        ]
-      },
+      "enable": "have_frePro",
       "modifiers": {},
       "replaceable": false,
       "options": [
@@ -37576,12 +37188,7 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_frePro"
-        ]
-      },
+      "enable": "have_frePro",
       "modifiers": {},
       "replaceable": false,
       "options": [
@@ -38003,12 +37610,7 @@
       "group": "",
       "tab": "Advanced",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_frePro"
-        ]
-      },
+      "enable": "have_frePro",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -45405,12 +45007,7 @@
       "group": "Hysteresis",
       "tab": "Advanced",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "use_enthalpy"
-        ]
-      },
+      "enable": "use_enthalpy",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -48394,12 +47991,7 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_hol"
-        ]
-      },
+      "enable": "have_hol",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -61729,12 +61321,7 @@
       "group": "Economizer",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "secOutRel.have_eco"
-        ]
-      },
+      "enable": "secOutRel.have_eco",
       "modifiers": {},
       "replaceable": false,
       "options": [
@@ -61847,12 +61434,7 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_frePro"
-        ]
-      },
+      "enable": "have_frePro",
       "modifiers": {},
       "replaceable": false,
       "options": [
@@ -62558,18 +62140,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone",
-        "Buildings.Templates.AirHandlersFans.Types.Controller.OpenLoop"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -62580,20 +62154,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Fan.None",
-        "Buildings.Templates.Components.Types.Fan.SingleConstant",
-        "Buildings.Templates.Components.Types.Fan.SingleVariable",
-        "Buildings.Templates.Components.Types.Fan.ArrayVariable"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -62604,20 +62168,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Fan.None",
-        "Buildings.Templates.Components.Types.Fan.SingleConstant",
-        "Buildings.Templates.Components.Types.Fan.SingleVariable",
-        "Buildings.Templates.Components.Types.Fan.ArrayVariable"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -62628,20 +62182,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Fan.None",
-        "Buildings.Templates.Components.Types.Fan.SingleConstant",
-        "Buildings.Templates.Components.Types.Fan.SingleVariable",
-        "Buildings.Templates.Components.Types.Fan.ArrayVariable"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -63425,12 +62969,7 @@
       "tab": "",
       "visible": true,
       "modifiers": {},
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "choiceModifiers": {},
       "replaceable": true,
       "options": [
@@ -63472,12 +63011,7 @@
       "group": "",
       "tab": "Advanced",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "cfg.have_souChiWat"
-        ]
-      },
+      "enable": "cfg.have_souChiWat",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -63497,12 +63031,7 @@
       "group": "",
       "tab": "Advanced",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "cfg.have_souHeaWat"
-        ]
-      },
+      "enable": "cfg.have_souHeaWat",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -63622,12 +63151,7 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -65551,19 +65075,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -65574,21 +65089,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.BarometricRelief",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReliefDamper",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReliefFan",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanDp"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -65599,18 +65103,10 @@
       "group": "Energy and ventilation standards",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -66472,20 +65968,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Damper.Modulating",
-        "Buildings.Templates.Components.Types.Damper.None",
-        "Buildings.Templates.Components.Types.Damper.PressureIndependent",
-        "Buildings.Templates.Components.Types.Damper.TwoPosition"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -66496,20 +65982,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Damper.Modulating",
-        "Buildings.Templates.Components.Types.Damper.None",
-        "Buildings.Templates.Components.Types.Damper.PressureIndependent",
-        "Buildings.Templates.Components.Types.Damper.TwoPosition"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -66520,20 +65996,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Damper.Modulating",
-        "Buildings.Templates.Components.Types.Damper.None",
-        "Buildings.Templates.Components.Types.Damper.PressureIndependent",
-        "Buildings.Templates.Components.Types.Damper.TwoPosition"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -66544,20 +66010,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.Damper.Modulating",
-        "Buildings.Templates.Components.Types.Damper.None",
-        "Buildings.Templates.Components.Types.Damper.PressureIndependent",
-        "Buildings.Templates.Components.Types.Damper.TwoPosition"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -67484,19 +66940,10 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly",
-        "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat",
-        "Buildings.Templates.ZoneEquipment.Types.Controller.OpenLoop"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -68060,12 +67507,7 @@
       "tab": "",
       "visible": true,
       "modifiers": {},
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "choiceModifiers": {},
       "replaceable": true,
       "options": [
@@ -68127,12 +67569,7 @@
       "group": "",
       "tab": "Advanced",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "cfg.have_souChiWat"
-        ]
-      },
+      "enable": "cfg.have_souChiWat",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -68152,12 +67589,7 @@
       "group": "",
       "tab": "Advanced",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "cfg.have_souHeaWat"
-        ]
-      },
+      "enable": "cfg.have_souHeaWat",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -69245,18 +68677,10 @@
       "group": "Energy and ventilation standards",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          false
-        ]
-      },
+      "enable": false,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1",
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -78399,12 +77823,7 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_occSen"
-        ]
-      },
+      "enable": "have_occSen",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -80758,12 +80177,7 @@
       "group": "Setpoint adjustable setting",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_locAdj"
-        ]
-      },
+      "enable": "have_locAdj",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -80883,12 +80297,7 @@
       "group": "Setpoints limits setting",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_winSen"
-        ]
-      },
+      "enable": "have_winSen",
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -80908,12 +80317,7 @@
       "group": "Setpoints limits setting",
       "tab": "",
       "visible": true,
-      "enable": {
-        "operator": "none",
-        "operands": [
-          "have_winSen"
-        ]
-      },
+      "enable": "have_winSen",
       "modifiers": {},
       "replaceable": false,
       "options": [],
