@@ -14,6 +14,7 @@ const DEBUG = !!process.env.DEBUG_SCHEDULE;
 
 const staticDataDir = "tests/static-data";
 const jsonRecordPath = path.join(staticDataDir, "json");
+// Test package with the annotation __ctrlFlow(schedule={"modelica://Buildings/Templates/AirHandlersFans/Data/VAVMultiZone.mo"})
 const archivePath = path.join(staticDataDir, "json.tar.gz");
 const templateClassName = "Buildings.Templates.AirHandlersFans.VAVMultiZone";
 const scheduleRecordPath =
