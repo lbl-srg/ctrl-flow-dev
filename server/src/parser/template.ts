@@ -11,6 +11,7 @@
 import * as parser from "./parser";
 import { evaluateExpression, Expression, Literal } from "./expression";
 import { Modification } from "./modification";
+import { buildParameterTable, Table } from "./schedule";
 
 const templateStore = new Map<string, Template>();
 const systemTypeStore = new Map<string, SystemTypeN>();
@@ -29,16 +30,16 @@ export function getProject(): Project {
 }
 
 type Options = { [key: string]: Option };
-type ScheduleOptions = { [key: string]: ScheduleOption };
+type ScheduleOptions = { [key: string]: Table };
 
 export function getOptions(): {
   options: Option[];
-  scheduleOptions: ScheduleOption[];
+  scheduleOptions: Table[];
 } {
   const templates = [...templateStore.values()];
 
   let allConfigOptions = {};
-  let allScheduleOptions = {};
+  let allScheduleOptions: ScheduleOptions = {};
 
   templates.map((t) => {
     const { options, scheduleOptions } = t.getOptions();
@@ -240,7 +241,7 @@ export interface ModifiersN {
 export class Template {
   scheduleOptionPaths: string[] = [];
   options: Options = {};
-  scheduleOptions: ScheduleOptions = {};
+  scheduleOptions: { [key: string]: Table } = {};
   systemTypes: SystemTypeN[] = [];
   mods: { [key: string]: Expression } = {};
   pathMods: { [key: string]: string } = {};
@@ -316,6 +317,44 @@ export class Template {
     return Object.keys(redeclaredTypes);
   }
 
+  /**
+   * Extracts schedule class paths from the `__ctrlFlow(schedule=...)` class annotation.
+   *
+   * The annotation value is a Modelica array literal of URI strings, e.g.
+   *   `{"modelica://Buildings/Templates/AirHandlersFans/Data/VAVMultiZone.mo"}`
+   *
+   * Each URI ending in ".mo" is converted to dot-notation:
+   *   `modelica://Buildings/Templates/AirHandlersFans/Data/VAVMultiZone.mo`
+   *   → `Buildings.Templates.AirHandlersFans.Data.VAVMultiZone`
+   */
+  _extractSchedulePaths(element: parser.Element): string[] {
+    const ctrlFlowAnnotation = element.annotation?.find(
+      (m) => m.name === "__ctrlFlow",
+    );
+    if (!ctrlFlowAnnotation) return [];
+
+    const scheduleMod = ctrlFlowAnnotation.mods.find(
+      (m) => m.name === "schedule",
+    );
+    if (!scheduleMod) return [];
+
+    const rawValue = evaluateExpression(scheduleMod.value);
+    if (typeof rawValue !== "string") return [];
+
+    // Parse the Modelica array literal: strip outer { } then split on commas
+    const inner = rawValue.trim().replace(/^\{|\}$/g, "");
+    return inner
+      .split(",")
+      .map((s) => s.trim().replace(/^"|"$/g, ""))
+      .filter((uri) => uri.endsWith(".mo"))
+      .map((uri) =>
+        uri
+          .replace(/^modelica:\/\//, "")
+          .replace(/\//g, ".")
+          .replace(/\.mo$/, ""),
+      );
+  }
+
   _extractOptions(element: parser.Element) {
     let inputs = element.getInputs();
     const redeclaredInputs = this._findRedeclareTypes(inputs)
@@ -327,11 +366,17 @@ export class Template {
 
     inputs = { ...inputs, ...redeclaredInputs };
 
-    const datEntryPoints = Object.values(inputs).filter((i) => {
-      return i.modelicaPath.endsWith(".dat");
-    });
+    this.scheduleOptionPaths = this._extractSchedulePaths(element);
 
-    this.scheduleOptionPaths = datEntryPoints.map((i) => i.modelicaPath);
+    this.scheduleOptions = {};
+    for (const classPath of this.scheduleOptionPaths) {
+      try {
+        const table = buildParameterTable(classPath);
+        this.scheduleOptions[classPath] = table;
+      } catch {
+        // class not yet loaded in typeStore; skip
+      }
+    }
 
     this.options = {};
     Object.entries(inputs).map(([key, input]) => {
@@ -341,7 +386,6 @@ export class Template {
     // kludge: 'Modelica.Icons.Record' is useful for schematics but
     // never for 'Options'
     const modelicaIconsPath = "Modelica.Icons.Record";
-    delete this.scheduleOptions[modelicaIconsPath];
     delete this.options[modelicaIconsPath];
   }
 
@@ -406,7 +450,7 @@ export class Template {
   }
 
   getOptions() {
-    return { options: this.options, scheduleOptions: {} };
+    return { options: this.options, scheduleOptions: this.scheduleOptions };
   }
 
   getSystemTypes() {
