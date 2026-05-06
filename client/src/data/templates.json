@@ -110,7 +110,117 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "modifiers": {},
+      "modifiers": {
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel.MediumAir": {
+          "final": true,
+          "redeclare": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.MediumAir"
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel.typCtlFanRet": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "ctl.typCtlFanRet"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel.typCtlEco": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "ctl.typCtlEco"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel.energyDynamics": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "energyDynamics"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel.allowFlowReversal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "allowFlowReversalAir"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel.dat.mOutMin_flow_nominal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "dat.mOutMin_flow_nominal"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel.dat.damOut": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "dat.damOut"
+            ]
+          },
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel.dat.damOutMin": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "dat.damOutMin"
+            ]
+          },
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel.dat.damRel": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "dat.damRel"
+            ]
+          },
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel.dat.damRet": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "dat.damRet"
+            ]
+          },
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel.dat.fanRel": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "dat.fanRel"
+            ]
+          },
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel.dat.fanRet": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "dat.fanRet"
+            ]
+          },
+          "final": true,
+          "recordBinding": true
+        }
+      },
       "enable": false,
       "choiceModifiers": {},
       "replaceable": true,
@@ -5666,7 +5776,26 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "modifiers": {},
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Fan.per.pressure.V_flow": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "{0,1,2}*m_flow_nominal/1.2/max(1,nFan)"
+            ]
+          },
+          "final": false
+        },
+        "Buildings.Templates.Components.Data.Fan.per.pressure.dp": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "{1.5,1,0}*dp_nominal"
+            ]
+          },
+          "final": false
+        }
+      },
       "enable": {
         "operator": "!=",
         "operands": [
@@ -19367,6 +19496,19 @@
             ]
           },
           "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaPre.MediumHeaWat": {
+          "final": true,
+          "redeclare": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.MediumHeaWat"
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaPre.typVal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+            ]
+          },
+          "final": true
         }
       },
       "enable": {
@@ -21611,7 +21753,26 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "modifiers": {},
+      "modifiers": {
+        "Buildings.Templates.Components.Actuators.Valve.flowCharacteristics.y": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "{0,1}"
+            ]
+          },
+          "final": false
+        },
+        "Buildings.Templates.Components.Actuators.Valve.flowCharacteristics.phi": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "{0.0001,1}"
+            ]
+          },
+          "final": false
+        }
+      },
       "enable": {
         "operator": "&&",
         "operands": [
@@ -21741,7 +21902,26 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "modifiers": {},
+      "modifiers": {
+        "Buildings.Templates.Components.Actuators.Valve.flowCharacteristics1.y": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "{0,1}"
+            ]
+          },
+          "final": false
+        },
+        "Buildings.Templates.Components.Actuators.Valve.flowCharacteristics1.phi": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "{0.0001,1}"
+            ]
+          },
+          "final": false
+        }
+      },
       "enable": {
         "operator": "&&",
         "operands": [
@@ -21788,7 +21968,26 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "modifiers": {},
+      "modifiers": {
+        "Buildings.Templates.Components.Actuators.Valve.flowCharacteristics3.y": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "{0,1}"
+            ]
+          },
+          "final": false
+        },
+        "Buildings.Templates.Components.Actuators.Valve.flowCharacteristics3.phi": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "{0.0001,1}"
+            ]
+          },
+          "final": false
+        }
+      },
       "enable": {
         "operator": "&&",
         "operands": [
@@ -25185,6 +25384,97 @@
             "operator": "none",
             "operands": [
               "show_T"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Coils.WaterBasedHeating.hex.configuration": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Fluid.Types.HeatExchangerConfiguration.CounterFlow"
+            ]
+          },
+          "final": false
+        },
+        "Buildings.Templates.Components.Coils.WaterBasedHeating.hex.use_Q_flow_nominal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              true
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Coils.WaterBasedHeating.hex.Q_flow_nominal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Q_flow_nominal"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Coils.WaterBasedHeating.hex.T_a1_nominal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "dat.TWatEnt_nominal"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Coils.WaterBasedHeating.hex.T_a2_nominal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "dat.TAirEnt_nominal"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Coils.WaterBasedHeating.hex.dp1_nominal": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "val.typ",
+                      "Buildings.Templates.Components.Types.Valve.None"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      "dpWat_nominal"
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  {
+                    "operator": "none",
+                    "operands": [
+                      0
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Coils.WaterBasedHeating.hex.dp2_nominal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "dpAir_nominal"
             ]
           },
           "final": true
@@ -28829,6 +29119,19 @@
             ]
           },
           "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo.MediumChiWat": {
+          "final": true,
+          "redeclare": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.MediumChiWat"
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo.typVal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+            ]
+          },
+          "final": true
         }
       },
       "enable": true,
@@ -29049,6 +29352,106 @@
             "operator": "none",
             "operands": [
               "show_T"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Coils.WaterBasedCooling.hex.configuration": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Fluid.Types.HeatExchangerConfiguration.CounterFlow"
+            ]
+          },
+          "final": false
+        },
+        "Buildings.Templates.Components.Coils.WaterBasedCooling.hex.use_Q_flow_nominal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              true
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Coils.WaterBasedCooling.hex.Q_flow_nominal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Q_flow_nominal"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Coils.WaterBasedCooling.hex.T_a1_nominal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "dat.TWatEnt_nominal"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Coils.WaterBasedCooling.hex.T_a2_nominal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "dat.TAirEnt_nominal"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Coils.WaterBasedCooling.hex.w_a2_nominal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "dat.wAirEnt_nominal"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Coils.WaterBasedCooling.hex.dp1_nominal": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "val.typ",
+                      "Buildings.Templates.Components.Types.Valve.None"
+                    ]
+                  },
+                  {
+                    "operator": "none",
+                    "operands": [
+                      "dpWat_nominal"
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  {
+                    "operator": "none",
+                    "operands": [
+                      0
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.Components.Coils.WaterBasedCooling.hex.dp2_nominal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "dpAir_nominal"
             ]
           },
           "final": true
@@ -62123,7 +62526,44 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "modifiers": {},
+      "modifiers": {
+        "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.dat.typ": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "typ"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.dat.typFanSup": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "typFanSup"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.dat.typFanRel": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "typFanRel"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.dat.typFanRet": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "typFanRet"
+            ]
+          },
+          "final": true
+        }
+      },
       "enable": true,
       "choiceModifiers": {},
       "replaceable": true,
@@ -62590,7 +63030,62 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "modifiers": {},
+      "modifiers": {
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.cfg.typ": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "typ"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.cfg.typFanSup": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "typFanSup"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.cfg.typFanRel": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "typFanRel"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.cfg.typFanRet": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "typFanRet"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.cfg.have_souChiWat": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "have_souChiWat"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.cfg.have_souHeaWat": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "have_souHeaWat"
+            ]
+          },
+          "final": true
+        }
+      },
       "enable": true,
       "choiceModifiers": {},
       "replaceable": true,
@@ -62951,7 +63446,18 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "modifiers": {},
+      "modifiers": {
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.dat.cfg": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "cfg"
+            ]
+          },
+          "final": false,
+          "recordBinding": true
+        }
+      },
       "enable": true,
       "choiceModifiers": {},
       "replaceable": true,
@@ -63045,7 +63551,44 @@
       "group": "Controls",
       "tab": "",
       "visible": true,
-      "modifiers": {},
+      "modifiers": {
+        "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.ctl.typFanSup": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "cfg.typFanSup"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.ctl.typFanRel": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "cfg.typFanRel"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.ctl.typFanRet": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "cfg.typFanRet"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.ctl.typ": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "cfg.typCtl"
+            ]
+          },
+          "final": true
+        }
+      },
       "enable": true,
       "choiceModifiers": {},
       "replaceable": true,
@@ -66602,6 +67145,19 @@
             ]
           },
           "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea.MediumHeaWat": {
+          "final": true,
+          "redeclare": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.MediumHeaWat"
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea.typVal": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+            ]
+          },
+          "final": true
         }
       },
       "enable": true,
@@ -66923,7 +67479,17 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "modifiers": {},
+      "modifiers": {
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController.dat.typ": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "typ"
+            ]
+          },
+          "final": true
+        }
+      },
       "enable": true,
       "choiceModifiers": {},
       "replaceable": true,
@@ -67339,7 +67905,35 @@
       "group": "",
       "tab": "",
       "visible": true,
-      "modifiers": {},
+      "modifiers": {
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.cfg.typ": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "typ"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.cfg.have_souChiWat": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "have_souChiWat"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.cfg.have_souHeaWat": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "have_souHeaWat"
+            ]
+          },
+          "final": true
+        }
+      },
       "enable": true,
       "choiceModifiers": {},
       "replaceable": true,
@@ -67636,7 +68230,17 @@
       "group": "Controls",
       "tab": "",
       "visible": true,
-      "modifiers": {},
+      "modifiers": {
+        "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.ctl.typ": {
+          "expression": {
+            "operator": "none",
+            "operands": [
+              "cfg.typCtl"
+            ]
+          },
+          "final": true
+        }
+      },
       "enable": true,
       "choiceModifiers": {},
       "replaceable": true,
