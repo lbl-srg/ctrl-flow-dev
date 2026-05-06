@@ -516,16 +516,21 @@ export class ShortClass extends Element {
     this.description = definition.description?.description_string;
     this.replaceable = definition.replaceable;
 
-    if (specifier.value?.class_modification) {
-      this.mods = getModificationList(
-        specifier.value,
-        this.modelicaPath,
-        this.type,
-      );
-    }
+    // Capture element-level mods before initializeReplaceable resets this.mods.
+    // For non-replaceable short classes these are set directly; for replaceable
+    // ones they are merged after constraining-clause mods (element mods win per
+    // Modelica spec §7.3.2).
+    const elementMods: Modification[] = specifier.value?.class_modification
+      ? getModificationList(specifier.value, this.modelicaPath, this.type)
+      : [];
 
     if (this.replaceable) {
       initializeReplaceable(this, definition, basePath);
+      if (elementMods.length) {
+        this.mods = [...(this.mods || []), ...elementMods];
+      }
+    } else {
+      this.mods = elementMods.length ? elementMods : this.mods;
     }
     setUIInfo(this);
   }
@@ -817,6 +822,12 @@ export class Component extends Element implements Replaceable {
     if (this.replaceable) {
       // The following may modify descriptionBlock and this.annotation
       initializeReplaceable(this, definition, basePath);
+      // Merge element-level modifiers AFTER constraining-clause mods so they
+      // take precedence per Modelica spec §7.3.2 (constraining-clause modifiers
+      // apply across redeclarations but are overridden by element modifiers).
+      if (this.mod?.mods?.length) {
+        this.mods = [...(this.mods || []), ...this.mod.mods];
+      }
     }
 
     // Must be called last since it uses this.annotation
