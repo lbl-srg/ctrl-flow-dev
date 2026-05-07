@@ -442,6 +442,7 @@ export abstract class Element {
   final = false;
   inner: boolean | null = null;
   outer: boolean | null = null;
+  isProtected?: true;
   tab = "";
   group = "";
 
@@ -610,6 +611,33 @@ export class LongClass extends Element {
         ?.filter((e: Element | undefined) => e !== undefined)
         ?.filter((e: Element) => e.elementType !== "extends_clause") || [];
 
+    const processSection = (list: any[], isProtected: boolean): Element[] =>
+      (list ?? [])
+        .map((e: any) => {
+          const element = _constructElement(e, this.modelicaPath);
+          if (element?.elementType === "extends_clause") {
+            const extendParam = element as Extend;
+            this.mods = extendParam.mods;
+            this.extendElement = typeStore.get(extendParam.type) as LongClass;
+            this.extendElementDeadEnd = extendParam.deadEnd;
+          }
+          if (element && isProtected) {
+            element.isProtected = true;
+          }
+          return element;
+        })
+        .filter((e): e is Element => e !== undefined)
+        .filter((e) => e.elementType !== "extends_clause");
+
+    const sectionElements = (
+      specifier.composition?.element_sections ?? []
+    ).flatMap((section: any) => [
+      ...processSection(section.public_element_list, false),
+      ...processSection(section.protected_element_list, true),
+    ]);
+
+    this.elementList = [...(this.elementList ?? []), ...sectionElements];
+
     this.annotation = specifier.composition?.annotation?.map(
       (m: mj.Mod | mj.WrappedMod) => createModification({ definition: m }),
     );
@@ -748,6 +776,7 @@ function setInputVisible(
   let isVisible = !(
     instance.outer ||
     instance.final ||
+    instance.isProtected ||
     connectorSizing === true
   );
 
