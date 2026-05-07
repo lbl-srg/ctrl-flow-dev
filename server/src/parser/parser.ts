@@ -592,9 +592,9 @@ export class LongClass extends Element {
 
     this.description = specifier.description_string;
 
-    this.elementList =
-      specifier.composition?.element_list
-        ?.map((e: any) => {
+    const processSection = (list: any[], isProtected: boolean): Element[] =>
+      (list ?? [])
+        .map((e: any) => {
           const element = _constructElement(e, this.modelicaPath);
           if (element?.elementType === "extends_clause") {
             const extendParam = element as Extend;
@@ -606,21 +606,6 @@ export class LongClass extends Element {
             // change
             this.extendElementDeadEnd = extendParam.deadEnd;
           }
-          return element;
-        })
-        ?.filter((e: Element | undefined) => e !== undefined)
-        ?.filter((e: Element) => e.elementType !== "extends_clause") || [];
-
-    const processSection = (list: any[], isProtected: boolean): Element[] =>
-      (list ?? [])
-        .map((e: any) => {
-          const element = _constructElement(e, this.modelicaPath);
-          if (element?.elementType === "extends_clause") {
-            const extendParam = element as Extend;
-            this.mods = extendParam.mods;
-            this.extendElement = typeStore.get(extendParam.type) as LongClass;
-            this.extendElementDeadEnd = extendParam.deadEnd;
-          }
           if (element && isProtected) {
             element.isProtected = true;
           }
@@ -629,14 +614,19 @@ export class LongClass extends Element {
         .filter((e): e is Element => e !== undefined)
         .filter((e) => e.elementType !== "extends_clause");
 
-    const sectionElements = (
-      specifier.composition?.element_sections ?? []
-    ).flatMap((section: any) => [
+    const rootPackage = PACKAGE_LIST[0];
+    this.elementList = [
+      // Treat `element_list` as a synthetic public section
+      { public_element_list: specifier.composition?.element_list ?? [], protected_element_list: [] },
+      ...(specifier.composition?.element_sections ?? []),
+    ].flatMap((section: any) => [
       ...processSection(section.public_element_list, false),
-      ...processSection(section.protected_element_list, true),
+      // Only parse protected sections within the project root package — too costly to do across all classes.
+      // (The case with !rootPackage is for testing.)
+      ...(!rootPackage || this.modelicaPath.startsWith(rootPackage)
+        ? processSection(section.protected_element_list, true)
+        : []),
     ]);
-
-    this.elementList = [...(this.elementList ?? []), ...sectionElements];
 
     this.annotation = specifier.composition?.annotation?.map(
       (m: mj.Mod | mj.WrappedMod) => createModification({ definition: m }),
