@@ -194,6 +194,28 @@ describe("Expected elements are extracted", () => {
     });
   });
 
+  it("Declaration-level choices annotation restricts enum options", () => {
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.elementList[0] as parser.LongClass;
+    const parentPath = "TestPackage.Template.TestTemplate.typ_limited";
+    const element = template.elementList?.find(
+      (e) => e.modelicaPath === parentPath,
+    ) as parser.Element;
+    const inputs = element.getInputs();
+    const parent = inputs[parentPath];
+
+    expect(parent.inputs?.length).toEqual(2);
+    expect(parent.inputs).toContain(
+      "TestPackage.Types.IceCream.Chocolate",
+    );
+    expect(parent.inputs).toContain(
+      "TestPackage.Types.IceCream.Vanilla",
+    );
+    expect(parent.inputs).not.toContain(
+      "TestPackage.Types.IceCream.Strawberry",
+    );
+  });
+
   it("Extracts expected LongClass inputs", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const longClass = file.elementList[0] as parser.LongClass;

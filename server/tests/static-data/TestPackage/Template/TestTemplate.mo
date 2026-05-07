@@ -124,6 +124,18 @@ model TestTemplate "Test Template"
       Evaluate=true,
       Dialog(group="Configuration"));
 
+  parameter TestPackage.Types.IceCream typ_limited =
+    TestPackage.Types.IceCream.Chocolate
+    "Test Enum with restricted choices"
+    annotation (
+      Evaluate=true,
+      Dialog(group="Configuration"),
+      choices(
+        choice=TestPackage.Types.IceCream.Chocolate
+        "Chocolate",
+        choice=TestPackage.Types.IceCream.Vanilla
+        "Vanilla"));
+
   // redclare modifier params
   TestPackage.Component.FourthComponent redeclare_param_01(
       redeclare final TestPackage.Component.SecondComponent replaceable_param
