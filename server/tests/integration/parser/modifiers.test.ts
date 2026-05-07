@@ -125,6 +125,33 @@ describe("Modifications", () => {
     expect(mod.expression).toBeUndefined();
   });
 
+  /**
+   * Regression test for https://github.com/lbl-srg/ctrl-flow-dev/issues/418
+   * Element-level modifiers on a replaceable must be captured alongside
+   * constraining-clause modifiers.
+   */
+  it("Includes element-level modifiers on replaceable (not just constraining-clause mods)", () => {
+    const path =
+      "TestPackage.Template.TestTemplate.selectable_component_with_element_mods";
+    const constrainingModPath = `${path}.container`; // from constraining clause
+    const elementModPath = `${path}.icecream`; // from element itself
+    const option = tOptions[path];
+    const mods = option.modifiers;
+
+    // Constraining-clause modifier should be present
+    expect(mods[constrainingModPath]).toBeTruthy();
+    expect(
+      evaluateExpression(mods[constrainingModPath].expression),
+    ).toEqual("TestPackage.Types.Container.Cone");
+
+    // Element-level modifier should be present and take precedence over constraining clause modifiers
+    expect(mods[elementModPath]).toBeTruthy();
+    expect(
+      evaluateExpression(mods[elementModPath].expression),
+    ).toEqual("first.icecream");
+    expect(mods[elementModPath].final).toBe(true);
+  });
+
   it("Doesn't have a modifier that matches the option path (the 'default mod')", () => {
     const path = "TestPackage.Template.TestTemplate.typ";
     const option = tOptions[path];

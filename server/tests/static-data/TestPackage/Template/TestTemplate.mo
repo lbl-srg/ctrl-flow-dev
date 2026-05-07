@@ -145,6 +145,30 @@ model TestTemplate "Test Template"
     local_var="Modified Value"
   );
 
+  /*
+    Test that element-level modifiers on a replaceable are captured
+    (not just the modifiers from the constraining clause)
+  */
+  inner replaceable
+    TestPackage.Component.SecondComponent
+    selectable_component_with_element_mods(
+      final icecream=first.icecream
+    ) constrainedby TestPackage.Interface.PartialComponent(
+      final container=TestPackage.Types.Container.Cone,
+      icecream=third.icecream
+    )
+    "Replaceable Component with both element and constraining-clause modifiers"
+    annotation (
+      choices(
+        choice(
+          redeclare replaceable TestPackage.Component.SecondComponent selectable_component_with_element_mods
+          "Second Test Component"),
+        choice(
+          redeclare replaceable TestPackage.Component.ThirdComponent selectable_component_with_element_mods
+          "Third Test Component")
+      )
+    );
+
   inner replaceable
     Component.SecondComponent
     selectable_component_with_relative_paths constrainedby
