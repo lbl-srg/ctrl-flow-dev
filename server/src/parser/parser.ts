@@ -854,6 +854,19 @@ export class Component extends Element implements Replaceable {
         ? []
         : typeInputs[this.type]?.inputs || [];
 
+    // If a choices annotation is present at the declaration level, restrict
+    // childInputs to the specified choices (e.g. a subset of enum values).
+    const choicesAnnotation = this.annotation.find((m) => m.name === "choices");
+    if (choicesAnnotation && childInputs.length > 0) {
+      const specifiedChoices = choicesAnnotation.mods
+        .filter((c) => c.value)
+        .map((c) => evaluateExpression(c.value) as string)
+        .filter(Boolean);
+      if (specifiedChoices.length > 0) {
+        childInputs = childInputs.filter((c) => specifiedChoices.includes(c));
+      }
+    }
+
     childInputs.filter((typeInputs) => {
       const element = typeStore.get(typeInputs);
       return !element?.deadEnd;
