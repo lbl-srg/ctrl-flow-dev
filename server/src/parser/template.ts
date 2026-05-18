@@ -9,7 +9,7 @@
  */
 
 import * as parser from "./parser";
-import { evaluateExpression, Expression, Literal } from "./expression";
+import { Expression, Literal } from "./expression";
 import { Modification } from "./modification";
 import { buildParameterTable, Table } from "./schedule";
 
@@ -130,10 +130,8 @@ export function flattenModifiers(
   modList
     .filter((m) => m !== undefined || m !== null)
     .map((mod) => {
-      // Include modifiers with truthy value, OR redeclare modifiers
-      // The original check was `mod?.value` (truthy) - we keep that for regular modifiers
-      // but also include redeclare modifiers since the type itself is meaningful
-      if (mod?.value || mod?.redeclare) {
+      // Include modifiers with defined value, OR redeclare modifiers
+      if (mod?.value !== undefined || mod?.redeclare) {
         mods[mod.modelicaPath] = {
           expression: mod.value,
           final: mod.final,
@@ -338,7 +336,7 @@ export class Template {
     );
     if (!scheduleMod) return [];
 
-    const rawValue = evaluateExpression(scheduleMod.value);
+    const rawValue = scheduleMod.value;
     if (typeof rawValue !== "string") return [];
 
     // Parse the Modelica array literal: strip outer { } then split on commas

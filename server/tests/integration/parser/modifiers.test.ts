@@ -7,7 +7,6 @@ import {
 } from "../../../src/parser/template";
 import { findElement } from "../../../src/parser/parser";
 import { loadPackage, Template } from "../../../src/parser/";
-import { evaluateExpression } from "../../../src/parser/expression";
 import * as parser from "../../../src/parser/parser";
 import * as fs from "fs";
 import * as path from "path";
@@ -56,7 +55,7 @@ describe("Modifications", () => {
     const mod = flattenModifiers(input.modifiers);
     // Modifier paths are now instance-based, not type-based
     const modPath = `${path}.interface_param`;
-    expect(evaluateExpression(mod[modPath].expression)).toEqual(
+    expect(mod[modPath].expression).toEqual(
       "Updated Value",
     );
   });
@@ -70,7 +69,7 @@ describe("Modifications", () => {
     };
     const input = inputs[childPath];
     const mod = flattenModifiers(input.modifiers);
-    expect(evaluateExpression(mod[childPath].expression)).toEqual(
+    expect(mod[childPath].expression).toEqual(
       "Interface Param",
     );
   });
@@ -108,7 +107,7 @@ describe("Modifications", () => {
     const mods = option.modifiers;
 
     expect(mods[modPath]).toBeTruthy();
-    expect(evaluateExpression(mods[modPath].expression)).toEqual(expected);
+    expect(mods[modPath].expression).toEqual(expected);
   });
 
   it("Creates redeclare modifiers", () => {
@@ -141,13 +140,13 @@ describe("Modifications", () => {
     // Constraining-clause modifier should be present
     expect(mods[constrainingModPath]).toBeTruthy();
     expect(
-      evaluateExpression(mods[constrainingModPath].expression),
+      mods[constrainingModPath].expression,
     ).toEqual("TestPackage.Types.Container.Cone");
 
     // Element-level modifier should be present and take precedence over constraining clause modifiers
     expect(mods[elementModPath]).toBeTruthy();
     expect(
-      evaluateExpression(mods[elementModPath].expression),
+      mods[elementModPath].expression,
     ).toEqual("first.icecream");
     expect(mods[elementModPath].final).toBe(true);
   });
@@ -200,10 +199,7 @@ describe("Record Binding Modifications", () => {
     const redeclareMod = mods![0];
     expect(redeclareMod.redeclare).toBe("TestRecord.Rec");
     expect(redeclareMod.recordBinding).toBe(true);
-    expect(redeclareMod.value).toEqual({
-      operator: "none",
-      operands: ["localRec"],
-    });
+    expect(redeclareMod.value).toEqual("localRec");
   });
 
   it("Composite instance binding should have recordBinding=true", () => {
@@ -227,10 +223,7 @@ describe("Record Binding Modifications", () => {
     expect(flatMods[redeclarePath].redeclare).toBe("TestRecord.Rec");
     expect(flatMods[redeclarePath].recordBinding).toBe(true);
     // The expression should contain the binding value
-    expect(flatMods[redeclarePath].expression).toEqual({
-      operator: "none",
-      operands: ["localRec"],
-    });
+    expect(flatMods[redeclarePath].expression).toEqual("localRec");
   });
 
   afterAll(() => {
