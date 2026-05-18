@@ -19675,11 +19675,8 @@
       "modifiers": {},
       "replaceable": false,
       "options": [
-        "Buildings.Templates.Components.Types.Valve.None",
         "Buildings.Templates.Components.Types.Valve.ThreeWayModulating",
-        "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition",
-        "Buildings.Templates.Components.Types.Valve.TwoWayModulating",
-        "Buildings.Templates.Components.Types.Valve.TwoWayTwoPosition"
+        "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
       ],
       "definition": false,
       "shortExclType": false
@@ -26058,17 +26055,123 @@
     },
     {
       "modelicaPath": "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.configuration",
-      "type": "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.con",
+      "type": "Buildings.Fluid.Types.HeatExchangerConfiguration",
       "name": "Heat exchanger configuration",
       "group": "",
       "tab": "",
-      "visible": false,
+      "visible": true,
       "enable": true,
       "modifiers": {},
       "replaceable": false,
-      "options": [],
+      "options": [
+        "Buildings.Fluid.Types.HeatExchangerConfiguration.ParallelFlow",
+        "Buildings.Fluid.Types.HeatExchangerConfiguration.CounterFlow",
+        "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowUnmixed",
+        "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowStream1MixedStream2Unmixed",
+        "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowStream1UnmixedStream2Mixed",
+        "Buildings.Fluid.Types.HeatExchangerConfiguration.ConstantTemperaturePhaseChange"
+      ],
       "definition": false,
       "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Types.HeatExchangerConfiguration",
+      "name": "Enumeration for heat exchanger construction",
+      "type": "Buildings.Fluid.Types.HeatExchangerConfiguration",
+      "value": "Buildings.Fluid.Types.HeatExchangerConfiguration",
+      "visible": true,
+      "replaceable": false,
+      "options": [
+        "Buildings.Fluid.Types.HeatExchangerConfiguration.ParallelFlow",
+        "Buildings.Fluid.Types.HeatExchangerConfiguration.CounterFlow",
+        "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowUnmixed",
+        "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowStream1MixedStream2Unmixed",
+        "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowStream1UnmixedStream2Mixed",
+        "Buildings.Fluid.Types.HeatExchangerConfiguration.ConstantTemperaturePhaseChange"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Types.HeatExchangerConfiguration"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Types.HeatExchangerConfiguration.ParallelFlow",
+      "name": "Parallel flow",
+      "type": "Buildings.Fluid.Types.HeatExchangerConfiguration",
+      "value": "Buildings.Fluid.Types.HeatExchangerConfiguration.ParallelFlow",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Types.HeatExchangerConfiguration"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Types.HeatExchangerConfiguration.CounterFlow",
+      "name": "Counter flow",
+      "type": "Buildings.Fluid.Types.HeatExchangerConfiguration",
+      "value": "Buildings.Fluid.Types.HeatExchangerConfiguration.CounterFlow",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Types.HeatExchangerConfiguration"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowUnmixed",
+      "name": "Cross flow, both streams unmixed",
+      "type": "Buildings.Fluid.Types.HeatExchangerConfiguration",
+      "value": "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowUnmixed",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Types.HeatExchangerConfiguration"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowStream1MixedStream2Unmixed",
+      "name": "Cross flow, stream 1 mixed, stream 2 unmixed",
+      "type": "Buildings.Fluid.Types.HeatExchangerConfiguration",
+      "value": "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowStream1MixedStream2Unmixed",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Types.HeatExchangerConfiguration"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowStream1UnmixedStream2Mixed",
+      "name": "Cross flow, stream 1 unmixed, stream 2 mixed",
+      "type": "Buildings.Fluid.Types.HeatExchangerConfiguration",
+      "value": "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowStream1UnmixedStream2Mixed",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Types.HeatExchangerConfiguration"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Types.HeatExchangerConfiguration.ConstantTemperaturePhaseChange",
+      "name": "Constant temperature phase change in one stream",
+      "type": "Buildings.Fluid.Types.HeatExchangerConfiguration",
+      "value": "Buildings.Fluid.Types.HeatExchangerConfiguration.ConstantTemperaturePhaseChange",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Types.HeatExchangerConfiguration"
+      ]
     },
     {
       "modelicaPath": "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectivenessNTU.use_dynamicFlowRegime",
@@ -29492,7 +29595,7 @@
       "value": {
         "operator": "none",
         "operands": [
-          "con.CounterFlow"
+          "Buildings.Fluid.Types.HeatExchangerConfiguration.CounterFlow"
         ]
       },
       "name": "Heat exchanger configuration",
@@ -29512,105 +29615,6 @@
       ],
       "definition": false,
       "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Fluid.Types.HeatExchangerConfiguration",
-      "name": "Enumeration for heat exchanger construction",
-      "type": "Buildings.Fluid.Types.HeatExchangerConfiguration",
-      "value": "Buildings.Fluid.Types.HeatExchangerConfiguration",
-      "visible": true,
-      "replaceable": false,
-      "options": [
-        "Buildings.Fluid.Types.HeatExchangerConfiguration.ParallelFlow",
-        "Buildings.Fluid.Types.HeatExchangerConfiguration.CounterFlow",
-        "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowUnmixed",
-        "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowStream1MixedStream2Unmixed",
-        "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowStream1UnmixedStream2Mixed",
-        "Buildings.Fluid.Types.HeatExchangerConfiguration.ConstantTemperaturePhaseChange"
-      ],
-      "definition": true,
-      "shortExclType": false,
-      "treeList": [
-        "Buildings.Fluid.Types.HeatExchangerConfiguration"
-      ]
-    },
-    {
-      "modelicaPath": "Buildings.Fluid.Types.HeatExchangerConfiguration.ParallelFlow",
-      "name": "Parallel flow",
-      "type": "Buildings.Fluid.Types.HeatExchangerConfiguration",
-      "value": "Buildings.Fluid.Types.HeatExchangerConfiguration.ParallelFlow",
-      "visible": false,
-      "replaceable": false,
-      "definition": true,
-      "shortExclType": false,
-      "treeList": [
-        "Buildings.Fluid.Types.HeatExchangerConfiguration"
-      ]
-    },
-    {
-      "modelicaPath": "Buildings.Fluid.Types.HeatExchangerConfiguration.CounterFlow",
-      "name": "Counter flow",
-      "type": "Buildings.Fluid.Types.HeatExchangerConfiguration",
-      "value": "Buildings.Fluid.Types.HeatExchangerConfiguration.CounterFlow",
-      "visible": false,
-      "replaceable": false,
-      "definition": true,
-      "shortExclType": false,
-      "treeList": [
-        "Buildings.Fluid.Types.HeatExchangerConfiguration"
-      ]
-    },
-    {
-      "modelicaPath": "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowUnmixed",
-      "name": "Cross flow, both streams unmixed",
-      "type": "Buildings.Fluid.Types.HeatExchangerConfiguration",
-      "value": "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowUnmixed",
-      "visible": false,
-      "replaceable": false,
-      "definition": true,
-      "shortExclType": false,
-      "treeList": [
-        "Buildings.Fluid.Types.HeatExchangerConfiguration"
-      ]
-    },
-    {
-      "modelicaPath": "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowStream1MixedStream2Unmixed",
-      "name": "Cross flow, stream 1 mixed, stream 2 unmixed",
-      "type": "Buildings.Fluid.Types.HeatExchangerConfiguration",
-      "value": "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowStream1MixedStream2Unmixed",
-      "visible": false,
-      "replaceable": false,
-      "definition": true,
-      "shortExclType": false,
-      "treeList": [
-        "Buildings.Fluid.Types.HeatExchangerConfiguration"
-      ]
-    },
-    {
-      "modelicaPath": "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowStream1UnmixedStream2Mixed",
-      "name": "Cross flow, stream 1 unmixed, stream 2 mixed",
-      "type": "Buildings.Fluid.Types.HeatExchangerConfiguration",
-      "value": "Buildings.Fluid.Types.HeatExchangerConfiguration.CrossFlowStream1UnmixedStream2Mixed",
-      "visible": false,
-      "replaceable": false,
-      "definition": true,
-      "shortExclType": false,
-      "treeList": [
-        "Buildings.Fluid.Types.HeatExchangerConfiguration"
-      ]
-    },
-    {
-      "modelicaPath": "Buildings.Fluid.Types.HeatExchangerConfiguration.ConstantTemperaturePhaseChange",
-      "name": "Constant temperature phase change in one stream",
-      "type": "Buildings.Fluid.Types.HeatExchangerConfiguration",
-      "value": "Buildings.Fluid.Types.HeatExchangerConfiguration.ConstantTemperaturePhaseChange",
-      "visible": false,
-      "replaceable": false,
-      "definition": true,
-      "shortExclType": false,
-      "treeList": [
-        "Buildings.Fluid.Types.HeatExchangerConfiguration"
-      ]
     },
     {
       "modelicaPath": "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.r_nominal",
