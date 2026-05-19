@@ -483,7 +483,7 @@ export const resolveToValue = (
       const value = JSON.parse(operand); // "\"String literal\"" → "String literal"
       return value;
     } catch {
-      return operand; // "Any.Type" unchanged, "{"\"String literal\"}" unchanged
+      return operand; // "Any.Type" unchanged, "{\"String literal\"}" unchanged
     }
   }
 
@@ -512,7 +512,12 @@ export const resolveToValue = (
     }
   }
 
-  return value;
+  // A looked-up value may itself be a quoted string literal (e.g. `"\"foo\""` stored in
+  // selections). Run it through resolveToValue so the quoting is stripped, the same
+  // way it would be for any other literal operand that appears directly in an expression.
+  return typeof value === "string"
+    ? resolveToValue(value, context, scope)
+    : value;
 };
 
 /**
