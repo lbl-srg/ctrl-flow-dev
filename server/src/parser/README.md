@@ -152,18 +152,13 @@ Buildings.Templates.Components.Sensors.DifferentialPressure pAirSup_rel(
 It creates the following dictionary of modifiers on the option `Buildings.Templates.AirHandlersFans.VAVMultiZone.pAirSup_rel`:
 
 ```json
-
 {
-    "modelicaPath": "Buildings.Templates.AirHandlersFans.VAVMultiZone.pAirSup_rel"
+    "modelicaPath": "Buildings.Templates.AirHandlersFans.VAVMultiZone.pAirSup_rel",
     "modifiers": {
-        "Buildings.Templates.Components.Interfaces.PartialSensor.have_sen": {
-          "expression": {
-            "operator": "none",
-            "operands": [
-              true
-            ]
-        },
-        "final": true
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.pAirSup_rel.have_sen": {
+          "expression": true,
+          "final": true
+        }
     }
 }
 ```
