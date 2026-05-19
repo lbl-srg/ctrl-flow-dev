@@ -973,12 +973,7 @@
       "value": {
         "operator": "^",
         "operands": [
-          {
-            "operator": "primary_array",
-            "operands": [
-              "2/rho_default/k1*dpDamper_nominal"
-            ]
-          },
+          "2/rho_default/k1*dpDamper_nominal",
           0.5
         ]
       },
@@ -1124,12 +1119,7 @@
           {
             "operator": "^",
             "operands": [
-              {
-                "operator": "primary_array",
-                "operands": [
-                  "A/kDamMin"
-                ]
-              },
+              "A/kDamMin",
               2
             ]
           }
@@ -2005,12 +1995,7 @@
             "operator": "*",
             "operands": [
               "y_internal",
-              {
-                "operator": "primary_array",
-                "operands": [
-                  "1 -l"
-                ]
-              }
+              "1 -l"
             ]
           }
         ]
@@ -4787,35 +4772,20 @@
             "operands": [
               "havePressureCurve",
               {
-                "operator": "primary_array",
+                "operator": "-",
                 "operands": [
+                  "pressure.V_flow[end]",
                   {
-                    "operator": "-",
+                    "operator": "*",
                     "operands": [
-                      "pressure.V_flow[end]",
                       {
-                        "operator": "*",
+                        "operator": "/",
                         "operands": [
-                          {
-                            "operator": "/",
-                            "operands": [
-                              {
-                                "operator": "primary_array",
-                                "operands": [
-                                  "pressure.V_flow[end] -pressure.V_flow[end -1]"
-                                ]
-                              },
-                              {
-                                "operator": "primary_array",
-                                "operands": [
-                                  "pressure.dp[end] -pressure.dp[end -1]"
-                                ]
-                              }
-                            ]
-                          },
-                          "pressure.dp[end]"
+                          "pressure.V_flow[end] -pressure.V_flow[end -1]",
+                          "pressure.dp[end] -pressure.dp[end -1]"
                         ]
-                      }
+                      },
+                      "pressure.dp[end]"
                     ]
                   }
                 ]
@@ -4852,35 +4822,20 @@
             "operands": [
               "havePressureCurve",
               {
-                "operator": "primary_array",
+                "operator": "-",
                 "operands": [
+                  "pressure.dp[1]",
                   {
-                    "operator": "-",
+                    "operator": "*",
                     "operands": [
-                      "pressure.dp[1]",
                       {
-                        "operator": "*",
+                        "operator": "/",
                         "operands": [
-                          {
-                            "operator": "/",
-                            "operands": [
-                              {
-                                "operator": "primary_array",
-                                "operands": [
-                                  "pressure.dp[1] -pressure.dp[2]"
-                                ]
-                              },
-                              {
-                                "operator": "primary_array",
-                                "operands": [
-                                  "pressure.V_flow[1] -pressure.V_flow[2]"
-                                ]
-                              }
-                            ]
-                          },
-                          "pressure.V_flow[1]"
+                          "pressure.dp[1] -pressure.dp[2]",
+                          "pressure.V_flow[1] -pressure.V_flow[2]"
                         ]
-                      }
+                      },
+                      "pressure.V_flow[1]"
                     ]
                   }
                 ]
@@ -7077,15 +7032,10 @@
                 "operator": "if",
                 "operands": [
                   {
-                    "operator": "primary_array",
+                    "operator": "==",
                     "operands": [
-                      {
-                        "operator": "==",
-                        "operands": [
-                          "portFlowDirection_1",
-                          "Modelica.Fluid.Types.PortFlowDirection.Entering"
-                        ]
-                      }
+                      "portFlowDirection_1",
+                      "Modelica.Fluid.Types.PortFlowDirection.Entering"
                     ]
                   },
                   0
@@ -7109,15 +7059,10 @@
                 "operator": "if",
                 "operands": [
                   {
-                    "operator": "primary_array",
+                    "operator": "==",
                     "operands": [
-                      {
-                        "operator": "==",
-                        "operands": [
-                          "portFlowDirection_1",
-                          "Modelica.Fluid.Types.PortFlowDirection.Leaving"
-                        ]
-                      }
+                      "portFlowDirection_1",
+                      "Modelica.Fluid.Types.PortFlowDirection.Leaving"
                     ]
                   },
                   0
@@ -7168,15 +7113,10 @@
                 "operator": "if",
                 "operands": [
                   {
-                    "operator": "primary_array",
+                    "operator": "==",
                     "operands": [
-                      {
-                        "operator": "==",
-                        "operands": [
-                          "portFlowDirection_2",
-                          "Modelica.Fluid.Types.PortFlowDirection.Entering"
-                        ]
-                      }
+                      "portFlowDirection_2",
+                      "Modelica.Fluid.Types.PortFlowDirection.Entering"
                     ]
                   },
                   0
@@ -7200,15 +7140,10 @@
                 "operator": "if",
                 "operands": [
                   {
-                    "operator": "primary_array",
+                    "operator": "==",
                     "operands": [
-                      {
-                        "operator": "==",
-                        "operands": [
-                          "portFlowDirection_2",
-                          "Modelica.Fluid.Types.PortFlowDirection.Leaving"
-                        ]
-                      }
+                      "portFlowDirection_2",
+                      "Modelica.Fluid.Types.PortFlowDirection.Leaving"
                     ]
                   },
                   0
@@ -7259,15 +7194,10 @@
                 "operator": "if",
                 "operands": [
                   {
-                    "operator": "primary_array",
+                    "operator": "==",
                     "operands": [
-                      {
-                        "operator": "==",
-                        "operands": [
-                          "portFlowDirection_3",
-                          "Modelica.Fluid.Types.PortFlowDirection.Entering"
-                        ]
-                      }
+                      "portFlowDirection_3",
+                      "Modelica.Fluid.Types.PortFlowDirection.Entering"
                     ]
                   },
                   0
@@ -7291,15 +7221,10 @@
                 "operator": "if",
                 "operands": [
                   {
-                    "operator": "primary_array",
+                    "operator": "==",
                     "operands": [
-                      {
-                        "operator": "==",
-                        "operands": [
-                          "portFlowDirection_3",
-                          "Modelica.Fluid.Types.PortFlowDirection.Leaving"
-                        ]
-                      }
+                      "portFlowDirection_3",
+                      "Modelica.Fluid.Types.PortFlowDirection.Leaving"
                     ]
                   },
                   0
@@ -14158,14 +14083,9 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "!",
             "operands": [
-              {
-                "operator": "!",
-                "operands": [
-                  "use_C_in"
-                ]
-              }
+              "use_C_in"
             ]
           },
           {
@@ -15037,14 +14957,9 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "!",
             "operands": [
-              {
-                "operator": "!",
-                "operands": [
-                  "use_X_in"
-                ]
-              }
+              "use_X_in"
             ]
           },
           {
@@ -15085,14 +15000,9 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "!",
             "operands": [
-              {
-                "operator": "!",
-                "operands": [
-                  "use_C_in"
-                ]
-              }
+              "use_C_in"
             ]
           },
           {
@@ -15387,25 +15297,20 @@
             "operands": [
               "secOutRel.have_eco",
               {
-                "operator": "primary_array",
+                "operator": "||",
                 "operands": [
                   {
-                    "operator": "||",
+                    "operator": "==",
                     "operands": [
-                      {
-                        "operator": "==",
-                        "operands": [
-                          "ctl.typCtlEco",
-                          "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.DifferentialDryBulb"
-                        ]
-                      },
-                      {
-                        "operator": "==",
-                        "operands": [
-                          "ctl.typCtlEco",
-                          "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulbWithDifferentialDryBulb"
-                        ]
-                      }
+                      "ctl.typCtlEco",
+                      "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.DifferentialDryBulb"
+                    ]
+                  },
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "ctl.typCtlEco",
+                      "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulbWithDifferentialDryBulb"
                     ]
                   }
                 ]
@@ -17404,25 +17309,20 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.Components.Types.Valve.TwoWayTwoPosition"
-                    ]
-                  }
+                  "typ",
+                  "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "typ",
+                  "Buildings.Templates.Components.Types.Valve.TwoWayTwoPosition"
                 ]
               }
             ]
@@ -17528,25 +17428,20 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.Components.Types.Valve.ThreeWayModulating"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition"
-                    ]
-                  }
+                  "typ",
+                  "Buildings.Templates.Components.Types.Valve.ThreeWayModulating"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "typ",
+                  "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition"
                 ]
               }
             ]
@@ -17589,25 +17484,20 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.Components.Types.Valve.ThreeWayModulating"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition"
-                    ]
-                  }
+                  "typ",
+                  "Buildings.Templates.Components.Types.Valve.ThreeWayModulating"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "typ",
+                  "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition"
                 ]
               }
             ]
@@ -17988,36 +17878,31 @@
             ]
           },
           {
-            "operator": "primary_array",
+            "operator": "if_elseif",
             "operands": [
               {
-                "operator": "if_elseif",
+                "operator": "if",
                 "operands": [
                   {
-                    "operator": "if",
+                    "operator": "==",
                     "operands": [
-                      {
-                        "operator": "==",
-                        "operands": [
-                          "typ",
-                          "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
-                        ]
-                      },
-                      {
-                        "operator": "!=",
-                        "operands": [
-                          "chaTwo",
-                          "Buildings.Templates.Components.Types.ValveCharacteristicTwoWay.PressureIndependent"
-                        ]
-                      }
+                      "typ",
+                      "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
                     ]
                   },
                   {
-                    "operator": "else",
+                    "operator": "!=",
                     "operands": [
-                      true
+                      "chaTwo",
+                      "Buildings.Templates.Components.Types.ValveCharacteristicTwoWay.PressureIndependent"
                     ]
                   }
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  true
                 ]
               }
             ]
@@ -20281,12 +20166,7 @@
             "operator": "*",
             "operands": [
               "UA_nominal",
-              {
-                "operator": "primary_array",
-                "operands": [
-                  "r_nominal +1"
-                ]
-              }
+              "r_nominal +1"
             ]
           },
           "r_nominal"
@@ -20794,30 +20674,25 @@
         "operands": [
           "abs(m1_flow)",
           {
-            "operator": "primary_array",
+            "operator": "if_elseif",
             "operands": [
               {
-                "operator": "if_elseif",
+                "operator": "if",
+                "operands": [
+                  "allowFlowReversal1",
+                  "fra_a1*Medium1.specificHeatCapacityCp(state_a1_inflow) +fra_b1*Medium1.specificHeatCapacityCp(state_b1_inflow)"
+                ]
+              },
+              {
+                "operator": "else",
                 "operands": [
                   {
-                    "operator": "if",
-                    "operands": [
-                      "allowFlowReversal1",
-                      "fra_a1*Medium1.specificHeatCapacityCp(state_a1_inflow) +fra_b1*Medium1.specificHeatCapacityCp(state_b1_inflow)"
-                    ]
-                  },
-                  {
-                    "operator": "else",
+                    "operator": "function_call",
                     "operands": [
                       {
-                        "operator": "function_call",
+                        "operator": "Medium1.specificHeatCapacityCp",
                         "operands": [
-                          {
-                            "operator": "Medium1.specificHeatCapacityCp",
-                            "operands": [
-                              "Medium1.specificHeatCapacityCp"
-                            ]
-                          }
+                          "Medium1.specificHeatCapacityCp"
                         ]
                       }
                     ]
@@ -20847,30 +20722,25 @@
         "operands": [
           "abs(m2_flow)",
           {
-            "operator": "primary_array",
+            "operator": "if_elseif",
             "operands": [
               {
-                "operator": "if_elseif",
+                "operator": "if",
+                "operands": [
+                  "allowFlowReversal2",
+                  "fra_a2*Medium2.specificHeatCapacityCp(state_a2_inflow) +fra_b2*Medium2.specificHeatCapacityCp(state_b2_inflow)"
+                ]
+              },
+              {
+                "operator": "else",
                 "operands": [
                   {
-                    "operator": "if",
-                    "operands": [
-                      "allowFlowReversal2",
-                      "fra_a2*Medium2.specificHeatCapacityCp(state_a2_inflow) +fra_b2*Medium2.specificHeatCapacityCp(state_b2_inflow)"
-                    ]
-                  },
-                  {
-                    "operator": "else",
+                    "operator": "function_call",
                     "operands": [
                       {
-                        "operator": "function_call",
+                        "operator": "Medium2.specificHeatCapacityCp",
                         "operands": [
-                          {
-                            "operator": "Medium2.specificHeatCapacityCp",
-                            "operands": [
-                              "Medium2.specificHeatCapacityCp"
-                            ]
-                          }
+                          "Medium2.specificHeatCapacityCp"
                         ]
                       }
                     ]
@@ -20925,12 +20795,7 @@
         "operator": "*",
         "operands": [
           "CMin_flow",
-          {
-            "operator": "primary_array",
-            "operands": [
-              "T_in2 -T_in1"
-            ]
-          }
+          "T_in2 -T_in1"
         ]
       },
       "name": "Maximum heat flow rate into medium 1",
@@ -21919,12 +21784,7 @@
             "operator": "/",
             "operands": [
               1,
-              {
-                "operator": "primary_array",
-                "operands": [
-                  "1/hA.hA_1 +1/hA.hA_2"
-                ]
-              }
+              "1/hA.hA_1 +1/hA.hA_2"
             ]
           },
           "final": false
@@ -23286,12 +23146,7 @@
             "operator": "/",
             "operands": [
               1,
-              {
-                "operator": "primary_array",
-                "operands": [
-                  "1/10 +1/20"
-                ]
-              }
+              "1/10 +1/20"
             ]
           },
           "final": false
@@ -26803,49 +26658,39 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOADes",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOADes",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
-                    ]
-                  }
+                  "minOADes",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "minOADes",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
                 ]
               }
             ]
           },
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOAConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOAConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                    ]
-                  }
+                  "minOAConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "minOAConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
                 ]
               }
             ]
@@ -26870,49 +26715,39 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOADes",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOADes",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
-                    ]
-                  }
+                  "minOADes",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "minOADes",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
                 ]
               }
             ]
           },
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOAConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOAConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                    ]
-                  }
+                  "minOAConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "minOAConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
                 ]
               }
             ]
@@ -26934,25 +26769,20 @@
       "tab": "Economizer",
       "visible": true,
       "enable": {
-        "operator": "primary_array",
+        "operator": "&&",
         "operands": [
           {
-            "operator": "&&",
+            "operator": "==",
             "operands": [
-              {
-                "operator": "==",
-                "operands": [
-                  "minOADes",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
-                ]
-              },
-              {
-                "operator": "==",
-                "operands": [
-                  "venStd",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
-                ]
-              }
+              "minOADes",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "venStd",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
             ]
           }
         ]
@@ -26972,25 +26802,20 @@
       "tab": "Economizer",
       "visible": true,
       "enable": {
-        "operator": "primary_array",
+        "operator": "&&",
         "operands": [
           {
-            "operator": "&&",
+            "operator": "==",
             "operands": [
-              {
-                "operator": "==",
-                "operands": [
-                  "venStd",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
-                ]
-              },
-              {
-                "operator": "==",
-                "operands": [
-                  "minOADes",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
-                ]
-              }
+              "venStd",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "minOADes",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
             ]
           }
         ]
@@ -27081,37 +26906,27 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "==",
+            "operands": [
+              "minOADes",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
+            ]
+          },
+          {
+            "operator": "||",
             "operands": [
               {
                 "operator": "==",
                 "operands": [
-                  "minOADes",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
+                  "dpConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
                 ]
-              }
-            ]
-          },
-          {
-            "operator": "primary_array",
-            "operands": [
+              },
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "dpConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "dpConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                    ]
-                  }
+                  "dpConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
                 ]
               }
             ]
@@ -27136,37 +26951,27 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "==",
+            "operands": [
+              "minOADes",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
+            ]
+          },
+          {
+            "operator": "||",
             "operands": [
               {
                 "operator": "==",
                 "operands": [
-                  "minOADes",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
+                  "dpConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
                 ]
-              }
-            ]
-          },
-          {
-            "operator": "primary_array",
-            "operands": [
+              },
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "dpConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "dpConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                    ]
-                  }
+                  "dpConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
                 ]
               }
             ]
@@ -27473,25 +27278,20 @@
         "operands": [
           "have_frePro",
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "freProHeaCoiCon",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "freProHeaCoiCon",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                    ]
-                  }
+                  "freProHeaCoiCon",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "freProHeaCoiCon",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
                 ]
               }
             ]
@@ -27517,25 +27317,20 @@
         "operands": [
           "have_frePro",
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "freProHeaCoiCon",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "freProHeaCoiCon",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                    ]
-                  }
+                  "freProHeaCoiCon",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "freProHeaCoiCon",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
                 ]
               }
             ]
@@ -27743,49 +27538,39 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "buiPreCon",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "buiPreCon",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanDp"
-                    ]
-                  }
+                  "buiPreCon",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "buiPreCon",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanDp"
                 ]
               }
             ]
           },
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "retFanCon",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "retFanCon",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                    ]
-                  }
+                  "retFanCon",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "retFanCon",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
                 ]
               }
             ]
@@ -27810,49 +27595,39 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "buiPreCon",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "buiPreCon",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanDp"
-                    ]
-                  }
+                  "buiPreCon",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "buiPreCon",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanDp"
                 ]
               }
             ]
           },
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "retFanCon",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "retFanCon",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                    ]
-                  }
+                  "retFanCon",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "retFanCon",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
                 ]
               }
             ]
@@ -27874,25 +27649,20 @@
       "tab": "Pressure control",
       "visible": false,
       "enable": {
-        "operator": "primary_array",
+        "operator": "||",
         "operands": [
           {
-            "operator": "||",
+            "operator": "==",
             "operands": [
-              {
-                "operator": "==",
-                "operands": [
-                  "buiPreCon",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir"
-                ]
-              },
-              {
-                "operator": "==",
-                "operands": [
-                  "buiPreCon",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanDp"
-                ]
-              }
+              "buiPreCon",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "buiPreCon",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanDp"
             ]
           }
         ]
@@ -27912,25 +27682,20 @@
       "tab": "Pressure control",
       "visible": true,
       "enable": {
-        "operator": "primary_array",
+        "operator": "||",
         "operands": [
           {
-            "operator": "||",
+            "operator": "==",
             "operands": [
-              {
-                "operator": "==",
-                "operands": [
-                  "buiPreCon",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir"
-                ]
-              },
-              {
-                "operator": "==",
-                "operands": [
-                  "buiPreCon",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanDp"
-                ]
-              }
+              "buiPreCon",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "buiPreCon",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanDp"
             ]
           }
         ]
@@ -29562,25 +29327,20 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoi",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.WaterBased"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoi",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.Electric"
-                    ]
-                  }
+                  "heaCoi",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.WaterBased"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "heaCoi",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.Electric"
                 ]
               }
             ]
@@ -29611,25 +29371,20 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoi",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.WaterBased"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoi",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.Electric"
-                    ]
-                  }
+                  "heaCoi",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.WaterBased"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "heaCoi",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.Electric"
                 ]
               }
             ]
@@ -29655,50 +29410,40 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoi",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.WaterBased"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoi",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.Electric"
-                    ]
-                  }
+                  "heaCoi",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.WaterBased"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "heaCoi",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.Electric"
                 ]
               }
             ]
           },
           "have_frePro",
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoiCon",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoiCon",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                    ]
-                  }
+                  "heaCoiCon",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "heaCoiCon",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
                 ]
               }
             ]
@@ -29723,50 +29468,40 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoi",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.WaterBased"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoi",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.Electric"
-                    ]
-                  }
+                  "heaCoi",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.WaterBased"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "heaCoi",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.Electric"
                 ]
               }
             ]
           },
           "have_frePro",
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoiCon",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoiCon",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                    ]
-                  }
+                  "heaCoiCon",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "heaCoiCon",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
                 ]
               }
             ]
@@ -29791,25 +29526,20 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoi",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.WaterBased"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoi",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.Electric"
-                    ]
-                  }
+                  "heaCoi",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.WaterBased"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "heaCoi",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.Electric"
                 ]
               }
             ]
@@ -29835,25 +29565,20 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoi",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.WaterBased"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "heaCoi",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.Electric"
-                    ]
-                  }
+                  "heaCoi",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.WaterBased"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "heaCoi",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.Electric"
                 ]
               }
             ]
@@ -31089,12 +30814,7 @@
           "expression": {
             "operator": "/",
             "operands": [
-              {
-                "operator": "primary_array",
-                "operands": [
-                  "uHeaMax +uCooMin"
-                ]
-              },
+              "uHeaMax +uCooMin",
               2
             ]
           },
@@ -31104,12 +30824,7 @@
           "expression": {
             "operator": "/",
             "operands": [
-              {
-                "operator": "primary_array",
-                "operands": [
-                  "uHeaMax +uCooMin"
-                ]
-              },
+              "uHeaMax +uCooMin",
               2
             ]
           },
@@ -31399,49 +31114,39 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOADes",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOADes",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
-                    ]
-                  }
+                  "minOADes",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "minOADes",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
                 ]
               }
             ]
           },
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOAConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOAConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                    ]
-                  }
+                  "minOAConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "minOAConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
                 ]
               }
             ]
@@ -31466,49 +31171,39 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOADes",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOADes",
-                      "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
-                    ]
-                  }
+                  "minOADes",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "minOADes",
+                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
                 ]
               }
             ]
           },
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOAConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "minOAConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                    ]
-                  }
+                  "minOAConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "minOAConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
                 ]
               }
             ]
@@ -31554,25 +31249,20 @@
       "tab": "Limits",
       "visible": true,
       "enable": {
-        "operator": "primary_array",
+        "operator": "&&",
         "operands": [
           {
-            "operator": "&&",
+            "operator": "==",
             "operands": [
-              {
-                "operator": "==",
-                "operands": [
-                  "minOADes",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
-                ]
-              },
-              {
-                "operator": "==",
-                "operands": [
-                  "venStd",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
-                ]
-              }
+              "minOADes",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "venStd",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
             ]
           }
         ]
@@ -31592,25 +31282,20 @@
       "tab": "Limits",
       "visible": true,
       "enable": {
-        "operator": "primary_array",
+        "operator": "&&",
         "operands": [
           {
-            "operator": "&&",
+            "operator": "==",
             "operands": [
-              {
-                "operator": "==",
-                "operands": [
-                  "venStd",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
-                ]
-              },
-              {
-                "operator": "==",
-                "operands": [
-                  "minOADes",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
-                ]
-              }
+              "venStd",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "minOADes",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
             ]
           }
         ]
@@ -31701,37 +31386,27 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "==",
+            "operands": [
+              "minOADes",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
+            ]
+          },
+          {
+            "operator": "||",
             "operands": [
               {
                 "operator": "==",
                 "operands": [
-                  "minOADes",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
+                  "dpConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
                 ]
-              }
-            ]
-          },
-          {
-            "operator": "primary_array",
-            "operands": [
+              },
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "dpConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "dpConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                    ]
-                  }
+                  "dpConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
                 ]
               }
             ]
@@ -31756,37 +31431,27 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "==",
+            "operands": [
+              "minOADes",
+              "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
+            ]
+          },
+          {
+            "operator": "||",
             "operands": [
               {
                 "operator": "==",
                 "operands": [
-                  "minOADes",
-                  "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure"
+                  "dpConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
                 ]
-              }
-            ]
-          },
-          {
-            "operator": "primary_array",
-            "operands": [
+              },
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "dpConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "dpConTyp",
-                      "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                    ]
-                  }
+                  "dpConTyp",
+                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
                 ]
               }
             ]
@@ -32036,12 +31701,7 @@
       "value": {
         "operator": "/",
         "operands": [
-          {
-            "operator": "primary_array",
-            "operands": [
-              "uHeaMax +uCooMin"
-            ]
-          },
+          "uHeaMax +uCooMin",
           2
         ]
       },
@@ -32080,12 +31740,7 @@
       "value": {
         "operator": "/",
         "operands": [
-          {
-            "operator": "primary_array",
-            "operands": [
-              "uHeaMax +uCooMin"
-            ]
-          },
+          "uHeaMax +uCooMin",
           2
         ]
       },
@@ -36471,12 +36126,7 @@
       "value": {
         "operator": "/",
         "operands": [
-          {
-            "operator": "primary_array",
-            "operands": [
-              "uMin +uMax"
-            ]
-          },
+          "uMin +uMax",
           2
         ]
       },
@@ -36497,12 +36147,7 @@
       "value": {
         "operator": "/",
         "operands": [
-          {
-            "operator": "primary_array",
-            "operands": [
-              "uMin +uMax"
-            ]
-          },
+          "uMin +uMax",
           2
         ]
       },
@@ -51288,47 +50933,37 @@
             "operator": "+",
             "operands": [
               {
-                "operator": "primary_array",
+                "operator": "if_elseif",
                 "operands": [
                   {
-                    "operator": "if_elseif",
+                    "operator": "if",
                     "operands": [
-                      {
-                        "operator": "if",
-                        "operands": [
-                          "coiHeaPre.have_sou",
-                          "dat.coiHeaPre.mWat_flow_nominal"
-                        ]
-                      },
-                      {
-                        "operator": "else",
-                        "operands": [
-                          0
-                        ]
-                      }
+                      "coiHeaPre.have_sou",
+                      "dat.coiHeaPre.mWat_flow_nominal"
+                    ]
+                  },
+                  {
+                    "operator": "else",
+                    "operands": [
+                      0
                     ]
                   }
                 ]
               },
               {
-                "operator": "primary_array",
+                "operator": "if_elseif",
                 "operands": [
                   {
-                    "operator": "if_elseif",
+                    "operator": "if",
                     "operands": [
-                      {
-                        "operator": "if",
-                        "operands": [
-                          "coiHeaReh.have_sou",
-                          "dat.coiHeaReh.mWat_flow_nominal"
-                        ]
-                      },
-                      {
-                        "operator": "else",
-                        "operands": [
-                          0
-                        ]
-                      }
+                      "coiHeaReh.have_sou",
+                      "dat.coiHeaReh.mWat_flow_nominal"
+                    ]
+                  },
+                  {
+                    "operator": "else",
+                    "operands": [
+                      0
                     ]
                   }
                 ]
@@ -51363,47 +50998,37 @@
             "operator": "+",
             "operands": [
               {
-                "operator": "primary_array",
+                "operator": "if_elseif",
                 "operands": [
                   {
-                    "operator": "if_elseif",
+                    "operator": "if",
                     "operands": [
-                      {
-                        "operator": "if",
-                        "operands": [
-                          "coiHeaPre.have_sou",
-                          "dat.coiHeaPre.Q_flow_nominal"
-                        ]
-                      },
-                      {
-                        "operator": "else",
-                        "operands": [
-                          0
-                        ]
-                      }
+                      "coiHeaPre.have_sou",
+                      "dat.coiHeaPre.Q_flow_nominal"
+                    ]
+                  },
+                  {
+                    "operator": "else",
+                    "operands": [
+                      0
                     ]
                   }
                 ]
               },
               {
-                "operator": "primary_array",
+                "operator": "if_elseif",
                 "operands": [
                   {
-                    "operator": "if_elseif",
+                    "operator": "if",
                     "operands": [
-                      {
-                        "operator": "if",
-                        "operands": [
-                          "coiHeaReh.have_sou",
-                          "dat.coiHeaReh.Q_flow_nominal"
-                        ]
-                      },
-                      {
-                        "operator": "else",
-                        "operands": [
-                          0
-                        ]
-                      }
+                      "coiHeaReh.have_sou",
+                      "dat.coiHeaReh.Q_flow_nominal"
+                    ]
+                  },
+                  {
+                    "operator": "else",
+                    "operands": [
+                      0
                     ]
                   }
                 ]
@@ -54501,25 +54126,20 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
-                    ]
-                  }
+                  "typ",
+                  "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "typ",
+                  "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
                 ]
               }
             ]
@@ -54559,25 +54179,20 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
-                    ]
-                  }
+                  "typ",
+                  "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "typ",
+                  "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
                 ]
               }
             ]
@@ -54617,25 +54232,20 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
-                    ]
-                  }
+                  "typ",
+                  "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "typ",
+                  "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
                 ]
               }
             ]
@@ -54675,25 +54285,20 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
-                    ]
-                  }
+                  "typ",
+                  "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "typ",
+                  "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
                 ]
               }
             ]
@@ -54734,25 +54339,20 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
-                    ]
-                  }
+                  "typ",
+                  "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "typ",
+                  "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
                 ]
               }
             ]
@@ -54784,25 +54384,20 @@
         "operator": "&&",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
               {
-                "operator": "||",
+                "operator": "==",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
-                    ]
-                  },
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
-                    ]
-                  }
+                  "typ",
+                  "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "typ",
+                  "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
                 ]
               }
             ]
@@ -54897,25 +54492,20 @@
       "tab": "",
       "visible": false,
       "enable": {
-        "operator": "primary_array",
+        "operator": "||",
         "operands": [
           {
-            "operator": "||",
+            "operator": "==",
             "operands": [
-              {
-                "operator": "==",
-                "operands": [
-                  "typ",
-                  "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
-                ]
-              },
-              {
-                "operator": "==",
-                "operands": [
-                  "typ",
-                  "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
-                ]
-              }
+              "typ",
+              "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "typ",
+              "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
             ]
           }
         ]
@@ -56042,25 +55632,20 @@
       "tab": "Damper and valve control",
       "visible": true,
       "enable": {
-        "operator": "primary_array",
+        "operator": "||",
         "operands": [
           {
-            "operator": "||",
+            "operator": "==",
             "operands": [
-              {
-                "operator": "==",
-                "operands": [
-                  "controllerTypeDam",
-                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
-                ]
-              },
-              {
-                "operator": "==",
-                "operands": [
-                  "controllerTypeDam",
-                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                ]
-              }
+              "controllerTypeDam",
+              "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "controllerTypeDam",
+              "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
             ]
           }
         ]
@@ -56080,25 +55665,20 @@
       "tab": "Damper and valve control",
       "visible": true,
       "enable": {
-        "operator": "primary_array",
+        "operator": "||",
         "operands": [
           {
-            "operator": "||",
+            "operator": "==",
             "operands": [
-              {
-                "operator": "==",
-                "operands": [
-                  "controllerTypeDam",
-                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
-                ]
-              },
-              {
-                "operator": "==",
-                "operands": [
-                  "controllerTypeDam",
-                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                ]
-              }
+              "controllerTypeDam",
+              "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "controllerTypeDam",
+              "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
             ]
           }
         ]
@@ -57716,25 +57296,20 @@
       "tab": "Damper control",
       "visible": true,
       "enable": {
-        "operator": "primary_array",
+        "operator": "||",
         "operands": [
           {
-            "operator": "||",
+            "operator": "==",
             "operands": [
-              {
-                "operator": "==",
-                "operands": [
-                  "damCon",
-                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
-                ]
-              },
-              {
-                "operator": "==",
-                "operands": [
-                  "damCon",
-                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                ]
-              }
+              "damCon",
+              "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "damCon",
+              "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
             ]
           }
         ]
@@ -57754,25 +57329,20 @@
       "tab": "Damper control",
       "visible": true,
       "enable": {
-        "operator": "primary_array",
+        "operator": "||",
         "operands": [
           {
-            "operator": "||",
+            "operator": "==",
             "operands": [
-              {
-                "operator": "==",
-                "operands": [
-                  "damCon",
-                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
-                ]
-              },
-              {
-                "operator": "==",
-                "operands": [
-                  "damCon",
-                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                ]
-              }
+              "damCon",
+              "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "damCon",
+              "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
             ]
           }
         ]
@@ -62150,25 +61720,20 @@
       "tab": "",
       "visible": true,
       "enable": {
-        "operator": "primary_array",
+        "operator": "||",
         "operands": [
           {
-            "operator": "||",
+            "operator": "==",
             "operands": [
-              {
-                "operator": "==",
-                "operands": [
-                  "damCon",
-                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
-                ]
-              },
-              {
-                "operator": "==",
-                "operands": [
-                  "damCon",
-                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                ]
-              }
+              "damCon",
+              "Buildings.Controls.OBC.CDL.Types.SimpleController.PI"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "damCon",
+              "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
             ]
           }
         ]
@@ -62188,25 +61753,20 @@
       "tab": "",
       "visible": true,
       "enable": {
-        "operator": "primary_array",
+        "operator": "||",
         "operands": [
           {
-            "operator": "||",
+            "operator": "==",
             "operands": [
-              {
-                "operator": "==",
-                "operands": [
-                  "damCon",
-                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
-                ]
-              },
-              {
-                "operator": "==",
-                "operands": [
-                  "damCon",
-                  "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
-                ]
-              }
+              "damCon",
+              "Buildings.Controls.OBC.CDL.Types.SimpleController.PD"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "damCon",
+              "Buildings.Controls.OBC.CDL.Types.SimpleController.PID"
             ]
           }
         ]
@@ -62766,15 +62326,10 @@
             "operator": "!",
             "operands": [
               {
-                "operator": "primary_array",
+                "operator": "||",
                 "operands": [
-                  {
-                    "operator": "||",
-                    "operands": [
-                      "have_SZVAV",
-                      "have_parFanPowUni"
-                    ]
-                  }
+                  "have_SZVAV",
+                  "have_parFanPowUni"
                 ]
               }
             ]
@@ -62803,15 +62358,10 @@
             "operator": "!",
             "operands": [
               {
-                "operator": "primary_array",
+                "operator": "||",
                 "operands": [
-                  {
-                    "operator": "||",
-                    "operands": [
-                      "have_SZVAV",
-                      "have_typTerUni"
-                    ]
-                  }
+                  "have_SZVAV",
+                  "have_typTerUni"
                 ]
               }
             ]
@@ -62840,15 +62390,10 @@
             "operator": "!",
             "operands": [
               {
-                "operator": "primary_array",
+                "operator": "||",
                 "operands": [
-                  {
-                    "operator": "||",
-                    "operands": [
-                      "have_parFanPowUni",
-                      "have_typTerUni"
-                    ]
-                  }
+                  "have_parFanPowUni",
+                  "have_typTerUni"
                 ]
               }
             ]
@@ -62910,15 +62455,10 @@
         "operator": "!",
         "operands": [
           {
-            "operator": "primary_array",
+            "operator": "&&",
             "operands": [
-              {
-                "operator": "&&",
-                "operands": [
-                  "have_CO2Sen",
-                  "have_SZVAV"
-                ]
-              }
+              "have_CO2Sen",
+              "have_SZVAV"
             ]
           }
         ]
@@ -62947,15 +62487,10 @@
         "operands": [
           "have_CO2Sen",
           {
-            "operator": "primary_array",
+            "operator": "||",
             "operands": [
-              {
-                "operator": "||",
-                "operands": [
-                  "have_parFanPowUni",
-                  "have_typTerUni"
-                ]
-              }
+              "have_parFanPowUni",
+              "have_typTerUni"
             ]
           }
         ]

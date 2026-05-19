@@ -56,7 +56,7 @@ describe("Modifications", () => {
     // Modifier paths are now instance-based, not type-based
     const modPath = `${path}.interface_param`;
     expect(mod[modPath].expression).toEqual(
-      "Updated Value",
+      "\"Updated Value\"",
     );
   });
 
@@ -70,7 +70,7 @@ describe("Modifications", () => {
     const input = inputs[childPath];
     const mod = flattenModifiers(input.modifiers);
     expect(mod[childPath].expression).toEqual(
-      "Interface Param",
+      "\"Interface Param\"",
     );
   });
 

@@ -81,7 +81,7 @@ describe("Expected elements are extracted", () => {
 
     const uninitializedParamPath = `${template.modelicaPath}.test_string_uninitialized`;
     const initializedParamPath = `${template.modelicaPath}.test_string_initialized`;
-    const expectedValue = "I'm all set";
+    const expectedValue = "\"I'm all set\""; // string literals are wrapped in quotes
 
     // check that when a parameter has an initial value it is set, when it is not it is null
     const unInitializedInput = templateInputs[uninitializedParamPath];
