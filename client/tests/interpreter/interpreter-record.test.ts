@@ -45,7 +45,7 @@ const mockConfig = {
  * Heat pump plant test data loaded from gzipped templates.json.
  * This file includes the plant template (Buildings.Templates.Plants.HeatPumps.AirToWater)
  * which is not yet in production but needed for testing record binding functionality.
- * Should be replaced by actual data from client/src/data/templates.json once the plant template is in production
+ * Should be replaced by actual data from client/src/data/templates.json once the plant template is in production.
  */
 import * as zlib from "zlib";
 import * as fs from "fs";
@@ -212,12 +212,10 @@ describe("Path rewriting for record bindings", () => {
     );
 
     // ctl.cfg has a modifier binding it to cfg (via PartialHeatPumpPlant.cfg)
-    // The modifier should exist in context.mods
+    // The modifier should exist in context.mods and point to cfg
     const ctlCfgMod = context.mods["ctl.cfg"];
     expect(ctlCfgMod).toBeDefined();
-    expect(ctlCfgMod.expression.operator).toBe("none");
-    // The binding points to cfg
-    expect(ctlCfgMod.expression.operands[0]).toBe("cfg");
+    expect(ctlCfgMod.expression).toBe("cfg");
   });
 
   it("Path resolution rewrites instance path when recordBinding is true", () => {

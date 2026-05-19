@@ -172,8 +172,8 @@ describe("Simple resolveToValue tests (no type resolving/evaluation)", () => {
 
 describe("Test set", () => {
   it("Simple expression evaluation without use of context", () => {
-    const expectedValue = 1;
-    const simpleExpression = buildExpression("none", [expectedValue]);
+    const expectedValue = true;
+    const simpleExpression = buildExpression(">", [2, 1]);
     const value = evaluate(simpleExpression);
     expect(value).toEqual(expectedValue);
   });
@@ -591,7 +591,7 @@ describe("ctl.have_CO2Sen enable expression", () => {
     const firstOperand = {
       operator: "==",
       operands: [
-        "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.typ",
+        "typ",
         "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone",
       ],
     };
@@ -760,7 +760,8 @@ describe("Scope tests", () => {
     // test modifier value
     // modifier points to the correct parameter definition (secOutRel.dat location)
     // After parser refactoring, instance references are stored as relative paths
-    expect(context.mods["secOutRel.secOut.dat"].expression.operands[0]).toEqual(
+    console.log("secOutRel.secOut.dat = ", JSON.stringify(context.mods["secOutRel.secOut.dat"], null, 2));
+    expect(context.mods["secOutRel.secOut.dat"].expression).toEqual(
       "dat",
     );
 
