@@ -281,6 +281,10 @@ function buildPrimaryExpression(
       return getExpression(expr, basePath, baseType);
     });
 
+    if (expressions.length === 1) {
+      return expressions[0];
+    }
+
     // Multiple expressions - return as array expression
     // This construct is not well understood, probably used to cover the case
     // PRIMARY = "[" expression-list { ";" expression-list } "]" from the grammar
