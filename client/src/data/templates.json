@@ -19675,11 +19675,8 @@
       "modifiers": {},
       "replaceable": false,
       "options": [
-        "Buildings.Templates.Components.Types.Valve.None",
         "Buildings.Templates.Components.Types.Valve.ThreeWayModulating",
-        "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition",
-        "Buildings.Templates.Components.Types.Valve.TwoWayModulating",
-        "Buildings.Templates.Components.Types.Valve.TwoWayTwoPosition"
+        "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
       ],
       "definition": false,
       "shortExclType": false
