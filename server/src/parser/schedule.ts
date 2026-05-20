@@ -245,16 +245,23 @@ function buildColumnsFromElement(
   const columns: Column[] = [];
   const groupedColumns = new Map<string, Column[]>(); // group/tab name -> columns
 
-  // Merge this element's extends mods (non-redeclare, value-bearing) into the modMap
-  // so that e.g. `extends Parent(x=someValue)` overrides are visible to all child columns.
+  // Extends clause mods (e.g. `extends Parent(final x=cfg.x)`) apply only to
+  // inherited parameters at this level. They must NOT propagate into nested
+  // component scopes: buildModifierMap copies `modMap` as `inherited`, so if
+  // we mutated modMap here, `cfg.x` would also leak into e.g. the `cfg`
+  // component's parameters and create self-referencing values like
+  // `instanceName="cfg.x" value="cfg.x"`.
+  // Solution: build a localModMap for current-level extractAttributes calls
+  // while keeping the original modMap for child component scopes.
+  const localModMap: ModifierMap = new Map(modMap);
   for (const mod of (element as LongClass).mods ?? []) {
     if (
       mod.value !== undefined &&
       mod.name &&
       !mod.redeclare &&
-      !modMap.has(mod.name)
+      !localModMap.has(mod.name)
     ) {
-      modMap.set(mod.name, mod.value);
+      localModMap.set(mod.name, mod.value);
     }
   }
 
@@ -325,7 +332,7 @@ function buildColumnsFromElement(
       const attributes = extractAttributes(
         component,
         element,
-        modMap,
+        localModMap,
         instancePath,
         localNames,
       );
@@ -356,7 +363,7 @@ function buildColumnsFromElement(
       const groupAttributes = extractAttributes(
         component,
         element,
-        modMap,
+        localModMap,
         instancePath,
         localNames,
       );
