@@ -442,6 +442,7 @@ export abstract class Element {
   final = false;
   inner: boolean | null = null;
   outer: boolean | null = null;
+  isProtected?: true;
   tab = "";
   group = "";
 
@@ -591,9 +592,9 @@ export class LongClass extends Element {
 
     this.description = specifier.description_string;
 
-    this.elementList =
-      specifier.composition?.element_list
-        ?.map((e: any) => {
+    const processSection = (list: any[], isProtected: boolean): Element[] =>
+      (list ?? [])
+        .map((e: any) => {
           const element = _constructElement(e, this.modelicaPath);
           if (element?.elementType === "extends_clause") {
             const extendParam = element as Extend;
@@ -605,10 +606,27 @@ export class LongClass extends Element {
             // change
             this.extendElementDeadEnd = extendParam.deadEnd;
           }
+          if (element && isProtected) {
+            element.isProtected = true;
+          }
           return element;
         })
-        ?.filter((e: Element | undefined) => e !== undefined)
-        ?.filter((e: Element) => e.elementType !== "extends_clause") || [];
+        .filter((e): e is Element => e !== undefined)
+        .filter((e) => e.elementType !== "extends_clause");
+
+    const rootPackage = PACKAGE_LIST[0];
+    this.elementList = [
+      // Treat `element_list` as a synthetic public section
+      { public_element_list: specifier.composition?.element_list ?? [], protected_element_list: [] },
+      ...(specifier.composition?.element_sections ?? []),
+    ].flatMap((section: any) => [
+      ...processSection(section.public_element_list, false),
+      // Only parse protected sections within the project root package — too costly to do across all classes.
+      // (The case with !rootPackage is for testing.)
+      ...(!rootPackage || this.modelicaPath.startsWith(rootPackage)
+        ? processSection(section.protected_element_list, true)
+        : []),
+    ]);
 
     this.annotation = specifier.composition?.annotation?.map(
       (m: mj.Mod | mj.WrappedMod) => createModification({ definition: m }),
@@ -748,6 +766,7 @@ function setInputVisible(
   let isVisible = !(
     instance.outer ||
     instance.final ||
+    instance.isProtected ||
     connectorSizing === true
   );
 
