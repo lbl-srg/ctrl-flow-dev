@@ -281,3 +281,47 @@ describe("Expected elements are extracted", () => {
     expect(forcedFalse.enable).toBeFalsy();
   });
 });
+
+describe("Element sections public and protected", () => {
+  beforeAll(() => {
+    initializeTestModelicaJson();
+  });
+
+  it("includes elements from all element_sections in elementList", () => {
+    const file = parser.getFile("TestPackage.MultipleSections") as parser.File;
+    const cls = file.elementList[0] as parser.LongClass;
+    const names = cls.elementList?.map((e) => e.name) ?? [];
+    expect(names).toContain("p");
+    expect(names).toContain("q");
+    expect(names).toContain("r");
+    expect(names).toContain("s");
+    expect(names).toContain("t");
+    expect(cls.elementList?.length).toBe(5);
+  });
+
+  it("marks elements from protected_element_list with isProtected", () => {
+    const file = parser.getFile("TestPackage.MultipleSections") as parser.File;
+    const cls = file.elementList[0] as parser.LongClass;
+    const byName = Object.fromEntries(
+      (cls.elementList ?? []).map((e) => [e.name, e]),
+    );
+    expect(byName["q"].isProtected).toBe(true);
+    expect(byName["s"].isProtected).toBe(true);
+    expect(byName["p"].isProtected).toBeUndefined();
+    expect(byName["r"].isProtected).toBeUndefined();
+    expect(byName["t"].isProtected).toBeUndefined();
+  });
+
+  it("sets visible=false for protected elements, visible=true for public elements", () => {
+    const file = parser.getFile("TestPackage.MultipleSections") as parser.File;
+    const cls = file.elementList[0] as parser.LongClass;
+    const inputs = cls.getInputs();
+    expect(inputs["TestPackage.MultipleSections.q"]).toBeDefined();
+    expect(inputs["TestPackage.MultipleSections.q"].visible).toBe(false);
+    expect(inputs["TestPackage.MultipleSections.s"]).toBeDefined();
+    expect(inputs["TestPackage.MultipleSections.s"].visible).toBe(false);
+    expect(inputs["TestPackage.MultipleSections.p"].visible).toBe(true);
+    expect(inputs["TestPackage.MultipleSections.r"].visible).toBe(true);
+    expect(inputs["TestPackage.MultipleSections.t"].visible).toBe(true);
+  });
+});

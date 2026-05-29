@@ -129,7 +129,7 @@ export function findPackageEntryPoints(
 
       for (let templateJson of [...templateNodes.map(({ json }) => json)]) {
         let packageName = (templateJson as any).within;
-        while (packageName && packageName !== rootPackageName) {
+        while (packageName) {
           const packagePath = getPathFromClassName(packageName, dir);
           if (!packagePath) {
             break;
@@ -150,15 +150,21 @@ export function findPackageEntryPoints(
           PACKAGE_LIST.push(packageNode.className);
           templateNodes.push(packageNode);
 
+          if (packageName === rootPackageName) {
+            break;
+          }
           packageName = (packageJson as any).within;
         }
       }
     }
   });
-
-  return templateNodes.map(({ className, json }) => {
-    return { className, json };
-  });
+  PACKAGE_LIST.sort();
+  TEMPLATE_LIST.sort();
+  templateNodes.sort();
+  return templateNodes
+    .map(({ className, json }) => {
+      return { className, json };
+    });
 }
 
 /**

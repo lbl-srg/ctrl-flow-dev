@@ -27,6 +27,7 @@ describe("Parser file loading", () => {
       .map(({className}) => className)
       .sort();
     expect(entryPointNames).toEqual([
+      'TestPackage',
       'TestPackage.NestedTemplate',
       'TestPackage.NestedTemplate.Subcategory',
       'TestPackage.NestedTemplate.Subcategory.SecondTemplate',
