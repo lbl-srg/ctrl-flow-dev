@@ -16911,6 +16911,216 @@
       "shortExclType": false
     },
     {
+      "modelicaPath": "Buildings.Templates.Components.Interfaces.PartialCoil.datVal",
+      "type": "Buildings.Templates.Components.Data.Valve",
+      "name": "Local record for control valve with lumped flow resistance",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "Buildings.Templates.Components.Interfaces.PartialCoil.datVal.typ": {
+          "expression": "typVal",
+          "final": true
+        },
+        "Buildings.Templates.Components.Interfaces.PartialCoil.datVal.m_flow_nominal": {
+          "expression": "dat.mWat_flow_nominal",
+          "final": true
+        },
+        "Buildings.Templates.Components.Interfaces.PartialCoil.datVal.dpValve_nominal": {
+          "expression": "dat.dpValve_nominal",
+          "final": true
+        },
+        "Buildings.Templates.Components.Interfaces.PartialCoil.datVal.dpFixed_nominal": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "!=",
+                    "operands": [
+                      "typVal",
+                      "Buildings.Templates.Components.Types.Valve.None"
+                    ]
+                  },
+                  "dat.dpWat_nominal"
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  0
+                ]
+              }
+            ]
+          },
+          "final": true
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "Buildings.Templates.Components.Data.Valve.typ",
+        "Buildings.Templates.Components.Data.Valve.m_flow_nominal",
+        "Buildings.Templates.Components.Data.Valve.dpValve_nominal",
+        "Buildings.Templates.Components.Data.Valve.dpFixed_nominal",
+        "Buildings.Templates.Components.Data.Valve.dpFixedByp_nominal"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Valve.typ",
+      "type": "Buildings.Templates.Components.Types.Valve",
+      "name": "Equipment type",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": false,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Valve.m_flow_nominal",
+      "type": "Modelica.Units.SI.MassFlowRate",
+      "name": "Nominal mass flow rate of fully open valve",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "!=",
+        "operands": [
+          "typ",
+          "Buildings.Templates.Components.Types.Valve.None"
+        ]
+      },
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Valve.m_flow_nominal.min": {
+          "expression": 0,
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Valve.m_flow_nominal.start": {
+          "expression": 1,
+          "final": false
+        }
+      },
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Valve.dpValve_nominal",
+      "type": "Modelica.Units.SI.PressureDifference",
+      "name": "Nominal pressure drop of fully open valve",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "!=",
+        "operands": [
+          "typ",
+          "Buildings.Templates.Components.Types.Valve.None"
+        ]
+      },
+      "modifiers": {
+        "Buildings.Templates.Components.Data.Valve.dpValve_nominal.min": {
+          "expression": 0,
+          "final": true
+        },
+        "Buildings.Templates.Components.Data.Valve.dpValve_nominal.displayUnit": {
+          "expression": "\"Pa\"",
+          "final": false
+        },
+        "Buildings.Templates.Components.Data.Valve.dpValve_nominal.start": {
+          "expression": 0,
+          "final": false
+        }
+      },
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Valve.dpFixed_nominal",
+      "type": "Modelica.Units.SI.PressureDifference",
+      "value": 0,
+      "name": "Nominal pressure drop of pipes and other equipment in flow leg",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "!=",
+        "operands": [
+          "typ",
+          "Buildings.Templates.Components.Types.Valve.None"
+        ]
+      },
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Valve.dpFixedByp_nominal",
+      "type": "Modelica.Units.SI.PressureDifference",
+      "value": "dpFixed_nominal",
+      "name": "Nominal pressure drop in the bypass line",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "||",
+        "operands": [
+          {
+            "operator": "==",
+            "operands": [
+              "typ",
+              "Buildings.Templates.Components.Types.Valve.ThreeWayTwoPosition"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "typ",
+              "Buildings.Templates.Components.Types.Valve.ThreeWayModulating"
+            ]
+          }
+        ]
+      },
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Data.Valve",
+      "type": "Buildings.Templates.Components.Data.Valve",
+      "name": "Record for valve model",
+      "visible": false,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [
+        "Buildings.Templates.Components.Data.Valve.typ",
+        "Buildings.Templates.Components.Data.Valve.m_flow_nominal",
+        "Buildings.Templates.Components.Data.Valve.dpValve_nominal",
+        "Buildings.Templates.Components.Data.Valve.dpFixed_nominal",
+        "Buildings.Templates.Components.Data.Valve.dpFixedByp_nominal"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Templates.Components.Data.Valve"
+      ]
+    },
+    {
       "modelicaPath": "Buildings.Templates.Components.Interfaces.PartialCoil",
       "type": "Buildings.Templates.Components.Interfaces.PartialCoil",
       "name": "Interface class for coil",
@@ -16941,7 +17151,8 @@
         "Buildings.Templates.Components.Interfaces.PartialCoil.port_aSou",
         "Buildings.Templates.Components.Interfaces.PartialCoil.port_bSou",
         "Buildings.Templates.Components.Interfaces.PartialCoil.busWea",
-        "Buildings.Templates.Components.Interfaces.PartialCoil.bus"
+        "Buildings.Templates.Components.Interfaces.PartialCoil.bus",
+        "Buildings.Templates.Components.Interfaces.PartialCoil.datVal"
       ],
       "definition": true,
       "shortExclType": false,
@@ -16976,7 +17187,8 @@
         "Buildings.Templates.Components.Interfaces.PartialCoil.port_aSou",
         "Buildings.Templates.Components.Interfaces.PartialCoil.port_bSou",
         "Buildings.Templates.Components.Interfaces.PartialCoil.busWea",
-        "Buildings.Templates.Components.Interfaces.PartialCoil.bus"
+        "Buildings.Templates.Components.Interfaces.PartialCoil.bus",
+        "Buildings.Templates.Components.Interfaces.PartialCoil.datVal"
       ],
       "definition": true,
       "shortExclType": false,
@@ -22948,7 +23160,8 @@
         "Buildings.Templates.Components.Interfaces.PartialCoil.port_aSou",
         "Buildings.Templates.Components.Interfaces.PartialCoil.port_bSou",
         "Buildings.Templates.Components.Interfaces.PartialCoil.busWea",
-        "Buildings.Templates.Components.Interfaces.PartialCoil.bus"
+        "Buildings.Templates.Components.Interfaces.PartialCoil.bus",
+        "Buildings.Templates.Components.Interfaces.PartialCoil.datVal"
       ],
       "definition": true,
       "shortExclType": false,
@@ -23650,7 +23863,8 @@
         "Buildings.Templates.Components.Interfaces.PartialCoil.port_aSou",
         "Buildings.Templates.Components.Interfaces.PartialCoil.port_bSou",
         "Buildings.Templates.Components.Interfaces.PartialCoil.busWea",
-        "Buildings.Templates.Components.Interfaces.PartialCoil.bus"
+        "Buildings.Templates.Components.Interfaces.PartialCoil.bus",
+        "Buildings.Templates.Components.Interfaces.PartialCoil.datVal"
       ],
       "definition": true,
       "shortExclType": false,
@@ -24569,7 +24783,8 @@
         "Buildings.Templates.Components.Interfaces.PartialCoil.port_aSou",
         "Buildings.Templates.Components.Interfaces.PartialCoil.port_bSou",
         "Buildings.Templates.Components.Interfaces.PartialCoil.busWea",
-        "Buildings.Templates.Components.Interfaces.PartialCoil.bus"
+        "Buildings.Templates.Components.Interfaces.PartialCoil.bus",
+        "Buildings.Templates.Components.Interfaces.PartialCoil.datVal"
       ],
       "definition": true,
       "shortExclType": false,
@@ -54086,6 +54301,162 @@
       "shortExclType": false
     },
     {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datDamVAV",
+      "type": "Buildings.Templates.Components.Data.Damper",
+      "name": "Local record for VAV damper with lumped flow resistance",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datDamVAV.typ": {
+          "expression": "damVAV.typ",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datDamVAV.m_flow_nominal": {
+          "expression": "dat.damVAV.m_flow_nominal",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datDamVAV.dp_nominal": {
+          "expression": "dat.damVAV.dp_nominal",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datDamVAV.dpFixed_nominal": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "damVAV.typ",
+                      "Buildings.Templates.Components.Types.Damper.None"
+                    ]
+                  },
+                  0
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  "dat.coiHea.dpAir_nominal"
+                ]
+              }
+            ]
+          },
+          "final": true
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "Buildings.Templates.Components.Data.Damper.typ",
+        "Buildings.Templates.Components.Data.Damper.m_flow_nominal",
+        "Buildings.Templates.Components.Data.Damper.dp_nominal",
+        "Buildings.Templates.Components.Data.Damper.dpFixed_nominal"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea",
+      "type": "Buildings.Templates.Components.Data.Coil",
+      "name": "Local record for coil with lumped flow resistance",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea.typ": {
+          "expression": "coiHea.typ",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea.typVal": {
+          "expression": "coiHea.typVal",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea.have_sou": {
+          "expression": "coiHea.have_sou",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea.mAir_flow_nominal": {
+          "expression": "dat.coiHea.mAir_flow_nominal",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea.mWat_flow_nominal": {
+          "expression": "dat.coiHea.mWat_flow_nominal",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea.dpWat_nominal": {
+          "expression": "dat.coiHea.dpWat_nominal",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea.dpValve_nominal": {
+          "expression": "dat.coiHea.dpValve_nominal",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea.cap_nominal": {
+          "expression": "dat.coiHea.cap_nominal",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea.TWatEnt_nominal": {
+          "expression": "dat.coiHea.TWatEnt_nominal",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea.TAirEnt_nominal": {
+          "expression": "dat.coiHea.TAirEnt_nominal",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea.dpAir_nominal": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "damVAV.typ",
+                      "Buildings.Templates.Components.Types.Damper.None"
+                    ]
+                  },
+                  "dat.coiHea.dpAir_nominal"
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  0
+                ]
+              }
+            ]
+          },
+          "final": true
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "Buildings.Templates.Components.Data.Coil.typ",
+        "Buildings.Templates.Components.Data.Coil.typVal",
+        "Buildings.Templates.Components.Data.Coil.have_sou",
+        "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
+        "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpWat_nominal",
+        "Buildings.Templates.Components.Data.Coil.dpValve_nominal",
+        "Buildings.Templates.Components.Data.Coil.cap_nominal",
+        "Buildings.Templates.Components.Data.Coil.Q_flow_nominal",
+        "Buildings.Templates.Components.Data.Coil.TWatEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.TAirEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.wAirEnt_nominal",
+        "Buildings.Templates.Components.Data.Coil.datCoi"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.typ",
       "type": "Buildings.Templates.ZoneEquipment.Types.Configuration",
       "name": "Type of system",
@@ -55143,6 +55514,8 @@
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.ctl",
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.TAirDis",
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.VAirDis_flow",
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datDamVAV",
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea",
         "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.typ",
         "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.id",
         "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souChiWat",
@@ -55196,6 +55569,8 @@
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.ctl",
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.TAirDis",
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.VAirDis_flow",
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datDamVAV",
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea",
         "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.typ",
         "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.id",
         "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souChiWat",
@@ -65307,6 +65682,8 @@
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.ctl",
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.TAirDis",
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.VAirDis_flow",
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datDamVAV",
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea",
         "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.typ",
         "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.id",
         "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souChiWat",
