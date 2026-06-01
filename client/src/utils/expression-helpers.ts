@@ -196,9 +196,6 @@ function expressionEvaluator(
   let parsed_expression: any;
 
   switch (expression.operator) {
-    case "none":
-      parsed_expression = resolved_expression.operands[0];
-      break;
     case "<":
       parsed_expression =
         resolved_expression.operands[0] < resolved_expression.operands[1];

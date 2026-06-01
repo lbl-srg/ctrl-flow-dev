@@ -22,7 +22,6 @@ import {
 
 import {
   Literal,
-  evaluateExpression,
   Expression,
   getExpression,
 } from "./expression";
@@ -484,7 +483,7 @@ export abstract class Element {
           (m) => m.name === "enable",
         )?.value;
 
-        return enable !== undefined ? evaluateExpression(enable) : enable;
+        return enable;
       }
     }
   }
@@ -742,10 +741,10 @@ function setUIInfo(instance: Element): void {
     const tab = dialog.mods.find((m) => m.name === "tab")?.value;
     const enable = dialog.mods.find((m) => m.name === "enable")?.value;
 
-    instance.group = group ? evaluateExpression(group) : "";
-    instance.tab = tab ? evaluateExpression(tab) : "";
+    instance.group = group ? JSON.parse(group): "";
+    instance.tab = tab ? JSON.parse(tab) : "";
     const _enable = isDisabledGroup ? false : true;
-    instance.enable = enable ? evaluateExpression(enable) : _enable;
+    instance.enable = enable ?? _enable;
   } else {
     instance.enable = isDisabledGroup ? instance.enable : true;
   }
@@ -759,9 +758,7 @@ function setInputVisible(
   let connectorSizing = dialog?.mods.find(
     (m) => m.name === "connectorSizing",
   )?.value;
-  connectorSizing = connectorSizing
-    ? evaluateExpression(connectorSizing)
-    : false;
+  connectorSizing = connectorSizing ?? false;
 
   let isVisible = !(
     instance.outer ||
@@ -879,7 +876,7 @@ export class Component extends Element implements Replaceable {
     if (choicesAnnotation && childInputs.length > 0) {
       const specifiedChoices = choicesAnnotation.mods
         .filter((c) => c.value)
-        .map((c) => evaluateExpression(c.value) as string)
+        .map((c) => c.value as string)
         .filter(Boolean);
       if (specifiedChoices.length > 0) {
         childInputs = childInputs.filter((c) => specifiedChoices.includes(c));

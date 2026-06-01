@@ -18,38 +18,6 @@ export type Expression = {
   operands: Array<Literal | Expression>;
 };
 
-function expandStringOperand(
-  operand: string,
-  basePath: string,
-  baseType: string,
-): Literal | Expression {
-  let myoperand = operand;
-  try {
-    myoperand = JSON.parse(operand as string);
-  } catch {
-    /** deserialization failed */
-  }
-  /*
-   * After try and catch above:
-   *   "Buildings.Type"      → "Buildings.Type" (deserialization failed)
-   *   "\"String literal\""  → "String literal"
-   *   "false"               → false
-   * Only attempt to expand as a type if still a string, and original operand not literal.
-   * Only expand definitions (enum values, types, etc.), not instance parameters.
-   * Instance parameters like "typCtlFanRet" should stay as relative paths so the
-   * interpreter can resolve them against the appropriate instance scope.
-   */
-  if (typeof myoperand === "string" && !/^".*"$/.test(operand)) {
-    const element =
-      typeStore.get(myoperand, basePath) || typeStore.get(myoperand, baseType);
-    // Only expand if it's a definition (enum, type, etc.), not an instance parameter
-    const isDefinition =
-      element && !["component_clause", "import_clause"].includes(element.elementType);
-    myoperand = isDefinition ? element.modelicaPath : myoperand;
-  }
-  return myoperand;
-}
-
 function buildArithmeticExpression(
   expression: any,
   operator: any,
@@ -59,9 +27,7 @@ function buildArithmeticExpression(
   const arithmetic_expression: Expression = {
     operator: operator === "<>" ? "!=" : operator,
     operands: expression.map((operand: any) =>
-      typeof operand === "string"
-        ? expandStringOperand(operand, basePath, baseType)
-        : getExpression(operand, basePath, baseType),
+      getExpression(operand, basePath, baseType),
     ),
   };
 
@@ -72,14 +38,14 @@ function buildLogicalExpression(
   expression: any,
   basePath: string,
   baseType: string,
-): Expression {
+): Expression | Literal {
   const logical_expression: Expression = {
     operator: "bad_logical_expression",
     operands: ["unknown_logical_expression"],
   };
 
   if (expression.arithmetic_expressions) {
-    let result: Expression;
+    let result: Expression | Literal;
     // Single arithmetic_expression without relation_operator is a boolean reference
     if (
       expression.arithmetic_expressions.length === 1 &&
@@ -272,11 +238,6 @@ function buildTermExpression(
   basePath: string,
   baseType: string,
 ): Expression | Literal {
-  // A term can be a string, or an object with operators and factors
-  if (typeof term === "string") {
-    return expandStringOperand(term, basePath, baseType);
-  }
-
   if (typeof term === "object" && term.factors) {
     // term: { operators: ["*", "/"], factors: [...] }
     // operators may be absent if there's only one factor
@@ -312,12 +273,6 @@ function buildPrimaryExpression(
   basePath: string,
   baseType: string,
 ): Expression | Literal {
-  // primary can be a string or an array of expression objects
-  // expression: { simple_expression?: ..., if_expression?: ... }
-  if (typeof primary === "string") {
-    return expandStringOperand(primary, basePath, baseType);
-  }
-
   if (Array.isArray(primary)) {
     // Array of expression objects
     const expressions = primary.map((expr: any) => {
@@ -327,13 +282,7 @@ function buildPrimaryExpression(
     });
 
     if (expressions.length === 1) {
-      if (expressions[0].operator === "none") {
-        // We avoid the additional nesting level
-        // { operator: 'none', operands: ['string'] }
-        return expressions[0].operands[0];
-      } else {
-        return expressions[0];
-      }
+      return expressions[0];
     }
 
     // Multiple expressions - return as array expression
@@ -355,13 +304,6 @@ function buildFactorExpression(
   basePath: string,
   baseType: string,
 ): Expression | Literal {
-  // A factor can be:
-  // - a string
-  // - an object with { primary1, operator?, primary2? } for exponentiation
-  if (typeof factor === "string") {
-    return expandStringOperand(factor, basePath, baseType);
-  }
-
   if (typeof factor === "object" && factor.primary1 !== undefined) {
     const primary1Expr = buildPrimaryExpression(
       factor.primary1,
@@ -393,7 +335,7 @@ function buildSimpleExpression(
   expression: any,
   basePath: string,
   baseType: string,
-): Expression {
+): Expression | Literal {
   let operand = expression;
 
   // Handle object-type simple_expression with terms and addOps
@@ -455,31 +397,26 @@ function buildSimpleExpression(
     console.log("Unknown Expression: ", JSON.stringify(expression, null, 2));
   }
 
-  if (typeof expression === "string") {
-    operand = expandStringOperand(expression, basePath, baseType);
-  }
+  // modelica-json encodes numbers as strings; parse them back to numbers
+  operand =
+    typeof operand === "string" && // Number(null) = 0
+    operand.trim() !== "" && // Number("") = 0
+    !isNaN(Number(operand))
+      ? Number(operand)
+      : operand;
 
-  const simple_expression: Expression = {
-    operator: "none",
-    operands: [operand],
-  };
+  // modelica-json encodes Booleans as strings; parse them back to Booleans
+  if (operand === "true") operand = true;
+  else if (operand === "false") operand = false;
 
-  return simple_expression;
-}
-
-export function evaluateExpression(expression: Expression): any {
-  // (BE) If expression operator isn't none just return the expression
-  // TODO: If expression operand is path should we keep as expression or just return the path?
-  return expression.operator === "none" ? expression.operands[0] : expression;
-
-  // Buildings.Templates.Data.AllSystems.stdEne
+  return operand as Literal;
 }
 
 export function getExpression(
   value: any,
   basePath = "",
   baseType = "",
-): Expression {
+): Expression | Literal {
   const simple_expression = value?.simple_expression;
   const logical_expression =
     simple_expression?.logical_expression || value?.logical_expression;

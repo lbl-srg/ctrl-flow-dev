@@ -126,7 +126,7 @@ export interface OptionInterface {
   visible?: boolean;
   options?: string[];
   enable?: Expression;
-  modifiers: { [key]: { expression: Expression; final: boolean } };
+  modifiers: { [key: string]: { expression: Expression | Literal; final: boolean } };
   choiceModifiers?: { [key: string]: Modifiers };
   definition: boolean;
   replaceable: boolean;
@@ -143,13 +143,19 @@ This one-to-many relationship creates the tree representing the nodes that make 
 export type Literal = boolean | string | number;
 
 export type Expression = {
-  operator: "<>" | "!=" | "if" | "else" | "if_elseif" | "none";
+  operator: "<>" | "!=" | "!" | "||" | "&&" | "if" | "else" | "if_elseif" | "else_if" | "for" | "if_array" | "primary_array" | "function_call" | string;
   operands: Array<Literal | Expression>;
 };
 ```
 
-`Operator`: a string indicating which operation. `none` is a special operator indiciating the operand is a `Literal` that requires no evaluation.
-`Operands`: a list that can either be a literal value (like the number `4`) or another expression to resolve
+`Operator`: a string indicating which operation.
+`Operands`: a list that can either be a literal value (like the number `4`) or another expression to resolve.
+
+Literal values (booleans, numbers, and fully-resolved strings) are stored directly as `Literal`, not wrapped in an `Expression`.
+
+String `Literal`s come in two flavours:
+- **Variable reference** — a valid Modelica identifier such as `"ctl.typCtlFanRet"`. The interpreter looks this up in the current scope to obtain its value.
+- **String literal** — a Modelica string constant stored with its surrounding quotes escaped, e.g. `"\"foo\""` (JSON encoding of `"foo"`). The interpreter JSON-parses the value to recover the plain string `foo`, distinguishing it from a variable reference.
 
 ### Schedule Table
 

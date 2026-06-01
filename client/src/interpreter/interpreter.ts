@@ -10,7 +10,10 @@ export type Expression = {
   operands: Array<Literal | Expression>;
 };
 
-function isExpression(item: any): boolean {
+// Predicate return type lets TS narrow: true → Expression, false → Exclude<T, Expression>.
+// Since Literal (boolean | string | number) and Expression ({operator, operands}) are disjoint,
+// the false branch collapses to Literal with no cast needed at call sites.
+function isExpression(item: any): item is Expression {
   return !!item?.operator;
 }
 
@@ -291,16 +294,9 @@ const _instancePathToOption = (
         !modBinding && curOption?.recordBinding ? curOption : null;
 
       if (modBinding || optionBinding) {
-        const bindingSource = modBinding
+        const bindingPath = modBinding
           ? modBinding.expression
-          : (curOption.value as Expression | undefined);
-        let bindingPath: string | null = null;
-        if (
-          bindingSource?.operator === "none" &&
-          typeof bindingSource.operands[0] === "string"
-        ) {
-          bindingPath = bindingSource.operands[0];
-        }
+          : (curOption.value as Expression | Literal | undefined);
 
         if (bindingPath) {
           const remainingPath = pathSegments.join(".");
@@ -361,21 +357,46 @@ const _instancePathToOption = (
   };
 };
 
-// This is a hack to determine modelica paths
-// The backend expands all relative paths every 'option' path should begin with 'Modelica'
-// 'Modelica' or 'Buildings' it is a modelica path
-function isModelicaPath(path: string) {
-  if (path.startsWith("Modelica") || path.startsWith("Buildings")) {
-    return true;
+const IDENT = /[a-zA-Z_][a-zA-Z0-9_]*/;
+const MODELICA_NAME_RE = new RegExp(
+  `^\\.?(${IDENT.source})(\\.${IDENT.source})*$`,
+);
+
+/** Returns true if `name` is a syntactically valid Modelica name.
+ * Identifier: `IDENT = NON-DIGIT { DIGIT | NON-DIGIT }`,
+ * Name = [ `.` ] IDENT { `.` IDENT }
+ *
+ * Technical debt: Q-IDENT = "'" { Q-CHAR | S-ESCAPE } "'" is not supported yet.
+ */
+export function isValidModelicaName(name: string): boolean {
+  return MODELICA_NAME_RE.test(name);
+}
+
+const LOADED_LIBRARIES = ["Modelica", "Buildings"];
+const TEST_LIBRARIES =
+  process.env.NODE_ENV === "test" ? ["TestRecord", "TestPackage"] : [];
+
+/**
+ * Returns true if `path` is a syntactically valid Modelica name whose root
+ * package matches a loaded or test library.
+ *
+ * TODO (technical debt): `LOADED_LIBRARIES` should come from a configuration
+ * file rather than being hard-coded.
+ */
+function isFullyQualifiedName(
+  path: string,
+  loadedLibraries = LOADED_LIBRARIES,
+  testLibraries = TEST_LIBRARIES,
+): boolean {
+  if (!isValidModelicaName(path)) {
+    return false;
   }
-  // Support test packages
-  if (
-    process.env.NODE_ENV === "test" &&
-    (path.startsWith("TestRecord") || path.startsWith("TestPackage"))
-  ) {
-    return true;
-  }
-  return false;
+  // Extract root package name (get rid of optional leading `.`)
+  const root = path.replace(/^\./, "").split(".")[0];
+  return (
+    loadedLibraries.some((lib) => root === lib) ||
+    testLibraries.some((lib) => root === lib)
+  );
 }
 
 /**
@@ -423,7 +444,6 @@ export function resolvePaths(
 ///////////////// Expression Evaluation
 type Comparator = ">" | ">=" | "<" | "<=";
 export type OperatorType =
-  | "none"
   | "!"
   | "=="
   | "!="
@@ -436,66 +456,68 @@ export type OperatorType =
   | Comparator;
 
 /**
- * Resolve something to its value/type, dealing with Literals
- * and expressions
- *
- * If there is a string, it will get fed back to 'getValue'
+ * Resolve a Literal operand to its value.
+ * - Numbers and booleans are returned as-is.
+ * - Fully qualified Modelica names are returned as-is.
+ * - Strings that are not valid Modelica names are JSON-parsed (e.g. `"\"foo\""` → `"foo"`),
+ *   falling back to the raw string if parsing fails.
+ * - Valid Modelica names that are not fully qualified are looked up via `getValue`;
+ *   returned as-is when no context is provided.
  */
 export const resolveToValue = (
-  operand: Literal | Expression,
+  operand: Literal,
   context?: ConfigContext,
   scope = "",
-): Literal | null | undefined | Expression => {
-  let value: any = null;
-  if (["number", "boolean"].includes(typeof operand)) {
-    return evaluate(operand);
-  }
-
-  if (typeof operand === "string" && !context) {
+): Literal | null | undefined => {
+  if (typeof operand !== "string") {
     return operand;
   }
 
-  const _context = context as ConfigContext;
+  if (isFullyQualifiedName(operand)) {
+    // Fully qualified names are bare comparables: return as-is
+    return operand;
+  }
 
-  if (typeof operand !== "string") return;
-
-  if (isModelicaPath(operand)) {
-    const option = _context.options[operand];
-    if (option === undefined) {
-      // console.log(`undefined path: ${operand}`);
-      // TODO: these are modelica paths that should
-      // be extracted!
-      return operand;
-    } else if (option?.definition) {
-      return operand;
-    } else {
-      // Update the operand with just the param name
-      const name = operand.split(".").pop() as string;
-      operand = name;
+  if (!isValidModelicaName(operand)) {
+    try {
+      const value = JSON.parse(operand); // "\"String literal\"" → "String literal"
+      return value;
+    } catch {
+      return operand; // "Any.Type" unchanged, "{\"String literal\"}" unchanged
     }
   }
 
-  const { instancePath, optionPath } = resolvePaths(operand, _context, scope);
+  if (!context) {
+    return operand;
+  }
+
+  const { instancePath, optionPath } = resolvePaths(operand, context, scope);
   const instancePathScope = instancePath.split(".").slice(0, -1).join(".");
   // have the actual instance path, check for cached value
-  value = _context._getCachedValue(instancePath);
+  let value = context._getCachedValue(instancePath);
   // if no value, check instance path now that scope should be properly applied
-  value =
-    value === undefined || value === null
-      ? _context.getValue(instancePath)
-      : value;
+  if (value === undefined || value === null) {
+    const fetched = context.getValue(instancePath);
+    value = isExpression(fetched) ? undefined : fetched;
+  }
   // fallback to the original option
   if ((value === undefined || value === null) && optionPath) {
-    const typeOption = _context.options[optionPath];
+    const typeOption = context.options[optionPath];
     if (typeOption?.definition) {
       value = typeOption.modelicaPath;
     } else if (typeOption && "value" in typeOption) {
       const potentialExpression = typeOption?.value; // enums
-      value = evaluate(potentialExpression, context, instancePathScope);
+      const evaluated = evaluate(potentialExpression, context, instancePathScope);
+      value = isExpression(evaluated) ? undefined : evaluated;
     }
   }
 
-  return value;
+  // A looked-up value may itself be a quoted string literal (e.g. `"\"foo\""` stored in
+  // selections). Run it through resolveToValue so the quoting is stripped, the same
+  // way it would be for any other literal operand that appears directly in an expression.
+  return typeof value === "string"
+    ? resolveToValue(value, context, scope)
+    : value;
 };
 
 /**
@@ -539,19 +561,16 @@ export const evaluate = (
   possibleExpression: Expression | Literal | null | undefined,
   context?: ConfigContext,
   scope?: string,
-) => {
+): Literal | null | Expression | undefined => {
+  let val: Literal | null | Expression | undefined = null;
+
   if (!isExpression(possibleExpression)) {
-    return possibleExpression; // already a constant
+    return resolveToValue(possibleExpression as Literal, context, scope);
   }
 
   const expression = possibleExpression as Expression;
 
-  let val: Literal | null | Expression | undefined = null;
-
   switch (expression.operator) {
-    case "none":
-      val = resolveToValue(expression.operands[0] as Literal, context, scope);
-      break;
     case "<":
     case "<=":
     case ">":
@@ -564,7 +583,9 @@ export const evaluate = (
       };
 
       const resolvedOperands = expression.operands.map((o) =>
-        resolveToValue(o, context, scope),
+        isExpression(o)
+          ? evaluate(o as Expression, context, scope)
+          : resolveToValue(o, context, scope),
       );
       val = comparators[expression.operator](
         resolvedOperands[0],
@@ -576,7 +597,9 @@ export const evaluate = (
     case "==":
     case "!=": {
       const resolvedOperands = expression.operands.map((o) =>
-        resolveToValue(o, context, scope),
+        isExpression(o)
+          ? evaluate(o as Expression, context, scope)
+          : resolveToValue(o, context, scope),
       );
       const isEqual = allElementsEqual(resolvedOperands);
       val = expression.operator.includes("!") ? !isEqual : isEqual;
@@ -1036,7 +1059,7 @@ export class ConfigContext {
     let optionPath: string | null = "";
     let instancePath = path;
 
-    if (isModelicaPath(path)) {
+    if (isFullyQualifiedName(path)) {
       const option = this.options[path];
       if (option) {
         if (option.definition) {

@@ -1,5 +1,4 @@
 import * as parser from "../../../src/parser/parser";
-import { evaluateExpression } from "../../../src/parser/expression";
 import { initializeTestModelicaJson } from "./utils";
 const testModelicaFile = "TestPackage.Template.TestTemplate";
 
@@ -82,24 +81,24 @@ describe("Expected elements are extracted", () => {
 
     const uninitializedParamPath = `${template.modelicaPath}.test_string_uninitialized`;
     const initializedParamPath = `${template.modelicaPath}.test_string_initialized`;
-    const expectedValue = "I'm all set";
+    const expectedValue = "\"I'm all set\""; // string literals are wrapped in quotes
 
     // check that when a parameter has an initial value it is set, when it is not it is null
     const unInitializedInput = templateInputs[uninitializedParamPath];
     expect(unInitializedInput?.value).toBeUndefined();
     const initializedInput = templateInputs[initializedParamPath];
 
-    expect(evaluateExpression(initializedInput?.value)).toEqual(expectedValue);
+    expect(initializedInput?.value).toEqual(expectedValue);
 
     // check that other literals are extracted to a good value
     const boolPath = `${template.modelicaPath}.nullable_bool`;
-    expect(evaluateExpression(templateInputs[boolPath]?.value)).toBe(false);
+    expect(templateInputs[boolPath]?.value).toBe(false);
 
     const realNumPath = `${template.modelicaPath}.test_real`;
-    expect(evaluateExpression(templateInputs[realNumPath]?.value)).toBe(1);
+    expect(templateInputs[realNumPath]?.value).toBe(1);
 
     const intPath = `${template.modelicaPath}.test_int`;
-    expect(evaluateExpression(templateInputs[intPath]?.value)).toBe(2);
+    expect(templateInputs[intPath]?.value).toBe(2);
   });
 
   /*

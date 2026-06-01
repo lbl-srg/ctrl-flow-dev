@@ -61,7 +61,7 @@ import {
   isInputGroup,
 } from "./parser";
 import { Modification } from "./modification";
-import { evaluateExpression, Expression, Literal } from "./expression";
+import { Expression, Literal } from "./expression";
 
 // --- Header definitions ---
 
@@ -587,20 +587,20 @@ function applyModifiersToAttr(
  */
 function resolveModValue(
   value: any,
-): string | number | boolean | Expression | undefined {
+): Expression | Literal | undefined {
   if (value === null || value === undefined) {
     return undefined;
   }
   if (typeof value !== "object") {
-    return value as string | number | boolean;
+    return value as Literal;
   }
   // Expression object — try to reduce to a literal
-  const evaluated = evaluateExpression(value as Expression);
+  const evaluated = value as Expression;
   if (evaluated === null) {
     return undefined;
   }
   // Return the literal if simple, otherwise keep the full Expression for client eval
-  return evaluated as string | number | boolean | Expression;
+  return evaluated as Expression | Literal;
 }
 
 /**

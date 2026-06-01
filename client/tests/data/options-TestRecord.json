@@ -2,12 +2,7 @@
   "TestRecord.Rec.p": {
     "modelicaPath": "TestRecord.Rec.p",
     "type": "Real",
-    "value": {
-      "operator": "none",
-      "operands": [
-        0
-      ]
-    },
+    "value": 0,
     "name": "",
     "group": "",
     "tab": "",
@@ -67,12 +62,7 @@
   "TestRecord.Mod.localRec": {
     "modelicaPath": "TestRecord.Mod.localRec",
     "type": "TestRecord.Rec",
-    "value": {
-      "operator": "none",
-      "operands": [
-        "rec"
-      ]
-    },
+    "value": "rec",
     "name": "",
     "group": "",
     "tab": "",
@@ -119,12 +109,7 @@
     "enable": true,
     "modifiers": {
       "TestRecord.Mod1.localRec.p": {
-        "expression": {
-          "operator": "none",
-          "operands": [
-            1
-          ]
-        },
+        "expression": 1,
         "final": false
       }
     },
@@ -141,12 +126,7 @@
     "visible": false,
     "modifiers": {
       "TestRecord.Mod1.rec": {
-        "expression": {
-          "operator": "none",
-          "operands": [
-            "localRec"
-          ]
-        },
+        "expression": "localRec",
         "final": false,
         "redeclare": "TestRecord.Rec",
         "recordBinding": true
@@ -174,12 +154,7 @@
     "enable": true,
     "modifiers": {
       "TestRecord.Nested.localRecFirst.p": {
-        "expression": {
-          "operator": "none",
-          "operands": [
-            -1
-          ]
-        },
+        "expression": -1,
         "final": false
       }
     },
@@ -200,12 +175,7 @@
     "enable": true,
     "modifiers": {
       "TestRecord.Nested.localRec.p": {
-        "expression": {
-          "operator": "none",
-          "operands": [
-            3
-          ]
-        },
+        "expression": 3,
         "final": false
       }
     },
@@ -226,12 +196,7 @@
     "enable": false,
     "modifiers": {
       "TestRecord.Nested.mod.rec": {
-        "expression": {
-          "operator": "none",
-          "operands": [
-            "localRec"
-          ]
-        },
+        "expression": "localRec",
         "final": false,
         "recordBinding": true
       }
@@ -277,21 +242,11 @@
     "visible": false,
     "modifiers": {
       "TestRecord.NestedExtended.localRec.p": {
-        "expression": {
-          "operator": "none",
-          "operands": [
-            4
-          ]
-        },
+        "expression": 4,
         "final": false
       },
       "TestRecord.NestedExtended.localRecFirst.p": {
-        "expression": {
-          "operator": "none",
-          "operands": [
-            -2
-          ]
-        },
+        "expression": -2,
         "final": false
       }
     },
@@ -347,12 +302,7 @@
     "enable": false,
     "modifiers": {
       "TestRecord.mod2.localRec": {
-        "expression": {
-          "operator": "none",
-          "operands": [
-            "mod1.localRec"
-          ]
-        },
+        "expression": "mod1.localRec",
         "final": false,
         "recordBinding": true
       }
@@ -378,12 +328,7 @@
             {
               "operator": "Rec",
               "operands": [
-                {
-                  "operator": "none",
-                  "operands": [
-                    "TestRecord.Rec"
-                  ]
-                }
+                "Rec"
               ]
             }
           ]
@@ -435,12 +380,7 @@
     "enable": false,
     "modifiers": {
       "TestRecord.nesExt1.mod1.localRec.p": {
-        "expression": {
-          "operator": "none",
-          "operands": [
-            -3
-          ]
-        },
+        "expression": -3,
         "final": false
       }
     },

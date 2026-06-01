@@ -1,6 +1,5 @@
 import { initializeTestModelicaJson } from "./utils";
 import { loadPackage, getOptions } from "../../../src/parser/";
-import { evaluateExpression } from "../../../src/parser/expression";
 
 /**
  * This set of tests is attempting to cover all places a 'type' is assigned, checking
