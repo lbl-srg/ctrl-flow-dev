@@ -1,4 +1,5 @@
 import * as parser from "../../../src/parser/parser";
+import * as loader from "../../../src/parser/loader";
 import { initializeTestModelicaJson } from "./utils";
 const testModelicaFile = "TestPackage.Template.TestTemplate";
 
@@ -279,6 +280,60 @@ describe("Expected elements are extracted", () => {
       templateInputs["TestPackage.Template.TestTemplate.linkage_keyword_false"];
 
     expect(forcedFalse.enable).toBeFalsy();
+  });
+});
+
+describe("Multiple extends clauses (regression #507)", () => {
+  const elementPath = "TestPackage.Interface.MultipleExtendsInterface";
+
+  beforeAll(() => {
+    initializeTestModelicaJson();
+    parser.typeStore.get(elementPath); // force load from JSON
+  });
+
+  it("retains all extends entries in extendsInfo", () => {
+    const element = parser.findElement(elementPath) as parser.LongClass;
+    expect(element).toBeDefined();
+    expect(element.extendsInfo.length).toBe(2);
+  });
+
+  it("each extendsInfo entry resolves to a distinct parent", () => {
+    const element = parser.findElement(elementPath) as parser.LongClass;
+    const parentPaths = element.extendsInfo.map((e) => e.element?.modelicaPath);
+    expect(parentPaths).toContain("TestPackage.Interface.NestedExtendInterface");
+    expect(parentPaths).toContain("TestPackage.Interface.PartialComponent");
+  });
+
+  it("getChildElements includes elements from every extends parent", () => {
+    const element = parser.findElement(elementPath) as parser.LongClass;
+    const childPaths = element.getChildElements().map((e) => e.modelicaPath);
+    expect(childPaths).toContain("TestPackage.Interface.NestedExtendInterface.nested_interface_param");
+    expect(childPaths).toContain("TestPackage.Interface.PartialComponent.container");
+  });
+
+  it("mods getter is undefined when no extends has modifications", () => {
+    const element = parser.findElement(elementPath) as parser.LongClass;
+    expect(element.mods).toBeUndefined();
+  });
+
+  it("a shared base class is loaded from disk only once across multiple subclasses", () => {
+    // NestedExtendInterface is extended by both ExtendInterface and MultipleExtendsInterface.
+    // Loading both should trigger exactly one disk read for NestedExtendInterface.
+    parser.typeStore._store.clear();
+    initializeTestModelicaJson();
+
+    const loaderSpy = jest.spyOn(loader, "loader");
+
+    parser.typeStore.get("TestPackage.Interface.ExtendInterface");
+    parser.typeStore.get("TestPackage.Interface.MultipleExtendsInterface");
+
+    const canonicalPath = "TestPackage.Interface.NestedExtendInterface";
+    const exactLoads = loaderSpy.mock.calls.filter(
+      (args) => args[0] === canonicalPath,
+    );
+    expect(exactLoads.length).toBe(1);
+
+    loaderSpy.mockRestore();
   });
 });
 

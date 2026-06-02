@@ -567,9 +567,24 @@ export class ShortClass extends Element {
 export class LongClass extends Element {
   elementList: Element[] | undefined = [];
   entryPoint = false;
-  mods: Modification[] | undefined;
-  extendElement: LongClass | undefined;
-  extendElementDeadEnd = false;
+  extendsInfo: Array<{
+    element: LongClass | undefined;
+    mods: Modification[] | undefined;
+    deadEnd: boolean;
+  }> = [];
+
+  get mods(): Modification[] | undefined {
+    const all = this.extendsInfo.flatMap((e) => e.mods ?? []);
+    return all.length > 0 ? all : undefined;
+  }
+
+  get extendElement(): LongClass | undefined {
+    return this.extendsInfo[0]?.element;
+  }
+
+  get extendElementDeadEnd(): boolean {
+    return this.extendsInfo[0]?.deadEnd ?? false;
+  }
 
   constructor(
     definition: any,
@@ -597,13 +612,11 @@ export class LongClass extends Element {
           const element = _constructElement(e, this.modelicaPath);
           if (element?.elementType === "extends_clause") {
             const extendParam = element as Extend;
-            this.mods = extendParam.mods;
-            this.extendElement = typeStore.get(extendParam.type) as LongClass;
-            // Kludge - the instatiation of the extend type (extendParam) should
-            // likely be assigned and not the fetched type. However with how
-            // the extend param is unpacked into the LongClass, this is a smaller
-            // change
-            this.extendElementDeadEnd = extendParam.deadEnd;
+            this.extendsInfo.push({
+              element: typeStore.get(extendParam.type) as LongClass | undefined,
+              mods: extendParam.mods,
+              deadEnd: extendParam.deadEnd,
+            });
           }
           if (element && isProtected) {
             element.isProtected = true;
@@ -646,12 +659,14 @@ export class LongClass extends Element {
   getChildElements(useDeadEnd = false): Element[] {
     const elements = this.elementList || [];
 
-    return (
-      this.extendElement === undefined ||
-      (this.extendElementDeadEnd && useDeadEnd)
-        ? elements
-        : [...elements, ...this.extendElement?.getChildElements(useDeadEnd)]
-    ).filter((el) => Object.keys(el.getInputs({}, false)).length > 0);
+    const inheritedElements = this.extendsInfo.flatMap(({ element, deadEnd }) => {
+      if (element === undefined || (deadEnd && useDeadEnd)) return [];
+      return element.getChildElements(useDeadEnd);
+    });
+
+    return [...elements, ...inheritedElements].filter(
+      (el) => Object.keys(el.getInputs({}, false)).length > 0,
+    );
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
@@ -673,7 +688,7 @@ export class LongClass extends Element {
 
     // make sure all child elements (extend + other elements) get
     // template inputs added
-    this.extendElement?.getInputs(inputs);
+    this.extendsInfo.forEach(({ element }) => element?.getInputs(inputs));
     this.elementList?.map((e) => e.getInputs(inputs));
 
     inputs[this.modelicaPath] = {
@@ -1020,10 +1035,11 @@ export class Extend extends Element {
     }
 
     this.deadEnd = this.getLinkageKeywordValue() === false;
-    const registered = this.registerPath(this.modelicaPath, this.type);
-    if (!registered) {
-      return; // PUNCH-OUT!
-    }
+    // Force-load the referenced type into the store. Unlike other element types,
+    // Extend does not register itself: every extends clause in the same parent
+    // shares the same __extend path, so store registration would cause false-positive
+    // duplicate detection for the second+ extends clause.
+    typeStore.get(this.type);
 
     if (definition.extends_clause.class_modification) {
       this.mods = getModificationList(

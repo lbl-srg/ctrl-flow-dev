@@ -503,7 +503,6 @@
       "type": "Buildings.Templates.Components.Data.Damper",
       "name": "Record for damper model",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.Components.Data.Damper.typ",
@@ -1646,6 +1645,103 @@
       "shortExclType": false
     },
     {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
+      "type": "Boolean",
+      "value": true,
+      "name": "Set to true to continuously open and close valve using strokeTime",
+      "group": "Actuator position",
+      "tab": "Dynamics",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
+      "type": "Modelica.Units.SI.Time",
+      "value": 120,
+      "name": "Time needed to fully open or close actuator",
+      "group": "Actuator position",
+      "tab": "Dynamics",
+      "visible": false,
+      "enable": "use_strokeTime",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.init",
+      "type": "Modelica.Blocks.Types.Init",
+      "value": "Modelica.Blocks.Types.Init.InitialOutput",
+      "name": "Type of initialization (no init/steady state/initial state/initial output)",
+      "group": "Actuator position",
+      "tab": "Dynamics",
+      "visible": false,
+      "enable": "use_strokeTime",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_start",
+      "type": "Real",
+      "value": 1,
+      "name": "Initial position of actuator",
+      "group": "Actuator position",
+      "tab": "Dynamics",
+      "visible": true,
+      "enable": "use_strokeTime",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y",
+      "type": "Modelica.Blocks.Interfaces.RealInput",
+      "name": "Actuator position (0: closed, 1: open)",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y.min": {
+          "expression": 0,
+          "final": false
+        },
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y.max": {
+          "expression": 1,
+          "final": false
+        }
+      },
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_actual",
+      "type": "Modelica.Blocks.Interfaces.RealOutput",
+      "name": "Actual actuator position",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
       "modelicaPath": "Buildings.Fluid.Interfaces.PartialTwoPort",
       "type": "Buildings.Fluid.Interfaces.PartialTwoPort",
       "name": "Partial component with two ports",
@@ -1793,6 +1889,26 @@
       ]
     },
     {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal",
+      "type": "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal",
+      "name": "Partial model that implements the filtered opening for valves and dampers",
+      "visible": false,
+      "replaceable": false,
+      "options": [
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.init",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_start",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_actual"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal"
+      ]
+    },
+    {
       "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential",
       "type": "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential",
       "name": "Partial model for air dampers with exponential opening characteristics",
@@ -1860,7 +1976,13 @@
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
-        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.init",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_start",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_actual"
       ],
       "definition": true,
       "shortExclType": false,
@@ -1868,7 +1990,8 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential",
         "Buildings.Fluid.BaseClasses.PartialResistance",
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
-        "Buildings.Fluid.Interfaces.PartialTwoPort"
+        "Buildings.Fluid.Interfaces.PartialTwoPort",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal"
       ]
     },
     {
@@ -1876,7 +1999,6 @@
       "type": "Buildings.Fluid.Actuators.Dampers.Exponential",
       "name": "Air damper with exponential opening characteristics",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential.dpDamper_nominal",
@@ -1913,7 +2035,13 @@
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
-        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.init",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_start",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_actual"
       ],
       "definition": true,
       "shortExclType": false,
@@ -1922,7 +2050,8 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential",
         "Buildings.Fluid.BaseClasses.PartialResistance",
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
-        "Buildings.Fluid.Interfaces.PartialTwoPort"
+        "Buildings.Fluid.Interfaces.PartialTwoPort",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal"
       ]
     },
     {
@@ -2099,7 +2228,13 @@
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
-        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.init",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_start",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_actual"
       ],
       "definition": true,
       "shortExclType": false,
@@ -2108,7 +2243,8 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential",
         "Buildings.Fluid.BaseClasses.PartialResistance",
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
-        "Buildings.Fluid.Interfaces.PartialTwoPort"
+        "Buildings.Fluid.Interfaces.PartialTwoPort",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal"
       ]
     },
     {
@@ -2207,7 +2343,6 @@
       "type": "Buildings.Templates.Components.Routing.PassThroughFluid",
       "name": "Direct fluid pass-through",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.Components.Routing.PassThroughFluid.icon_pipe",
@@ -2910,7 +3045,6 @@
       "type": "Buildings.Fluid.Sensors.BaseClasses.PartialFlowSensor",
       "name": "Partial component to model sensors that measure flow properties",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Sensors.BaseClasses.PartialFlowSensor.m_flow_nominal",
@@ -2931,7 +3065,6 @@
       "type": "Buildings.Fluid.Sensors.BaseClasses.PartialDynamicFlowSensor",
       "name": "Partial component to model sensors that measure flow properties using a dynamic model",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Sensors.BaseClasses.PartialDynamicFlowSensor.tau",
@@ -3098,7 +3231,6 @@
       "type": "Buildings.Templates.Components.Interfaces.PartialSensor",
       "name": "Interface class for sensor",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.Components.Interfaces.PartialSensor.have_sen",
@@ -3398,7 +3530,6 @@
       "type": "Buildings.Fluid.Sensors.TemperatureTwoPort",
       "name": "Ideal two port temperature sensor",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Sensors.TemperatureTwoPort.T",
@@ -3625,7 +3756,6 @@
       "type": "Buildings.Fluid.Sensors.SpecificEnthalpyTwoPort",
       "name": "Ideal two port sensor for the specific enthalpy",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Sensors.SpecificEnthalpyTwoPort.h_out_start",
@@ -4749,7 +4879,6 @@
       "type": "Buildings.Fluid.Movers.BaseClasses.Characteristics.flowParameters",
       "name": "Record for flow parameters",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Movers.BaseClasses.Characteristics.flowParameters.V_flow",
@@ -5191,7 +5320,6 @@
       "type": "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters",
       "name": "Record for efficiency parameters vs. volumetric flow rate",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters.V_flow",
@@ -5310,7 +5438,6 @@
       "type": "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters_yMot",
       "name": "Record for efficiency parameters vs. motor part load ratio",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters_yMot.y",
@@ -5397,7 +5524,6 @@
       "type": "Buildings.Fluid.Movers.BaseClasses.Characteristics.powerParameters",
       "name": "Record for electrical power parameters",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Movers.BaseClasses.Characteristics.powerParameters.V_flow",
@@ -5508,7 +5634,6 @@
       "type": "Buildings.Fluid.Movers.BaseClasses.Euler.peak",
       "name": "Record for the operation condition at peak efficiency",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Movers.BaseClasses.Euler.peak.V_flow",
@@ -5867,7 +5992,6 @@
       "type": "Buildings.Fluid.Movers.Data.Generic",
       "name": "Generic data record for movers",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Movers.Data.Generic.pressure",
@@ -5903,7 +6027,6 @@
       "type": "Buildings.Templates.Components.Data.Fan",
       "name": "Record for fan model",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.Components.Data.Fan.typ",
@@ -5958,7 +6081,6 @@
       "type": "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection",
       "name": "Record for outdoor/relief/return air section",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamOut",
@@ -6390,7 +6512,6 @@
       "type": "Buildings.Templates.AirHandlersFans.Interfaces.Bus",
       "name": "Control bus for air handler",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.AirHandlersFans.Interfaces.Bus.fanSup",
@@ -6813,7 +6934,6 @@
       "type": "Buildings.Fluid.Sensors.RelativePressure",
       "name": "Ideal relative pressure sensor",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Sensors.RelativePressure.port_a",
@@ -8147,7 +8267,6 @@
       "type": "Buildings.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume",
       "name": "Partial mixing volume with inlet and outlet ports (flow reversal is allowed)",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume.initialize_p",
@@ -8559,7 +8678,6 @@
       "type": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSectionDedicatedDampers",
       "name": "Base class for modeling separate dampers for ventilation and economizer",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSectionDedicatedDampers.damOut",
@@ -9481,6 +9599,22 @@
         "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.mSenFac": {
           "expression": 1,
           "final": true
+        },
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.port_a.p.start": {
+          "expression": "Medium.p_default",
+          "final": false
+        },
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.port_a.h_outflow.start": {
+          "expression": "h_outflow_start",
+          "final": false
+        },
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.port_b.p.start": {
+          "expression": "p_start",
+          "final": false
+        },
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.port_b.h_outflow.start": {
+          "expression": "h_outflow_start",
+          "final": false
         }
       },
       "replaceable": false,
@@ -9520,13 +9654,17 @@
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.X_start",
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.C_start",
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.C_nominal",
-        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac"
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac",
+        "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
       ],
       "definition": true,
       "shortExclType": false,
       "treeList": [
         "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine",
-        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations"
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations",
+        "Buildings.Fluid.Interfaces.PartialTwoPort"
       ]
     },
     {
@@ -9624,14 +9762,18 @@
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.X_start",
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.C_start",
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.C_nominal",
-        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac"
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac",
+        "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
       ],
       "definition": true,
       "shortExclType": false,
       "treeList": [
         "Buildings.Fluid.Movers.SpeedControlled_y",
         "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine",
-        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations"
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations",
+        "Buildings.Fluid.Interfaces.PartialTwoPort"
       ]
     },
     {
@@ -10296,7 +10438,6 @@
       "type": "Buildings.Fluid.BaseClasses.MassFlowRateMultiplier",
       "name": "Model that multiplies the mass flow rate",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.BaseClasses.MassFlowRateMultiplier.use_input",
@@ -14547,7 +14688,6 @@
       "type": "Buildings.BoundaryConditions.WeatherData.Bus",
       "name": "Data bus that stores weather data",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.BoundaryConditions.WeatherData.Bus.TDryBul",
@@ -14742,7 +14882,6 @@
       "type": "Buildings.Fluid.Sources.Outside",
       "name": "Boundary that takes weather data, and optionally trace substances, as an input",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Sources.BaseClasses.Outside.use_C_in",
@@ -15218,7 +15357,6 @@
       "type": "Buildings.Fluid.Sources.BaseClasses.PartialSource_Xi_C",
       "name": "Partial component source with parameter definitions for Xi and C",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Sources.BaseClasses.PartialSource_Xi_C.use_X_in",
@@ -15245,7 +15383,6 @@
       "type": "Buildings.Fluid.Sources.Boundary_pT",
       "name": "Boundary with prescribed pressure, temperature, composition and trace substances",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Sources.Boundary_pT.use_p_in",
@@ -16496,7 +16633,6 @@
       "type": "Buildings.Templates.Components.Data.Coil",
       "name": "Record for coil model",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.Components.Data.Coil.typ",
@@ -16969,7 +17105,6 @@
       "type": "Buildings.Templates.Components.Data.Valve",
       "name": "Record for valve model",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.Components.Data.Valve.typ",
@@ -17607,7 +17742,6 @@
       "type": "Buildings.Fluid.Actuators.Valves.Data.Generic",
       "name": "Generic record for valve parameters",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Actuators.Valves.Data.Generic.y",
@@ -18415,6 +18549,362 @@
       "shortExclType": false
     },
     {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.CvData",
+      "type": "Buildings.Fluid.Types.CvTypes",
+      "value": "Buildings.Fluid.Types.CvTypes.OpPoint",
+      "name": "Selection of flow coefficient",
+      "group": "Flow Coefficient",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [
+        "Buildings.Fluid.Types.CvTypes.OpPoint",
+        "Buildings.Fluid.Types.CvTypes.Kv",
+        "Buildings.Fluid.Types.CvTypes.Cv",
+        "Buildings.Fluid.Types.CvTypes.Av"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Types.CvTypes",
+      "name": "Enumeration to define the choice of valve flow coefficient",
+      "type": "Buildings.Fluid.Types.CvTypes",
+      "value": "Buildings.Fluid.Types.CvTypes",
+      "visible": true,
+      "replaceable": false,
+      "options": [
+        "Buildings.Fluid.Types.CvTypes.OpPoint",
+        "Buildings.Fluid.Types.CvTypes.Kv",
+        "Buildings.Fluid.Types.CvTypes.Cv",
+        "Buildings.Fluid.Types.CvTypes.Av"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Types.CvTypes"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Types.CvTypes.OpPoint",
+      "name": "flow coefficient defined by m_flow_nominal/sqrt(dp_nominal)",
+      "type": "Buildings.Fluid.Types.CvTypes",
+      "value": "Buildings.Fluid.Types.CvTypes.OpPoint",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Types.CvTypes"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Types.CvTypes.Kv",
+      "name": "Kv (metric) flow coefficient",
+      "type": "Buildings.Fluid.Types.CvTypes",
+      "value": "Buildings.Fluid.Types.CvTypes.Kv",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Types.CvTypes"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Types.CvTypes.Cv",
+      "name": "Cv (US) flow coefficient",
+      "type": "Buildings.Fluid.Types.CvTypes",
+      "value": "Buildings.Fluid.Types.CvTypes.Cv",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Types.CvTypes"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Types.CvTypes.Av",
+      "name": "Av (metric) flow coefficient",
+      "type": "Buildings.Fluid.Types.CvTypes",
+      "value": "Buildings.Fluid.Types.CvTypes.Av",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Types.CvTypes"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Kv",
+      "type": "Real",
+      "name": "Kv (metric) flow coefficient [m3/h/(bar)^(1/2)]",
+      "group": "Flow Coefficient",
+      "tab": "",
+      "visible": true,
+      "enable": {
+        "operator": "==",
+        "operands": [
+          "CvData",
+          "Buildings.Fluid.Types.CvTypes.Kv"
+        ]
+      },
+      "modifiers": {
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Kv.fixed": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "CvData",
+                      "Buildings.Fluid.Types.CvTypes.Kv"
+                    ]
+                  },
+                  true
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  false
+                ]
+              }
+            ]
+          },
+          "final": false
+        }
+      },
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Cv",
+      "type": "Real",
+      "name": "Cv (US) flow coefficient [USG/min/(psi)^(1/2)]",
+      "group": "Flow Coefficient",
+      "tab": "",
+      "visible": true,
+      "enable": {
+        "operator": "==",
+        "operands": [
+          "CvData",
+          "Buildings.Fluid.Types.CvTypes.Cv"
+        ]
+      },
+      "modifiers": {
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Cv.fixed": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "CvData",
+                      "Buildings.Fluid.Types.CvTypes.Cv"
+                    ]
+                  },
+                  true
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  false
+                ]
+              }
+            ]
+          },
+          "final": false
+        }
+      },
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Av",
+      "type": "Modelica.Units.SI.Area",
+      "name": "Av (metric) flow coefficient",
+      "group": "Flow Coefficient",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "==",
+        "operands": [
+          "CvData",
+          "Buildings.Fluid.Types.CvTypes.Av"
+        ]
+      },
+      "modifiers": {
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Av.fixed": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "CvData",
+                      "Buildings.Fluid.Types.CvTypes.Av"
+                    ]
+                  },
+                  true
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  false
+                ]
+              }
+            ]
+          },
+          "final": false
+        }
+      },
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.deltaM",
+      "type": "Real",
+      "value": 0.02,
+      "name": "Fraction of nominal flow rate where linearization starts, if y=1",
+      "group": "Pressure-flow linearization",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.m_flow_nominal",
+      "type": "Modelica.Units.SI.MassFlowRate",
+      "name": "Nominal mass flow rate",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.dpValve_nominal",
+      "type": "Modelica.Units.SI.PressureDifference",
+      "name": "Nominal pressure drop of fully open valve, used if CvData=Buildings.Fluid.Types.CvTypes.OpPoint",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": {
+        "operator": "==",
+        "operands": [
+          "CvData",
+          "Buildings.Fluid.Types.CvTypes.OpPoint"
+        ]
+      },
+      "modifiers": {
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.dpValve_nominal.displayUnit": {
+          "expression": "\"Pa\"",
+          "final": false
+        },
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.dpValve_nominal.min": {
+          "expression": 0,
+          "final": false
+        },
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.dpValve_nominal.fixed": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  {
+                    "operator": "==",
+                    "operands": [
+                      "CvData",
+                      "Buildings.Fluid.Types.CvTypes.OpPoint"
+                    ]
+                  },
+                  true
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  false
+                ]
+              }
+            ]
+          },
+          "final": false
+        }
+      },
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.rhoStd",
+      "type": "Modelica.Units.SI.Density",
+      "name": "Inlet density for which valve coefficients are defined",
+      "group": "Nominal condition",
+      "tab": "Advanced",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.ValveParameters",
+      "type": "Buildings.Fluid.Actuators.BaseClasses.ValveParameters",
+      "name": "Model with parameters for valves",
+      "visible": false,
+      "replaceable": false,
+      "options": [
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.CvData",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Kv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Cv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Av",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.deltaM",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.m_flow_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.dpValve_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.rhoStd"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters"
+      ]
+    },
+    {
       "modelicaPath": "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve",
       "type": "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve",
       "name": "Partial model for a two way valve",
@@ -18431,6 +18921,21 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve.m_flow_turbulent": {
           "expression": "deltaM*abs(m_flow_nominal)",
           "final": true
+        },
+        "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve.rhoStd": {
+          "expression": {
+            "operator": "function_call",
+            "operands": [
+              {
+                "operator": "Medium.density_pTX",
+                "operands": [
+                  "Medium.density_pTX",
+                  "Medium.density_pTX"
+                ]
+              }
+            ]
+          },
+          "final": false
         }
       },
       "replaceable": false,
@@ -18455,7 +18960,21 @@
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
-        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.CvData",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Kv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Cv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Av",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.deltaM",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.m_flow_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.dpValve_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.rhoStd",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.init",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_start",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_actual"
       ],
       "definition": true,
       "shortExclType": false,
@@ -18463,7 +18982,9 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve",
         "Buildings.Fluid.BaseClasses.PartialResistance",
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
-        "Buildings.Fluid.Interfaces.PartialTwoPort"
+        "Buildings.Fluid.Interfaces.PartialTwoPort",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal"
       ]
     },
     {
@@ -18471,7 +18992,6 @@
       "type": "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValveKv",
       "name": "Partial model for a two way valve using a Kv characteristic",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve.dpFixed_nominal",
@@ -18494,7 +19014,21 @@
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
-        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.CvData",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Kv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Cv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Av",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.deltaM",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.m_flow_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.dpValve_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.rhoStd",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.init",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_start",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_actual"
       ],
       "definition": true,
       "shortExclType": false,
@@ -18503,7 +19037,9 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve",
         "Buildings.Fluid.BaseClasses.PartialResistance",
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
-        "Buildings.Fluid.Interfaces.PartialTwoPort"
+        "Buildings.Fluid.Interfaces.PartialTwoPort",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal"
       ]
     },
     {
@@ -18552,7 +19088,21 @@
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
-        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.CvData",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Kv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Cv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Av",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.deltaM",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.m_flow_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.dpValve_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.rhoStd",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.init",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_start",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_actual"
       ],
       "definition": true,
       "shortExclType": false,
@@ -18561,7 +19111,9 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve",
         "Buildings.Fluid.BaseClasses.PartialResistance",
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
-        "Buildings.Fluid.Interfaces.PartialTwoPort"
+        "Buildings.Fluid.Interfaces.PartialTwoPort",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal"
       ]
     },
     {
@@ -18675,7 +19227,21 @@
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
-        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.CvData",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Kv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Cv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Av",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.deltaM",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.m_flow_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.dpValve_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.rhoStd",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.init",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_start",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_actual"
       ],
       "definition": true,
       "shortExclType": false,
@@ -18684,7 +19250,9 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve",
         "Buildings.Fluid.BaseClasses.PartialResistance",
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
-        "Buildings.Fluid.Interfaces.PartialTwoPort"
+        "Buildings.Fluid.Interfaces.PartialTwoPort",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal"
       ]
     },
     {
@@ -18834,7 +19402,21 @@
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
-        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.CvData",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Kv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Cv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Av",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.deltaM",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.m_flow_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.dpValve_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.rhoStd",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.init",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_start",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_actual"
       ],
       "definition": true,
       "shortExclType": false,
@@ -18843,7 +19425,9 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve",
         "Buildings.Fluid.BaseClasses.PartialResistance",
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
-        "Buildings.Fluid.Interfaces.PartialTwoPort"
+        "Buildings.Fluid.Interfaces.PartialTwoPort",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal"
       ]
     },
     {
@@ -18984,7 +19568,21 @@
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
-        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.CvData",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Kv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Cv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Av",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.deltaM",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.m_flow_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.dpValve_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.rhoStd",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.init",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_start",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_actual"
       ],
       "definition": true,
       "shortExclType": false,
@@ -18993,7 +19591,9 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve",
         "Buildings.Fluid.BaseClasses.PartialResistance",
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
-        "Buildings.Fluid.Interfaces.PartialTwoPort"
+        "Buildings.Fluid.Interfaces.PartialTwoPort",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal"
       ]
     },
     {
@@ -19279,6 +19879,21 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.res3": {
           "final": false,
           "redeclare": "Buildings.Fluid.Actuators.BaseClasses.PartialTwoWayValve"
+        },
+        "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve.rhoStd": {
+          "expression": {
+            "operator": "function_call",
+            "operands": [
+              {
+                "operator": "Medium.density_pTX",
+                "operands": [
+                  "Medium.density_pTX",
+                  "Medium.density_pTX"
+                ]
+              }
+            ]
+          },
+          "final": false
         }
       },
       "replaceable": false,
@@ -19313,14 +19928,30 @@
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.X_start",
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.C_start",
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.C_nominal",
-        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac"
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.init",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_start",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_actual",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.CvData",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Kv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Cv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Av",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.deltaM",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.m_flow_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.dpValve_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.rhoStd"
       ],
       "definition": true,
       "shortExclType": false,
       "treeList": [
         "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve",
         "Buildings.Fluid.BaseClasses.PartialThreeWayResistance",
-        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations"
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters"
       ]
     },
     {
@@ -19388,7 +20019,21 @@
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.X_start",
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.C_start",
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.C_nominal",
-        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac"
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.init",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_start",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_actual",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.CvData",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Kv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Cv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Av",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.deltaM",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.m_flow_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.dpValve_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.rhoStd"
       ],
       "definition": true,
       "shortExclType": false,
@@ -19396,7 +20041,9 @@
         "Buildings.Fluid.Actuators.Valves.ThreeWayEqualPercentageLinear",
         "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve",
         "Buildings.Fluid.BaseClasses.PartialThreeWayResistance",
-        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations"
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters"
       ]
     },
     {
@@ -19588,7 +20235,21 @@
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.X_start",
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.C_start",
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.C_nominal",
-        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac"
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.init",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_start",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_actual",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.CvData",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Kv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Cv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Av",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.deltaM",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.m_flow_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.dpValve_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.rhoStd"
       ],
       "definition": true,
       "shortExclType": false,
@@ -19596,7 +20257,9 @@
         "Buildings.Fluid.Actuators.Valves.ThreeWayLinear",
         "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve",
         "Buildings.Fluid.BaseClasses.PartialThreeWayResistance",
-        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations"
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters"
       ]
     },
     {
@@ -19840,7 +20503,21 @@
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.X_start",
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.C_start",
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.C_nominal",
-        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac"
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.init",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_start",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.y_actual",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.CvData",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Kv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Cv",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.Av",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.deltaM",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.m_flow_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.dpValve_nominal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters.rhoStd"
       ],
       "definition": true,
       "shortExclType": false,
@@ -19848,7 +20525,9 @@
         "Buildings.Fluid.Actuators.Valves.ThreeWayTable",
         "Buildings.Fluid.Actuators.BaseClasses.PartialThreeWayValve",
         "Buildings.Fluid.BaseClasses.PartialThreeWayResistance",
-        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations"
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations",
+        "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal",
+        "Buildings.Fluid.Actuators.BaseClasses.ValveParameters"
       ]
     },
     {
@@ -20405,7 +21084,6 @@
       "type": "Buildings.Fluid.HeatExchangers.BaseClasses.HADryCoil",
       "name": "Sensible convective heat transfer model for air to water coil",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.HeatExchangers.BaseClasses.HADryCoil.UA_nominal",
@@ -21582,6 +22260,172 @@
       "shortExclType": false
     },
     {
+      "modelicaPath": "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.computeFlowResistance1",
+      "type": "Boolean",
+      "value": true,
+      "name": "=true, compute flow resistance. Set to false to assume no friction",
+      "group": "Medium 1",
+      "tab": "Flow resistance",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.from_dp1",
+      "type": "Boolean",
+      "value": false,
+      "name": "= true, use m_flow = f(dp) else dp = f(m_flow)",
+      "group": "Medium 1",
+      "tab": "Flow resistance",
+      "visible": true,
+      "enable": "computeFlowResistance1",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp1_nominal",
+      "type": "Modelica.Units.SI.PressureDifference",
+      "name": "Pressure difference",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp1_nominal.min": {
+          "expression": 0,
+          "final": false
+        },
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp1_nominal.displayUnit": {
+          "expression": "\"Pa\"",
+          "final": false
+        }
+      },
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.linearizeFlowResistance1",
+      "type": "Boolean",
+      "value": false,
+      "name": "= true, use linear relation between m_flow and dp for any flow rate",
+      "group": "Medium 1",
+      "tab": "Flow resistance",
+      "visible": true,
+      "enable": "computeFlowResistance1",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.deltaM1",
+      "type": "Real",
+      "value": 0.1,
+      "name": "Fraction of nominal flow rate where flow transitions to laminar",
+      "group": "Medium 1",
+      "tab": "Flow resistance",
+      "visible": true,
+      "enable": "computeFlowResistance1",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.computeFlowResistance2",
+      "type": "Boolean",
+      "value": true,
+      "name": "=true, compute flow resistance. Set to false to assume no friction",
+      "group": "Medium 2",
+      "tab": "Flow resistance",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.from_dp2",
+      "type": "Boolean",
+      "value": false,
+      "name": "= true, use m_flow = f(dp) else dp = f(m_flow)",
+      "group": "Medium 2",
+      "tab": "Flow resistance",
+      "visible": true,
+      "enable": "computeFlowResistance2",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp2_nominal",
+      "type": "Modelica.Units.SI.PressureDifference",
+      "name": "Pressure difference",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp2_nominal.min": {
+          "expression": 0,
+          "final": false
+        },
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp2_nominal.displayUnit": {
+          "expression": "\"Pa\"",
+          "final": false
+        }
+      },
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.linearizeFlowResistance2",
+      "type": "Boolean",
+      "value": false,
+      "name": "= true, use linear relation between m_flow and dp for any flow rate",
+      "group": "Medium 2",
+      "tab": "Flow resistance",
+      "visible": true,
+      "enable": "computeFlowResistance2",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.deltaM2",
+      "type": "Real",
+      "value": 0.1,
+      "name": "Fraction of nominal flow rate where flow transitions to laminar",
+      "group": "Medium 2",
+      "tab": "Flow resistance",
+      "visible": true,
+      "enable": "computeFlowResistance2",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
       "modelicaPath": "Buildings.Fluid.Interfaces.PartialFourPort",
       "type": "Buildings.Fluid.Interfaces.PartialFourPort",
       "name": "Partial model with four ports",
@@ -21606,7 +22450,6 @@
       "type": "Buildings.Fluid.Interfaces.PartialFourPortInterface",
       "name": "Partial model with four ports and declaration of quantities that are used by many models",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Interfaces.PartialFourPortInterface.m1_flow_nominal",
@@ -21637,11 +22480,56 @@
       ]
     },
     {
+      "modelicaPath": "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters",
+      "type": "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters",
+      "name": "Parameters for flow resistance for models with four ports",
+      "visible": false,
+      "replaceable": false,
+      "options": [
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.computeFlowResistance1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.from_dp1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp1_nominal",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.linearizeFlowResistance1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.deltaM1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.computeFlowResistance2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.from_dp2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp2_nominal",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.linearizeFlowResistance2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.deltaM2"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters"
+      ]
+    },
+    {
       "modelicaPath": "Buildings.Fluid.Interfaces.StaticFourPortHeatMassExchanger",
       "type": "Buildings.Fluid.Interfaces.StaticFourPortHeatMassExchanger",
       "name": "Partial model transporting two fluid streams between four ports without storing mass or energy",
       "visible": false,
-      "modifiers": {},
+      "modifiers": {
+        "Buildings.Fluid.Interfaces.StaticFourPortHeatMassExchanger.computeFlowResistance1": {
+          "expression": {
+            "operator": ">",
+            "operands": [
+              "dp1_nominal",
+              "Modelica.Constants.eps"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Fluid.Interfaces.StaticFourPortHeatMassExchanger.computeFlowResistance2": {
+          "expression": {
+            "operator": ">",
+            "operands": [
+              "dp2_nominal",
+              "Modelica.Constants.eps"
+            ]
+          },
+          "final": true
+        }
+      },
       "replaceable": false,
       "options": [
         "Buildings.Fluid.Interfaces.StaticFourPortHeatMassExchanger.prescribedHeatFlowRate1",
@@ -21671,14 +22559,25 @@
         "Buildings.Fluid.Interfaces.PartialFourPort.port_a1",
         "Buildings.Fluid.Interfaces.PartialFourPort.port_b1",
         "Buildings.Fluid.Interfaces.PartialFourPort.port_a2",
-        "Buildings.Fluid.Interfaces.PartialFourPort.port_b2"
+        "Buildings.Fluid.Interfaces.PartialFourPort.port_b2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.computeFlowResistance1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.from_dp1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp1_nominal",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.linearizeFlowResistance1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.deltaM1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.computeFlowResistance2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.from_dp2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp2_nominal",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.linearizeFlowResistance2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.deltaM2"
       ],
       "definition": true,
       "shortExclType": false,
       "treeList": [
         "Buildings.Fluid.Interfaces.StaticFourPortHeatMassExchanger",
         "Buildings.Fluid.Interfaces.PartialFourPortInterface",
-        "Buildings.Fluid.Interfaces.PartialFourPort"
+        "Buildings.Fluid.Interfaces.PartialFourPort",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters"
       ]
     },
     {
@@ -21735,7 +22634,17 @@
         "Buildings.Fluid.Interfaces.PartialFourPort.port_a1",
         "Buildings.Fluid.Interfaces.PartialFourPort.port_b1",
         "Buildings.Fluid.Interfaces.PartialFourPort.port_a2",
-        "Buildings.Fluid.Interfaces.PartialFourPort.port_b2"
+        "Buildings.Fluid.Interfaces.PartialFourPort.port_b2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.computeFlowResistance1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.from_dp1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp1_nominal",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.linearizeFlowResistance1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.deltaM1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.computeFlowResistance2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.from_dp2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp2_nominal",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.linearizeFlowResistance2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.deltaM2"
       ],
       "definition": true,
       "shortExclType": false,
@@ -21743,7 +22652,8 @@
         "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectiveness",
         "Buildings.Fluid.Interfaces.StaticFourPortHeatMassExchanger",
         "Buildings.Fluid.Interfaces.PartialFourPortInterface",
-        "Buildings.Fluid.Interfaces.PartialFourPort"
+        "Buildings.Fluid.Interfaces.PartialFourPort",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters"
       ]
     },
     {
@@ -21823,7 +22733,17 @@
         "Buildings.Fluid.Interfaces.PartialFourPort.port_a1",
         "Buildings.Fluid.Interfaces.PartialFourPort.port_b1",
         "Buildings.Fluid.Interfaces.PartialFourPort.port_a2",
-        "Buildings.Fluid.Interfaces.PartialFourPort.port_b2"
+        "Buildings.Fluid.Interfaces.PartialFourPort.port_b2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.computeFlowResistance1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.from_dp1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp1_nominal",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.linearizeFlowResistance1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.deltaM1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.computeFlowResistance2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.from_dp2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp2_nominal",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.linearizeFlowResistance2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.deltaM2"
       ],
       "definition": true,
       "shortExclType": false,
@@ -21832,7 +22752,8 @@
         "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectiveness",
         "Buildings.Fluid.Interfaces.StaticFourPortHeatMassExchanger",
         "Buildings.Fluid.Interfaces.PartialFourPortInterface",
-        "Buildings.Fluid.Interfaces.PartialFourPort"
+        "Buildings.Fluid.Interfaces.PartialFourPort",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters"
       ]
     },
     {
@@ -21900,7 +22821,17 @@
         "Buildings.Fluid.Interfaces.PartialFourPort.port_a1",
         "Buildings.Fluid.Interfaces.PartialFourPort.port_b1",
         "Buildings.Fluid.Interfaces.PartialFourPort.port_a2",
-        "Buildings.Fluid.Interfaces.PartialFourPort.port_b2"
+        "Buildings.Fluid.Interfaces.PartialFourPort.port_b2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.computeFlowResistance1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.from_dp1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp1_nominal",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.linearizeFlowResistance1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.deltaM1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.computeFlowResistance2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.from_dp2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp2_nominal",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.linearizeFlowResistance2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.deltaM2"
       ],
       "definition": true,
       "shortExclType": false,
@@ -21910,7 +22841,8 @@
         "Buildings.Fluid.HeatExchangers.BaseClasses.PartialEffectiveness",
         "Buildings.Fluid.Interfaces.StaticFourPortHeatMassExchanger",
         "Buildings.Fluid.Interfaces.PartialFourPortInterface",
-        "Buildings.Fluid.Interfaces.PartialFourPort"
+        "Buildings.Fluid.Interfaces.PartialFourPort",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters"
       ]
     },
     {
@@ -22542,6 +23474,108 @@
       ]
     },
     {
+      "modelicaPath": "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.computeFlowResistance",
+      "type": "Boolean",
+      "value": true,
+      "name": "=true, compute flow resistance. Set to false to assume no friction",
+      "group": "",
+      "tab": "Flow resistance",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.from_dp",
+      "type": "Boolean",
+      "value": false,
+      "name": "= true, use m_flow = f(dp) else dp = f(m_flow)",
+      "group": "",
+      "tab": "Flow resistance",
+      "visible": true,
+      "enable": "computeFlowResistance",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.dp_nominal",
+      "type": "Modelica.Units.SI.PressureDifference",
+      "name": "Pressure difference",
+      "group": "Nominal condition",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.dp_nominal.min": {
+          "expression": 0,
+          "final": false
+        },
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.dp_nominal.displayUnit": {
+          "expression": "\"Pa\"",
+          "final": false
+        }
+      },
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.linearizeFlowResistance",
+      "type": "Boolean",
+      "value": false,
+      "name": "= true, use linear relation between m_flow and dp for any flow rate",
+      "group": "",
+      "tab": "Flow resistance",
+      "visible": true,
+      "enable": "computeFlowResistance",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.deltaM",
+      "type": "Real",
+      "value": 0.1,
+      "name": "Fraction of nominal flow rate where flow transitions to laminar",
+      "group": "",
+      "tab": "Flow resistance",
+      "visible": true,
+      "enable": "computeFlowResistance",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters",
+      "type": "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters",
+      "name": "Parameters for flow resistance for models with two ports",
+      "visible": false,
+      "replaceable": false,
+      "options": [
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.computeFlowResistance",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.from_dp",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.dp_nominal",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.linearizeFlowResistance",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.deltaM"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters"
+      ]
+    },
+    {
       "modelicaPath": "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger",
       "type": "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger",
       "name": "Partial model transporting one fluid stream with storing mass or energy",
@@ -22554,6 +23588,10 @@
         "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.port_b.h_outflow.start": {
           "expression": "h_outflow_start",
           "final": false
+        },
+        "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.computeFlowResistance": {
+          "expression": true,
+          "final": true
         }
       },
       "replaceable": false,
@@ -22576,14 +23614,20 @@
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
-        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.computeFlowResistance",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.from_dp",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.dp_nominal",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.linearizeFlowResistance",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.deltaM"
       ],
       "definition": true,
       "shortExclType": false,
       "treeList": [
         "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger",
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
-        "Buildings.Fluid.Interfaces.PartialTwoPort"
+        "Buildings.Fluid.Interfaces.PartialTwoPort",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters"
       ]
     },
     {
@@ -22624,7 +23668,12 @@
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
-        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.computeFlowResistance",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.from_dp",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.dp_nominal",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.linearizeFlowResistance",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.deltaM"
       ],
       "definition": true,
       "shortExclType": false,
@@ -22632,7 +23681,8 @@
         "Buildings.Fluid.HeatExchangers.HeaterCooler_u",
         "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger",
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
-        "Buildings.Fluid.Interfaces.PartialTwoPort"
+        "Buildings.Fluid.Interfaces.PartialTwoPort",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters"
       ]
     },
     {
@@ -23350,6 +24400,14 @@
         "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.Medium2": {
           "final": false,
           "redeclare": "Buildings.Media.Air"
+        },
+        "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.computeFlowResistance1": {
+          "expression": true,
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU.computeFlowResistance2": {
+          "expression": true,
+          "final": true
         }
       },
       "replaceable": false,
@@ -23389,14 +24447,25 @@
         "Buildings.Fluid.Interfaces.PartialFourPort.port_a1",
         "Buildings.Fluid.Interfaces.PartialFourPort.port_b1",
         "Buildings.Fluid.Interfaces.PartialFourPort.port_a2",
-        "Buildings.Fluid.Interfaces.PartialFourPort.port_b2"
+        "Buildings.Fluid.Interfaces.PartialFourPort.port_b2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.computeFlowResistance1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.from_dp1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp1_nominal",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.linearizeFlowResistance1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.deltaM1",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.computeFlowResistance2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.from_dp2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.dp2_nominal",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.linearizeFlowResistance2",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters.deltaM2"
       ],
       "definition": true,
       "shortExclType": false,
       "treeList": [
         "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU",
         "Buildings.Fluid.Interfaces.PartialFourPortInterface",
-        "Buildings.Fluid.Interfaces.PartialFourPort"
+        "Buildings.Fluid.Interfaces.PartialFourPort",
+        "Buildings.Fluid.Interfaces.FourPortFlowResistanceParameters"
       ]
     },
     {
@@ -48906,7 +49975,6 @@
       "type": "Buildings.Templates.AirHandlersFans.Components.Data.PartialController",
       "name": "Record for controller interface class",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Data.PartialController.typ",
@@ -48994,7 +50062,6 @@
       "type": "Buildings.Templates.ZoneEquipment.Interfaces.Bus",
       "name": "Control bus for zone equipment",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.ZoneEquipment.Interfaces.Bus.damVAV",
@@ -49587,7 +50654,6 @@
       "type": "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler",
       "name": "Configuration parameters for air handler interface class",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typ",
@@ -49790,7 +50856,6 @@
       "type": "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler",
       "name": "Record for air handler interface class",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.cfg",
@@ -51185,7 +52250,6 @@
       "type": "Buildings.Fluid.FixedResistances.LosslessPipe",
       "name": "Pipe with no flow friction and no heat transfer",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Fluid.FixedResistances.LosslessPipe.from_dp",
@@ -51823,7 +52887,6 @@
       "type": "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController",
       "name": "Record for multiple-zone VAV controller",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.typSecOut",
@@ -52097,7 +53160,6 @@
       "type": "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone",
       "name": "Configuration parameters for multiple-zone VAV",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typCoiHeaPre",
@@ -52427,6 +53489,54 @@
             ]
           },
           "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.typDamOut": {
+          "expression": "cfg.typDamOut",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.typDamOutMin": {
+          "expression": "cfg.typDamOutMin",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.typDamRel": {
+          "expression": "cfg.typDamRel",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.typDamRet": {
+          "expression": "cfg.typDamRet",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.typFanRel": {
+          "expression": "cfg.typFanRel",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.typFanRet": {
+          "expression": "cfg.typFanRet",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.nFanRel": {
+          "expression": "cfg.nFanRel",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.nFanRet": {
+          "expression": "cfg.nFanRet",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.damOut.m_flow_nominal": {
+          "expression": "mAirSup_flow_nominal",
+          "final": false
+        },
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.damOutMin.m_flow_nominal": {
+          "expression": "mOutMin_flow_nominal",
+          "final": false
+        },
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.damRel.m_flow_nominal": {
+          "expression": "mAirRet_flow_nominal",
+          "final": false
+        },
+        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.damRet.m_flow_nominal": {
+          "expression": "mAirRet_flow_nominal",
+          "final": false
         }
       },
       "replaceable": false,
@@ -52441,13 +53551,29 @@
         "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.id_souHeaWat",
         "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.ctl",
         "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.mAirSup_flow_nominal",
-        "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.mAirRet_flow_nominal"
+        "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.mAirRet_flow_nominal",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamOut",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamOutMin",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamRet",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typFanRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typFanRet",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.nFanRet",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.nFanRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.mOutMin_flow_nominal",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damOut",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damOutMin",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.damRet",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.fanRel",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.fanRet"
       ],
       "definition": true,
       "shortExclType": false,
       "treeList": [
         "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone",
-        "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler"
+        "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler",
+        "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection"
       ]
     },
     {
@@ -52790,7 +53916,6 @@
       "type": "Buildings.Templates.ZoneEquipment.Components.Data.PartialController",
       "name": "Record for controller interface class",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.ZoneEquipment.Components.Data.PartialController.typ"
@@ -53387,7 +54512,6 @@
       "type": "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal",
       "name": "Configuration parameters for air terminal unit interface class",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal.typ",
@@ -53588,7 +54712,6 @@
       "type": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal",
       "name": "Record for air terminal unit interface class",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.cfg",
@@ -54776,7 +55899,6 @@
       "type": "Buildings.Templates.ZoneEquipment.Components.Data.VAVBoxController",
       "name": "Record for VAV terminal unit controller",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.ZoneEquipment.Components.Data.VAVBoxController.stdVen",
@@ -54882,7 +56004,6 @@
       "type": "Buildings.Templates.ZoneEquipment.Configuration.VAVBox",
       "name": "Configuration parameters for VAV terminal unit",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.ZoneEquipment.Configuration.VAVBox.typDamVAV",
@@ -64293,7 +65414,6 @@
       "type": "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox",
       "name": "Guideline 36 controller for VAV terminal unit",
       "visible": false,
-      "modifiers": {},
       "replaceable": false,
       "options": [
         "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_occSen",
