@@ -172,8 +172,8 @@ describe("Simple resolveToValue tests (no type resolving/evaluation)", () => {
 
 describe("Test set", () => {
   it("Simple expression evaluation without use of context", () => {
-    const expectedValue = 1;
-    const simpleExpression = buildExpression("none", [expectedValue]);
+    const expectedValue = true;
+    const simpleExpression = buildExpression(">", [2, 1]);
     const value = evaluate(simpleExpression);
     expect(value).toEqual(expectedValue);
   });
@@ -591,7 +591,7 @@ describe("ctl.have_CO2Sen enable expression", () => {
     const firstOperand = {
       operator: "==",
       operands: [
-        "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.typ",
+        "typ",
         "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone",
       ],
     };
@@ -697,10 +697,7 @@ describe("ctl.have_CO2Sen enable expression", () => {
 
     const thirdOperand = {
       operator: "==",
-      operands: [
-        "stdVen",
-        stdVenValue,
-      ],
+      operands: ["stdVen", stdVenValue],
     };
 
     const stdVen = context.getValue("stdVen", "ctl");
@@ -760,9 +757,7 @@ describe("Scope tests", () => {
     // test modifier value
     // modifier points to the correct parameter definition (secOutRel.dat location)
     // After parser refactoring, instance references are stored as relative paths
-    expect(context.mods["secOutRel.secOut.dat"].expression.operands[0]).toEqual(
-      "dat",
-    );
+    expect(context.mods["secOutRel.secOut.dat"].expression).toEqual("dat");
 
     // scope is wrong when we attempt to get value
     // we get a modifier that has a scope baked in. Do we need to know where the modifier is from to evaluate it?
@@ -1204,5 +1199,34 @@ describe("Specific parameter debugging", () => {
     ) as FlatConfigOptionGroup;
 
     expect(coiCooDisplayOption).toBeUndefined();
+  });
+
+  it("Comparison with literal string assignment", () => {
+    const selections = {
+      "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo":
+        '"coiCoo.typVal"', // literal string matching an instance name
+    };
+    const coiCooConfig = addNewConfig(
+      "MZ Template with dummy coiCoo assignment",
+      mzTemplate,
+      selections,
+    );
+
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      coiCooConfig as ConfigInterface,
+      allOptions,
+      selections,
+    );
+
+    // Surrounding quotes mark a string literal: no variable lookup, compares as the string "coiCoo.typVal"
+    const expr = buildExpression("==", ["coiCoo", '"coiCoo.typVal"']);
+    expect(evaluate(expr, context)).toBeTruthy();
+    // No surrounding quotes: coiCoo.typVal is a variable reference, looked up in context
+    const expr1 = buildExpression("==", [
+      "coiCoo.typVal",
+      "Buildings.Templates.Components.Types.Valve.TwoWayModulating",
+    ]);
+    expect(evaluate(expr1, context)).toBeTruthy();
   });
 });

@@ -24,7 +24,7 @@ import * as mj from "./mj-types";
  * TODO: remove the modification store it is not used
  */
 
-import { evaluateExpression, Expression, getExpression } from "./expression";
+import { Expression, getExpression } from "./expression";
 
 const modStore: Map<string, Modification> = new Map();
 
@@ -159,7 +159,7 @@ function unpackRedeclaration(props: ModificationProps) {
       componentClause1.component_declaration1.declaration;
     const name = redeclareDefinition.identifier;
 
-    let bindingValue: Expression | string | undefined = undefined;
+    let bindingValue: Expression | Literal | undefined = undefined;
     const childMods: Modification[] = [];
     let isRecordBinding = false;
 

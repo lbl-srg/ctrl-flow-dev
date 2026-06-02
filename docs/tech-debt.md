@@ -20,7 +20,7 @@ When the schedule table is usable, there will be a new data type to store the va
 ## Adding numbers and literal strings
 
 - Integer/Float handling will need to be integrated. There are some assumptions that we are only dealing with strings/bools/type references
-- literal strings are not properly escaped. Currently the interpreter attempts to resolve strings as symbols and if it fails it just returns the string. This is a problem if a literal string mirrors a variable name.
+- ~~literal strings are not properly escaped.~~ Resolved: literal strings are now stored escaped within quotes in `templates.json` (e.g. `"\"foo\""`) to distinguish them from variable references. The interpreter JSON-parses such values to recover the plain string.
 
 ## Modelica Writer
 
