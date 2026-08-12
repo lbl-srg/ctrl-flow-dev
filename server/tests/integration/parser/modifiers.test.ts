@@ -158,6 +158,17 @@ describe("Modifications", () => {
 
     expect(mod).toBeUndefined();
   });
+
+  afterAll(() => {
+    // Generate options-TestTemplate.json for client tests
+    const outputPath = path.resolve(
+      __dirname,
+      "../../../../client/tests/data/options-TestTemplate.json",
+    );
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+    fs.writeFileSync(outputPath, JSON.stringify(tOptions, null, 2));
+    console.log(`Generated: ${outputPath}`);
+  });
 });
 
 describe("Record Binding Modifications", () => {
