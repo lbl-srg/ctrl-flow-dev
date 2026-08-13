@@ -16,6 +16,11 @@ export interface FlatConfigOptionGroup {
   groupName: string;
   selectionPath: string;
   items: (FlatConfigOptionGroup | FlatConfigOption)[];
+  /** Set for groups created from Dialog tab/group annotations, which are
+   * rendered without the frame of composition groups. Only tabs indent
+   * their content: a Dialog group may be nested under a tab but never
+   * under another Dialog group. */
+  dialog?: "tab" | "group";
 }
 
 export interface FlatConfigOption {
@@ -116,6 +121,15 @@ const SlideOut = ({
   }
 
   const displayedOptions = mapConfigContextToDisplayOptions(context);
+  // The template itself is wrapped in a composition group (its own frame and
+  // label), but the config panel already shows the template's name in the
+  // header above: unwrap that top-level frame so it isn't shown twice
+  const rootItems =
+    displayedOptions.length === 1 &&
+    "groupName" in displayedOptions[0] &&
+    !(displayedOptions[0] as FlatConfigOptionGroup).dialog
+      ? (displayedOptions[0] as FlatConfigOptionGroup).items
+      : displayedOptions;
 
   function renderDisplayOptions(
     items: (FlatConfigOptionGroup | FlatConfigOption)[],
@@ -124,15 +138,33 @@ const SlideOut = ({
       (option: FlatConfigOptionGroup | FlatConfigOption, index) => {
         if ("groupName" in option) {
           const optionGroup = option as FlatConfigOptionGroup;
+          const showLabel =
+            optionGroup.groupName !== "Configuration" &&
+            !(optionGroup.dialog === "group" && optionGroup.items.length === 1);
 
           return (
             <div
-              className="display-group-container"
+              className={[
+                optionGroup.dialog
+                  ? `display-dialog-${optionGroup.dialog}-container`
+                  : "display-group-container",
+                !showLabel && "display-group-container-unlabeled",
+              ]
+                .filter(Boolean)
+                .join(" ")}
               key={optionGroup.selectionPath}
             >
-              <label className="display-group-label">
-                {optionGroup.groupName}
-              </label>
+              {showLabel && (
+                <label
+                  className={
+                    optionGroup.dialog
+                      ? "display-group-label"
+                      : "display-group-label display-group-label-component"
+                  }
+                >
+                  {optionGroup.groupName}
+                </label>
+              )}
               {renderDisplayOptions(optionGroup.items)}
             </div>
           );
@@ -165,7 +197,7 @@ const SlideOut = ({
           onChange={updateConfigName}
           placeholder="Name Your Configuration"
         />*/}
-        {renderDisplayOptions(displayedOptions)}
+        {renderDisplayOptions(rootItems)}
         <div className="submit-container">
           <button type="submit">{itl.terms.save}</button>
         </div>

@@ -12,6 +12,11 @@ export interface FlatConfigOptionGroup {
   groupName: string;
   selectionPath: string;
   items: DisplayItem[];
+  /** Set for groups created from Dialog tab/group annotations, which are
+   * rendered without the frame of composition groups. Only tabs indent
+   * their content: a Dialog group may be nested under a tab but never
+   * under another Dialog group. */
+  dialog?: "tab" | "group";
 }
 
 export interface FlatConfigOption {
@@ -144,6 +149,7 @@ export function _formatDisplayGroup(
           `${paramInstance.instancePath}.__dialog.${key}`,
         ),
         items: [],
+        dialog: group ? "group" : "tab",
       };
       dialogContainers[key] = container;
       const parentItems =

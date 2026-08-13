@@ -1451,11 +1451,13 @@ describe("Display of Dialog group and tab annotations", () => {
       (item) => isGroup(item) && item.groupName === "Tabby",
     ) as FlatConfigOptionGroup;
     expect(tabbyGroup).toBeTruthy();
+    expect(tabbyGroup.dialog).toBe("tab");
 
     const groupyGroup = tabbyGroup.items.find(
       (item) => isGroup(item) && item.groupName === "Groupy",
     ) as FlatConfigOptionGroup;
     expect(groupyGroup).toBeTruthy();
+    expect(groupyGroup.dialog).toBe("group");
 
     const nullableBool = groupyGroup.items.find(
       (item) =>
@@ -1555,6 +1557,11 @@ describe("Display of Dialog group and tab annotations", () => {
     );
     expect(compositionGroups.length).toBeGreaterThan(0);
     expect(dialogGroups[0]).not.toBe(compositionGroups[0]);
+
+    // The dialog flag differentiates the two kinds of groups so that they
+    // can be rendered differently
+    expect(dialogGroups[0].dialog).toBe("group");
+    expect(compositionGroups[0].dialog).toBeUndefined();
   });
 
   it("Registers a Dialog group at the declaration position of a parameter hidden by a final assignment", () => {
