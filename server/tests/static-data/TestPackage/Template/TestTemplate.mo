@@ -6,6 +6,8 @@ model TestTemplate "Test Template"
   extends TestPackage.Interface.ExtendInterface(
     interface_param="Updated Value",
     interface_modified_bool=false,
+    final nested_final_bool=true,
+    final nested_hidden_group_bool=true,
     nested_interface_param="Template mod of the nested param");
 
   /*
@@ -75,6 +77,15 @@ model TestTemplate "Test Template"
     annotation (Evaluate=true, Dialog(group="Groupy", tab="Tabby", enable=true));
 
   /*
+    Test Dialog group name matching the description of a composition group
+    (the description of selectable_component): both groups must be displayed
+    separately
+  */
+  parameter Boolean collision_bool=true
+    "Test Dialog group name collision"
+    annotation (Evaluate=true, Dialog(group="Replaceable Component", enable=true));
+
+  /*
     Bool assigned by expression
   */
   parameter Boolean expression_bool=dat.nested_bool;
@@ -136,6 +147,15 @@ model TestTemplate "Test Template"
         "Chocolate",
         choice=TestPackage.Types.IceCream.Vanilla
         "Vanilla"));
+
+  /*
+    Test that the display position of the "Final Group" Dialog group follows
+    the declaration of nested_final_bool in NestedExtendInterface, although
+    that parameter is hidden by a final assignment in the extends clause
+  */
+  parameter Boolean final_group_member_bool=true
+    "Member of the Dialog group registered by nested_final_bool"
+    annotation (Evaluate=true, Dialog(group="Final Group", enable=true));
 
   // redclare modifier params
   TestPackage.Component.FourthComponent redeclare_param_01(

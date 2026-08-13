@@ -115,29 +115,97 @@ export function _formatDisplayGroup(
   const orderedOptions = [...(option.options ?? [])].sort(
     (a, b) => declaringClassRank(b) - declaringClassRank(a),
   );
-  const mappedItems = orderedOptions
-    .flatMap((o) => {
-      const childOption = context.options[o];
-      // Long class definitions with child options form a "group" of inputs in the configuration panel
-      if (
-        childOption.definition &&
-        !childOption.shortExclType &&
-        childOption?.options?.length
-      ) {
-        return _formatDisplayGroup(childOption, paramInstance, context);
-      } else {
-        const paramName = o.split(".").pop();
-        const childInstancePath = [paramInstance.instancePath, paramName]
-          .filter((p) => p !== "")
-          .join(".");
-        const oInstance = context.getOptionInstance(childInstancePath);
-        const oOptions = oInstance
-          ? _formatDisplayItem(oInstance, option.modelicaPath, context)
-          : null;
-        return oOptions;
+
+  // Parameters are laid out following the Dialog annotation of their
+  // declaration: parameters with no tab/group annotation are displayed
+  // headerless at the top, followed by the Dialog tabs and groups in order
+  // of first occurrence. The UI has no tab widget so tabs are rendered as
+  // groups enclosing their Dialog groups. Grouping is applied to the
+  // flattened, sorted parameter list so that identical group names merge
+  // across the inheritance hierarchy. Groups resulting from model
+  // composition (nested composite components) are never merged into Dialog
+  // groups: they keep their own nesting level, inside their Dialog group if
+  // their declaration is annotated.
+  const ungroupedItems: DisplayItem[] = [];
+  const groupedItems: DisplayItem[] = [];
+  const dialogContainers: { [key: string]: FlatConfigOptionGroup } = {};
+
+  const dialogContainer = (tab: string, group: string): DisplayItem[] => {
+    if (!tab && !group) {
+      return ungroupedItems;
+    }
+    const key = `${tab}|${group}`;
+    let container = dialogContainers[key];
+    if (!container) {
+      container = {
+        groupName: group || tab,
+        selectionPath: constructSelectionPath(
+          option.modelicaPath,
+          `${paramInstance.instancePath}.__dialog.${key}`,
+        ),
+        items: [],
+      };
+      dialogContainers[key] = container;
+      const parentItems =
+        group && tab ? dialogContainer(tab, "") : groupedItems;
+      parentItems.push(container);
+    }
+    return container.items;
+  };
+
+  orderedOptions.forEach((o) => {
+    const childOption = context.options[o];
+    // Register the Dialog container at the parameter's position even if the
+    // parameter itself is not displayed (e.g. hidden by a final assignment
+    // in a derived class): Modelica tools order tabs and groups by the
+    // position of the first parameter declared with the annotation, whether
+    // that parameter is displayed or not.
+    const tab = typeof childOption.tab === "string" ? childOption.tab : "";
+    const group =
+      typeof childOption.group === "string" ? childOption.group : "";
+    const containerItems = dialogContainer(tab, group);
+    let childItems: DisplayItem[];
+    // Long class definitions with child options form a "group" of inputs in the configuration panel
+    if (
+      childOption.definition &&
+      !childOption.shortExclType &&
+      childOption?.options?.length
+    ) {
+      const childGroup = _formatDisplayGroup(
+        childOption,
+        paramInstance,
+        context,
+      );
+      childItems = childGroup ? [childGroup] : [];
+    } else {
+      const paramName = o.split(".").pop();
+      const childInstancePath = [paramInstance.instancePath, paramName]
+        .filter((p) => p !== "")
+        .join(".");
+      const oInstance = context.getOptionInstance(childInstancePath);
+      childItems = oInstance
+        ? _formatDisplayItem(oInstance, option.modelicaPath, context)
+        : [];
+    }
+    if (childItems.length) {
+      containerItems.push(...childItems);
+    }
+  });
+
+  // Dialog containers whose parameters are all hidden are not displayed
+  const pruneEmptyContainers = (items: DisplayItem[]): DisplayItem[] =>
+    items.filter((item) => {
+      if ("groupName" in item) {
+        item.items = pruneEmptyContainers(item.items);
+        return item.items.length > 0;
       }
-    })
-    .filter((displayOption) => !!displayOption) as DisplayItem[];
+      return true;
+    });
+
+  const mappedItems = [
+    ...ungroupedItems,
+    ...pruneEmptyContainers(groupedItems),
+  ];
 
   const group =
     mappedItems && mappedItems.length
