@@ -104,8 +104,19 @@ export function _formatDisplayGroup(
     option.modelicaPath,
     instancePath,
   );
-  const mappedItems = option.options
-    ?.flatMap((o) => {
+  // `option.options` lists the parameters declared in the class itself first,
+  // followed by the inherited parameters. Modelica tools display inherited
+  // parameters first, starting with the deepest class in the inheritance tree:
+  // reorder by declaring class, from the last treeList entry (deepest base
+  // class) to the first (the class itself).
+  const treeList = option.treeList ?? [];
+  const declaringClassRank = (path: string) =>
+    treeList.indexOf(path.split(".").slice(0, -1).join("."));
+  const orderedOptions = [...(option.options ?? [])].sort(
+    (a, b) => declaringClassRank(b) - declaringClassRank(a),
+  );
+  const mappedItems = orderedOptions
+    .flatMap((o) => {
       const childOption = context.options[o];
       // Long class definitions with child options form a "group" of inputs in the configuration panel
       if (

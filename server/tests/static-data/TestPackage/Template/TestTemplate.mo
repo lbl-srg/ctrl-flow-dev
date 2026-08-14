@@ -5,6 +5,7 @@ model TestTemplate "Test Template"
   */
   extends TestPackage.Interface.ExtendInterface(
     interface_param="Updated Value",
+    interface_modified_bool=false,
     nested_interface_param="Template mod of the nested param");
 
   /*
