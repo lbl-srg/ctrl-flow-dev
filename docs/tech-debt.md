@@ -56,6 +56,10 @@ The current approach is a simplistic and not very flexible. A more robust approa
 
 To implement this, the grep command can continue to be used (by changing the template identifier), however the process for finding subpackages would need to be tweaked a bit in the parser since they are not explicitly listed from the grep command.
 
+## Parser Performance
+
+~~`npm run parseTemplateJSON` scaled poorly (minutes, growing with each new template added under `Buildings.Templates`) because two hot paths recomputed work that is invariant for the lifetime of a run: `loader()` in `server/src/parser/loader.ts` re-resolved a Modelica class name to a file path via `fs.existsSync` directory walks on every lookup, and `LongClass.getChildElements()` in `server/src/parser/parser.ts` re-walked the full `extends` inheritance chain on every call. Both are now memoized (the loader cache is cleared in `prependToModelicaJsonPath` for test isolation).~~ Resolved: both are now cached, cutting a ~7 minute run to ~4 seconds with identical output. If parse time regresses again, profile with `node --cpu-prof` before assuming it's inherent to library size — an unmemoized traversal is the more likely culprit.
+
 ## Confusion introduced by having a single data type `Option` instead of two
 
 The `Option` format is confusing. It mixes the template structure with UI in a way that is hard to discern. An `Option`'s `options` can either be items to put in a dropdown, OR child options to recursively visit.
