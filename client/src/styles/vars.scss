@@ -25,3 +25,13 @@
 
   --footer-height: 5rem;
 }
+
+// normalize.css and pico.css both set `line-height` on the root element via
+// zero-specificity `:where()` selectors, so whichever one is later in the
+// compiled stylesheet wins. Production builds concatenate CSS modules in a
+// different order than the dev server, which flips the winner and shrinks
+// line-height app-wide. Pin it explicitly here (real specificity) so it
+// can't lose to either vendor reset regardless of build order.
+html {
+  line-height: var(--line-height);
+}
