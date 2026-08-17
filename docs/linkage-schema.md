@@ -137,6 +137,8 @@ Options have a recursive structure with each `Option` potentially having child `
 
 This one-to-many relationship creates the tree representing the nodes that make up a template.
 
+See [ui-design-choices.md](./ui-design-choices.md) for how the front-end interprets `group`/`tab` to build the configuration panel's display order and layout.
+
 ### Expressions
 
 ```typescript

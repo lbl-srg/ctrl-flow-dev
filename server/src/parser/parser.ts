@@ -572,6 +572,12 @@ export class LongClass extends Element {
     mods: Modification[] | undefined;
     deadEnd: boolean;
   }> = [];
+  // getChildElements() is a pure function of elementList/extendsInfo, both of
+  // which are only ever populated once, in the constructor. It is called
+  // repeatedly (directly and via getInputs()) during traversal, so cache its
+  // result per useDeadEnd value rather than recomputing the inheritance walk
+  // every time.
+  private _childElementsCache = new Map<boolean, Element[]>();
 
   get mods(): Modification[] | undefined {
     const all = this.extendsInfo.flatMap((e) => e.mods ?? []);
@@ -657,6 +663,11 @@ export class LongClass extends Element {
    * Returns the list of elements with all inherited elements flattened
    */
   getChildElements(useDeadEnd = false): Element[] {
+    const cached = this._childElementsCache.get(useDeadEnd);
+    if (cached) {
+      return cached;
+    }
+
     const elements = this.elementList || [];
 
     const inheritedElements = this.extendsInfo.flatMap(({ element, deadEnd }) => {
@@ -664,9 +675,11 @@ export class LongClass extends Element {
       return element.getChildElements(useDeadEnd);
     });
 
-    return [...elements, ...inheritedElements].filter(
+    const result = [...elements, ...inheritedElements].filter(
       (el) => Object.keys(el.getInputs({}, false)).length > 0,
     );
+    this._childElementsCache.set(useDeadEnd, result);
+    return result;
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {

@@ -19,6 +19,8 @@ export let MODELICA_JSON_PATH = [
 // Used for testing: registers additional search paths for Modelica JSON files
 export function prependToModelicaJsonPath(paths: string[]) {
   MODELICA_JSON_PATH = [...paths, ...MODELICA_JSON_PATH];
+  // the search path changed, so any previously cached (mis)resolutions are stale
+  loaderCache.clear();
 }
 
 // The following regexp are prettyPrint safe (\s*) when used with GNU (not BSD) grep -z
@@ -207,19 +209,38 @@ function getPathFromClassName(
   return fs.existsSync(jsonFile) ? jsonFile : null;
 }
 
+// Resolving a class name to a file on disk walks the directory tree with
+// synchronous fs.existsSync calls. The same class name is looked up
+// repeatedly (often thousands of times) while parsing, so cache the result
+// (including "not found") since the search path is static during a run.
+const loaderCache = new Map<string, Object | undefined>();
+
 /**
  * Loads a Modelica JSON file given the full class name.
  * @param className The full Modelica class name to load (e.g. "Library.Package.Class")
  * @returns The loaded JSON object or undefined if not found
  */
 export function loader(className: string): Object | undefined {
-  if (className.startsWith("Modelica") && !className.startsWith("Modelica.Units")) {
-    return undefined;
+  if (loaderCache.has(className)) {
+    return loaderCache.get(className);
   }
-  for (const dir of MODELICA_JSON_PATH) {
-    const jsonFile = getPathFromClassName(className, dir);
-    if (jsonFile && fs.existsSync(jsonFile)) {
-      return require(jsonFile);
+
+  let result: Object | undefined;
+  if (
+    !(
+      className.startsWith("Modelica") &&
+      !className.startsWith("Modelica.Units")
+    )
+  ) {
+    for (const dir of MODELICA_JSON_PATH) {
+      const jsonFile = getPathFromClassName(className, dir);
+      if (jsonFile && fs.existsSync(jsonFile)) {
+        result = require(jsonFile);
+        break;
+      }
     }
   }
+
+  loaderCache.set(className, result);
+  return result;
 }

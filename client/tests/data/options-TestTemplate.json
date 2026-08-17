@@ -804,6 +804,21 @@
     "definition": false,
     "shortExclType": false
   },
+  "TestPackage.Template.TestTemplate.collision_bool": {
+    "modelicaPath": "TestPackage.Template.TestTemplate.collision_bool",
+    "type": "Boolean",
+    "value": true,
+    "name": "Test Dialog group name collision",
+    "group": "Replaceable Component",
+    "tab": "",
+    "visible": true,
+    "enable": true,
+    "modifiers": {},
+    "replaceable": false,
+    "options": [],
+    "definition": false,
+    "shortExclType": false
+  },
   "TestPackage.Template.TestTemplate.expression_bool": {
     "modelicaPath": "TestPackage.Template.TestTemplate.expression_bool",
     "type": "Boolean",
@@ -1006,6 +1021,21 @@
       "TestPackage.Types.IceCream.Chocolate",
       "TestPackage.Types.IceCream.Vanilla"
     ],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestPackage.Template.TestTemplate.final_group_member_bool": {
+    "modelicaPath": "TestPackage.Template.TestTemplate.final_group_member_bool",
+    "type": "Boolean",
+    "value": true,
+    "name": "Member of the Dialog group registered by nested_final_bool",
+    "group": "Final Group",
+    "tab": "",
+    "visible": true,
+    "enable": true,
+    "modifiers": {},
+    "replaceable": false,
+    "options": [],
     "definition": false,
     "shortExclType": false
   },
@@ -1296,6 +1326,36 @@
     "definition": false,
     "shortExclType": false
   },
+  "TestPackage.Interface.NestedExtendInterface.nested_final_bool": {
+    "modelicaPath": "TestPackage.Interface.NestedExtendInterface.nested_final_bool",
+    "type": "Boolean",
+    "value": false,
+    "name": "Nested interface param hidden by a final assignment in TestTemplate",
+    "group": "Final Group",
+    "tab": "",
+    "visible": true,
+    "enable": true,
+    "modifiers": {},
+    "replaceable": false,
+    "options": [],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestPackage.Interface.NestedExtendInterface.nested_hidden_group_bool": {
+    "modelicaPath": "TestPackage.Interface.NestedExtendInterface.nested_hidden_group_bool",
+    "type": "Boolean",
+    "value": false,
+    "name": "Nested interface param whose group has no displayed member",
+    "group": "Hidden Group",
+    "tab": "",
+    "visible": true,
+    "enable": true,
+    "modifiers": {},
+    "replaceable": false,
+    "options": [],
+    "definition": false,
+    "shortExclType": false
+  },
   "TestPackage.Interface.NestedExtendInterface.nested_interface_param": {
     "modelicaPath": "TestPackage.Interface.NestedExtendInterface.nested_interface_param",
     "type": "String",
@@ -1362,6 +1422,8 @@
     "visible": false,
     "replaceable": false,
     "options": [
+      "TestPackage.Interface.NestedExtendInterface.nested_final_bool",
+      "TestPackage.Interface.NestedExtendInterface.nested_hidden_group_bool",
       "TestPackage.Interface.NestedExtendInterface.nested_interface_param",
       "TestPackage.Interface.NestedExtendInterface.nested_outer_param",
       "TestPackage.Interface.NestedExtendInterface.nested_assignment_of_outer_param",
@@ -1389,6 +1451,8 @@
       "TestPackage.Interface.ExtendInterface.interface_param",
       "TestPackage.Interface.ExtendInterface.interface_modified_bool",
       "TestPackage.Interface.ExtendInterface.interface_unmodified_bool",
+      "TestPackage.Interface.NestedExtendInterface.nested_final_bool",
+      "TestPackage.Interface.NestedExtendInterface.nested_hidden_group_bool",
       "TestPackage.Interface.NestedExtendInterface.nested_interface_param",
       "TestPackage.Interface.NestedExtendInterface.nested_outer_param",
       "TestPackage.Interface.NestedExtendInterface.nested_assignment_of_outer_param",
@@ -1415,6 +1479,14 @@
         "expression": false,
         "final": false
       },
+      "TestPackage.Template.TestTemplate.nested_final_bool": {
+        "expression": true,
+        "final": true
+      },
+      "TestPackage.Template.TestTemplate.nested_hidden_group_bool": {
+        "expression": true,
+        "final": true
+      },
       "TestPackage.Template.TestTemplate.nested_interface_param": {
         "expression": "\"Template mod of the nested param\"",
         "final": false
@@ -1429,6 +1501,7 @@
       "TestPackage.Template.TestTemplate.dat",
       "TestPackage.Template.TestTemplate.should_ignore",
       "TestPackage.Template.TestTemplate.nullable_bool",
+      "TestPackage.Template.TestTemplate.collision_bool",
       "TestPackage.Template.TestTemplate.expression_bool",
       "TestPackage.Template.TestTemplate.complex_expression_bool",
       "TestPackage.Template.TestTemplate.test_string_uninitialized",
@@ -1439,6 +1512,7 @@
       "TestPackage.Template.TestTemplate.connector_param_false",
       "TestPackage.Template.TestTemplate.typ",
       "TestPackage.Template.TestTemplate.typ_limited",
+      "TestPackage.Template.TestTemplate.final_group_member_bool",
       "TestPackage.Template.TestTemplate.redeclare_param_01",
       "TestPackage.Template.TestTemplate.redeclare_param_02",
       "TestPackage.Template.TestTemplate.short_path_component",
@@ -1450,6 +1524,8 @@
       "TestPackage.Interface.ExtendInterface.interface_param",
       "TestPackage.Interface.ExtendInterface.interface_modified_bool",
       "TestPackage.Interface.ExtendInterface.interface_unmodified_bool",
+      "TestPackage.Interface.NestedExtendInterface.nested_final_bool",
+      "TestPackage.Interface.NestedExtendInterface.nested_hidden_group_bool",
       "TestPackage.Interface.NestedExtendInterface.nested_interface_param",
       "TestPackage.Interface.NestedExtendInterface.nested_outer_param",
       "TestPackage.Interface.NestedExtendInterface.nested_assignment_of_outer_param",
