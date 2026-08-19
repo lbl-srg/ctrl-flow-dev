@@ -26,12 +26,11 @@
   --footer-height: 5rem;
 }
 
-// normalize.css and pico.css both set `line-height` on the root element via
-// zero-specificity `:where()` selectors, so whichever one is later in the
-// compiled stylesheet wins. Production builds concatenate CSS modules in a
-// different order than the dev server, which flips the winner and shrinks
-// line-height app-wide. Pin it explicitly here (real specificity) so it
-// can't lose to either vendor reset regardless of build order.
+// normalize.css and Pico both set `line-height` on the root element via
+// zero-specificity `:where()` selectors, so whichever ends up later in the
+// compiled stylesheet wins the cascade — order that isn't guaranteed to match
+// source order once webpack concatenates separate CSS modules. Pin it here
+// with real specificity so it can't lose regardless of module order.
 html {
   line-height: var(--line-height);
 }
