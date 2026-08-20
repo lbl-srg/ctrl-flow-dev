@@ -3,7 +3,7 @@ set -x
 
 MODELICA_BUILDINGS_COMMIT=b399379315641da39b231033b0660100fd6489a5
 MODELICA_STANDARD_TAG=v4.0.0 # This should be driven by 'uses' annotation from Buildings/package.mo
-MODELICA_JSON_COMMIT=b715c09d3092192779e8eccd80c813f08ea1a8e6
+MODELICA_JSON_COMMIT=81d90dac01cce41cbb80f7b0171c673dbcd7788a
 
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
