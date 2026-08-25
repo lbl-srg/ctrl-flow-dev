@@ -1177,6 +1177,41 @@ export class ConfigContext {
   }
 
   /**
+   * True if the instance is explicitly disabled by a Dialog(enable=...)
+   * annotation that evaluates to false. A disabled instance disables its
+   * whole subtree: parameters under it are not user-editable regardless of
+   * their own enable annotation. The check operates on the instance tree
+   * (not the class definition) since the same class may be reachable through
+   * both a disabled and an enabled instance path.
+   */
+  _isInstanceDisabled(instancePath: string): boolean {
+    if (!instancePath) {
+      return false;
+    }
+    const { optionPath } = resolvePaths(instancePath, this);
+    const option = optionPath ? this.options[optionPath] : undefined;
+    // `enable` is never synthesized to false by the parser: undefined marks a
+    // plain composite group, whose children remain live
+    if (option?.enable === undefined) {
+      return false;
+    }
+    const scope = instancePath.split(".").slice(0, -1).join(".");
+    const enable = evaluate(option.enable, this, scope);
+    // an unresolvable expression is NOT treated as disabled
+    return !isExpression(enable) && !enable;
+  }
+
+  _isAncestorDisabled(instancePath: string): boolean {
+    const segments = instancePath.split(".");
+    for (let i = segments.length - 1; i > 0; i--) {
+      if (this._isInstanceDisabled(segments.slice(0, i).join("."))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * Returns an OptionInstance for the provided instance path. OptionInstance
    * bakes in useful info related to make it easier to map to a display format
    */
@@ -1234,6 +1269,9 @@ export class ConfigContext {
     display = outerOption
       ? false // outer elements are always hidden
       : !!(display && option.visible);
+    if (display && this._isAncestorDisabled(instancePath)) {
+      display = false; // any disabled ancestor hides the whole subtree
+    }
 
     return { ...optionInstance, display };
   }

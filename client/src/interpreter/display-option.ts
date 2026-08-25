@@ -253,6 +253,12 @@ export function _formatDisplayItem(
       _formatDisplayOption(optionInstance, parentModelicaPath, context),
     );
   }
+
+  // An instance disabled by Dialog(enable=...) hides its whole subtree:
+  // don't descend into its type
+  if (context._isInstanceDisabled(optionInstance.instancePath)) {
+    return displayList;
+  }
   // check if the type needs to be rendered
   // Use optionInstance.value for type lookup:
   // - For non-replaceable components with no binding (value is undefined), lookup fails -> no nested components rendered
