@@ -125,6 +125,23 @@ describe("Modifications", () => {
   });
 
   /**
+   * Regression test: `redeclare final Type comp(field=value)` locks `comp`
+   * to its redeclared type, so nothing downstream can override `field`
+   * either — it must be treated as final even though only the redeclare
+   * itself (not `field`) carries the `final` keyword in the Modelica source.
+   */
+  it("Propagates 'final' from a redeclare onto its own inline bindings", () => {
+    const path = "TestPackage.Template.TestTemplate.redeclare_param_01";
+    const nestedModPath = `${path}.replaceable_param.component_param`;
+    const option = tOptions[path];
+    const mod = option.modifiers[nestedModPath];
+
+    expect(mod).toBeDefined();
+    expect(mod.expression).toEqual('"From final redeclare"');
+    expect(mod.final).toBeTruthy();
+  });
+
+  /**
    * Regression test for https://github.com/lbl-srg/ctrl-flow-dev/issues/418
    * Element-level modifiers on a replaceable must be captured alongside
    * constraining-clause modifiers.

@@ -1087,6 +1087,10 @@
       "TestPackage.Template.TestTemplate.redeclare_param_01.replaceable_param": {
         "final": true,
         "redeclare": "TestPackage.Component.SecondComponent"
+      },
+      "TestPackage.Template.TestTemplate.redeclare_param_01.replaceable_param.component_param": {
+        "expression": "\"From final redeclare\"",
+        "final": true
       }
     },
     "replaceable": false,

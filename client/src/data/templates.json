@@ -52742,24 +52742,24 @@
         },
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.cfg.typCoiHea": {
           "expression": "coiHea.typ",
-          "final": false
+          "final": true
         },
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.cfg.typValCoiHea": {
           "expression": "coiHea.typVal",
-          "final": false
+          "final": true
         },
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.cfg.typDamVAV": {
           "expression": "damVAV.typ",
-          "final": false
+          "final": true
         },
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.cfg.typCtl": {
           "expression": "ctl.typ",
-          "final": false,
+          "final": true,
           "recordBinding": true
         },
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.cfg.stdVen": {
           "expression": "ctl.stdVen",
-          "final": false
+          "final": true
         },
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.dat": {
           "final": false,

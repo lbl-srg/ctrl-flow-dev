@@ -121,6 +121,21 @@ export function createModification(
  * - `redeclare NewType myParam = someValue` -> redeclare="NewType", value="someValue"
  * - `redeclare package Medium = NewMedium` -> redeclare="NewMedium", value=undefined
  */
+/**
+ * A `final` redeclare locks the component to its redeclared type: nothing
+ * downstream can touch it again, so any bindings written inline in that same
+ * redeclare clause are just as unmodifiable even when they don't repeat the
+ * `final` keyword themselves (Buildings authors are inconsistent about this).
+ */
+function markModsFinal(mods: Modification[]): void {
+  mods.forEach((m) => {
+    m.final = true;
+    if (m.mods.length) {
+      markModsFinal(m.mods);
+    }
+  });
+}
+
 function unpackRedeclaration(props: ModificationProps) {
   let { basePath, definition, baseType } = props;
   let redeclaration = (definition as mj.RedeclareMod).element_redeclaration;
@@ -184,6 +199,10 @@ function unpackRedeclaration(props: ModificationProps) {
       }
     }
 
+    if (final) {
+      markModsFinal(childMods);
+    }
+
     // The redeclared type is stored under 'redeclare' property
     const redeclaredType = element.type;
 
@@ -224,6 +243,10 @@ function unpackRedeclaration(props: ModificationProps) {
         [basePath, name].filter((s) => s).join("."),
         redeclaredType,
       );
+    }
+
+    if (final) {
+      markModsFinal(childMods);
     }
 
     return new Modification(
