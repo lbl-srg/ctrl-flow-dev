@@ -22,6 +22,10 @@ export interface OptionInterface {
   options?: string[];
   childOptions?: OptionInterface[];
   valueExpression?: any; //{ expression: string; modelicaPath: string };
+  /** Never synthesized to `false` by the parser: undefined for non-selectable
+   * composite groups; a defined value evaluating to false (explicit
+   * Dialog(enable=...) annotation or dead end) disables the whole subtree of
+   * an instance of this option. */
   enable?: any; // { modelicaPath: string; expression: string };
   modifiers: any;
   choiceModifiers?: { [key: string]: Modifiers };

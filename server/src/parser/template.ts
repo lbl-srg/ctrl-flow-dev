@@ -69,6 +69,9 @@ export interface Option {
   group?: Literal | string;
   tab?: string;
   value?: any;
+  /** Never synthesized to `false` (see parser Element.enable): undefined for
+   * non-selectable composite groups; a defined value evaluating to false
+   * disables the whole subtree of an instance of this option. */
   enable?: any;
   treeList?: string[]; // Only defined if (option.definition)
   modifiers: {

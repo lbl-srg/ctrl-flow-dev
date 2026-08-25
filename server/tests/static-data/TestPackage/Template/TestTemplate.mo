@@ -114,6 +114,13 @@ model TestTemplate "Test Template"
     "Test Integer"
     annotation (Dialog(enable=false));
 
+  // disable condition: explicit disable on a composite component.
+  // Its child inputs must stay populated (only the display is disabled,
+  // for the whole subtree)
+  TestPackage.Component.FirstComponent disabled_component
+    "Disabled composite component"
+    annotation (Dialog(enable=false));
+
   // disable condition: 'connectorSizing=true'
   parameter Integer connector_param
     "Connector Param"

@@ -435,7 +435,12 @@ export abstract class Element {
   duplicate = false;
   elementType!: ElementType;
   replaceable: boolean = false;
-  enable: Expression | boolean = false;
+  /** Never synthesized to `false`: undefined marks a non-selectable composite
+   * group whose children remain live, while a defined `false` (or an
+   * expression evaluating to false) only comes from an explicit
+   * Dialog(enable=...) annotation and disables the whole subtree
+   * client-side. */
+  enable?: Expression | boolean;
   annotation: Modification[] = [];
   deadEnd = false;
   final = false;
@@ -771,10 +776,9 @@ function setUIInfo(instance: Element): void {
 
     instance.group = group ? JSON.parse(group): "";
     instance.tab = tab ? JSON.parse(tab) : "";
-    const _enable = isDisabledGroup ? false : true;
-    instance.enable = enable ?? _enable;
+    instance.enable = enable ?? (isDisabledGroup ? undefined : true);
   } else {
-    instance.enable = isDisabledGroup ? instance.enable : true;
+    instance.enable = isDisabledGroup ? undefined : true;
   }
 }
 
@@ -893,10 +897,10 @@ export class Component extends Element implements Replaceable {
     const typeInstance = typeStore.get(this.type) || null;
     const typeInputs = typeInstance ? typeInstance.getInputs({}, false) : {};
     const visible = setInputVisible(typeInputs[this.type], this);
-    let childInputs =
-      this.enable === false || this.deadEnd
-        ? []
-        : typeInputs[this.type]?.inputs || [];
+    // Dialog(enable=false) must not sever child inputs: hiding the disabled
+    // subtree is handled client-side from `enable` (#599). Only a dead end
+    // (__ctrlFlow(enable=false)) cuts the reference list.
+    let childInputs = this.deadEnd ? [] : typeInputs[this.type]?.inputs || [];
 
     // If a choices annotation is present at the declaration level, restrict
     // childInputs to the specified choices (e.g. a subset of enum values).

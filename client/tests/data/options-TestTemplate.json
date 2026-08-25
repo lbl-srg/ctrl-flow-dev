@@ -454,7 +454,6 @@
     "tab": "",
     "visible": false,
     "modifiers": {},
-    "enable": false,
     "choiceModifiers": {},
     "replaceable": true,
     "options": [
@@ -516,7 +515,6 @@
     "tab": "",
     "visible": true,
     "modifiers": {},
-    "enable": false,
     "choiceModifiers": {},
     "replaceable": true,
     "options": [
@@ -550,7 +548,6 @@
     "group": "",
     "tab": "",
     "visible": false,
-    "enable": false,
     "modifiers": {
       "TestPackage.Template.TestTemplate.third.component_param": {
         "expression": "\"Third Component Template Override\"",
@@ -558,7 +555,13 @@
       }
     },
     "replaceable": false,
-    "options": [],
+    "options": [
+      "TestPackage.Component.ThirdComponent.component_param",
+      "TestPackage.Component.ThirdComponent.selectable_component",
+      "TestPackage.Component.ThirdComponent.container_from_outer",
+      "TestPackage.Interface.PartialComponent.container",
+      "TestPackage.Interface.PartialComponent.icecream"
+    ],
     "definition": false,
     "shortExclType": false
   },
@@ -945,6 +948,25 @@
     "definition": false,
     "shortExclType": false
   },
+  "TestPackage.Template.TestTemplate.disabled_component": {
+    "modelicaPath": "TestPackage.Template.TestTemplate.disabled_component",
+    "type": "TestPackage.Component.FirstComponent",
+    "name": "Disabled composite component",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "enable": false,
+    "modifiers": {},
+    "replaceable": false,
+    "options": [
+      "TestPackage.Component.FirstComponent.component_param",
+      "TestPackage.Component.FirstComponent.datAll",
+      "TestPackage.Interface.PartialComponent.container",
+      "TestPackage.Interface.PartialComponent.icecream"
+    ],
+    "definition": false,
+    "shortExclType": false
+  },
   "TestPackage.Template.TestTemplate.connector_param": {
     "modelicaPath": "TestPackage.Template.TestTemplate.connector_param",
     "type": "Integer",
@@ -1092,7 +1114,6 @@
     "group": "",
     "tab": "",
     "visible": false,
-    "enable": false,
     "modifiers": {
       "TestPackage.Template.TestTemplate.short_path_component.replaceable_param": {
         "final": false,
@@ -1100,7 +1121,11 @@
       }
     },
     "replaceable": false,
-    "options": [],
+    "options": [
+      "TestPackage.Component.FourthComponent.replaceable_param",
+      "TestPackage.Interface.PartialComponent.container",
+      "TestPackage.Interface.PartialComponent.icecream"
+    ],
     "definition": false,
     "shortExclType": false
   },
@@ -1274,10 +1299,12 @@
     "group": "",
     "tab": "",
     "visible": true,
-    "enable": false,
     "modifiers": {},
     "replaceable": false,
-    "options": [],
+    "options": [
+      "TestPackage.Component.FirstComponent",
+      "TestPackage.Component.SecondComponent"
+    ],
     "definition": false,
     "shortExclType": false
   },
@@ -1508,6 +1535,7 @@
       "TestPackage.Template.TestTemplate.test_string_initialized",
       "TestPackage.Template.TestTemplate.test_real",
       "TestPackage.Template.TestTemplate.test_int",
+      "TestPackage.Template.TestTemplate.disabled_component",
       "TestPackage.Template.TestTemplate.connector_param",
       "TestPackage.Template.TestTemplate.connector_param_false",
       "TestPackage.Template.TestTemplate.typ",
@@ -1547,7 +1575,6 @@
     "tab": "",
     "visible": true,
     "modifiers": {},
-    "enable": false,
     "choiceModifiers": {},
     "replaceable": true,
     "options": [
