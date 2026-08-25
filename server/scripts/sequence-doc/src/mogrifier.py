@@ -25,12 +25,44 @@ TABLE_OP_LIST = ['TABLE', 'ROW', 'COLUMN']
 Selections = Dict[str, List]
 
 elements_to_delete = []
+_run_style_name_cache = {}
+_paragraph_style_name_cache = {}
 
 def initialize_remove_list():
-    ''' Resets global remove list to an empty array
+    ''' Resets global remove list and style name caches for a fresh doc
     '''
     global elements_to_delete
     elements_to_delete = []
+    _run_style_name_cache.clear()
+    _paragraph_style_name_cache.clear()
+
+def get_run_style_name(run):
+    ''' Cached lookup of a run's character style name.
+        python-docx re-walks the whole style tree on every call to
+        Styles.default()/get_by_id() with no internal caching, so calling
+        run.style.name for every run in the document (most of which fall
+        back to the default style) made style resolution the dominant cost.
+        The style id -> name mapping can't change while we process a doc,
+        so cache it here keyed by (part, style id).
+    '''
+    key = (run.part, run.element.style)
+    try:
+        return _run_style_name_cache[key]
+    except KeyError:
+        name = run.style.name
+        _run_style_name_cache[key] = name
+        return name
+
+def get_paragraph_style_name(paragraph):
+    ''' Cached lookup of a paragraph's style name, see get_run_style_name
+    '''
+    key = (paragraph.part, paragraph._p.style)
+    try:
+        return _paragraph_style_name_cache[key]
+    except KeyError:
+        name = paragraph.style.name
+        _paragraph_style_name_cache[key] = name
+        return name
 
 def remove_node(node):
     ''' Controls access to a global list for nodes to be deleted
@@ -50,7 +82,7 @@ def remove_element(element):
 def get_heading_level(paragraph):
     ''' Gets heading level of paragraph
     '''
-    style = paragraph.style.name
+    style = get_paragraph_style_name(paragraph)
     match = re.match(r'Heading (\d+)', style)
 
     if not match:
@@ -83,7 +115,7 @@ def remove_info_box(paragraph, run_op_lookup: Dict):
 def remove_section(paragraph: Paragraph, run_op_lookup: Dict):
     ''' Removes a section of text and its siblings
     '''
-    style = paragraph.style.name
+    style = get_paragraph_style_name(paragraph)
     level = get_heading_level(paragraph)
     
     if style in ('Info. box', 'InfoboxList', 'InfoTableTitle'):
@@ -144,8 +176,9 @@ def create_control_structures(doc):
     ## Sections
     for para in doc.paragraphs:
         for run in para.runs:
+            run_style_name = get_run_style_name(run)
             if (
-                (current and run.style.name != ANNOTATION_STYLE)
+                (current and run_style_name != ANNOTATION_STYLE)
                 or
                 (current and para is not current['paragraph'])
             ):
@@ -153,8 +186,8 @@ def create_control_structures(doc):
                 if current['text']:
                     control_structures.append(current)
                 current = None
-                
-            if not current and run.style.name == ANNOTATION_STYLE:
+
+            if not current and run_style_name == ANNOTATION_STYLE:
                 current = {
                     'paragraph': para,
                     'text': '',
@@ -162,7 +195,7 @@ def create_control_structures(doc):
                 }
                 run_op_lookup[run.element] = current
 
-            if current and run.style.name == ANNOTATION_STYLE:
+            if current and run_style_name == ANNOTATION_STYLE:
                 run_op_lookup[run.element] = current
                 current['runs'].append(run)
                 current['text'] += run.text
@@ -173,8 +206,9 @@ def create_control_structures(doc):
             for cell in row.cells:
                 for para in cell.paragraphs:
                     for run in para.runs:
+                        run_style_name = get_run_style_name(run)
                         if (
-                            (current and run.style.name != ANNOTATION_STYLE)
+                            (current and run_style_name != ANNOTATION_STYLE)
                             or
                             (current and para is not current['paragraph'])
                         ):
@@ -183,7 +217,7 @@ def create_control_structures(doc):
                                 control_structures.append(current)
                             current = None
 
-                        if not current and run.style.name == ANNOTATION_STYLE:
+                        if not current and run_style_name == ANNOTATION_STYLE:
                             current = {
                                 'paragraph': para,
                                 'text': '',
@@ -195,7 +229,7 @@ def create_control_structures(doc):
                             }
                             run.op = current
 
-                        if current and run.style.name == ANNOTATION_STYLE:
+                        if current and run_style_name == ANNOTATION_STYLE:
                             run.op = current
                             current['runs'].append(run)
                             current['text'] += run.text
@@ -220,9 +254,10 @@ def remove_info_and_instr_boxes(doc, selections: Selections):
     instr_box_style = 'Instr. box'
 
     for para in doc.paragraphs:
-        if utils.reduce_to_boolean(selections['DEL_INFO_BOX']) and para.style.name in info_box_styles:
+        para_style_name = get_paragraph_style_name(para)
+        if utils.reduce_to_boolean(selections['DEL_INFO_BOX']) and para_style_name in info_box_styles:
             remove_node(para)
-        if para.style.name == instr_box_style:
+        if para_style_name == instr_box_style:
             remove_node(para)
 
 def evaluate_annotation(op, name_map, selections: Selections):
@@ -509,7 +544,7 @@ def remove_toggles(doc):
     '''
     for para in doc.paragraphs:
         for run in para.runs:
-            if run.style.name == ANNOTATION_STYLE:
+            if get_run_style_name(run) == ANNOTATION_STYLE:
                 remove_node(run)
 
     for table in doc.tables:
@@ -517,7 +552,7 @@ def remove_toggles(doc):
             for cell in row.cells:
                 for para in cell.paragraphs:
                     for run in para.runs:
-                        if run.style.name == ANNOTATION_STYLE:
+                        if get_run_style_name(run) == ANNOTATION_STYLE:
                             remove_node(run)
 
 def mogrify_doc(doc: Document, name_map: Dict, selections: Selections) -> Document:
