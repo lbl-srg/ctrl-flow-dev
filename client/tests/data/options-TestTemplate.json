@@ -1009,6 +1009,20 @@
     "definition": false,
     "shortExclType": false
   },
+  "TestPackage.Template.TestTemplate.dead_end_component": {
+    "modelicaPath": "TestPackage.Template.TestTemplate.dead_end_component",
+    "type": "TestPackage.Component.DeadEndComponent",
+    "name": "Dead-end component",
+    "group": "Skipped Group",
+    "tab": "Skipped Tab",
+    "visible": false,
+    "enable": false,
+    "modifiers": {},
+    "replaceable": false,
+    "options": [],
+    "definition": false,
+    "shortExclType": false
+  },
   "TestPackage.Template.TestTemplate.typ": {
     "modelicaPath": "TestPackage.Template.TestTemplate.typ",
     "type": "TestPackage.Types.IceCream",
@@ -1538,6 +1552,8 @@
       "TestPackage.Template.TestTemplate.disabled_component",
       "TestPackage.Template.TestTemplate.connector_param",
       "TestPackage.Template.TestTemplate.connector_param_false",
+      "TestPackage.Template.TestTemplate.linkage_keyword_false",
+      "TestPackage.Template.TestTemplate.dead_end_component",
       "TestPackage.Template.TestTemplate.typ",
       "TestPackage.Template.TestTemplate.typ_limited",
       "TestPackage.Template.TestTemplate.final_group_member_bool",
