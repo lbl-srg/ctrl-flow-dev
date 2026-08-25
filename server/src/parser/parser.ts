@@ -531,6 +531,49 @@ export abstract class Element {
   }
 }
 
+/**
+ * Reads the `__ctrlFlow(enable=<literal>)` value directly from raw
+ * modelica-json annotation arrays, without creating Modification instances:
+ * modification unpacking resolves names through typeStore and may trigger
+ * file loads, which must not happen before an element knows whether it is a
+ * dead end — `__ctrlFlow(enable=false)` is a hard parse skip and nothing may
+ * be looked up or loaded from that declaration site (#601).
+ *
+ * Several raw locations may hold the annotation depending on the element
+ * kind (component-clause description vs. element-level description next to a
+ * constraining clause), so any number of candidate arrays can be passed.
+ */
+function getRawCtrlFlowEnable(
+  ...annotations: Array<Array<any> | undefined>
+): boolean | undefined {
+  for (const annotation of annotations) {
+    for (const entry of annotation ?? []) {
+      const mod =
+        entry?.element_modification_or_replaceable?.element_modification ??
+        entry;
+      if (mod?.name !== "__ctrlFlow") {
+        continue;
+      }
+      for (const nested of mod.modification?.class_modification ?? []) {
+        const nestedMod =
+          nested?.element_modification_or_replaceable?.element_modification ??
+          nested;
+        if (nestedMod?.name !== "enable") {
+          continue;
+        }
+        const value = nestedMod.modification?.expression?.simple_expression;
+        if (value === "false") {
+          return false;
+        }
+        if (value === "true") {
+          return true;
+        }
+      }
+    }
+  }
+  return undefined;
+}
+
 export class ShortClass extends Element {
   mods?: Modification[];
   value?: string; // undefined for short class definitions (no binding)
@@ -551,15 +594,47 @@ export class ShortClass extends Element {
     if (!registered) {
       return; // PUNCH-OUT!
     }
+    // From MLS: the description of a short class definition belongs to the
+    // short class specifier (specifier.value.description); with a
+    // constraining clause it sits at the element level instead
+    // (definition.description, handled by initializeReplaceable for
+    // everything but the description string and dead end detection below).
+    this.description =
+      definition.description?.description_string ??
+      specifier.value?.description?.description_string;
+    this.replaceable = definition.replaceable;
+    // Hard parse skip (#601): the dead end is detected from the raw
+    // annotation (whichever location holds it) before any type resolution,
+    // and the aliased class is then deliberately neither resolved nor
+    // loaded — this.type keeps the raw (unresolved) alias target and no
+    // modification is unpacked.
+    this.deadEnd =
+      getRawCtrlFlowEnable(
+        definition.description?.annotation,
+        specifier.value?.description?.annotation,
+      ) === false;
+    if (this.deadEnd) {
+      this.type = specifier.value?.name;
+      return; // PUNCH-OUT!
+    }
     // For short class definitions:
     // - modelicaPath: the short class name (e.g., Parent.Medium)
     // - type: the aliased type (e.g., SomeMedium)
     // - value: undefined (no binding for class definitions)
     const specifierType = typeStore.get(specifier.value?.name, basePath);
     this.type = specifierType?.modelicaPath || specifier.value?.name;
-    // value remains undefined - no binding for short class definitions
-    this.description = definition.description?.description_string;
-    this.replaceable = definition.replaceable;
+    // Parse the description annotation regardless of the alias kind:
+    // historically only initializeReplaceable parsed it, and only with a
+    // constraining clause, silently dropping e.g. Dialog(group/tab) or
+    // choices on the other variants (#601). Choice references that cannot
+    // be resolved (e.g. the media selectors of upstream Buildings.Fluid,
+    // whose targets have no modelica-json output) punch out during
+    // modification unpacking instead of failing the parse.
+    this.annotation = createAnnotationModifications(
+      definition.description ?? specifier.value?.description,
+      basePath,
+      this.type,
+    );
 
     // Capture element-level mods before initializeReplaceable resets this.mods.
     // For non-replaceable short classes these are set directly; for replaceable
@@ -581,6 +656,11 @@ export class ShortClass extends Element {
   }
 
   getChildElements(): Element[] {
+    // Hard parse skip (#601): this lazy load is what would defeat the
+    // constructor skip on first traversal.
+    if (this.deadEnd) {
+      return [];
+    }
     // Retrieve the child elements from the aliased type (stored in this.type)
     const typeSpecifier = typeStore.get(this.type) as LongClass;
 
@@ -588,6 +668,11 @@ export class ShortClass extends Element {
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
+    // Hard parse skip (#601): the aliased type must not be resolved or
+    // loaded from a dead-ended alias, which therefore yields no inputs.
+    if (this.deadEnd) {
+      return inputs;
+    }
     // Retrieve the inputs from the aliased type (stored in this.type)
     const typeSpecifier = typeStore.get(this.type) as LongClass;
 
@@ -616,13 +701,16 @@ export class LongClass extends Element {
     element: LongClass | undefined;
     mods: Modification[] | undefined;
     deadEnd: boolean;
+    // Base class name as written (raw for dead ends, resolved otherwise):
+    // `element` is undefined for a dead-ended extends clause, so this is the
+    // only record of which class was skipped (#601 diagnostic).
+    type: string;
   }> = [];
   // getChildElements() is a pure function of elementList/extendsInfo, both of
   // which are only ever populated once, in the constructor. It is called
   // repeatedly (directly and via getInputs()) during traversal, so cache its
-  // result per useDeadEnd value rather than recomputing the inheritance walk
-  // every time.
-  private _childElementsCache = new Map<boolean, Element[]>();
+  // result rather than recomputing the inheritance walk every time.
+  private _childElementsCache: Element[] | undefined;
 
   get mods(): Modification[] | undefined {
     const all = this.extendsInfo.flatMap((e) => e.mods ?? []);
@@ -630,11 +718,23 @@ export class LongClass extends Element {
   }
 
   get extendElement(): LongClass | undefined {
-    return this.extendsInfo[0]?.element;
-  }
-
-  get extendElementDeadEnd(): boolean {
-    return this.extendsInfo[0]?.deadEnd ?? false;
+    const first = this.extendsInfo[0];
+    if (!first) {
+      return undefined;
+    }
+    // A dead-ended base class is never loaded from here (#601), but when it
+    // has already been parsed through a live route, lexical name resolution
+    // (Store._get inheritance walk, schedule type chains) may still traverse
+    // it: __ctrlFlow(enable=false) prunes the UI tree, not Modelica lookup
+    // semantics. The lookup is store-only, so it can never trigger a load.
+    return (
+      first.element ??
+      (first.deadEnd
+        ? (typeStore.get(first.type, this.modelicaPath, false) as
+            | LongClass
+            | undefined)
+        : undefined)
+    );
   }
 
   constructor(
@@ -664,9 +764,15 @@ export class LongClass extends Element {
           if (element?.elementType === "extends_clause") {
             const extendParam = element as Extend;
             this.extendsInfo.push({
-              element: typeStore.get(extendParam.type) as LongClass | undefined,
+              // Hard parse skip (#601): a dead-ended base class is not
+              // resolved or loaded — it contributes no ancestors and no
+              // elements to this class.
+              element: extendParam.deadEnd
+                ? undefined
+                : (typeStore.get(extendParam.type) as LongClass | undefined),
               mods: extendParam.mods,
               deadEnd: extendParam.deadEnd,
+              type: extendParam.type,
             });
           }
           if (element && isProtected) {
@@ -706,24 +812,23 @@ export class LongClass extends Element {
 
   /**@
    * Returns the list of elements with all inherited elements flattened
+   * (dead-ended base classes are unresolved and contribute nothing, #601)
    */
-  getChildElements(useDeadEnd = false): Element[] {
-    const cached = this._childElementsCache.get(useDeadEnd);
-    if (cached) {
-      return cached;
+  getChildElements(): Element[] {
+    if (this._childElementsCache) {
+      return this._childElementsCache;
     }
 
     const elements = this.elementList || [];
 
-    const inheritedElements = this.extendsInfo.flatMap(({ element, deadEnd }) => {
-      if (element === undefined || (deadEnd && useDeadEnd)) return [];
-      return element.getChildElements(useDeadEnd);
-    });
+    const inheritedElements = this.extendsInfo.flatMap(({ element }) =>
+      element === undefined ? [] : element.getChildElements(),
+    );
 
     const result = [...elements, ...inheritedElements].filter(
       (el) => Object.keys(el.getInputs({}, false)).length > 0,
     );
-    this._childElementsCache.set(useDeadEnd, result);
+    this._childElementsCache = result;
     return result;
   }
 
@@ -739,8 +844,10 @@ export class LongClass extends Element {
     this.getChildElements().forEach((el) => el.getInputs(inputs));
 
     // get filtered child list
-    const children = this.getChildElements(true)
-      .filter((el) => !el.deadEnd)
+    // Dead-ended members stay referenced (as disabled, childless entries):
+    // their Dialog group/tab anchors the ordering of the parameter dialog
+    // even though they are not displayed (#601).
+    const children = this.getChildElements()
       .filter((el) => !(el.modelicaPath in MLS_PREDEFINED_TYPES))
       .map((el) => el.modelicaPath);
 
@@ -789,6 +896,39 @@ function createAnnotationModifications(
       }),
     )
     .filter((m) => m !== undefined) as Modification[];
+}
+
+/**
+ * Annotation parsing for dead-ended elements (#601): Dialog group/tab must
+ * still be extracted — even a disabled, childless entry anchors the ordering
+ * of the parameter dialog — but nothing may resolve into the skipped scope.
+ * The (unresolved) type is therefore not passed as baseType, and `choices`
+ * entries — whose unpacking loads the choice classes — are dropped.
+ */
+function createDeadEndAnnotations(
+  descriptionBlock:
+    | {
+        annotation?: Array<mj.Mod | mj.WrappedMod>;
+      }
+    | undefined,
+  basePath: string,
+): Modification[] {
+  if (!descriptionBlock?.annotation) {
+    return [];
+  }
+  return createAnnotationModifications(
+    {
+      annotation: descriptionBlock.annotation.filter((entry: any) => {
+        const name = (
+          entry?.element_modification_or_replaceable?.element_modification ??
+          entry
+        )?.name;
+        return name !== "choices";
+      }),
+    },
+    basePath,
+    "",
+  );
 }
 
 /**
@@ -877,12 +1017,50 @@ export class Component extends Element implements Replaceable {
     if (!registered) {
       return; // PUNCH-OUT!
     }
-    const typeElement = typeStore.get(componentClause.type_specifier, basePath);
-    this.type = typeElement?.modelicaPath || componentClause.type_specifier; // might be a predefined type from MLS
     this.final = definition.final ? definition.final : this.final;
     this.inner = definition.inner;
     this.outer = definition.outer;
     this.replaceable = definition.replaceable;
+
+    // From MLS: description of non-replaceable components is within
+    // component-clause; with a constraining clause it sits at the element
+    // level instead (definition.description, handled by initializeReplaceable
+    // for everything but the dead end detection below).
+    const descriptionBlock = componentClause.component_list.find(
+      (c: any) => "description" in c,
+    )?.description;
+    this.description =
+      descriptionBlock?.description_string ||
+      definition.description?.description_string ||
+      "";
+
+    // Hard parse skip (#601): the dead end is detected from the raw
+    // annotation (whichever location holds it) before any type resolution.
+    // A dead-ended component keeps the raw (unresolved) type specifier and
+    // nothing is unpacked from its declaration — no declared type lookup, no
+    // binding modification, no constraining clause — since every one of
+    // those resolves names and could load the very files the annotation
+    // asks to keep out.
+    this.deadEnd =
+      getRawCtrlFlowEnable(
+        descriptionBlock?.annotation,
+        definition.description?.annotation,
+      ) === false;
+    if (this.deadEnd) {
+      this.type = componentClause.type_specifier;
+      // Even a disabled, childless entry anchors Dialog group/tab ordering
+      // in the parameter dialog: parse the annotation — minus anything that
+      // could resolve into the skipped scope — and derive the UI info.
+      this.annotation = createDeadEndAnnotations(
+        descriptionBlock ?? definition.description,
+        basePath,
+      );
+      setUIInfo(this);
+      return; // PUNCH-OUT!
+    }
+
+    const typeElement = typeStore.get(componentClause.type_specifier, basePath);
+    this.type = typeElement?.modelicaPath || componentClause.type_specifier; // might be a predefined type from MLS
 
     this.mod = declarationBlock.modification
       ? createModification({
@@ -899,11 +1077,6 @@ export class Component extends Element implements Replaceable {
       }
     }
 
-    // From MLS: description of non-replaceable components is within component-clause
-    const descriptionBlock = componentClause.component_list.find(
-      (c: any) => "description" in c,
-    )?.description;
-    this.description = descriptionBlock?.description_string || "";
     this.annotation = createAnnotationModifications(
       descriptionBlock,
       basePath,
@@ -921,23 +1094,24 @@ export class Component extends Element implements Replaceable {
       }
     }
 
-    // Must be called last since it uses this.annotation
-    // which gets modified by initializeReplaceable()
-    this.deadEnd = this.getLinkageKeywordValue() === false;
     setUIInfo(this);
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
-    if (this.replaceable) {
+    // A dead-ended replaceable takes the plain path below: choices must not
+    // be offered (let alone resolved) for a subtree that is not parsed.
+    if (this.replaceable && !this.deadEnd) {
       inputs = getReplaceableInputs(inputs, recursive, this);
       return inputs;
     }
     if (this.modelicaPath in inputs) {
       return inputs;
     }
-    // if a replaceable and in modification store - use that type
-    // if not in mod store, use 'this.type'
-    const typeInstance = typeStore.get(this.type) || null;
+    // Hard parse skip (#601): a dead-ended component still yields its own
+    // (disabled, childless) entry, but its type must not be resolved or
+    // loaded — this lazy load is what would defeat the constructor skip on
+    // first traversal.
+    const typeInstance = this.deadEnd ? null : typeStore.get(this.type) || null;
     const typeInputs = typeInstance ? typeInstance.getInputs({}, false) : {};
     const visible = setInputVisible(typeInputs[this.type], this);
     // Dialog(enable=false) must not sever child inputs: hiding the disabled
@@ -957,11 +1131,6 @@ export class Component extends Element implements Replaceable {
         childInputs = childInputs.filter((c) => specifiedChoices.includes(c));
       }
     }
-
-    childInputs.filter((typeInputs) => {
-      const element = typeStore.get(typeInputs);
-      return !element?.deadEnd;
-    });
 
     inputs[this.modelicaPath] = {
       modelicaPath: this.modelicaPath,
@@ -1077,6 +1246,18 @@ export class Extend extends Element {
     super();
     this.name = EXTEND_NAME; // arbitrary name. Important that this will not collide with other param names
     this.modelicaPath = `${basePath}.${this.name}`;
+
+    // Hard parse skip (#601): the dead end is detected from the raw
+    // annotation before any type resolution, and a dead-ended base class is
+    // then deliberately neither resolved nor loaded — this.type keeps the
+    // raw (unresolved) base class name and its modifiers are not unpacked.
+    this.deadEnd =
+      getRawCtrlFlowEnable(definition.extends_clause?.annotation) === false;
+    if (this.deadEnd) {
+      this.type = definition.extends_clause.name;
+      return; // PUNCH-OUT!
+    }
+
     const typeElement = typeStore.get(definition.extends_clause.name, basePath);
     this.type = typeElement?.modelicaPath || definition.extends_clause.name;
 
@@ -1094,7 +1275,6 @@ export class Extend extends Element {
         .filter((m: any) => m !== undefined) as Modification[];
     }
 
-    this.deadEnd = this.getLinkageKeywordValue() === false;
     // Force-load the referenced type into the store. Unlike other element types,
     // Extend does not register itself: every extends clause in the same parent
     // shares the same __extend path, so store registration would cause false-positive
@@ -1111,7 +1291,8 @@ export class Extend extends Element {
   }
 
   getInputs(inputs: { [key: string]: TemplateInput } = {}, recursive = true) {
-    if (this.modelicaPath in inputs) {
+    // Hard parse skip (#601): a dead-ended base class stays unloaded
+    if (this.deadEnd || this.modelicaPath in inputs) {
       return inputs;
     }
 

@@ -137,6 +137,14 @@ model TestTemplate "Test Template"
     "Param to test linkage keyword override to false"
     annotation (Dialog(enable=true), __ctrlFlow(enable=false));
 
+  // Hard parse skip (#601): the declared type must never be loaded or parsed.
+  // The Dialog group/tab must still be extracted: even disabled, the entry
+  // anchors the ordering of the parameter dialog.
+  TestPackage.Component.DeadEndComponent dead_end_component
+    "Dead-end component"
+    annotation (Dialog(group="Skipped Group", tab="Skipped Tab", enable=true),
+      __ctrlFlow(enable=false));
+
   parameter TestPackage.Types.IceCream typ = TestPackage.Types.IceCream.Chocolate
     "Test Enum"
     annotation (
