@@ -21,6 +21,30 @@ export function prependToModelicaJsonPath(paths: string[]) {
   MODELICA_JSON_PATH = [...paths, ...MODELICA_JSON_PATH];
   // the search path changed, so any previously cached (mis)resolutions are stale
   loaderCache.clear();
+  topLevelPackageNames = null;
+  typeStore.clearLoadFailures();
+}
+
+// Names of the top-level packages loadable from the search path
+// (e.g. "Buildings", "Modelica"): the top-level directories and .json files
+// of each MODELICA_JSON_PATH entry.
+let topLevelPackageNames: Set<string> | null = null;
+
+export function getTopLevelPackageNames(): Set<string> {
+  if (!topLevelPackageNames) {
+    topLevelPackageNames = new Set<string>();
+    for (const dir of MODELICA_JSON_PATH) {
+      if (!fs.existsSync(dir)) {
+        continue;
+      }
+      for (const entry of fs.readdirSync(dir)) {
+        topLevelPackageNames.add(
+          entry.endsWith(".json") ? entry.slice(0, -5) : entry,
+        );
+      }
+    }
+  }
+  return topLevelPackageNames;
 }
 
 // The following regexp are prettyPrint safe (\s*) when used with GNU (not BSD) grep -z

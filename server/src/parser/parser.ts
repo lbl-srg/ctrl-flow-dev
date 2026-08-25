@@ -9,6 +9,7 @@
 
 import {
   findPackageEntryPoints,
+  getTopLevelPackageNames,
   loader,
   TEMPLATE_LIST,
   PACKAGE_LIST,
@@ -63,6 +64,24 @@ export const isPredefinedType = (path: string) =>
 
 class Store {
   _store: Map<string, any> = new Map();
+  // Candidate paths whose load attempt (_load) already failed. The store
+  // itself keeps growing as files are parsed, so it is always checked
+  // positively first; this set only short-circuits repeated file lookup and
+  // construction attempts for candidates known not to load (#600).
+  _loadFailures: Set<string> = new Set();
+
+  clearLoadFailures(): void {
+    this._loadFailures.clear();
+  }
+
+  // Fully reset parsing state (used by tests). Constructed-file dedupe shares
+  // the store's lifecycle: a File's elements live in the store, so an emptied
+  // store must also forget which files were already constructed.
+  clear(): void {
+    this._store.clear();
+    this._loadFailures.clear();
+    constructedFiles.clear();
+  }
 
   set(path: string, element: Element): boolean {
     if (!this.has(path)) {
@@ -120,11 +139,17 @@ class Store {
 
     // Attempt to load
     if (load) {
-      const { path } = this._load(paths);
-      if (!path) {
+      const candidates = paths.filter((p) => !this._loadFailures.has(p));
+      const { path: loadedPath } = this._load(candidates);
+      if (!loadedPath) {
+        candidates.forEach((p) => this._loadFailures.add(p));
         return; // PUNCH-OUT! File not found
       }
-      return this._get(path);
+      // Candidates tried (and rejected) before the successful one also failed
+      candidates
+        .slice(0, candidates.indexOf(loadedPath))
+        .forEach((p) => this._loadFailures.add(p));
+      return this._get(loadedPath);
     }
   }
 
@@ -136,6 +161,18 @@ class Store {
    * TODO: convert this so it returns an iterator
    */
   _generatePaths(path: string, basePath: string): Array<string> {
+    // A path whose first segment names a top-level loaded package is already
+    // fully qualified: prefixing it with enclosing scopes can only produce
+    // bogus candidates that fuzzy-resolve to unrelated files (#600).
+    // LIMITATION: per MLS lookup rules a nested class named after a top-level
+    // package (e.g. a local class "Buildings") would shadow it; such a reference
+    // is misresolved here — but it already failed before this shortcut existed,
+    // and the pattern is not used in MBL.
+    const firstSegment = path?.split(".")[0];
+    if (firstSegment && getTopLevelPackageNames().has(firstSegment)) {
+      return [path];
+    }
+
     const splitBasePath = basePath ? basePath.split(".") : [];
 
     const pathList: string[] = [];
@@ -505,19 +542,22 @@ export class ShortClass extends Element {
     super();
     const specifier = (definition.class_definition ?? definition)
       .class_specifier.short_class_specifier;
-    const specifierType = typeStore.get(specifier.value?.name, basePath);
     this.name = specifier.identifier;
+    this.modelicaPath = `${basePath}.${this.name}`;
+    // Register before resolving the aliased type (like LongClass does) so
+    // that a redundant re-construction punches out here instead of
+    // re-running a full lookup candidate sweep (#600).
+    const registered = this.registerPath(this.modelicaPath);
+    if (!registered) {
+      return; // PUNCH-OUT!
+    }
     // For short class definitions:
     // - modelicaPath: the short class name (e.g., Parent.Medium)
     // - type: the aliased type (e.g., SomeMedium)
     // - value: undefined (no binding for class definitions)
-    this.modelicaPath = `${basePath}.${this.name}`;
+    const specifierType = typeStore.get(specifier.value?.name, basePath);
     this.type = specifierType?.modelicaPath || specifier.value?.name;
     // value remains undefined - no binding for short class definitions
-    const registered = this.registerPath(this.modelicaPath, this.type);
-    if (!registered) {
-      return; // PUNCH-OUT!
-    }
     this.description = definition.description?.description_string;
     this.replaceable = definition.replaceable;
 
@@ -830,16 +870,19 @@ export class Component extends Element implements Replaceable {
     )?.declaration as mj.DeclarationBlock;
     this.name = declarationBlock.identifier;
     this.modelicaPath = `${basePath}.${this.name}`;
+    // Register before resolving the declared type (like LongClass does) so
+    // that a redundant re-construction punches out here instead of
+    // re-running a full lookup candidate sweep (#600).
+    const registered = this.registerPath(this.modelicaPath);
+    if (!registered) {
+      return; // PUNCH-OUT!
+    }
     const typeElement = typeStore.get(componentClause.type_specifier, basePath);
     this.type = typeElement?.modelicaPath || componentClause.type_specifier; // might be a predefined type from MLS
     this.final = definition.final ? definition.final : this.final;
     this.inner = definition.inner;
     this.outer = definition.outer;
     this.replaceable = definition.replaceable;
-    const registered = this.registerPath(this.modelicaPath, this.type);
-    if (!registered) {
-      return; // PUNCH-OUT!
-    }
 
     this.mod = declarationBlock.modification
       ? createModification({
@@ -1231,14 +1274,54 @@ export class File {
   }
 }
 
+// Fully constructed Files keyed by their loaded json object: `loader` returns
+// require-cached objects, so any two class names resolving to the same file
+// on disk share one key. This bounds construction to at most once per real
+// file, whatever candidate names the lookup throws at it (#600).
+// While a File is still under construction it is deliberately NOT in this
+// map: a re-entrant same-file construction stays shallow (every element
+// punches out on its already-registered path) and terminates immediately.
+const constructedFiles = new Map<Object, File>();
+
+// Class names for which a File construction is currently active, i.e. the
+// live getFile call stack.
+const activeFileConstructions: string[] = [];
+
+const constructFile = (jsonData: any, className: string): File => {
+  const constructed = constructedFiles.get(jsonData);
+  if (constructed) {
+    return constructed;
+  }
+  activeFileConstructions.push(className);
+  try {
+    const file = new File(jsonData, className);
+    constructedFiles.set(jsonData, file);
+    return file;
+  } finally {
+    activeFileConstructions.pop();
+  }
+};
+
 /**
  * Extracts the given file into the type store
- * @param filePath - The ***relative*** path to the file to load (e.g. "Buildings/Templates/File")
+ * @param className - The full class name of the file to load (e.g. "Buildings.Templates.File")
  */
 export const getFile = (className: string) => {
+  // Re-entrancy guard: an element registers its path before resolving its
+  // type, so a same-name construction nested below an active one punches out
+  // shallowly and triggers no further lookups. A third same-name activation
+  // therefore means the punch-out protection regressed into the unbounded
+  // getFile <-> typeStore.get recursion of #600 — fail fast with the active
+  // construction stack instead of overflowing the call stack.
+  if (activeFileConstructions.filter((c) => c === className).length >= 2) {
+    throw new Error(
+      `Unbounded file lookup recursion detected on '${className}'. ` +
+        `Active construction stack: ${activeFileConstructions.join(" -> ")}`,
+    );
+  }
   const jsonData = loader(className);
   if (jsonData) {
-    return new File(jsonData, className);
+    return constructFile(jsonData, className);
   }
 };
 
@@ -1249,7 +1332,7 @@ export const getFile = (className: string) => {
  */
 export const loadPackage = (packageName: string) => {
   const entryPoints = findPackageEntryPoints(packageName);
-  entryPoints?.map(({ json, className }) => new File(json, className));
+  entryPoints?.map(({ json, className }) => constructFile(json, className));
 
   // Attempt to load project settings from a pre-defined path
   const projectPath = "Buildings.Templates.Data.AllSystems";
