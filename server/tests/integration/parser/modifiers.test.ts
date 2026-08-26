@@ -142,6 +142,24 @@ describe("Modifications", () => {
   });
 
   /**
+   * Regression test: `redeclare final Type comp(...)` must lock down every
+   * parameter of `Type`, not just the ones bound inline in the redeclare
+   * clause — `is_another_param` has no binding in the redeclare clause but
+   * still belongs to the redeclared `SecondComponent` type, so it must be
+   * final too.
+   */
+  it("Propagates 'final' from a redeclare onto every parameter of the redeclared type", () => {
+    const path = "TestPackage.Template.TestTemplate.redeclare_param_01";
+    const unboundModPath = `${path}.replaceable_param.is_another_param`;
+    const option = tOptions[path];
+    const mod = option.modifiers[unboundModPath];
+
+    expect(mod).toBeDefined();
+    expect(mod.final).toBeTruthy();
+    expect(mod.expression).toBeUndefined();
+  });
+
+  /**
    * Regression test for https://github.com/lbl-srg/ctrl-flow-dev/issues/418
    * Element-level modifiers on a replaceable must be captured alongside
    * constraining-clause modifiers.

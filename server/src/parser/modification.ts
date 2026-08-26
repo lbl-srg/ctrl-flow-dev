@@ -136,6 +136,38 @@ function markModsFinal(mods: Modification[]): void {
   });
 }
 
+/**
+ * A `final` redeclare locks down every parameter of the redeclared type, not
+ * just the ones bound inline in the redeclare clause: marks the already
+ * present child mods final, then synthesizes an unbound `final` Modification
+ * for every other own/inherited parameter of `element` so those can't be
+ * modified downstream either.
+ */
+function finalizeAllParams(
+  element: Element | undefined,
+  childBasePath: string,
+  childMods: Modification[],
+): void {
+  markModsFinal(childMods);
+
+  const boundNames = new Set(childMods.map((m) => m.name));
+  const getChildElements = (element as { getChildElements?: () => Element[] })
+    ?.getChildElements;
+  const allParams =
+    typeof getChildElements === "function"
+      ? getChildElements.call(element)
+      : [];
+
+  allParams.forEach((el) => {
+    const paramName = el.modelicaPath.split(".").pop() as string;
+    if (!boundNames.has(paramName)) {
+      childMods.push(
+        new Modification(childBasePath, paramName, undefined, [], true),
+      );
+    }
+  });
+}
+
 function unpackRedeclaration(props: ModificationProps) {
   let { basePath, definition, baseType } = props;
   let redeclaration = (definition as mj.RedeclareMod).element_redeclaration;
@@ -200,7 +232,11 @@ function unpackRedeclaration(props: ModificationProps) {
     }
 
     if (final) {
-      markModsFinal(childMods);
+      finalizeAllParams(
+        element,
+        [basePath, name].filter((s) => s).join("."),
+        childMods,
+      );
     }
 
     // The redeclared type is stored under 'redeclare' property
@@ -246,7 +282,11 @@ function unpackRedeclaration(props: ModificationProps) {
     }
 
     if (final) {
-      markModsFinal(childMods);
+      finalizeAllParams(
+        aliasedType,
+        [basePath, name].filter((s) => s).join("."),
+        childMods,
+      );
     }
 
     return new Modification(

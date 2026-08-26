@@ -133,8 +133,11 @@ export function flattenModifiers(
   modList
     .filter((m) => m !== undefined || m !== null)
     .map((mod) => {
-      // Include modifiers with defined value, OR redeclare modifiers
-      if (mod?.value !== undefined || mod?.redeclare) {
+      // Include modifiers with a defined value, a redeclare, or a `final`
+      // flag (a `final` redeclare synthesizes unbound entries for every
+      // parameter of the redeclared type; those must survive with no value
+      // so downstream still sees them as locked)
+      if (mod?.value !== undefined || mod?.redeclare || mod?.final) {
         mods[mod.modelicaPath] = {
           expression: mod.value,
           final: mod.final,

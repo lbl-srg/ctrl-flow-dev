@@ -1091,6 +1091,18 @@
       "TestPackage.Template.TestTemplate.redeclare_param_01.replaceable_param.component_param": {
         "expression": "\"From final redeclare\"",
         "final": true
+      },
+      "TestPackage.Template.TestTemplate.redeclare_param_01.replaceable_param.is_another_param": {
+        "final": true
+      },
+      "TestPackage.Template.TestTemplate.redeclare_param_01.replaceable_param.inner_outer_param": {
+        "final": true
+      },
+      "TestPackage.Template.TestTemplate.redeclare_param_01.replaceable_param.container": {
+        "final": true
+      },
+      "TestPackage.Template.TestTemplate.redeclare_param_01.replaceable_param.icecream": {
+        "final": true
       }
     },
     "replaceable": false,
