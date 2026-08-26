@@ -720,6 +720,9 @@ function nextInTypeChain(current: Element): Element | undefined {
   if (current instanceof ShortClass) {
     const aliasedType = current.type;
     if (
+      // Hard parse skip (#601): a dead-ended alias holds a raw, deliberately
+      // unresolved type that must not be looked up (and thereby loaded)
+      !current.deadEnd &&
       aliasedType &&
       aliasedType !== current.modelicaPath &&
       !MLS_PREDEFINED_TYPES.includes(aliasedType)

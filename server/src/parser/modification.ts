@@ -349,17 +349,36 @@ function unpackModblock(props: ModificationProps) {
                 ?.name;
         const constrainingClause = replaceable.constraining_clause;
         const replaceableType = typeStore.get(typeSpecifier, basePath);
-        value = replaceableType?.modelicaPath; // modelicaPath is the replaceable type
+        if (!replaceableType) {
+          // PUNCH-OUT! The choice references a class that cannot be resolved
+          // (e.g. the media selectors of upstream Buildings.Fluid: classes
+          // aliased by short classes get no modelica-json output). Drop the
+          // choice instead of emitting a value-less choice modification that
+          // initializeReplaceable would reject as malformed.
+          console.log(
+            `Unable to find choice type: ${basePath}\t${typeSpecifier}`,
+          );
+          return;
+        }
+        value = replaceableType.modelicaPath; // modelicaPath is the replaceable type
         // get selection mods
-        const classModification = (
+        const rawModification =
           "component_clause1" in replaceable
             ? (clause as mj.ComponentClause1).component_declaration1.declaration
                 ?.modification
             : (clause as mj.ShortClassDefinition).short_class_specifier.value
-                ?.class_modification
+                ?.class_modification;
+        // Component redeclarations carry a ClassMod object while short class
+        // redeclarations carry the bare class_modification array — normalize
+        // so getModificationList always receives a ClassMod.
+        const classModification = (
+          Array.isArray(rawModification)
+            ? { class_modification: rawModification }
+            : rawModification
         ) as mj.ClassMod;
-        // Additional modifiers can be attached to choice
-        if (classModification) {
+        // Additional modifiers can be attached to choice (a direct binding —
+        // redeclare X id = value — carries none)
+        if (classModification?.class_modification) {
           // Extract the actual component name from the redeclaration
           // (e.g., "selectable_component" from "redeclare ... selectable_component(...)")
           const componentName =
