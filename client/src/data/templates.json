@@ -19287,6 +19287,93 @@
         "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.prescribedHeatFlowRate": {
           "expression": true,
           "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.use_C_flow": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.heatPort": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.C_flow": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.initialize_p": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.simplify_mWat_flow": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.m_flow_nominal": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.nPorts": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.m_flow_small": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.allowFlowReversal": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.V": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.ports": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.T": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.U": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.p": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.m": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.Xi": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.mXi": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.C": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.mC": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.energyDynamics": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.massDynamics": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.substanceDynamics": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.traceDynamics": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.p_start": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.T_start": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.X_start": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.C_start": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.C_nominal": {
+          "final": true
+        },
+        "Buildings.Fluid.HeatExchangers.HeaterCooler_u.vol.mSenFac": {
+          "final": true
         }
       },
       "replaceable": false,
@@ -48586,6 +48673,24 @@
           "expression": "ctl.stdVen",
           "final": true
         },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.cfg.typ": {
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.cfg.typFanSup": {
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.cfg.typFanRet": {
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.cfg.typFanRel": {
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.cfg.have_souChiWat": {
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.cfg.have_souHeaWat": {
+          "final": true
+        },
         "Buildings.Templates.AirHandlersFans.VAVMultiZone.dat": {
           "final": false,
           "redeclare": "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone"
@@ -52742,24 +52847,33 @@
         },
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.cfg.typCoiHea": {
           "expression": "coiHea.typ",
-          "final": false
+          "final": true
         },
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.cfg.typValCoiHea": {
           "expression": "coiHea.typVal",
-          "final": false
+          "final": true
         },
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.cfg.typDamVAV": {
           "expression": "damVAV.typ",
-          "final": false
+          "final": true
         },
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.cfg.typCtl": {
           "expression": "ctl.typ",
-          "final": false,
+          "final": true,
           "recordBinding": true
         },
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.cfg.stdVen": {
           "expression": "ctl.stdVen",
-          "final": false
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.cfg.typ": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.cfg.have_souChiWat": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.cfg.have_souHeaWat": {
+          "final": true
         },
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.dat": {
           "final": false,
@@ -52882,6 +52996,57 @@
         "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea": {
           "final": true,
           "redeclare": "Buildings.Templates.Components.Coils.None"
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.typ": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.typVal": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.have_sou": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.have_weaBus": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.dat": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.mAir_flow_nominal": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.dpAir_nominal": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.Q_flow_nominal": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.tau": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.energyDynamics": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.allowFlowReversalAir": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.allowFlowReversalLiq": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.port_aSou": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.port_bSou": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.busWea": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.bus": {
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.coiHea.datVal": {
+          "final": true
         },
         "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly.ctl": {
           "final": false,

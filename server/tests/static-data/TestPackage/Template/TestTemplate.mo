@@ -174,7 +174,8 @@ model TestTemplate "Test Template"
 
   // redclare modifier params
   TestPackage.Component.FourthComponent redeclare_param_01(
-      redeclare final TestPackage.Component.SecondComponent replaceable_param
+      redeclare final TestPackage.Component.SecondComponent replaceable_param(
+        component_param="From final redeclare")
     )
     "First Param to test component redeclares"
     annotation(Dialog(enable=true));
