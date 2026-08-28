@@ -9,13 +9,11 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/node": "^20.9.4",
     "@types/react-dom": "^18.3.1",
-    "css-loader": "^7.1.2",
     "formik": "^2.2.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-localization": "^1.0.19",
     "react-router-dom": "^6.30.4",
-    "react-scripts": "^5.0.1",
     "react-zoom-pan-pinch": "^2.1.3",
     "typescript": "^4.5.4",
     "use-debounce": "^7.0.1",
@@ -27,22 +25,15 @@
     "postcss": "^8.4.31"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "npm version patch && react-app-rewired build",
-    "buildForS3": "npm version patch && DISABLE_ESLINT_PLUGIN=true PUBLIC_URL=/ react-app-rewired build",
+    "start": "vite",
+    "build": "npm version patch && tsc --noEmit && vite build",
+    "buildForS3": "npm version patch && vite build",
     "test": "jest",
-    "eject": "react-scripts eject",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "format": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --write .",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "browserslist": {
     "production": [
@@ -57,9 +48,7 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.17.12",
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@emotion/babel-plugin": "^11.7.1",
+    "@babel/preset-env": "^7.25.9",
     "@picocss/pico": "^1.4.4",
     "@types/jest": "^29.2.2",
     "@types/jsdom": "^20.0.1",
@@ -67,7 +56,7 @@
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",
-    "customize-cra": "^1.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^8.4.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-react": "^7.27.1",
@@ -78,10 +67,10 @@
     "mobx-persist-store": "^1.0.6",
     "mobx-react": "^7.5.0",
     "prettier": "^2.5.1",
-    "react-app-rewired": "^2.2.1",
     "sass": "^1.49.9",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
-    "uuid": "^14.0.0"
+    "uuid": "^14.0.0",
+    "vite": "^6.3.5"
   }
 }

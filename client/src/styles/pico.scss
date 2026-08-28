@@ -14,7 +14,7 @@
   --modal-overlay-background-color: #{rgba(mix($grey-900, $grey-800), 0.9)};
 
 
-@import "~@picocss/pico/scss/pico"; // html
+@import "@picocss/pico/scss/pico"; // html
 
 dialog article {
   position: relative;
