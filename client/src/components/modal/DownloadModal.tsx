@@ -79,7 +79,7 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
   async function downloadFiles() {
     setLoading(true);
     // if (checked.includes(CONTROL_SEQUENCE)) {
-    //   const response = await fetch(`${process.env.REACT_APP_API}/sequence`, {
+    //   const response = await fetch(`${import.meta.env.VITE_API}/sequence`, {
     //     method: "POST",
     //     headers: { "Content-Type": "application/json" },
     //     body: JSON.stringify({...getSequenceData(), DEL_INFO_BOX: [true]}),
@@ -94,7 +94,7 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
     // }
 
     if (checked.includes(CONTROL_SEQUENCE_WITH_INFO_TEXT)) {
-      const response = await fetch(`${process.env.REACT_APP_API}/sequence`, {
+      const response = await fetch(`${import.meta.env.VITE_API}/sequence`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({...getSequenceData(), DEL_INFO_BOX: [false]}),
