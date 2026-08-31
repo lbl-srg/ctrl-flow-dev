@@ -42,7 +42,14 @@ RUN node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json 
 WORKDIR /server
 
 # Copy the rest of the server app
-RUN npm i
+# Network calls to the npm registry occasionally get reset inside Docker's
+# build network (ECONNRESET/"network aborted"). Increase npm's retry count
+# and backoff timeouts so transient blips don't fail the whole image build.
+RUN npm i \
+  --fetch-retries=5 \
+  --fetch-retry-factor=2 \
+  --fetch-retry-mintimeout=20000 \
+  --fetch-retry-maxtimeout=120000
 COPY . .
 
 RUN npm run parseTemplateJSON
