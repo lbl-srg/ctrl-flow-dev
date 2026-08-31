@@ -10,7 +10,13 @@ export default defineConfig({
     outDir: "build",
   },
   server: {
-    port: 3000,
+    // The backend (server/) runs on port 3000 (see server/src/config.ts
+    // PORT default and FE_ORIGIN_URL default of http://localhost:3001),
+    // so the client dev server uses 3001 to avoid colliding with it.
+    // strictPort ensures a real conflict fails loudly instead of Vite
+    // silently binding to a different interface/port.
+    port: 3001,
+    strictPort: true,
     open: true,
   },
   css: {
