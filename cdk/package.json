@@ -11,7 +11,6 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@aws-cdk/aws-s3-deployment": "1.180.0",
     "@types/jest": "^27.5.2",
     "@types/node": "10.17.27",
     "@types/prettier": "2.6.0",
@@ -22,7 +21,7 @@
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "aws-cdk-lib": "2.260.0",
+    "aws-cdk-lib": "2.267.0",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.21"
   }
