@@ -1,17 +1,18 @@
 #!/bin/sh
 set -x
 
-MODELICA_BUILDINGS_COMMIT=b399379315641da39b231033b0660100fd6489a5
+MODELICA_BUILDINGS_REF=issue4700_templates
 MODELICA_STANDARD_TAG=v4.0.0 # This should be driven by 'uses' annotation from Buildings/package.mo
 MODELICA_JSON_COMMIT=b715c09d3092192779e8eccd80c813f08ea1a8e6
 
-parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
-
 # Clone modelica buildings commit -
 cd ../dependencies
-git clone https://github.com/lbl-srg/modelica-buildings.git
+mkdir -p modelica-buildings
 cd modelica-buildings
-git checkout $MODELICA_BUILDINGS_COMMIT
+git init -q
+git remote add origin https://github.com/lbl-srg/modelica-buildings.git
+git fetch --depth 1 origin "$MODELICA_BUILDINGS_REF"
+git checkout -q FETCH_HEAD
 cd -
 
 # Clone modelica-json commit

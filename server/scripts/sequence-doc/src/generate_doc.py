@@ -10,10 +10,10 @@ import csv
 from mogrifier import mogrify_doc
 
 
-DEFAULT_DOC_VERSION = 'Current G36 Decisions'
-OUTPUT_PATH = 'Current Guideline 36.docx'
-MAPPING_FILE_PATH = 'Guideline 36-2021 (mappings).csv'
-SOURCE_DOC_PATH = 'Guideline 36-2021 (sequence selection source).docx'
+DEFAULT_DOC_VERSION = 'DOD_20260828'
+OUTPUT_PATH = 'sequence.docx'
+MAPPING_FILE_PATH = 'mappings.csv'
+SOURCE_DOC_PATH = 'sequenceWithTags.docx'
 MAPPINGS_SHORT_ID = 'Short ID'
 MAPPINGS_MODELICA_INSTANCE = 'Modelica Parameter'
 MAPPINGS_MODELICA_VALUES = 'Modelica Path'
