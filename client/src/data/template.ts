@@ -27,9 +27,9 @@ export interface OptionInterface {
    * Dialog(enable=...) annotation or dead end) disables the whole subtree of
    * an instance of this option. */
   enable?: any; // { modelicaPath: string; expression: string };
-  modifiers: any;
-  choiceModifiers?: { [key: string]: Modifiers };
-  treeList: string[];
+  modifiers?: any;
+  choiceModifiers?: { [key: string]: Modifiers | undefined };
+  treeList?: string[];
   definition: boolean;
   shortExclType: boolean; // Short class definition excluding `type` definition
   replaceable: boolean;
