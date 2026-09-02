@@ -75,7 +75,12 @@ export default class Template {
 
   constructor(rootStore: RootStore) {
     this.templates = tplData.templates;
-    this.optionList = tplData.options;
+    // `tplData` is a generated JSON fixture whose inferred literal type only
+    // partially matches `OptionInterface` (e.g. optional `treeList`, modifier
+    // entries without `expression`). TS silently skips this structural check on
+    // the large production file but flags it on smaller regenerated ones, so
+    // cast explicitly at the boundary. Mirrors the `modifiers: any` escape hatch.
+    this.optionList = tplData.options as unknown as OptionInterface[];
     this.systemTypes = tplData.systemTypes;
     this.rootStore = rootStore;
 
