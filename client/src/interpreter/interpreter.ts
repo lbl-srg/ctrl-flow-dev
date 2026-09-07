@@ -32,7 +32,7 @@ export const constructSelectionPath = (
 };
 
 interface Modifier {
-  expression: Expression;
+  expression?: Expression | string;
   final: boolean;
   fromClassDefinition: boolean;
   redeclare?: string; // the redeclared type path, undefined if not a redeclare
@@ -660,7 +660,7 @@ export const evaluate = (
 const addToModObject = (
   newMods: {
     [key: string]: {
-      expression: Expression;
+      expression?: Expression | string;
       final: boolean;
       redeclare?: string;
       recordBinding?: boolean;
@@ -727,7 +727,7 @@ const getReplaceableType = (
   option: OptionInterface,
   mods: {
     [key: string]: {
-      expression: Expression;
+      expression?: Expression | string;
       final: boolean;
       redeclare?: string;
     };
@@ -808,7 +808,7 @@ const buildModsHelper = (
   const childOptions = option.options;
 
   const optionsWithModsList: string[] =
-    "treeList" in option && option.treeList.length > 0
+    option.treeList && option.treeList.length > 0
       ? option.treeList
       : [option.modelicaPath];
 
