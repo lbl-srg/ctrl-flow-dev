@@ -5,7 +5,12 @@ def reduce_to_boolean(boolList: list[bool]) -> bool:
 
 def common_member(l1, l2) -> bool:
     '''Is any member of l1 in l2
+
+    `l2` is materialized first so that one-shot iterables (e.g. `map`,
+    generators) can be passed safely: membership is tested once per element
+    of `l1`, which would otherwise exhaust the iterator after the first check.
     '''
+    l2 = list(l2)
     return [i for i in l1 if i in l2]
 
 def remove_empty_strings(string_list: list[str]) -> list[str]:
