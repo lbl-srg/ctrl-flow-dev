@@ -1,8 +1,8 @@
 #!/bin/sh
 set -x
 
-MODELICA_BUILDINGS_COMMIT=b399379315641da39b231033b0660100fd6489a5
-MODELICA_STANDARD_TAG=v4.0.0 # This should be driven by 'uses' annotation from Buildings/package.mo
+MODELICA_BUILDINGS_COMMIT=b0774846b2c09ee674bca84a4f0a19c1ddc5f4e1
+MODELICA_STANDARD_TAG=v4.1.0 # This should be driven by 'uses' annotation from Buildings/package.mo
 MODELICA_JSON_COMMIT=b715c09d3092192779e8eccd80c813f08ea1a8e6
 
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
