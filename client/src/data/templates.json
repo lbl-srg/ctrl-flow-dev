@@ -260,6 +260,7 @@
         "Buildings.Templates.Components.Actuators.Damper.typ",
         "Buildings.Templates.Components.Actuators.Damper.dat",
         "Buildings.Templates.Components.Actuators.Damper.dp_nominal",
+        "Buildings.Templates.Components.Actuators.Damper.dpFixed_nominal",
         "Buildings.Templates.Components.Actuators.Damper.use_strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.init",
@@ -391,6 +392,21 @@
       "type": "Modelica.Units.SI.PressureDifference",
       "value": "dat.dp_nominal",
       "name": "Damper pressure drop",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Actuators.Damper.dpFixed_nominal",
+      "type": "Modelica.Units.SI.PressureDifference",
+      "value": "dat.dpFixed_nominal",
+      "name": "Pressure drop of duct and resistances other than the damper in series, at nominal mass flow rate",
       "group": "",
       "tab": "",
       "visible": false,
@@ -734,7 +750,7 @@
           "final": true
         },
         "Buildings.Templates.Components.Actuators.Damper.exp.dpFixed_nominal": {
-          "expression": "dat.dpFixed_nominal",
+          "expression": "dpFixed_nominal",
           "final": true
         },
         "Buildings.Templates.Components.Actuators.Damper.exp.use_strokeTime": {
@@ -794,6 +810,7 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential.k",
         "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization",
         "Buildings.Fluid.BaseClasses.PartialResistance.from_dp",
+        "Buildings.Fluid.BaseClasses.PartialResistance.n",
         "Buildings.Fluid.BaseClasses.PartialResistance.dp_nominal",
         "Buildings.Fluid.BaseClasses.PartialResistance.linearized",
         "Buildings.Fluid.BaseClasses.PartialResistance.m_flow_turbulent",
@@ -1195,6 +1212,21 @@
       "type": "Boolean",
       "value": false,
       "name": "= true, use m_flow = f(dp) else dp = f(m_flow)",
+      "group": "",
+      "tab": "Advanced",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.BaseClasses.PartialResistance.n",
+      "type": "Real",
+      "value": 2,
+      "name": "Flow exponent, n=1 for laminar, n=2 for turbulent",
       "group": "",
       "tab": "Advanced",
       "visible": true,
@@ -1781,6 +1813,7 @@
       "options": [
         "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization",
         "Buildings.Fluid.BaseClasses.PartialResistance.from_dp",
+        "Buildings.Fluid.BaseClasses.PartialResistance.n",
         "Buildings.Fluid.BaseClasses.PartialResistance.dp_nominal",
         "Buildings.Fluid.BaseClasses.PartialResistance.linearized",
         "Buildings.Fluid.BaseClasses.PartialResistance.m_flow_turbulent",
@@ -1879,6 +1912,7 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential.k",
         "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization",
         "Buildings.Fluid.BaseClasses.PartialResistance.from_dp",
+        "Buildings.Fluid.BaseClasses.PartialResistance.n",
         "Buildings.Fluid.BaseClasses.PartialResistance.dp_nominal",
         "Buildings.Fluid.BaseClasses.PartialResistance.linearized",
         "Buildings.Fluid.BaseClasses.PartialResistance.m_flow_turbulent",
@@ -1938,6 +1972,7 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential.k",
         "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization",
         "Buildings.Fluid.BaseClasses.PartialResistance.from_dp",
+        "Buildings.Fluid.BaseClasses.PartialResistance.n",
         "Buildings.Fluid.BaseClasses.PartialResistance.dp_nominal",
         "Buildings.Fluid.BaseClasses.PartialResistance.linearized",
         "Buildings.Fluid.BaseClasses.PartialResistance.m_flow_turbulent",
@@ -1990,7 +2025,7 @@
           "final": true
         },
         "Buildings.Templates.Components.Actuators.Damper.ind.dpFixed_nominal": {
-          "expression": "dat.dpFixed_nominal",
+          "expression": "dpFixed_nominal",
           "final": true
         },
         "Buildings.Templates.Components.Actuators.Damper.ind.use_strokeTime": {
@@ -2049,6 +2084,7 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential.k",
         "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization",
         "Buildings.Fluid.BaseClasses.PartialResistance.from_dp",
+        "Buildings.Fluid.BaseClasses.PartialResistance.n",
         "Buildings.Fluid.BaseClasses.PartialResistance.dp_nominal",
         "Buildings.Fluid.BaseClasses.PartialResistance.linearized",
         "Buildings.Fluid.BaseClasses.PartialResistance.m_flow_turbulent",
@@ -2175,6 +2211,7 @@
         "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential.k",
         "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization",
         "Buildings.Fluid.BaseClasses.PartialResistance.from_dp",
+        "Buildings.Fluid.BaseClasses.PartialResistance.n",
         "Buildings.Fluid.BaseClasses.PartialResistance.dp_nominal",
         "Buildings.Fluid.BaseClasses.PartialResistance.linearized",
         "Buildings.Fluid.BaseClasses.PartialResistance.m_flow_turbulent",
@@ -2208,7 +2245,7 @@
     },
     {
       "modelicaPath": "Buildings.Templates.Components.Actuators.Damper.non",
-      "type": "Buildings.Templates.Components.Routing.PassThroughFluid",
+      "type": "Buildings.Fluid.FixedResistances.PressureDrop",
       "name": "No damper",
       "group": "",
       "tab": "",
@@ -2217,11 +2254,50 @@
         "Buildings.Templates.Components.Actuators.Damper.non.Medium": {
           "final": true,
           "redeclare": "Buildings.Fluid.Interfaces.PartialTwoPort.Medium"
+        },
+        "Buildings.Templates.Components.Actuators.Damper.non.m_flow_nominal": {
+          "expression": "m_flow_nominal",
+          "final": true
+        },
+        "Buildings.Templates.Components.Actuators.Damper.non.dp_nominal": {
+          "expression": "dpFixed_nominal",
+          "final": true
+        },
+        "Buildings.Templates.Components.Actuators.Damper.non.allowFlowReversal": {
+          "expression": "allowFlowReversal",
+          "final": true
+        },
+        "Buildings.Templates.Components.Actuators.Damper.non.show_T": {
+          "expression": "show_T",
+          "final": true
+        },
+        "Buildings.Templates.Components.Actuators.Damper.non.from_dp": {
+          "expression": "from_dp",
+          "final": true
+        },
+        "Buildings.Templates.Components.Actuators.Damper.non.linearized": {
+          "expression": "linearized",
+          "final": true
         }
       },
       "replaceable": false,
       "options": [
-        "Buildings.Templates.Components.Routing.PassThroughFluid.icon_pipe",
+        "Buildings.Fluid.FixedResistances.PressureDrop.n",
+        "Buildings.Fluid.FixedResistances.PressureDrop.deltaM",
+        "Buildings.Fluid.FixedResistances.PressureDrop.k",
+        "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization",
+        "Buildings.Fluid.BaseClasses.PartialResistance.from_dp",
+        "Buildings.Fluid.BaseClasses.PartialResistance.n",
+        "Buildings.Fluid.BaseClasses.PartialResistance.dp_nominal",
+        "Buildings.Fluid.BaseClasses.PartialResistance.linearized",
+        "Buildings.Fluid.BaseClasses.PartialResistance.m_flow_turbulent",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_nominal",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_small",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.dp",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_a",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
@@ -2230,89 +2306,147 @@
       "shortExclType": false
     },
     {
-      "modelicaPath": "Buildings.Templates.Components.Routing.PassThroughFluid.icon_pipe",
-      "type": "Buildings.Templates.Components.Types.IntegrationPoint",
-      "value": "Buildings.Templates.Components.Types.IntegrationPoint.Supply",
-      "name": "Pipe symbol",
+      "modelicaPath": "Buildings.Fluid.FixedResistances.PressureDrop.n",
+      "type": "Real",
+      "value": 2,
+      "name": "Flow exponent, n=1 for laminar, n=2 for turbulent",
       "group": "",
-      "tab": "Graphics",
+      "tab": "Advanced",
       "visible": true,
-      "enable": false,
+      "enable": true,
       "modifiers": {},
       "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Types.IntegrationPoint.None",
-        "Buildings.Templates.Components.Types.IntegrationPoint.Return",
-        "Buildings.Templates.Components.Types.IntegrationPoint.Supply"
-      ],
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
     {
-      "modelicaPath": "Buildings.Templates.Components.Types.IntegrationPoint",
-      "name": "Enumeration to specify the integration point of equipment",
-      "type": "Buildings.Templates.Components.Types.IntegrationPoint",
-      "value": "Buildings.Templates.Components.Types.IntegrationPoint",
+      "modelicaPath": "Buildings.Fluid.FixedResistances.PressureDrop.deltaM",
+      "type": "Real",
+      "value": 0.3,
+      "name": "Fraction of nominal mass flow rate where transition to turbulent occurs",
+      "group": "Transition to laminar",
+      "tab": "",
       "visible": true,
+      "enable": {
+        "operator": "!",
+        "operands": [
+          "linearized"
+        ]
+      },
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.FixedResistances.PressureDrop.k",
+      "type": "Real",
+      "value": {
+        "operator": "if_elseif",
+        "operands": [
+          {
+            "operator": "if",
+            "operands": [
+              {
+                "operator": "&&",
+                "operands": [
+                  "computeFlowResistance",
+                  {
+                    "operator": "!",
+                    "operands": [
+                      {
+                        "operator": "||",
+                        "operands": [
+                          "linearized",
+                          "fullyLaminar"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "operator": "/",
+                "operands": [
+                  "m_flow_nominal_pos",
+                  {
+                    "operator": "^",
+                    "operands": [
+                      "dp_nominal_pos",
+                      "1/n"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "operator": "else",
+            "operands": [
+              0
+            ]
+          }
+        ]
+      },
+      "name": "Flow coefficient, k=m_flow/dp^(1/n)",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.FixedResistances.PressureDrop",
+      "type": "Buildings.Fluid.FixedResistances.PressureDrop",
+      "name": "Fixed flow resistance with dp and m_flow as parameter",
+      "visible": false,
+      "modifiers": {
+        "Buildings.Fluid.FixedResistances.PressureDrop.m_flow_turbulent": {
+          "expression": {
+            "operator": "if_elseif",
+            "operands": [
+              {
+                "operator": "if",
+                "operands": [
+                  "computeFlowResistance",
+                  "deltaM*m_flow_nominal_pos"
+                ]
+              },
+              {
+                "operator": "else",
+                "operands": [
+                  0
+                ]
+              }
+            ]
+          },
+          "final": true
+        }
+      },
       "replaceable": false,
       "options": [
-        "Buildings.Templates.Components.Types.IntegrationPoint.None",
-        "Buildings.Templates.Components.Types.IntegrationPoint.Return",
-        "Buildings.Templates.Components.Types.IntegrationPoint.Supply"
-      ],
-      "definition": true,
-      "shortExclType": false,
-      "treeList": [
-        "Buildings.Templates.Components.Types.IntegrationPoint"
-      ]
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Types.IntegrationPoint.None",
-      "name": "None",
-      "type": "Buildings.Templates.Components.Types.IntegrationPoint",
-      "value": "Buildings.Templates.Components.Types.IntegrationPoint.None",
-      "visible": false,
-      "replaceable": false,
-      "definition": true,
-      "shortExclType": false,
-      "treeList": [
-        "Buildings.Templates.Components.Types.IntegrationPoint"
-      ]
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Types.IntegrationPoint.Return",
-      "name": "Return side",
-      "type": "Buildings.Templates.Components.Types.IntegrationPoint",
-      "value": "Buildings.Templates.Components.Types.IntegrationPoint.Return",
-      "visible": false,
-      "replaceable": false,
-      "definition": true,
-      "shortExclType": false,
-      "treeList": [
-        "Buildings.Templates.Components.Types.IntegrationPoint"
-      ]
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Types.IntegrationPoint.Supply",
-      "name": "Supply side",
-      "type": "Buildings.Templates.Components.Types.IntegrationPoint",
-      "value": "Buildings.Templates.Components.Types.IntegrationPoint.Supply",
-      "visible": false,
-      "replaceable": false,
-      "definition": true,
-      "shortExclType": false,
-      "treeList": [
-        "Buildings.Templates.Components.Types.IntegrationPoint"
-      ]
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Routing.PassThroughFluid",
-      "type": "Buildings.Templates.Components.Routing.PassThroughFluid",
-      "name": "Direct fluid pass-through",
-      "visible": false,
-      "replaceable": false,
-      "options": [
-        "Buildings.Templates.Components.Routing.PassThroughFluid.icon_pipe",
+        "Buildings.Fluid.FixedResistances.PressureDrop.n",
+        "Buildings.Fluid.FixedResistances.PressureDrop.deltaM",
+        "Buildings.Fluid.FixedResistances.PressureDrop.k",
+        "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization",
+        "Buildings.Fluid.BaseClasses.PartialResistance.from_dp",
+        "Buildings.Fluid.BaseClasses.PartialResistance.n",
+        "Buildings.Fluid.BaseClasses.PartialResistance.dp_nominal",
+        "Buildings.Fluid.BaseClasses.PartialResistance.linearized",
+        "Buildings.Fluid.BaseClasses.PartialResistance.m_flow_turbulent",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_nominal",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_small",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.dp",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_a",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
@@ -2320,7 +2454,9 @@
       "definition": true,
       "shortExclType": false,
       "treeList": [
-        "Buildings.Templates.Components.Routing.PassThroughFluid",
+        "Buildings.Fluid.FixedResistances.PressureDrop",
+        "Buildings.Fluid.BaseClasses.PartialResistance",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
         "Buildings.Fluid.Interfaces.PartialTwoPort"
       ]
     },
@@ -2705,6 +2841,7 @@
         "Buildings.Templates.Components.Actuators.Damper.typ",
         "Buildings.Templates.Components.Actuators.Damper.dat",
         "Buildings.Templates.Components.Actuators.Damper.dp_nominal",
+        "Buildings.Templates.Components.Actuators.Damper.dpFixed_nominal",
         "Buildings.Templates.Components.Actuators.Damper.use_strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.init",
@@ -2980,6 +3117,10 @@
         "Buildings.Fluid.Sensors.VolumeFlowRate.V_flow.unit": {
           "expression": "\"m3/s\"",
           "final": true
+        },
+        "Buildings.Fluid.Sensors.VolumeFlowRate.V_flow.nominal": {
+          "expression": "m_flow_nominal/d_start",
+          "final": false
         }
       },
       "replaceable": false,
@@ -3151,6 +3292,101 @@
       ],
       "definition": false,
       "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Routing.PassThroughFluid.icon_pipe",
+      "type": "Buildings.Templates.Components.Types.IntegrationPoint",
+      "value": "Buildings.Templates.Components.Types.IntegrationPoint.Supply",
+      "name": "Pipe symbol",
+      "group": "",
+      "tab": "Graphics",
+      "visible": true,
+      "enable": false,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [
+        "Buildings.Templates.Components.Types.IntegrationPoint.None",
+        "Buildings.Templates.Components.Types.IntegrationPoint.Return",
+        "Buildings.Templates.Components.Types.IntegrationPoint.Supply"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Types.IntegrationPoint",
+      "name": "Enumeration to specify the integration point of equipment",
+      "type": "Buildings.Templates.Components.Types.IntegrationPoint",
+      "value": "Buildings.Templates.Components.Types.IntegrationPoint",
+      "visible": true,
+      "replaceable": false,
+      "options": [
+        "Buildings.Templates.Components.Types.IntegrationPoint.None",
+        "Buildings.Templates.Components.Types.IntegrationPoint.Return",
+        "Buildings.Templates.Components.Types.IntegrationPoint.Supply"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Templates.Components.Types.IntegrationPoint"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Types.IntegrationPoint.None",
+      "name": "None",
+      "type": "Buildings.Templates.Components.Types.IntegrationPoint",
+      "value": "Buildings.Templates.Components.Types.IntegrationPoint.None",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Templates.Components.Types.IntegrationPoint"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Types.IntegrationPoint.Return",
+      "name": "Return side",
+      "type": "Buildings.Templates.Components.Types.IntegrationPoint",
+      "value": "Buildings.Templates.Components.Types.IntegrationPoint.Return",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Templates.Components.Types.IntegrationPoint"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Types.IntegrationPoint.Supply",
+      "name": "Supply side",
+      "type": "Buildings.Templates.Components.Types.IntegrationPoint",
+      "value": "Buildings.Templates.Components.Types.IntegrationPoint.Supply",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Templates.Components.Types.IntegrationPoint"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Routing.PassThroughFluid",
+      "type": "Buildings.Templates.Components.Routing.PassThroughFluid",
+      "name": "Direct fluid pass-through",
+      "visible": false,
+      "replaceable": false,
+      "options": [
+        "Buildings.Templates.Components.Routing.PassThroughFluid.icon_pipe",
+        "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Templates.Components.Routing.PassThroughFluid",
+        "Buildings.Fluid.Interfaces.PartialTwoPort"
+      ]
     },
     {
       "modelicaPath": "Buildings.Templates.Components.Interfaces.PartialSensor.have_sen",
@@ -3512,6 +3748,10 @@
         "Buildings.Fluid.Sensors.TemperatureTwoPort.T.start": {
           "expression": "T_start",
           "final": false
+        },
+        "Buildings.Fluid.Sensors.TemperatureTwoPort.T.nominal": {
+          "expression": 300,
+          "final": false
         }
       },
       "replaceable": false,
@@ -3828,6 +4068,10 @@
         },
         "Buildings.Fluid.Sensors.SpecificEnthalpyTwoPort.h_out.start": {
           "expression": "h_out_start",
+          "final": false
+        },
+        "Buildings.Fluid.Sensors.SpecificEnthalpyTwoPort.h_out.nominal": {
+          "expression": "h_out_start*m_flow_nominal",
           "final": false
         }
       },
@@ -4640,16 +4884,10 @@
       "modelicaPath": "Buildings.Templates.Components.Data.Damper.m_flow_nominal",
       "type": "Modelica.Units.SI.MassFlowRate",
       "name": "Air mass flow rate",
-      "group": "Mechanical",
+      "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "!=",
-        "operands": [
-          "typ",
-          "Buildings.Templates.Components.Types.Damper.None"
-        ]
-      },
+      "enable": true,
       "modifiers": {
         "Buildings.Templates.Components.Data.Damper.m_flow_nominal.min": {
           "expression": 0,
@@ -4669,7 +4907,7 @@
       "modelicaPath": "Buildings.Templates.Components.Data.Damper.dp_nominal",
       "type": "Modelica.Units.SI.PressureDifference",
       "name": "Air pressure drop",
-      "group": "Mechanical",
+      "group": "Nominal condition",
       "tab": "",
       "visible": false,
       "enable": {
@@ -4739,10 +4977,10 @@
       "type": "Modelica.Units.SI.PressureDifference",
       "value": 0,
       "name": "Air pressure drop of fixed elements in series with damper",
-      "group": "Mechanical",
+      "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": false,
+      "enable": true,
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -6915,6 +7153,7 @@
         "Buildings.Templates.Components.Actuators.Damper.typ",
         "Buildings.Templates.Components.Actuators.Damper.dat",
         "Buildings.Templates.Components.Actuators.Damper.dp_nominal",
+        "Buildings.Templates.Components.Actuators.Damper.dpFixed_nominal",
         "Buildings.Templates.Components.Actuators.Damper.use_strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.init",
@@ -6978,6 +7217,7 @@
         "Buildings.Templates.Components.Actuators.Damper.typ",
         "Buildings.Templates.Components.Actuators.Damper.dat",
         "Buildings.Templates.Components.Actuators.Damper.dp_nominal",
+        "Buildings.Templates.Components.Actuators.Damper.dpFixed_nominal",
         "Buildings.Templates.Components.Actuators.Damper.use_strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.init",
@@ -7436,6 +7676,7 @@
         "Buildings.Fluid.FixedResistances.Junction.homotopyInitialization",
         "Buildings.Fluid.FixedResistances.Junction.m_flow_nominal",
         "Buildings.Fluid.FixedResistances.Junction.dp_nominal",
+        "Buildings.Fluid.FixedResistances.Junction.n",
         "Buildings.Fluid.FixedResistances.Junction.deltaM",
         "Buildings.Fluid.FixedResistances.Junction.linearized",
         "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.port_1",
@@ -7510,6 +7751,21 @@
           "final": false
         }
       },
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.FixedResistances.Junction.n",
+      "type": "Real",
+      "value": 2,
+      "name": "Flow exponent, n=1 for laminar, n=2 for turbulent",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
       "replaceable": false,
       "options": [],
       "definition": false,
@@ -8964,6 +9220,10 @@
           "final": false,
           "redeclare": "Buildings.Fluid.FixedResistances.PressureDrop"
         },
+        "Buildings.Fluid.FixedResistances.Junction.res1.n": {
+          "expression": "n",
+          "final": true
+        },
         "Buildings.Fluid.FixedResistances.Junction.res1.from_dp": {
           "expression": "from_dp",
           "final": false
@@ -8992,6 +9252,10 @@
           "final": false,
           "redeclare": "Buildings.Fluid.FixedResistances.PressureDrop"
         },
+        "Buildings.Fluid.FixedResistances.Junction.res2.n": {
+          "expression": "n",
+          "final": true
+        },
         "Buildings.Fluid.FixedResistances.Junction.res2.from_dp": {
           "expression": "from_dp",
           "final": false
@@ -9019,6 +9283,10 @@
         "Buildings.Fluid.FixedResistances.Junction.res3": {
           "final": false,
           "redeclare": "Buildings.Fluid.FixedResistances.PressureDrop"
+        },
+        "Buildings.Fluid.FixedResistances.Junction.res3.n": {
+          "expression": "n",
+          "final": true
         },
         "Buildings.Fluid.FixedResistances.Junction.res3.from_dp": {
           "expression": "from_dp",
@@ -9050,6 +9318,7 @@
         "Buildings.Fluid.FixedResistances.Junction.homotopyInitialization",
         "Buildings.Fluid.FixedResistances.Junction.m_flow_nominal",
         "Buildings.Fluid.FixedResistances.Junction.dp_nominal",
+        "Buildings.Fluid.FixedResistances.Junction.n",
         "Buildings.Fluid.FixedResistances.Junction.deltaM",
         "Buildings.Fluid.FixedResistances.Junction.linearized",
         "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.port_1",
@@ -9127,6 +9396,7 @@
         "Buildings.Fluid.FixedResistances.Junction.homotopyInitialization",
         "Buildings.Fluid.FixedResistances.Junction.m_flow_nominal",
         "Buildings.Fluid.FixedResistances.Junction.dp_nominal",
+        "Buildings.Fluid.FixedResistances.Junction.n",
         "Buildings.Fluid.FixedResistances.Junction.deltaM",
         "Buildings.Fluid.FixedResistances.Junction.linearized",
         "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.port_1",
@@ -9380,6 +9650,7 @@
         "Buildings.Templates.Components.Actuators.Damper.typ",
         "Buildings.Templates.Components.Actuators.Damper.dat",
         "Buildings.Templates.Components.Actuators.Damper.dp_nominal",
+        "Buildings.Templates.Components.Actuators.Damper.dpFixed_nominal",
         "Buildings.Templates.Components.Actuators.Damper.use_strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.init",
@@ -9454,7 +9725,7 @@
     },
     {
       "modelicaPath": "Buildings.Templates.Components.Fans.SingleVariable.fan",
-      "type": "Buildings.Fluid.Movers.SpeedControlled_y",
+      "type": "Buildings.Templates.Components.BaseClasses.MoverSpeedControlled_y",
       "name": "Fan",
       "group": "",
       "tab": "",
@@ -9472,6 +9743,10 @@
           "expression": "dat.per",
           "final": true,
           "recordBinding": true
+        },
+        "Buildings.Templates.Components.Fans.SingleVariable.fan.m_flow_nominal": {
+          "expression": "m_flow_nominal",
+          "final": true
         },
         "Buildings.Templates.Components.Fans.SingleVariable.fan.energyDynamics": {
           "expression": "energyDynamics",
@@ -9498,6 +9773,7 @@
       },
       "replaceable": false,
       "options": [
+        "Buildings.Templates.Components.BaseClasses.MoverSpeedControlled_y.m_flow_nominal",
         "Buildings.Fluid.Movers.SpeedControlled_y.y_start",
         "Buildings.Fluid.Movers.SpeedControlled_y.y",
         "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.per",
@@ -9540,6 +9816,20 @@
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
       ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.BaseClasses.MoverSpeedControlled_y.m_flow_nominal",
+      "type": "Modelica.Units.SI.MassFlowRate",
+      "name": "",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -10330,6 +10620,71 @@
       ]
     },
     {
+      "modelicaPath": "Buildings.Templates.Components.BaseClasses.MoverSpeedControlled_y",
+      "type": "Buildings.Templates.Components.BaseClasses.MoverSpeedControlled_y",
+      "visible": false,
+      "modifiers": {
+        "Buildings.Templates.Components.BaseClasses.MoverSpeedControlled_y._m_flow_nominal": {
+          "expression": "m_flow_nominal",
+          "final": true
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "Buildings.Templates.Components.BaseClasses.MoverSpeedControlled_y.m_flow_nominal",
+        "Buildings.Fluid.Movers.SpeedControlled_y.y_start",
+        "Buildings.Fluid.Movers.SpeedControlled_y.y",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.per",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.inputType",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.constInput",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.stageInputs",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.computePowerUsingSimilarityLaws",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.addPowerToMedium",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.nominalValuesDefineDefaultPressureCurve",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.tau",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.use_riseTime",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.riseTime",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.init",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.stage",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.y_actual",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.P",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.heatPort",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.VMachine_flow",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.dpMachine",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.eta",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.etaHyd",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.etaMot",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.m_flow_small",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.show_T",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.m_flow",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.dp",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.sta_a",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.sta_b",
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.energyDynamics",
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.massDynamics",
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.substanceDynamics",
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.traceDynamics",
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.p_start",
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.T_start",
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.X_start",
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.C_start",
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.C_nominal",
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.mSenFac",
+        "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
+        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Templates.Components.BaseClasses.MoverSpeedControlled_y",
+        "Buildings.Fluid.Movers.SpeedControlled_y",
+        "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine",
+        "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations",
+        "Buildings.Fluid.Interfaces.PartialTwoPort"
+      ]
+    },
+    {
       "modelicaPath": "Buildings.Templates.Components.Fans.SingleVariable.sigSta",
       "type": "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal",
       "name": "Start/stop signal",
@@ -10816,7 +11171,7 @@
     },
     {
       "modelicaPath": "Buildings.Templates.Components.Fans.ArrayVariable.fan",
-      "type": "Buildings.Fluid.Movers.SpeedControlled_y",
+      "type": "Buildings.Templates.Components.BaseClasses.MoverSpeedControlled_y",
       "name": "Fan array",
       "group": "",
       "tab": "",
@@ -10834,6 +11189,10 @@
           "expression": "dat.per",
           "final": true,
           "recordBinding": true
+        },
+        "Buildings.Templates.Components.Fans.ArrayVariable.fan.m_flow_nominal": {
+          "expression": "m_flow_nominal/max(1,nFan)",
+          "final": true
         },
         "Buildings.Templates.Components.Fans.ArrayVariable.fan.energyDynamics": {
           "expression": "energyDynamics",
@@ -10860,6 +11219,7 @@
       },
       "replaceable": false,
       "options": [
+        "Buildings.Templates.Components.BaseClasses.MoverSpeedControlled_y.m_flow_nominal",
         "Buildings.Fluid.Movers.SpeedControlled_y.y_start",
         "Buildings.Fluid.Movers.SpeedControlled_y.y",
         "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.per",
@@ -12676,6 +13036,7 @@
         "Buildings.Fluid.FixedResistances.Junction.homotopyInitialization",
         "Buildings.Fluid.FixedResistances.Junction.m_flow_nominal",
         "Buildings.Fluid.FixedResistances.Junction.dp_nominal",
+        "Buildings.Fluid.FixedResistances.Junction.n",
         "Buildings.Fluid.FixedResistances.Junction.deltaM",
         "Buildings.Fluid.FixedResistances.Junction.linearized",
         "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.port_1",
@@ -12913,6 +13274,7 @@
         "Buildings.Templates.Components.Actuators.Damper.typ",
         "Buildings.Templates.Components.Actuators.Damper.dat",
         "Buildings.Templates.Components.Actuators.Damper.dp_nominal",
+        "Buildings.Templates.Components.Actuators.Damper.dpFixed_nominal",
         "Buildings.Templates.Components.Actuators.Damper.use_strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.init",
@@ -13098,6 +13460,7 @@
         "Buildings.Templates.Components.Actuators.Damper.typ",
         "Buildings.Templates.Components.Actuators.Damper.dat",
         "Buildings.Templates.Components.Actuators.Damper.dp_nominal",
+        "Buildings.Templates.Components.Actuators.Damper.dpFixed_nominal",
         "Buildings.Templates.Components.Actuators.Damper.use_strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.init",
@@ -13230,6 +13593,7 @@
         "Buildings.Templates.Components.Actuators.Damper.typ",
         "Buildings.Templates.Components.Actuators.Damper.dat",
         "Buildings.Templates.Components.Actuators.Damper.dp_nominal",
+        "Buildings.Templates.Components.Actuators.Damper.dpFixed_nominal",
         "Buildings.Templates.Components.Actuators.Damper.use_strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.init",
@@ -14016,28 +14380,45 @@
     {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.typCtlFanRet",
       "type": "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn",
+      "value": "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowMeasured",
       "name": "Return fan control type",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": {
+        "operator": "!=",
+        "operands": [
+          "typFanRet",
+          "Buildings.Templates.Components.Types.Fan.None"
+        ]
+      },
       "modifiers": {},
       "replaceable": false,
-      "options": [],
+      "options": [
+        "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowMeasured",
+        "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.BuildingPressure"
+      ],
       "definition": false,
       "shortExclType": false
     },
     {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.typCtlEco",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer",
+      "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulb",
       "name": "Economizer control type",
       "group": "Configuration",
       "tab": "",
-      "visible": false,
-      "enable": false,
+      "visible": true,
+      "enable": "have_eco",
       "modifiers": {},
       "replaceable": false,
-      "options": [],
+      "options": [
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulb",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.DifferentialDryBulb",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulbWithDifferentialDryBulb",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedEnthalpyWithFixedDryBulb",
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.DifferentialEnthalpyWithFixedDryBulb"
+      ],
       "definition": false,
       "shortExclType": false
     },
@@ -15666,60 +16047,6 @@
           "final": false,
           "redeclare": "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.Medium"
         },
-        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.ports.m_flow.max": {
-          "expression": {
-            "operator": "if_elseif",
-            "operands": [
-              {
-                "operator": "if",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "flowDirection",
-                      "Modelica.Fluid.Types.PortFlowDirection.Leaving"
-                    ]
-                  },
-                  0
-                ]
-              },
-              {
-                "operator": "else",
-                "operands": [
-                  "+Modelica.Constants.inf"
-                ]
-              }
-            ]
-          },
-          "final": false
-        },
-        "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.ports.m_flow.min": {
-          "expression": {
-            "operator": "if_elseif",
-            "operands": [
-              {
-                "operator": "if",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "flowDirection",
-                      "Modelica.Fluid.Types.PortFlowDirection.Entering"
-                    ]
-                  },
-                  0
-                ]
-              },
-              {
-                "operator": "else",
-                "operands": [
-                  "-Modelica.Constants.inf"
-                ]
-              }
-            ]
-          },
-          "final": false
-        },
         "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.ports.h_outflow.nominal": {
           "expression": "Medium.h_default",
           "final": false
@@ -16185,60 +16512,6 @@
         "Buildings.Fluid.Sources.BaseClasses.PartialSource.ports.Medium": {
           "final": false,
           "redeclare": "Buildings.Fluid.Sources.BaseClasses.PartialSource.Medium"
-        },
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource.ports.m_flow.max": {
-          "expression": {
-            "operator": "if_elseif",
-            "operands": [
-              {
-                "operator": "if",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "flowDirection",
-                      "Modelica.Fluid.Types.PortFlowDirection.Leaving"
-                    ]
-                  },
-                  0
-                ]
-              },
-              {
-                "operator": "else",
-                "operands": [
-                  "+Modelica.Constants.inf"
-                ]
-              }
-            ]
-          },
-          "final": false
-        },
-        "Buildings.Fluid.Sources.BaseClasses.PartialSource.ports.m_flow.min": {
-          "expression": {
-            "operator": "if_elseif",
-            "operands": [
-              {
-                "operator": "if",
-                "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "flowDirection",
-                      "Modelica.Fluid.Types.PortFlowDirection.Entering"
-                    ]
-                  },
-                  0
-                ]
-              },
-              {
-                "operator": "else",
-                "operands": [
-                  "-Modelica.Constants.inf"
-                ]
-              }
-            ]
-          },
-          "final": false
         },
         "Buildings.Fluid.Sources.BaseClasses.PartialSource.ports.h_outflow.nominal": {
           "expression": "Medium.h_default",
@@ -17218,13 +17491,7 @@
       "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "!=",
-        "operands": [
-          "typ",
-          "Buildings.Templates.Components.Types.Valve.None"
-        ]
-      },
+      "enable": true,
       "modifiers": {
         "Buildings.Templates.Components.Data.Valve.m_flow_nominal.min": {
           "expression": 0,
@@ -17281,13 +17548,7 @@
       "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": {
-        "operator": "!=",
-        "operands": [
-          "typ",
-          "Buildings.Templates.Components.Types.Valve.None"
-        ]
-      },
+      "enable": true,
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -18219,7 +18480,7 @@
     },
     {
       "modelicaPath": "Buildings.Templates.Components.Actuators.Valve.non",
-      "type": "Buildings.Templates.Components.Routing.PassThroughFluid",
+      "type": "Buildings.Fluid.FixedResistances.PressureDrop",
       "name": "No valve",
       "group": "",
       "tab": "",
@@ -18228,11 +18489,50 @@
         "Buildings.Templates.Components.Actuators.Valve.non.Medium": {
           "final": true,
           "redeclare": "Buildings.Fluid.Interfaces.PartialTwoPort.Medium"
+        },
+        "Buildings.Templates.Components.Actuators.Valve.non.m_flow_nominal": {
+          "expression": "m_flow_nominal",
+          "final": true
+        },
+        "Buildings.Templates.Components.Actuators.Valve.non.dp_nominal": {
+          "expression": "dpFixed_nominal",
+          "final": true
+        },
+        "Buildings.Templates.Components.Actuators.Valve.non.allowFlowReversal": {
+          "expression": "allowFlowReversal",
+          "final": true
+        },
+        "Buildings.Templates.Components.Actuators.Valve.non.show_T": {
+          "expression": "show_T",
+          "final": true
+        },
+        "Buildings.Templates.Components.Actuators.Valve.non.from_dp": {
+          "expression": "from_dp",
+          "final": true
+        },
+        "Buildings.Templates.Components.Actuators.Valve.non.linearized": {
+          "expression": "linearized",
+          "final": true
         }
       },
       "replaceable": false,
       "options": [
-        "Buildings.Templates.Components.Routing.PassThroughFluid.icon_pipe",
+        "Buildings.Fluid.FixedResistances.PressureDrop.n",
+        "Buildings.Fluid.FixedResistances.PressureDrop.deltaM",
+        "Buildings.Fluid.FixedResistances.PressureDrop.k",
+        "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization",
+        "Buildings.Fluid.BaseClasses.PartialResistance.from_dp",
+        "Buildings.Fluid.BaseClasses.PartialResistance.n",
+        "Buildings.Fluid.BaseClasses.PartialResistance.dp_nominal",
+        "Buildings.Fluid.BaseClasses.PartialResistance.linearized",
+        "Buildings.Fluid.BaseClasses.PartialResistance.m_flow_turbulent",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_nominal",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_small",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.dp",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_a",
+        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
@@ -18537,6 +18837,7 @@
         "Buildings.Fluid.FixedResistances.Junction.homotopyInitialization",
         "Buildings.Fluid.FixedResistances.Junction.m_flow_nominal",
         "Buildings.Fluid.FixedResistances.Junction.dp_nominal",
+        "Buildings.Fluid.FixedResistances.Junction.n",
         "Buildings.Fluid.FixedResistances.Junction.deltaM",
         "Buildings.Fluid.FixedResistances.Junction.linearized",
         "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.port_1",
@@ -18688,6 +18989,7 @@
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_b",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.computeFlowResistance",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.from_dp",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.n",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.dp_nominal",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.linearizeFlowResistance",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.deltaM"
@@ -18952,6 +19254,10 @@
           "final": true,
           "redeclare": "Buildings.Fluid.Interfaces.PartialTwoPort.Medium"
         },
+        "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.preDro.n": {
+          "expression": "n",
+          "final": true
+        },
         "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.preDro.m_flow_nominal": {
           "expression": "m_flow_nominal",
           "final": true
@@ -18987,10 +19293,12 @@
       },
       "replaceable": false,
       "options": [
+        "Buildings.Fluid.FixedResistances.PressureDrop.n",
         "Buildings.Fluid.FixedResistances.PressureDrop.deltaM",
         "Buildings.Fluid.FixedResistances.PressureDrop.k",
         "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization",
         "Buildings.Fluid.BaseClasses.PartialResistance.from_dp",
+        "Buildings.Fluid.BaseClasses.PartialResistance.n",
         "Buildings.Fluid.BaseClasses.PartialResistance.dp_nominal",
         "Buildings.Fluid.BaseClasses.PartialResistance.linearized",
         "Buildings.Fluid.BaseClasses.PartialResistance.m_flow_turbulent",
@@ -19007,115 +19315,6 @@
       ],
       "definition": false,
       "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Fluid.FixedResistances.PressureDrop.deltaM",
-      "type": "Real",
-      "value": 0.3,
-      "name": "Fraction of nominal mass flow rate where transition to turbulent occurs",
-      "group": "Transition to laminar",
-      "tab": "",
-      "visible": true,
-      "enable": {
-        "operator": "!",
-        "operands": [
-          "linearized"
-        ]
-      },
-      "modifiers": {},
-      "replaceable": false,
-      "options": [],
-      "definition": false,
-      "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Fluid.FixedResistances.PressureDrop.k",
-      "type": "Real",
-      "value": {
-        "operator": "if_elseif",
-        "operands": [
-          {
-            "operator": "if",
-            "operands": [
-              "computeFlowResistance",
-              "m_flow_nominal_pos/sqrt(dp_nominal_pos)"
-            ]
-          },
-          {
-            "operator": "else",
-            "operands": [
-              0
-            ]
-          }
-        ]
-      },
-      "name": "Flow coefficient, k=m_flow/sqrt(dp), with unit=(kg.m)^(1/2)",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": true,
-      "modifiers": {},
-      "replaceable": false,
-      "options": [],
-      "definition": false,
-      "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Fluid.FixedResistances.PressureDrop",
-      "type": "Buildings.Fluid.FixedResistances.PressureDrop",
-      "name": "Fixed flow resistance with dp and m_flow as parameter",
-      "visible": false,
-      "modifiers": {
-        "Buildings.Fluid.FixedResistances.PressureDrop.m_flow_turbulent": {
-          "expression": {
-            "operator": "if_elseif",
-            "operands": [
-              {
-                "operator": "if",
-                "operands": [
-                  "computeFlowResistance",
-                  "deltaM*m_flow_nominal_pos"
-                ]
-              },
-              {
-                "operator": "else",
-                "operands": [
-                  0
-                ]
-              }
-            ]
-          },
-          "final": true
-        }
-      },
-      "replaceable": false,
-      "options": [
-        "Buildings.Fluid.FixedResistances.PressureDrop.deltaM",
-        "Buildings.Fluid.FixedResistances.PressureDrop.k",
-        "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization",
-        "Buildings.Fluid.BaseClasses.PartialResistance.from_dp",
-        "Buildings.Fluid.BaseClasses.PartialResistance.dp_nominal",
-        "Buildings.Fluid.BaseClasses.PartialResistance.linearized",
-        "Buildings.Fluid.BaseClasses.PartialResistance.m_flow_turbulent",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_nominal",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_small",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.dp",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_a",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
-        "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
-        "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
-        "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
-      ],
-      "definition": true,
-      "shortExclType": false,
-      "treeList": [
-        "Buildings.Fluid.FixedResistances.PressureDrop",
-        "Buildings.Fluid.BaseClasses.PartialResistance",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
-        "Buildings.Fluid.Interfaces.PartialTwoPort"
-      ]
     },
     {
       "modelicaPath": "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.computeFlowResistance",
@@ -19141,6 +19340,21 @@
       "tab": "Flow resistance",
       "visible": true,
       "enable": "computeFlowResistance",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.n",
+      "type": "Real",
+      "value": 2,
+      "name": "Flow exponent, n=1 for laminar, n=2 for turbulent",
+      "group": "",
+      "tab": "Flow resistance",
+      "visible": true,
+      "enable": true,
       "modifiers": {},
       "replaceable": false,
       "options": [],
@@ -19209,6 +19423,7 @@
       "options": [
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.computeFlowResistance",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.from_dp",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.n",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.dp_nominal",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.linearizeFlowResistance",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.deltaM"
@@ -19261,6 +19476,7 @@
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_b",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.computeFlowResistance",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.from_dp",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.n",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.dp_nominal",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.linearizeFlowResistance",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.deltaM"
@@ -19402,6 +19618,7 @@
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_b",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.computeFlowResistance",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.from_dp",
+        "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.n",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.dp_nominal",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.linearizeFlowResistance",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.deltaM"
@@ -19775,6 +19992,7 @@
         "Buildings.Fluid.FixedResistances.Junction.homotopyInitialization",
         "Buildings.Fluid.FixedResistances.Junction.m_flow_nominal",
         "Buildings.Fluid.FixedResistances.Junction.dp_nominal",
+        "Buildings.Fluid.FixedResistances.Junction.n",
         "Buildings.Fluid.FixedResistances.Junction.deltaM",
         "Buildings.Fluid.FixedResistances.Junction.linearized",
         "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.port_1",
@@ -20060,6 +20278,7 @@
         "Buildings.Fluid.FixedResistances.Junction.homotopyInitialization",
         "Buildings.Fluid.FixedResistances.Junction.m_flow_nominal",
         "Buildings.Fluid.FixedResistances.Junction.dp_nominal",
+        "Buildings.Fluid.FixedResistances.Junction.n",
         "Buildings.Fluid.FixedResistances.Junction.deltaM",
         "Buildings.Fluid.FixedResistances.Junction.linearized",
         "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.port_1",
@@ -20195,6 +20414,7 @@
         "Buildings.Fluid.FixedResistances.Junction.homotopyInitialization",
         "Buildings.Fluid.FixedResistances.Junction.m_flow_nominal",
         "Buildings.Fluid.FixedResistances.Junction.dp_nominal",
+        "Buildings.Fluid.FixedResistances.Junction.n",
         "Buildings.Fluid.FixedResistances.Junction.deltaM",
         "Buildings.Fluid.FixedResistances.Junction.linearized",
         "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.port_1",
@@ -20279,10 +20499,11 @@
     {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.idZon",
       "type": "String",
+      "value": "dat.idZon",
       "name": "Zone (or terminal unit) names",
-      "group": "Configuration",
+      "group": "",
       "tab": "",
-      "visible": true,
+      "visible": false,
       "enable": true,
       "modifiers": {},
       "replaceable": false,
@@ -20293,10 +20514,11 @@
     {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.namGro",
       "type": "String",
+      "value": "dat.namGro",
       "name": "Name of zone groups",
-      "group": "Configuration",
+      "group": "",
       "tab": "",
-      "visible": true,
+      "visible": false,
       "enable": true,
       "modifiers": {},
       "replaceable": false,
@@ -20307,10 +20529,11 @@
     {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.namGroZon",
       "type": "String",
+      "value": "dat.namGroZon",
       "name": "Name of group which each zone belongs to",
-      "group": "Configuration",
+      "group": "",
       "tab": "",
-      "visible": true,
+      "visible": false,
       "enable": true,
       "modifiers": {},
       "replaceable": false,
@@ -21859,7 +22082,7 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.p_rel_RetFan_max",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.relFanSpe_min",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.kRelFan",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.Thys",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.THys",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.posHys",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.hys",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.uAhuOpeMod",
@@ -24400,7 +24623,7 @@
       "shortExclType": false
     },
     {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.Thys",
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.THys",
       "type": "Real",
       "value": 0.25,
       "name": "Hysteresis for checking temperature difference",
@@ -25769,8 +25992,8 @@
           "expression": "yMinFrePro",
           "final": true
         },
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.frePro.Thys": {
-          "expression": "Thys",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.frePro.THys": {
+          "expression": "THys",
           "final": true
         }
       },
@@ -25789,7 +26012,7 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.Td",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.yMax",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.yMin",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.Thys",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.THys",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.uOutDamPosMin",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.uOutDam",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.uHeaCoi",
@@ -26245,7 +26468,7 @@
       "shortExclType": false
     },
     {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.Thys",
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.THys",
       "type": "Real",
       "value": 0.25,
       "name": "Hysteresis for checking temperature difference",
@@ -27002,7 +27225,7 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.Td",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.yMax",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.yMin",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.Thys",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.THys",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.uOutDamPosMin",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.uOutDam",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.uHeaCoi",
@@ -27060,8 +27283,8 @@
           "expression": "cooCoi",
           "final": true
         },
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.plaReq.Thys": {
-          "expression": "Thys",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.plaReq.THys": {
+          "expression": "THys",
           "final": true
         },
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.plaReq.posHys": {
@@ -27073,7 +27296,7 @@
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.heaCoi",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.cooCoi",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.Thys",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.THys",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.posHys",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.TAirSup",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.TAirSupSet",
@@ -27126,7 +27349,7 @@
       "shortExclType": false
     },
     {
-      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.Thys",
+      "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.THys",
       "type": "Real",
       "value": 0.1,
       "name": "Hysteresis for checking temperature difference",
@@ -27328,7 +27551,7 @@
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.heaCoi",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.cooCoi",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.Thys",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.THys",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.posHys",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.TAirSup",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.TAirSupSet",
@@ -30171,6 +30394,21 @@
       "tab": "",
       "visible": false,
       "modifiers": {
+        "Buildings.Controls.OBC.CDL.Reals.PIDWithReset.I.y.nominal": {
+          "expression": {
+            "operator": "function_call",
+            "operands": [
+              {
+                "operator": "max",
+                "operands": [
+                  "max",
+                  "max"
+                ]
+              }
+            ]
+          },
+          "final": false
+        },
         "Buildings.Controls.OBC.CDL.Reals.PIDWithReset.I.k": {
           "expression": "k/Ti",
           "final": true
@@ -32599,7 +32837,16 @@
       "tab": "",
       "visible": false,
       "enable": true,
-      "modifiers": {},
+      "modifiers": {
+        "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold.u.fixed": {
+          "expression": true,
+          "final": true
+        },
+        "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold.u.start": {
+          "expression": "pre_u_start",
+          "final": true
+        }
+      },
       "replaceable": false,
       "options": [],
       "definition": false,
@@ -38275,6 +38522,21 @@
       "tab": "",
       "visible": false,
       "modifiers": {
+        "Buildings.Controls.OBC.CDL.Reals.PID.I.y.nominal": {
+          "expression": {
+            "operator": "function_call",
+            "operands": [
+              {
+                "operator": "max",
+                "operands": [
+                  "max",
+                  "max"
+                ]
+              }
+            ]
+          },
+          "final": false
+        },
         "Buildings.Controls.OBC.CDL.Reals.PID.I.k": {
           "expression": "k/Ti",
           "final": true
@@ -40890,7 +41152,7 @@
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.p_rel_RetFan_max",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.relFanSpe_min",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.kRelFan",
-        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.Thys",
+        "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.THys",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.posHys",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.hys",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.uAhuOpeMod",
@@ -47139,70 +47401,57 @@
       "name": "Configuration parameters",
       "group": "",
       "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {},
-      "replaceable": true,
-      "options": [],
-      "definition": false,
-      "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.nZon",
-      "type": "Integer",
-      "name": "Number of served zones",
-      "group": "Configuration",
-      "tab": "",
-      "visible": true,
-      "enable": true,
-      "modifiers": {
-        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.nZon.min": {
-          "expression": 1,
-          "final": false
-        }
-      },
-      "replaceable": false,
-      "options": [],
-      "definition": false,
-      "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.dat",
-      "type": "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler",
-      "name": "Design and operating parameters",
-      "group": "",
-      "tab": "",
       "visible": true,
       "modifiers": {
-        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.dat.cfg": {
-          "expression": "cfg",
-          "final": false,
-          "recordBinding": true
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.cfg.nZon": {
+          "expression": "nZon",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.cfg.typ": {
+          "expression": "typ",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.cfg.typFanSup": {
+          "expression": "typFanSup",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.cfg.typFanRel": {
+          "expression": "typFanRel",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.cfg.typFanRet": {
+          "expression": "typFanRet",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.cfg.have_souChiWat": {
+          "expression": "have_souChiWat",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.cfg.have_souHeaWat": {
+          "expression": "have_souHeaWat",
+          "final": true
         }
       },
       "enable": true,
-      "choiceModifiers": {},
-      "replaceable": true,
-      "options": [
-        "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler"
-      ],
-      "definition": false,
-      "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.cfg",
-      "type": "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler",
-      "name": "Configuration parameters",
-      "group": "",
-      "tab": "",
-      "visible": true,
-      "modifiers": {},
-      "enable": false,
       "choiceModifiers": {},
       "replaceable": true,
       "options": [
         "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler"
       ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.nZon",
+      "type": "Integer",
+      "name": "Number of served zones",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -47478,6 +47727,7 @@
       "visible": false,
       "replaceable": false,
       "options": [
+        "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.nZon",
         "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typ",
         "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typFanSup",
         "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typFanRet",
@@ -47494,6 +47744,65 @@
       "treeList": [
         "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler"
       ]
+    },
+    {
+      "modelicaPath": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.nZon",
+      "type": "Integer",
+      "name": "Number of served zones",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.nZon.min": {
+          "expression": 1,
+          "final": false
+        }
+      },
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.dat",
+      "type": "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler",
+      "name": "Design and operating parameters",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "modifiers": {
+        "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.dat.cfg": {
+          "expression": "cfg",
+          "final": false,
+          "recordBinding": true
+        }
+      },
+      "enable": true,
+      "choiceModifiers": {},
+      "replaceable": true,
+      "options": [
+        "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.cfg",
+      "type": "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler",
+      "name": "Configuration parameters",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "modifiers": {},
+      "enable": false,
+      "choiceModifiers": {},
+      "replaceable": true,
+      "options": [
+        "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler"
+      ],
+      "definition": false,
+      "shortExclType": false
     },
     {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.id",
@@ -48673,6 +48982,9 @@
           "expression": "ctl.stdVen",
           "final": true
         },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.cfg.nZon": {
+          "final": true
+        },
         "Buildings.Templates.AirHandlersFans.VAVMultiZone.cfg.typ": {
           "final": true
         },
@@ -49018,6 +49330,69 @@
       ]
     },
     {
+      "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.idZon",
+      "type": "String",
+      "value": "{\"\"}",
+      "name": "Zone (or terminal unit) names",
+      "group": "Zoning",
+      "tab": "",
+      "visible": true,
+      "enable": {
+        "operator": "==",
+        "operands": [
+          "typ",
+          "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone"
+        ]
+      },
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.namGro",
+      "type": "String",
+      "value": "{\"\"}",
+      "name": "Name of zone groups",
+      "group": "Zoning",
+      "tab": "",
+      "visible": true,
+      "enable": {
+        "operator": "==",
+        "operands": [
+          "typ",
+          "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone"
+        ]
+      },
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.namGroZon",
+      "type": "String",
+      "value": "{\"\"}",
+      "name": "Name of group which each zone belongs to",
+      "group": "Zoning",
+      "tab": "",
+      "visible": true,
+      "enable": {
+        "operator": "==",
+        "operands": [
+          "typ",
+          "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone"
+        ]
+      },
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.typSecOut",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection",
       "name": "Type of outdoor air section",
@@ -49075,7 +49450,7 @@
     {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.TAirSupSet_min",
       "type": "Modelica.Units.SI.Temperature",
-      "value": "12 +273.15",
+      "value": 285.15,
       "name": "Lowest supply air temperature setpoint",
       "group": "Temperature setpoints",
       "tab": "",
@@ -49096,7 +49471,7 @@
     {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.TAirSupSet_max",
       "type": "Modelica.Units.SI.Temperature",
-      "value": "18 +273.15",
+      "value": 291.15,
       "name": "Highest supply air temperature setpoint",
       "group": "Temperature setpoints",
       "tab": "",
@@ -49117,7 +49492,7 @@
     {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.TOutRes_min",
       "type": "Modelica.Units.SI.Temperature",
-      "value": "16 +273.15",
+      "value": 289.15,
       "name": "Lowest value of the outdoor air temperature reset range",
       "group": "Temperature setpoints",
       "tab": "",
@@ -49138,7 +49513,7 @@
     {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.TOutRes_max",
       "type": "Modelica.Units.SI.Temperature",
-      "value": "21 +273.15",
+      "value": 294.15,
       "name": "Highest value of the outdoor air temperature reset range",
       "group": "Temperature setpoints",
       "tab": "",
@@ -49321,14 +49696,14 @@
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.pAirSupSet_rel_max.min": {
           "expression": 0,
-          "final": true
-        },
-        "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.pAirSupSet_rel_max.displayUnit": {
-          "expression": "\"Pa\"",
           "final": false
         },
         "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.pAirSupSet_rel_max.start": {
           "expression": 500,
+          "final": false
+        },
+        "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.pAirSupSet_rel_max.displayUnit": {
+          "expression": "\"Pa\"",
           "final": false
         }
       },
@@ -49373,14 +49748,14 @@
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.dpDamOutMinAbs.min": {
           "expression": 2.4,
-          "final": true
-        },
-        "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.dpDamOutMinAbs.displayUnit": {
-          "expression": "\"Pa\"",
           "final": false
         },
         "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.dpDamOutMinAbs.start": {
           "expression": 5,
+          "final": false
+        },
+        "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.dpDamOutMinAbs.displayUnit": {
+          "expression": "\"Pa\"",
           "final": false
         }
       },
@@ -49418,14 +49793,14 @@
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.dpDamOutMin_nominal.min": {
           "expression": 5,
-          "final": true
-        },
-        "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.dpDamOutMin_nominal.displayUnit": {
-          "expression": "\"Pa\"",
           "final": false
         },
         "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.dpDamOutMin_nominal.start": {
           "expression": 15,
+          "final": false
+        },
+        "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.dpDamOutMin_nominal.displayUnit": {
+          "expression": "\"Pa\"",
           "final": false
         }
       },
@@ -49529,7 +49904,7 @@
       "modifiers": {
         "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.dVFanRet_flow.min": {
           "expression": 0,
-          "final": true
+          "final": false
         },
         "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.dVFanRet_flow.start": {
           "expression": 0.1,
@@ -49647,6 +50022,9 @@
       "visible": false,
       "replaceable": false,
       "options": [
+        "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.idZon",
+        "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.namGro",
+        "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.namGroZon",
         "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.typSecOut",
         "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.buiPreCon",
         "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.stdVen",
@@ -49953,6 +50331,7 @@
         "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typSecOut",
         "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.buiPreCon",
         "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.stdVen",
+        "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.nZon",
         "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typ",
         "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typFanSup",
         "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typFanRet",
@@ -50029,10 +50408,6 @@
           "expression": "cfg.typValCoiHeaPre",
           "final": true
         },
-        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.coiHeaPre.have_sou": {
-          "expression": "cfg.have_souHeaWat",
-          "final": true
-        },
         "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.coiHeaPre.mAir_flow_nominal": {
           "expression": "mAirSup_flow_nominal",
           "final": false
@@ -50042,7 +50417,6 @@
       "options": [
         "Buildings.Templates.Components.Data.Coil.typ",
         "Buildings.Templates.Components.Data.Coil.typVal",
-        "Buildings.Templates.Components.Data.Coil.have_sou",
         "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
         "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
         "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
@@ -50096,20 +50470,6 @@
         "Buildings.Templates.Components.Types.Valve.TwoWayModulating",
         "Buildings.Templates.Components.Types.Valve.TwoWayTwoPosition"
       ],
-      "definition": false,
-      "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Templates.Components.Data.Coil.have_sou",
-      "type": "Boolean",
-      "name": "Set to true for fluid ports on the source side",
-      "group": "Configuration",
-      "tab": "",
-      "visible": true,
-      "enable": true,
-      "modifiers": {},
-      "replaceable": false,
-      "options": [],
       "definition": false,
       "shortExclType": false
     },
@@ -50259,7 +50619,25 @@
       "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": "have_sou",
+      "enable": {
+        "operator": "||",
+        "operands": [
+          {
+            "operator": "==",
+            "operands": [
+              "typ",
+              "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "typ",
+              "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
+            ]
+          }
+        ]
+      },
       "modifiers": {
         "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal.min": {
           "expression": 0,
@@ -50318,7 +50696,25 @@
       "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": "have_sou",
+      "enable": {
+        "operator": "||",
+        "operands": [
+          {
+            "operator": "==",
+            "operands": [
+              "typ",
+              "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "typ",
+              "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
+            ]
+          }
+        ]
+      },
       "modifiers": {
         "Buildings.Templates.Components.Data.Coil.dpWat_nominal.min": {
           "expression": 0,
@@ -50384,7 +50780,25 @@
       "enable": {
         "operator": "&&",
         "operands": [
-          "have_sou",
+          {
+            "operator": "||",
+            "operands": [
+              {
+                "operator": "==",
+                "operands": [
+                  "typ",
+                  "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+                ]
+              },
+              {
+                "operator": "==",
+                "operands": [
+                  "typ",
+                  "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
+                ]
+              }
+            ]
+          },
           {
             "operator": "!=",
             "operands": [
@@ -50608,7 +51022,25 @@
       "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": "have_sou",
+      "enable": {
+        "operator": "||",
+        "operands": [
+          {
+            "operator": "==",
+            "operands": [
+              "typ",
+              "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "typ",
+              "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
+            ]
+          }
+        ]
+      },
       "modifiers": {
         "Buildings.Templates.Components.Data.Coil.TWatEnt_nominal.min": {
           "expression": 273.15,
@@ -50671,7 +51103,25 @@
       "group": "Nominal condition",
       "tab": "",
       "visible": false,
-      "enable": "have_sou",
+      "enable": {
+        "operator": "||",
+        "operands": [
+          {
+            "operator": "==",
+            "operands": [
+              "typ",
+              "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+            ]
+          },
+          {
+            "operator": "==",
+            "operands": [
+              "typ",
+              "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
+            ]
+          }
+        ]
+      },
       "modifiers": {
         "Buildings.Templates.Components.Data.Coil.TAirEnt_nominal.min": {
           "expression": 243.15,
@@ -50787,7 +51237,6 @@
       "options": [
         "Buildings.Templates.Components.Data.Coil.typ",
         "Buildings.Templates.Components.Data.Coil.typVal",
-        "Buildings.Templates.Components.Data.Coil.have_sou",
         "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
         "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
         "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
@@ -50829,10 +51278,6 @@
           "expression": "cfg.typValCoiCoo",
           "final": true
         },
-        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.coiCoo.have_sou": {
-          "expression": "cfg.have_souChiWat",
-          "final": true
-        },
         "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.coiCoo.mAir_flow_nominal": {
           "expression": "mAirSup_flow_nominal",
           "final": false
@@ -50842,7 +51287,6 @@
       "options": [
         "Buildings.Templates.Components.Data.Coil.typ",
         "Buildings.Templates.Components.Data.Coil.typVal",
-        "Buildings.Templates.Components.Data.Coil.have_sou",
         "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
         "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
         "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
@@ -50881,10 +51325,6 @@
           "expression": "cfg.typValCoiHeaReh",
           "final": true
         },
-        "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.coiHeaReh.have_sou": {
-          "expression": "cfg.have_souHeaWat",
-          "final": true
-        },
         "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.coiHeaReh.mAir_flow_nominal": {
           "expression": "mAirSup_flow_nominal",
           "final": false
@@ -50894,7 +51334,6 @@
       "options": [
         "Buildings.Templates.Components.Data.Coil.typ",
         "Buildings.Templates.Components.Data.Coil.typVal",
-        "Buildings.Templates.Components.Data.Coil.have_sou",
         "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
         "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
         "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
@@ -51214,6 +51653,7 @@
         "Buildings.Templates.Components.Actuators.Damper.typ",
         "Buildings.Templates.Components.Actuators.Damper.dat",
         "Buildings.Templates.Components.Actuators.Damper.dp_nominal",
+        "Buildings.Templates.Components.Actuators.Damper.dpFixed_nominal",
         "Buildings.Templates.Components.Actuators.Damper.use_strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.strokeTime",
         "Buildings.Templates.Components.Actuators.Damper.init",
@@ -51817,10 +52257,6 @@
           "expression": "coiHea.typVal",
           "final": true
         },
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea.have_sou": {
-          "expression": "coiHea.have_sou",
-          "final": true
-        },
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea.mAir_flow_nominal": {
           "expression": "dat.coiHea.mAir_flow_nominal",
           "final": true
@@ -51881,7 +52317,6 @@
       "options": [
         "Buildings.Templates.Components.Data.Coil.typ",
         "Buildings.Templates.Components.Data.Coil.typVal",
-        "Buildings.Templates.Components.Data.Coil.have_sou",
         "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
         "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
         "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
@@ -52008,83 +52443,22 @@
       "name": "Configuration parameters",
       "group": "",
       "tab": "",
-      "visible": false,
-      "enable": false,
-      "modifiers": {},
-      "replaceable": true,
-      "options": [],
-      "definition": false,
-      "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.id",
-      "type": "String",
-      "value": "dat.id",
-      "name": "System tag",
-      "group": "Configuration",
-      "tab": "",
-      "visible": false,
-      "enable": true,
-      "modifiers": {},
-      "replaceable": false,
-      "options": [],
-      "definition": false,
-      "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souChiWat",
-      "type": "Boolean",
-      "name": "Set to true if system uses CHW",
-      "group": "Configuration",
-      "tab": "",
       "visible": true,
+      "modifiers": {
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.cfg.typ": {
+          "expression": "typ",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.cfg.have_souChiWat": {
+          "expression": "have_souChiWat",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.cfg.have_souHeaWat": {
+          "expression": "have_souHeaWat",
+          "final": true
+        }
+      },
       "enable": true,
-      "modifiers": {},
-      "replaceable": false,
-      "options": [],
-      "definition": false,
-      "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souHeaWat",
-      "type": "Boolean",
-      "name": "Set to true if system uses HHW",
-      "group": "Configuration",
-      "tab": "",
-      "visible": true,
-      "enable": true,
-      "modifiers": {},
-      "replaceable": false,
-      "options": [],
-      "definition": false,
-      "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.dat",
-      "type": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal",
-      "name": "Design and operating parameters",
-      "group": "",
-      "tab": "",
-      "visible": true,
-      "modifiers": {},
-      "enable": true,
-      "choiceModifiers": {},
-      "replaceable": true,
-      "options": [
-        "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal"
-      ],
-      "definition": false,
-      "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.cfg",
-      "type": "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal",
-      "name": "Configuration parameters",
-      "group": "",
-      "tab": "",
-      "visible": true,
-      "modifiers": {},
-      "enable": false,
       "choiceModifiers": {},
       "replaceable": true,
       "options": [
@@ -52176,6 +52550,83 @@
       "treeList": [
         "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal"
       ]
+    },
+    {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.id",
+      "type": "String",
+      "value": "dat.id",
+      "name": "System tag",
+      "group": "Configuration",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souChiWat",
+      "type": "Boolean",
+      "name": "Set to true if system uses CHW",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souHeaWat",
+      "type": "Boolean",
+      "name": "Set to true if system uses HHW",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.dat",
+      "type": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal",
+      "name": "Design and operating parameters",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "modifiers": {},
+      "enable": true,
+      "choiceModifiers": {},
+      "replaceable": true,
+      "options": [
+        "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.cfg",
+      "type": "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal",
+      "name": "Configuration parameters",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "modifiers": {},
+      "enable": false,
+      "choiceModifiers": {},
+      "replaceable": true,
+      "options": [
+        "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal"
+      ],
+      "definition": false,
+      "shortExclType": false
     },
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.id",
@@ -53722,10 +54173,6 @@
           "expression": "cfg.typValCoiHea",
           "final": true
         },
-        "Buildings.Templates.ZoneEquipment.Data.VAVBox.coiHea.have_sou": {
-          "expression": "cfg.have_souHeaWat",
-          "final": true
-        },
         "Buildings.Templates.ZoneEquipment.Data.VAVBox.coiHea.mAir_flow_nominal": {
           "expression": "ctl.VAirHeaSet_flow_max*1.2",
           "final": false
@@ -53735,7 +54182,6 @@
       "options": [
         "Buildings.Templates.Components.Data.Coil.typ",
         "Buildings.Templates.Components.Data.Coil.typVal",
-        "Buildings.Templates.Components.Data.Coil.have_sou",
         "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal",
         "Buildings.Templates.Components.Data.Coil.dpAir_nominal",
         "Buildings.Templates.Components.Data.Coil.mWat_flow_nominal",
