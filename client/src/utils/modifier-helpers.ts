@@ -13,7 +13,11 @@ export interface ConfigValues {
 }
 
 export type Modifiers = {
-  [key: string]: { expression: Expression; final: boolean; redeclare?: string };
+  [key: string]: {
+    expression?: Expression | string;
+    final: boolean;
+    redeclare?: string;
+  };
 };
 
 function addToModObject(
@@ -289,10 +293,10 @@ export function getUpdatedModifiers(
       const instancePath =
         key.split("-")[1]?.split(".").slice(0, -1).join(".") || "";
       const option = allOptions[modelicaPath] as OptionInterface;
-      let choiceModifiers = {};
+      let choiceModifiers: Modifiers = {};
 
       if (option?.choiceModifiers) {
-        choiceModifiers = option?.choiceModifiers[value];
+        choiceModifiers = option?.choiceModifiers[value] || {};
         // take modifiers and change to instace keys, instancePath above and add to updatedModifiers as the last item.
       }
 
