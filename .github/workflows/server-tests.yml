@@ -40,6 +40,9 @@ jobs:
         run: npm run install-python-deps
       - name: Install NPM packages
         run: npm ci
+      - name: Run sequence-doc Python tests
+        working-directory: server/scripts/sequence-doc
+        run: python3 -m pytest -c pytest.toml
       - name: Run tests
         run: |
           npm run start &
