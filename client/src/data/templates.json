@@ -2211,22 +2211,7 @@
       },
       "replaceable": false,
       "options": [
-        "Buildings.Fluid.FixedResistances.PressureDrop.n",
-        "Buildings.Fluid.FixedResistances.PressureDrop.deltaM",
-        "Buildings.Fluid.FixedResistances.PressureDrop.k",
-        "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization",
-        "Buildings.Fluid.BaseClasses.PartialResistance.from_dp",
-        "Buildings.Fluid.BaseClasses.PartialResistance.n",
-        "Buildings.Fluid.BaseClasses.PartialResistance.dp_nominal",
-        "Buildings.Fluid.BaseClasses.PartialResistance.linearized",
-        "Buildings.Fluid.BaseClasses.PartialResistance.m_flow_turbulent",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_nominal",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_small",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.dp",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_a",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
+        "Buildings.Templates.Components.Routing.PassThroughFluid.icon_pipe",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
@@ -2235,147 +2220,89 @@
       "shortExclType": false
     },
     {
-      "modelicaPath": "Buildings.Fluid.FixedResistances.PressureDrop.n",
-      "type": "Real",
-      "value": 2,
-      "name": "Flow exponent, n=1 for laminar, n=2 for turbulent",
+      "modelicaPath": "Buildings.Templates.Components.Routing.PassThroughFluid.icon_pipe",
+      "type": "Buildings.Templates.Components.Types.IntegrationPoint",
+      "value": "Buildings.Templates.Components.Types.IntegrationPoint.Supply",
+      "name": "Pipe symbol",
       "group": "",
-      "tab": "Advanced",
+      "tab": "Graphics",
       "visible": true,
-      "enable": true,
+      "enable": false,
       "modifiers": {},
-      "replaceable": false,
-      "options": [],
-      "definition": false,
-      "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Fluid.FixedResistances.PressureDrop.deltaM",
-      "type": "Real",
-      "value": 0.3,
-      "name": "Fraction of nominal mass flow rate where transition to turbulent occurs",
-      "group": "Transition to laminar",
-      "tab": "",
-      "visible": true,
-      "enable": {
-        "operator": "!",
-        "operands": [
-          "linearized"
-        ]
-      },
-      "modifiers": {},
-      "replaceable": false,
-      "options": [],
-      "definition": false,
-      "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Fluid.FixedResistances.PressureDrop.k",
-      "type": "Real",
-      "value": {
-        "operator": "if_elseif",
-        "operands": [
-          {
-            "operator": "if",
-            "operands": [
-              {
-                "operator": "&&",
-                "operands": [
-                  "computeFlowResistance",
-                  {
-                    "operator": "!",
-                    "operands": [
-                      {
-                        "operator": "||",
-                        "operands": [
-                          "linearized",
-                          "fullyLaminar"
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "operator": "/",
-                "operands": [
-                  "m_flow_nominal_pos",
-                  {
-                    "operator": "^",
-                    "operands": [
-                      "dp_nominal_pos",
-                      "1/n"
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "operator": "else",
-            "operands": [
-              0
-            ]
-          }
-        ]
-      },
-      "name": "Flow coefficient, k=m_flow/dp^(1/n)",
-      "group": "",
-      "tab": "",
-      "visible": false,
-      "enable": true,
-      "modifiers": {},
-      "replaceable": false,
-      "options": [],
-      "definition": false,
-      "shortExclType": false
-    },
-    {
-      "modelicaPath": "Buildings.Fluid.FixedResistances.PressureDrop",
-      "type": "Buildings.Fluid.FixedResistances.PressureDrop",
-      "name": "Fixed flow resistance with dp and m_flow as parameter",
-      "visible": false,
-      "modifiers": {
-        "Buildings.Fluid.FixedResistances.PressureDrop.m_flow_turbulent": {
-          "expression": {
-            "operator": "if_elseif",
-            "operands": [
-              {
-                "operator": "if",
-                "operands": [
-                  "computeFlowResistance",
-                  "deltaM*m_flow_nominal_pos"
-                ]
-              },
-              {
-                "operator": "else",
-                "operands": [
-                  0
-                ]
-              }
-            ]
-          },
-          "final": true
-        }
-      },
       "replaceable": false,
       "options": [
-        "Buildings.Fluid.FixedResistances.PressureDrop.n",
-        "Buildings.Fluid.FixedResistances.PressureDrop.deltaM",
-        "Buildings.Fluid.FixedResistances.PressureDrop.k",
-        "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization",
-        "Buildings.Fluid.BaseClasses.PartialResistance.from_dp",
-        "Buildings.Fluid.BaseClasses.PartialResistance.n",
-        "Buildings.Fluid.BaseClasses.PartialResistance.dp_nominal",
-        "Buildings.Fluid.BaseClasses.PartialResistance.linearized",
-        "Buildings.Fluid.BaseClasses.PartialResistance.m_flow_turbulent",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_nominal",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_small",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.show_T",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.dp",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_a",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface.sta_b",
+        "Buildings.Templates.Components.Types.IntegrationPoint.None",
+        "Buildings.Templates.Components.Types.IntegrationPoint.Return",
+        "Buildings.Templates.Components.Types.IntegrationPoint.Supply"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Types.IntegrationPoint",
+      "name": "Enumeration to specify the integration point of equipment",
+      "type": "Buildings.Templates.Components.Types.IntegrationPoint",
+      "value": "Buildings.Templates.Components.Types.IntegrationPoint",
+      "visible": true,
+      "replaceable": false,
+      "options": [
+        "Buildings.Templates.Components.Types.IntegrationPoint.None",
+        "Buildings.Templates.Components.Types.IntegrationPoint.Return",
+        "Buildings.Templates.Components.Types.IntegrationPoint.Supply"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Templates.Components.Types.IntegrationPoint"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Types.IntegrationPoint.None",
+      "name": "None",
+      "type": "Buildings.Templates.Components.Types.IntegrationPoint",
+      "value": "Buildings.Templates.Components.Types.IntegrationPoint.None",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Templates.Components.Types.IntegrationPoint"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Types.IntegrationPoint.Return",
+      "name": "Return side",
+      "type": "Buildings.Templates.Components.Types.IntegrationPoint",
+      "value": "Buildings.Templates.Components.Types.IntegrationPoint.Return",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Templates.Components.Types.IntegrationPoint"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Types.IntegrationPoint.Supply",
+      "name": "Supply side",
+      "type": "Buildings.Templates.Components.Types.IntegrationPoint",
+      "value": "Buildings.Templates.Components.Types.IntegrationPoint.Supply",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Templates.Components.Types.IntegrationPoint"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Routing.PassThroughFluid",
+      "type": "Buildings.Templates.Components.Routing.PassThroughFluid",
+      "name": "Direct fluid pass-through",
+      "visible": false,
+      "replaceable": false,
+      "options": [
+        "Buildings.Templates.Components.Routing.PassThroughFluid.icon_pipe",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_b"
@@ -2383,9 +2310,7 @@
       "definition": true,
       "shortExclType": false,
       "treeList": [
-        "Buildings.Fluid.FixedResistances.PressureDrop",
-        "Buildings.Fluid.BaseClasses.PartialResistance",
-        "Buildings.Fluid.Interfaces.PartialTwoPortInterface",
+        "Buildings.Templates.Components.Routing.PassThroughFluid",
         "Buildings.Fluid.Interfaces.PartialTwoPort"
       ]
     },
@@ -8251,7 +8176,7 @@
       "name": "Energy standard",
       "group": "",
       "tab": "",
-      "visible": false,
+      "visible": true,
       "enable": true,
       "modifiers": {},
       "replaceable": false,
@@ -8311,7 +8236,7 @@
       "name": "Ventilation standard",
       "group": "",
       "tab": "",
-      "visible": false,
+      "visible": true,
       "enable": true,
       "modifiers": {},
       "replaceable": false,
@@ -11448,21 +11373,53 @@
       "group": "Configuration",
       "tab": "",
       "visible": true,
-      "modifiers": {
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.cfg.typ": {
-          "expression": "typ",
-          "final": true
-        },
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.cfg.have_souChiWat": {
-          "expression": "have_souChiWat",
-          "final": true
-        },
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.cfg.have_souHeaWat": {
-          "expression": "have_souHeaWat",
-          "final": true
-        }
-      },
       "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souHeaWat",
+      "type": "Boolean",
+      "name": "Set to true if system uses HHW",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.dat",
+      "type": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal",
+      "name": "Design and operating parameters",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "modifiers": {},
+      "enable": true,
+      "choiceModifiers": {},
+      "replaceable": true,
+      "options": [
+        "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.cfg",
+      "type": "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal",
+      "name": "Configuration parameters",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "modifiers": {},
+      "enable": false,
       "choiceModifiers": {},
       "replaceable": true,
       "options": [
