@@ -2,7 +2,7 @@
 set -x
 
 MODELICA_BUILDINGS_REF=issue4700_templates
-MODELICA_STANDARD_TAG=v4.0.0 # This should be driven by 'uses' annotation from Buildings/package.mo
+MODELICA_STANDARD_TAG=v4.1.0 # This should be driven by 'uses' annotation from Buildings/package.mo
 MODELICA_JSON_COMMIT=b715c09d3092192779e8eccd80c813f08ea1a8e6
 
 # Clone modelica buildings commit -
