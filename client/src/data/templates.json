@@ -22,7 +22,7 @@
         "ctl.coiHea": "coiHea",
         "ctl.datAll": "datAll"
       },
-      "name": "Parallel fan-powered terminal unit - Constant volume"
+      "name": "Parallel fan-powered terminal unit - Constant volume fan"
     },
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxFanSeriesConstant",
@@ -34,7 +34,7 @@
         "ctl.coiHea": "coiHea",
         "ctl.datAll": "datAll"
       },
-      "name": "Series fan-powered terminal unit - Constant volume"
+      "name": "Series fan-powered terminal unit - Constant volume fan"
     },
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxReheat",
@@ -11187,7 +11187,7 @@
     },
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxFanParallelConstant",
-      "name": "Parallel fan-powered terminal unit - Constant volume",
+      "name": "Parallel fan-powered terminal unit - Constant volume fan",
       "type": "Buildings.Templates.ZoneEquipment.Types.Configuration",
       "value": "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxFanParallelConstant",
       "visible": false,
@@ -11200,7 +11200,7 @@
     },
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxFanSeriesConstant",
-      "name": "Series fan-powered terminal unit - Constant volume",
+      "name": "Series fan-powered terminal unit - Constant volume fan",
       "type": "Buildings.Templates.ZoneEquipment.Types.Configuration",
       "value": "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxFanSeriesConstant",
       "visible": false,
@@ -24579,7 +24579,7 @@
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxFanParallelConstant",
       "type": "Buildings.Templates.ZoneEquipment.VAVBoxFanParallelConstant",
-      "name": "Parallel fan-powered terminal unit - Constant volume",
+      "name": "Parallel fan-powered terminal unit - Constant volume fan",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.ZoneEquipment.VAVBoxFanParallelConstant.typ": {
@@ -24708,7 +24708,7 @@
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxFanSeriesConstant",
       "type": "Buildings.Templates.ZoneEquipment.VAVBoxFanSeriesConstant",
-      "name": "Series fan-powered terminal unit - Constant volume",
+      "name": "Series fan-powered terminal unit - Constant volume fan",
       "visible": false,
       "modifiers": {
         "Buildings.Templates.ZoneEquipment.VAVBoxFanSeriesConstant.typ": {
