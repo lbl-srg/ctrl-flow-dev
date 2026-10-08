@@ -1,0 +1,503 @@
+{
+  "Buildings.Templates.AirHandlersFans": [
+    "Buildings.Templates.AirHandlersFans.VAVMultiZone"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.TAirSupSet_max-ctl.TAirSupSet_max": [
+    291.15
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.TAirSupSet_min-ctl.TAirSupSet_min": [
+    285.15
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.TOutRes_max-ctl.TOutRes_max": [
+    294.15
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.TOutRes_min-ctl.TOutRes_min": [
+    289.15
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.ashCliZon-ctl.ashCliZon": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_4A"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.have_perZonRehBox-ctl.have_perZonRehBox": [
+    false
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.idZon-ctl.idZon": [
+    "{\"\"}"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.namGro-ctl.namGro": [
+    "{\"\"}"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.namGroZon-ctl.namGroZon": [
+    "{\"\"}"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.pAirRetSet_rel_max-ctl.pAirRetSet_rel_max": [
+    40
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.pAirRetSet_rel_min-ctl.pAirRetSet_rel_min": [
+    10
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.typCoiCoo-ctl.typCoiCoo": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.CoolingCoil.WaterBased"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.typCoiHea-ctl.typCoiHea": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.WaterBased"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.yFanRel_min-ctl.yFanRel_min": [
+    0.1
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.yFanRet_min-ctl.yFanRet_min": [
+    0.1
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.yFanSup_min-ctl.yFanSup_min": [
+    0.1
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.TAirSupSet_max-dat.ctl.TAirSupSet_max": [
+    291.15
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.TAirSupSet_min-dat.ctl.TAirSupSet_min": [
+    285.15
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.TOutRes_max-dat.ctl.TOutRes_max": [
+    294.15
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.TOutRes_min-dat.ctl.TOutRes_min": [
+    289.15
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.idZon-dat.ctl.idZon": [
+    "{\"\"}"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.namGro-dat.ctl.namGro": [
+    "{\"\"}"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.namGroZon-dat.ctl.namGroZon": [
+    "{\"\"}"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.pAirRetSet_rel_max-dat.ctl.pAirRetSet_rel_max": [
+    40
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.pAirRetSet_rel_min-dat.ctl.pAirRetSet_rel_min": [
+    10
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.yFanRel_min-dat.ctl.yFanRel_min": [
+    0.1
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.yFanRet_min-dat.ctl.yFanRet_min": [
+    0.1
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.yFanSup_min-dat.ctl.yFanSup_min": [
+    0.1
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.dat-ctl.dat": [
+    "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.nFanRel-ctl.nFanRel": [
+    0
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.nFanRet-ctl.nFanRet": [
+    1
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.nFanSup-ctl.nFanSup": [
+    1
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.typ-ctl.typ": [
+    "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.typFanRel-ctl.typFanRel": [
+    "Buildings.Templates.Components.Types.Fan.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.typFanRet-ctl.typFanRet": [
+    "Buildings.Templates.Components.Types.Fan.SingleVariable"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.typFanSup-ctl.typFanSup": [
+    "Buildings.Templates.Components.Types.Fan.SingleVariable"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.buiPreCon-ctl.buiPreCon": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.have_CO2Sen-ctl.have_CO2Sen": [
+    false
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.have_frePro-ctl.have_frePro": [
+    true
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.stdEne-ctl.stdEne": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.stdVen-ctl.stdVen": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.typCtlEco-ctl.typCtlEco": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulb"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.typCtlFanRet-ctl.typCtlFanRet": [
+    "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowMeasured"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.typFreSta-ctl.typFreSta": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_equipment"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.typSecOut-ctl.typSecOut": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.use_TMix-ctl.use_TMix": [
+    true
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialHeatRecovery.typ-secOutRel.recHea.typ": [
+    "Buildings.Templates.AirHandlersFans.Types.HeatRecovery.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.have_eco-secOutRel.have_eco": [
+    true
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.have_recHea-secOutRel.have_recHea": [
+    false
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.mAirRet_flow_nominal-secOutRel.mAirRet_flow_nominal": [
+    "Buildings.Templates.Components.Data.Damper"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.mAirSup_flow_nominal-secOutRel.mAirSup_flow_nominal": [
+    "Buildings.Templates.Components.Data.Damper"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.nFanRel-secOutRel.nFanRel": [
+    0
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.nFanRet-secOutRel.nFanRet": [
+    1
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.typ-secOutRel.typ": [
+    "Buildings.Templates.AirHandlersFans.Types.OutdoorReliefReturnSection.MixedAirWithDamper"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.typCtlEco-secOutRel.typCtlEco": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulb"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.typCtlFanRet-secOutRel.typCtlFanRet": [
+    "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowMeasured"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.typDamOut-secOutRel.typDamOut": [
+    "Buildings.Templates.Components.Types.Damper.Modulating"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.typDamOutMin-secOutRel.typDamOutMin": [
+    "Buildings.Templates.Components.Types.Damper.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.typDamRel-secOutRel.typDamRel": [
+    "Buildings.Templates.Components.Types.Damper.Modulating"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.typDamRet-secOutRel.typDamRet": [
+    "Buildings.Templates.Components.Types.Damper.Modulating"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.typFanRel-secOutRel.typFanRel": [
+    "Buildings.Templates.Components.Types.Fan.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.typFanRet-secOutRel.typFanRet": [
+    "Buildings.Templates.Components.Types.Fan.SingleVariable"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.typSecOut-secOutRel.typSecOut": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.typSecRel-secOutRel.typSecRel": [
+    "Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReturnFan"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.have_recHea-secOutRel.secOut.have_recHea": [
+    false
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.m_flow_nominal-secOutRel.secOut.m_flow_nominal": [
+    "Buildings.Templates.Components.Data.Damper"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.typ-secOutRel.secOut.typ": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.typCtlEco-secOutRel.secOut.typCtlEco": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulb"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.typDamOut-secOutRel.secOut.typDamOut": [
+    "Buildings.Templates.Components.Types.Damper.Modulating"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.typDamOutMin-secOutRel.secOut.typDamOutMin": [
+    "Buildings.Templates.Components.Types.Damper.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection.have_recHea-secOutRel.secRel.have_recHea": [
+    false
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection.nFanRel-secOutRel.secRel.nFanRel": [
+    0
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection.nFanRet-secOutRel.secRel.nFanRet": [
+    1
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection.typ-secOutRel.secRel.typ": [
+    "Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.ReturnFan"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection.typCtlEco-secOutRel.secRel.typCtlEco": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulb"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection.typCtlFanRet-secOutRel.secRel.typCtlFanRet": [
+    "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowMeasured"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection.typDamRel-secOutRel.secRel.typDamRel": [
+    "Buildings.Templates.Components.Types.Damper.Modulating"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection.typFanRel-secOutRel.secRel.typFanRel": [
+    "Buildings.Templates.Components.Types.Fan.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection.typFanRet-secOutRel.secRel.typFanRet": [
+    "Buildings.Templates.Components.Types.Fan.SingleVariable"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.recHea-secOutRel.recHea": [
+    "Buildings.Templates.AirHandlersFans.Components.HeatRecovery.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut-secOutRel.secOut": [
+    "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel-secOutRel.secRel": [
+    "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan"
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.fanRet-secOutRel.secRel.fanRet": [
+    "Buildings.Templates.Components.Fans.SingleVariable"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.nFanRel-cfg.nFanRel": [
+    0
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.nFanRet-cfg.nFanRet": [
+    1
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.nFanSup-cfg.nFanSup": [
+    1
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typCtl-cfg.typCtl": [
+    "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.buiPreCon-cfg.buiPreCon": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.stdVen-cfg.stdVen": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typCoiCoo-cfg.typCoiCoo": [
+    "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typCoiHeaPre-cfg.typCoiHeaPre": [
+    "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typCoiHeaReh-cfg.typCoiHeaReh": [
+    "Buildings.Templates.Components.Types.Coil.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typDamOut-cfg.typDamOut": [
+    "Buildings.Templates.Components.Types.Damper.Modulating"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typDamOutMin-cfg.typDamOutMin": [
+    "Buildings.Templates.Components.Types.Damper.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typDamRel-cfg.typDamRel": [
+    "Buildings.Templates.Components.Types.Damper.Modulating"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typDamRet-cfg.typDamRet": [
+    "Buildings.Templates.Components.Types.Damper.Modulating"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typSecOut-cfg.typSecOut": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typValCoiCoo-cfg.typValCoiCoo": [
+    "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typValCoiHeaPre-cfg.typValCoiHeaPre": [
+    "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typValCoiHeaReh-cfg.typValCoiHeaReh": [
+    "Buildings.Templates.Components.Types.Valve.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.ctl-dat.ctl": [
+    "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController"
+  ],
+  "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.id-dat.id": [
+    ""
+  ],
+  "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.QChiWat_flow_nominal-QChiWat_flow_nominal": [
+    "-1*abs(cap_nominal)"
+  ],
+  "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.cfg-cfg": [
+    "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone"
+  ],
+  "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.dat-dat": [
+    "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone"
+  ],
+  "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.have_porRel-have_porRel": [
+    true
+  ],
+  "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.have_souChiWat-have_souChiWat": [
+    true
+  ],
+  "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.have_souHeaWat-have_souHeaWat": [
+    true
+  ],
+  "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.id-id": [
+    ""
+  ],
+  "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.nFanRel-nFanRel": [
+    0
+  ],
+  "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.nFanRet-nFanRet": [
+    1
+  ],
+  "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.nFanSup-nFanSup": [
+    1
+  ],
+  "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.typ-typ": [
+    "Buildings.Templates.AirHandlersFans.Types.Configuration.SingleDuct"
+  ],
+  "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.typFanRel-typFanRel": [
+    "Buildings.Templates.Components.Types.Fan.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.typFanRet-typFanRet": [
+    "Buildings.Templates.Components.Types.Fan.SingleVariable"
+  ],
+  "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.typFanSup-typFanSup": [
+    "Buildings.Templates.Components.Types.Fan.SingleVariable"
+  ],
+  "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo": [
+    "Buildings.Templates.Components.Coils.WaterBasedCooling"
+  ],
+  "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaPre-coiHeaPre": [
+    "Buildings.Templates.Components.Coils.WaterBasedHeating"
+  ],
+  "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaReh-coiHeaReh": [
+    "Buildings.Templates.Components.Coils.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.VAVMultiZone.ctl-ctl": [
+    "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone"
+  ],
+  "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupBlo-fanSupBlo": [
+    "Buildings.Templates.Components.Fans.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupDra-fanSupDra": [
+    "Buildings.Templates.Components.Fans.SingleVariable"
+  ],
+  "Buildings.Templates.AirHandlersFans.VAVMultiZone.have_senPreBui-have_senPreBui": [
+    false
+  ],
+  "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel-secOutRel": [
+    "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper"
+  ],
+  "Buildings.Templates.Components.Actuators.Damper.typ-secOutRel.damRet.typ": [
+    "Buildings.Templates.Components.Types.Damper.Modulating"
+  ],
+  "Buildings.Templates.Components.Actuators.Damper.typ-secOutRel.secRel.damRel.typ": [
+    "Buildings.Templates.Components.Types.Damper.Modulating"
+  ],
+  "Buildings.Templates.Components.Coils.WaterBasedCooling.hex-coiCoo.hex": [
+    "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU"
+  ],
+  "Buildings.Templates.Components.Coils.WaterBasedHeating.hex-coiHeaPre.hex": [
+    "Buildings.Fluid.HeatExchangers.DryCoilEffectivenessNTU"
+  ],
+  "Buildings.Templates.Components.Data.Coil.Q_flow_nominal-dat.coiCoo.Q_flow_nominal": [
+    "-1*abs(cap_nominal)"
+  ],
+  "Buildings.Templates.Components.Data.Coil.Q_flow_nominal-dat.coiHeaPre.Q_flow_nominal": [
+    "-1*abs(cap_nominal)"
+  ],
+  "Buildings.Templates.Components.Data.Coil.typ-dat.coiCoo.typ": [
+    "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
+  ],
+  "Buildings.Templates.Components.Data.Coil.typ-dat.coiHeaPre.typ": [
+    "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+  ],
+  "Buildings.Templates.Components.Data.Damper.m_flow_nominal-dat.damOut.m_flow_nominal": [
+    "Buildings.Templates.Components.Data.Damper"
+  ],
+  "Buildings.Templates.Components.Data.Damper.m_flow_nominal-dat.damRel.m_flow_nominal": [
+    "Buildings.Templates.Components.Data.Damper"
+  ],
+  "Buildings.Templates.Components.Data.Damper.m_flow_nominal-dat.damRet.m_flow_nominal": [
+    "Buildings.Templates.Components.Data.Damper"
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialCoil.Q_flow_nominal-coiCoo.Q_flow_nominal": [
+    "-1*abs(cap_nominal)"
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialCoil.Q_flow_nominal-coiHeaPre.Q_flow_nominal": [
+    "-1*abs(cap_nominal)"
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialCoil.have_sou-coiCoo.have_sou": [
+    true
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialCoil.have_sou-coiHeaPre.have_sou": [
+    true
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialCoil.have_sou-coiHeaReh.have_sou": [
+    false
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialCoil.have_weaBus-coiCoo.have_weaBus": [
+    false
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialCoil.have_weaBus-coiHeaPre.have_weaBus": [
+    false
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialCoil.typ-coiCoo.typ": [
+    "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialCoil.typ-coiHeaPre.typ": [
+    "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialCoil.typ-coiHeaReh.typ": [
+    "Buildings.Templates.Components.Types.Coil.None"
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialCoil.typVal-coiCoo.typVal": [
+    "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialCoil.typVal-coiHeaPre.typVal": [
+    "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialCoil.typVal-coiHeaReh.typVal": [
+    "Buildings.Templates.Components.Types.Valve.None"
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialFan.have_senFlo-fanSupDra.have_senFlo": [
+    true
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialFan.have_senFlo-secOutRel.secRel.fanRet.have_senFlo": [
+    true
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialFan.nFan-fanSupDra.nFan": [
+    1
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialFan.nFan-secOutRel.secRel.fanRet.nFan": [
+    1
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialFan.text_flip-fanSupDra.text_flip": [
+    false
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialFan.text_flip-secOutRel.secRel.fanRet.text_flip": [
+    true
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialFan.text_rotation-fanSupDra.text_rotation": [
+    0
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialFan.text_rotation-secOutRel.secRel.fanRet.text_rotation": [
+    0
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialFan.typ-fanSupBlo.typ": [
+    "Buildings.Templates.Components.Types.Fan.None"
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialFan.typ-fanSupDra.typ": [
+    "Buildings.Templates.Components.Types.Fan.SingleVariable"
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialFan.typ-secOutRel.secRel.fanRet.typ": [
+    "Buildings.Templates.Components.Types.Fan.SingleVariable"
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialFan.typSin-fanSupDra.typSin": [
+    "Buildings.Templates.Components.Types.FanSingle.Housed"
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialFan.typSin-secOutRel.secRel.fanRet.typSin": [
+    "Buildings.Templates.Components.Types.FanSingle.Housed"
+  ],
+  "Buildings.Templates.Data.AllSystems.ashCliZon": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_4A"
+  ],
+  "Buildings.Templates.Data.AllSystems.stdEne": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1"
+  ],
+  "Buildings.Templates.Data.AllSystems.stdVen": [
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
+  ],
+  "Buildings.Templates.Data.AllSystems.sysUni": [
+    "Buildings.Templates.Types.Units.IP"
+  ],
+  "DEL_INFO_BOX": [
+    false
+  ]
+}

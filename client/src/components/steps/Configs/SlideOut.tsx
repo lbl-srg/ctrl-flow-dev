@@ -7,8 +7,8 @@ import Modal from "../../modal/Modal";
 import OptionSelect from "./OptionSelect";
 import { mapToDisplayOptions as mapConfigContextToDisplayOptions } from "../../../interpreter/display-option";
 import { ConfigContext } from "../../../interpreter/interpreter";
+import { getConfigValuesToSave } from "../../../interpreter/config-values";
 import { ConfigValues } from "../../../utils/modifier-helpers";
-import { removeEmpty } from "../../../utils/utils";
 
 import "../../../styles/components/config-slide-out.scss";
 
@@ -107,15 +107,12 @@ const SlideOut = ({
     event.preventDefault();
     event.stopPropagation();
 
-    const validSelections: ConfigValues = {};
-    Object.entries(selectedValues).map(([key, value]) => {
-      if (context.isValidSelection(key)) {
-        validSelections[key] = value;
-      }
-    });
-    const evaluatedValues = context.getEvaluatedValues();
-    configStore.setSelections(config.id, validSelections);
-    configStore.setEvaluatedValues(config.id, removeEmpty(evaluatedValues));
+    const { selections, evaluatedValues } = getConfigValuesToSave(
+      context,
+      selectedValues,
+    );
+    configStore.setSelections(config.id, selections);
+    configStore.setEvaluatedValues(config.id, evaluatedValues);
 
     close();
   }
