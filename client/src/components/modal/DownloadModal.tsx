@@ -3,7 +3,7 @@ import { useState, ChangeEvent } from "react";
 import itl from "../../translations";
 import { useStores } from "../../data";
 import { ConfigInterface } from "../../data/config";
-import { ProjectDetailInterface } from "../../data/project";
+import { buildSequencePayload } from "../../utils/sequence-payload";
 
 import Spinner from '../Spinner';
 
@@ -47,35 +47,6 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
     setChecked([]);
   }
 
-  function getSequenceData() {
-    const seqData: {[key: string]: any} = {};
-
-    projectConfigs.forEach((config) => {
-      const configData = {
-        ...config.evaluatedValues,
-        ...config.selections,
-        [config.systemPath]: config.templatePath,
-      };
-      const configKeys = Object.keys(configData);
-
-      configKeys.forEach((key) => {
-        if (seqData[key] !== undefined) {
-          const initalValue = seqData[key];
-          if (seqData[key].indexOf(configData[key]) === -1) {
-            seqData[key].push(configData[key]);
-          }
-        } else {
-          const [modelicaPath, instancePath] = key.split("-");
-          if (modelicaPath !== configData[key]) {
-            seqData[key] = [configData[key]];
-          }
-        }
-      });
-    });
-
-    return seqData;
-  }
-
   async function downloadFiles() {
     setLoading(true);
     // if (checked.includes(CONTROL_SEQUENCE)) {
@@ -97,7 +68,7 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
       const response = await fetch(`${import.meta.env.VITE_API}/sequence`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({...getSequenceData(), DEL_INFO_BOX: [false]}),
+        body: JSON.stringify(buildSequencePayload(projectConfigs, false)),
       });
 
       // TODO: Handle error responses which do not contain an actual file

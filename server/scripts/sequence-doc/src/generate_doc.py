@@ -20,8 +20,6 @@ MAPPINGS_MODELICA_VALUES = 'Modelica Path'
 
 ANNOTATION_STYLE = 'Toggle'
 
-logging.getLogger().setLevel(logging.DEBUG)
-
 def parse_args(args) -> str:
     parser = argparse.ArgumentParser(
         prog = 'GenerateSequenceDoc',
@@ -76,6 +74,8 @@ def generate_doc(selections, version) -> Document:
 def main():
     '''
     '''
+    # LOG_LEVEL=INFO or DEBUG for diagnostics
+    logging.basicConfig(level=os.environ.get('LOG_LEVEL', 'WARNING'))
     args = parse_args(sys.argv[1:])
     selections = extract_input(sys.stdin)
     document = generate_doc(selections, args.version)

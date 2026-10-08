@@ -11,8 +11,6 @@ import logging
 import utils
 from typing import Dict, List
 
-logging.getLogger().setLevel(logging.DEBUG)
-
 P_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p'
 BOOKMARK_TAGS = ['{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bookmarkEnd', "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bookmarkStart"]
 SECTION_TAG = ["{http://schemas.openxmlformats.org/wordprocessingml/2006/main}sectPr"]
@@ -295,7 +293,7 @@ def evaluate_annotation(op, name_map, selections: Selections):
 
         # 2: check if relevant selection is available
         if long_name not in selections:
-            logging.error('Path "%s" not found in store, deleting', long_name)
+            logging.info('Path "%s" not found in store, deleting', long_name)
             return True
         # 3: apply the operation type
         elif not utils.reduce_to_boolean(selections[long_name]):
@@ -316,7 +314,7 @@ def evaluate_annotation(op, name_map, selections: Selections):
         long_name = name_map[short_name]
 
         if long_name not in selections:
-            logging.error('Path "%s" not found in store, deleting', long_name)
+            logging.info('Path "%s" not found in store, deleting', long_name)
             return True
         elif utils.reduce_to_boolean(selections[long_name]):
             return True
@@ -342,7 +340,7 @@ def evaluate_annotation(op, name_map, selections: Selections):
         long_compare = name_map[short_compare]
                 
         if long_name not in selections:
-            logging.error('Path "%s" not found in store, deleting', long_name)
+            logging.info('Path "%s" not found in store, deleting', long_name)
             return True
         elif long_compare not in selections[long_name]:
             return True
@@ -368,7 +366,7 @@ def evaluate_annotation(op, name_map, selections: Selections):
         long_compare = name_map[short_compare]
                 
         if long_name not in selections:
-            logging.error('Path "%s" not found in store, keeping', long_name)
+            logging.info('Path "%s" not found in store, keeping', long_name)
             return False
         elif long_compare in selections[long_name]:
             return True
@@ -390,7 +388,7 @@ def evaluate_annotation(op, name_map, selections: Selections):
         long_compare = map(lambda name: name_map[name], short_compare)
                 
         if long_name not in selections:
-            logging.error('Path "%s" not found in store, deleting', long_name)
+            logging.info('Path "%s" not found in store, deleting', long_name)
             return True
         elif not utils.common_member(selections[long_name], long_compare):
             return True
@@ -519,7 +517,7 @@ def convert_units(control_structure, name_map, selections: Selections):
     ip_long_name = name_map[ip_short_name]
 
     if long_name not in selections:
-        logging.error('Path "%s" not found in store', long_name)
+        logging.info('Path "%s" not found in store', long_name)
         return
 
     for op in control_structure:

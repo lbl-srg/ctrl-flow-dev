@@ -35,13 +35,16 @@ export async function generateDoc(selections: SequenceData, path: string) {
     scriptProcess.stdin.end();
 
     // stdout and stderr need to have callbacks to close the process
-    // TODO: figure out best place to log response
-    scriptProcess.stdout.on('data', (data) => console.log(`${data}`));
-    scriptProcess.stderr.on('data', (data) => console.log(`${data}`));
+    // The script logs warnings and errors to stderr: logged once on close
+    let log = "";
+    scriptProcess.stdout.on('data', (data) => (log += data));
+    scriptProcess.stderr.on('data', (data) => (log += data));
     scriptProcess.on("close", (code) => {
       if (code === 0) {
+        if (log) console.warn(log);
         resolve(scriptProcess);
       } else {
+        console.error(log);
         reject(code);
       }
     });
