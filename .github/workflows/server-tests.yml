@@ -45,6 +45,6 @@ jobs:
         run: python3 -m pytest -c pytest.toml
       - name: Run tests
         run: |
-          npm run start &
+          npx ts-node src/index.ts & # no nodemon: tests write files to the watched directory
           sleep 5 # wait for server to start
           npm run test:ci

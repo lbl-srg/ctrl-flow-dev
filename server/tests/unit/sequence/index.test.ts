@@ -12,6 +12,7 @@ describe("Control Sequence Document", () => {
   it(
     "convertToDOCX executes without error",
     async () => {
+      fs.mkdirSync(tempDirPath, { recursive: true });
       await generateDoc(EXAMPLE_SELECTIONS, `${tempDirPath}/sequence-doc.docx`);
       return;
     },
