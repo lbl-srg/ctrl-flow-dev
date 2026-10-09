@@ -121,6 +121,7 @@ function configure(configCase: ConfigCase, project: Values): ConfigInterface {
   );
   return {
     id: "",
+    projectId: store.projectStore.activeProjectId,
     isLocked: false,
     systemPath: template.systemTypes[0],
     templatePath: template.modelicaPath,
