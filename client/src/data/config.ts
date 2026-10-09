@@ -12,6 +12,7 @@ export interface SelectionInterface {
 
 export interface ConfigInterface {
   id: string;
+  projectId: string;
   name?: string;
   isLocked: boolean;
   selections?: ConfigValues;
@@ -22,28 +23,34 @@ export interface ConfigInterface {
   [key: string]: string | number | undefined | boolean | ConfigValues;
 }
 
-export type ConfigProps = Omit<ConfigInterface, "id">;
+export type ConfigProps = Omit<ConfigInterface, "id" | "projectId">;
 
 export default class Config {
   configs: ConfigInterface[] = [];
   rootStore: RootStore;
+  /** Resolves once the store is loaded from local storage */
+  hydrated: Promise<unknown> = Promise.resolve();
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
 
-    makeAutoObservable(this);
+    makeAutoObservable(this, { hydrated: false });
 
     if (process.env.NODE_ENV !== "test") {
-      makePersistable(this, {
+      this.hydrated = makePersistable(this, {
         name: this.rootStore.getStorageKey("config"),
         properties: ["configs"],
       });
     }
   }
 
+  /**
+   * Adds a configuration to the active project
+   */
   add(config: ConfigProps) {
     const merged = {
       id: uuid(),
+      projectId: this.activeProjectId,
       name: "Default",
       isLocked: false,
       selections: {},
@@ -75,13 +82,15 @@ export default class Config {
     if (config) config.isLocked = !config.isLocked;
   }
 
-  hasSystemTemplateConfigs(systemPath: string, templatePath: string): boolean {
-    return this.configs.find(
-      (config) =>
-        config.systemPath == systemPath && config.templatePath === templatePath,
-    )
-      ? true
-      : false;
+  hasSystemTemplateConfigs(
+    systemPath: string,
+    templatePath: string,
+    projectId = this.activeProjectId,
+  ): boolean {
+    return (
+      this.getConfigsForSystemTemplate(systemPath, templatePath, projectId)
+        .length > 0
+    );
   }
 
   // Look in the config for the value of the first option that matches a given modelicaPath
@@ -122,29 +131,65 @@ export default class Config {
   getConfigsForSystemTemplate(
     systemPath: string | null,
     templatePath: string | null,
+    projectId = this.activeProjectId,
   ): ConfigInterface[] {
     return this.configs.filter(
       (config) =>
+        config.projectId === projectId &&
         config.systemPath === systemPath &&
         config.templatePath === templatePath,
     );
   }
 
-  getConfigsForProject(
-    //TODO: need to connect project to configs
-    //projectId: string,
-  ): ConfigInterface[] {
-    return toJS(this.configs);
-    /*return this.configs.filter(
-      (config) => config.projectId === projectId
-    );*/
+  getConfigsForProject(projectId = this.activeProjectId): ConfigInterface[] {
+    return toJS(
+      this.configs.filter((config) => config.projectId === projectId),
+    );
   }
 
-  removeAllForSystemTemplate(systemPath: string, templatePath: string) {
-    this.configs = this.configs.filter((config) =>
-      config.systemPath === systemPath && config.templatePath === templatePath
-        ? false
-        : true,
+  removeAllForSystemTemplate(
+    systemPath: string,
+    templatePath: string,
+    projectId = this.activeProjectId,
+  ) {
+    this.configs = this.configs.filter(
+      (config) =>
+        !(
+          config.projectId === projectId &&
+          config.systemPath === systemPath &&
+          config.templatePath === templatePath
+        ),
     );
+  }
+
+  removeAllForProject(projectId: string) {
+    this.configs = this.configs.filter(
+      (config) => config.projectId !== projectId,
+    );
+  }
+
+  /**
+   * Attaches the configurations that belong to no existing project (stored
+   * before configurations were linked to projects, or whose project was not
+   * saved) to the project, if there is exactly one. Otherwise, reports them:
+   * configurations are never dropped.
+   */
+  attachOrphans(projectIds: string[]) {
+    const orphans = this.configs.filter(
+      (config) => !projectIds.includes(config.projectId),
+    );
+    if (orphans.length === 0) return;
+    if (projectIds.length === 1) {
+      orphans.forEach((config) => (config.projectId = projectIds[0]));
+    } else {
+      console.error(
+        `${orphans.length} configuration(s) belong to no project`,
+        orphans.map((config) => config.id),
+      );
+    }
+  }
+
+  private get activeProjectId(): string {
+    return this.rootStore.projectStore.activeProjectId;
   }
 }
