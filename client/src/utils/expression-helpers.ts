@@ -1,6 +1,7 @@
 import { deepCopy } from "./utils";
 import { applyPathModifiers } from "./modifier-helpers";
 import { OptionInterface } from "../data/template";
+import { enclosingName, splitName } from "./names";
 
 export type Literal = boolean | string | number;
 
@@ -40,7 +41,7 @@ export function resolveValue(
 
     // We adjust scope to evaluate an expression if needed
     // Set scope relative to class definition by popping off what is assumed to be a param name
-    newScope = scope.split(".").slice(0, -1).join(".");
+    newScope = enclosingName(scope);
   } else if (typeof value === 'string') {
     // Since we don't have a selectionPath that means value is coming from inside an expression,
     // So if value is a string we need to do the following logic
@@ -48,7 +49,7 @@ export function resolveValue(
     // This section checks if we have a selection to resolveValue
     // We need to determine if value is a modelicaPath or an instancePath,
     // Below tests if a selection exists based on if value is a modelicaPath
-    const splitScopePath = scope.split('.');
+    const splitScopePath = splitName(scope);
 
     while(splitScopePath.length > 0) {
       const testPath = splitScopePath.join(".");
@@ -85,11 +86,11 @@ export function resolveValue(
     if (modifiedPath) {
       scopeModifier = modifiers[modifiedPath];
       // Set scope relative to class definition by popping off what is assumed to be a param name
-      newScope = modifiedPath.split(".").slice(0, -1).join(".");
+      newScope = enclosingName(modifiedPath);
     } else {
       scopeModifier = modifiers[value];
       // Set scope relative to class definition by popping off what is assumed to be a param name
-      newScope = value.split(".").slice(0, -1).join(".");
+      newScope = enclosingName(value);
     }
   } else {
     // The value is a boolean or number so we just return it

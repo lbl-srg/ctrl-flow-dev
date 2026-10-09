@@ -9,7 +9,6 @@ import { FlatConfigOption } from "../steps/Configs/SlideOut";
 import OptionSelect from "../steps/Configs/OptionSelect";
 import { useDebouncedCallback } from "use-debounce";
 import { removeEmpty } from "../../utils/utils";
-import { SystemTypeInterface, TemplateInterface } from "../../data/template";
 import {
   applyValueModifiers,
   applyVisibilityModifiers,
@@ -243,18 +242,7 @@ const EditDetailsModal = observer(
       // This removes all configs when saving project details.
       // The reason for this is we don't want the user to use saved configs with
       // changed project details as it will cause issues with evaluated values.
-      templateStore.systemTypes.forEach((systemType: SystemTypeInterface) => {
-        const templates = templateStore.getTemplatesForSystem(
-          systemType.modelicaPath,
-        );
-
-        templates.forEach((option: TemplateInterface) => {
-          configStore.removeAllForSystemTemplate(
-            systemType.modelicaPath,
-            option.modelicaPath,
-          );
-        });
-      });
+      configStore.removeAllForProject(projectStore.activeProjectId);
       if (afterSubmit) afterSubmit();
     }
 

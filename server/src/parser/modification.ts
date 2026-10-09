@@ -1,6 +1,7 @@
 import { typeStore, isInputGroup, LongClass, Element } from "./parser";
 import { Literal } from "./expression";
 import * as mj from "./mj-types";
+import { lastIdent } from "./names";
 
 /**
  * Modifications are places where there is an assignment, e.g.
@@ -159,7 +160,7 @@ function finalizeAllParams(
       : [];
 
   allParams.forEach((el) => {
-    const paramName = el.modelicaPath.split(".").pop() as string;
+    const paramName = lastIdent(el.modelicaPath);
     if (!boundNames.has(paramName)) {
       childMods.push(
         new Modification(childBasePath, paramName, undefined, [], true),

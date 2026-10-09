@@ -2,6 +2,14 @@ import { ConfigInterface } from "../../src/data/config";
 import { TemplateInterface, OptionInterface } from "../../src/data/template";
 import { removeEmpty } from "../../src/utils/utils";
 import { ConfigValues } from "../utils/modifier-helpers";
+import {
+  enclosingName,
+  firstIdent,
+  isName,
+  lastIdent,
+  splitName,
+  splitSelectionKey,
+} from "../utils/names";
 
 export type Literal = boolean | string | number;
 
@@ -58,7 +66,7 @@ interface Modifier {
  *
  */
 function createPossiblePaths(scope: string, path: string) {
-  const segments = scope.split(".");
+  const segments = splitName(scope);
   const paths = [];
   while (segments.length > 0) {
     paths.push([segments.join("."), path].filter((p) => p !== "").join("."));
@@ -87,7 +95,7 @@ export function applyPathModifiers(
   if (!pathModifiers) {
     return path;
   }
-  const splitScopePath = path.split(".");
+  const splitScopePath = splitName(path);
   let postFix: string | undefined = "";
   let modifiedPath = path;
 
@@ -137,7 +145,7 @@ const _instancePathToOption = (
     outerOptionPath = outerPaths?.optionPath;
   }
 
-  const pathSegments = modifiedPath.split(".");
+  const pathSegments = splitName(modifiedPath);
   const curInstancePathList = [pathSegments.shift()]; // keep track of instance path for modifiers
   let curOptionPath: string | null | undefined =
     `${context.template.modelicaPath}.${curInstancePathList[0]}`;
@@ -182,7 +190,7 @@ const _instancePathToOption = (
     // this instance path
     if (context.config?.selections) {
       Object.entries(context.selections).map(([key, value]) => {
-        const [, instancePath] = key.split("-");
+        const [, instancePath] = splitSelectionKey(key);
         // Only string values (Modelica paths) can be used for option lookup
         if (
           instancePath === curInstancePathList.join(".") &&
@@ -272,7 +280,7 @@ const _instancePathToOption = (
     // use the options child list to get the correct type - inherited types
     // are only correctly referenced through this list
     curOptionPath = option?.options?.find(
-      (o) => o.split(".").pop() === paramName,
+      (o) => lastIdent(o) === paramName,
     ) as string;
     if (debug)
       console.log(
@@ -306,15 +314,12 @@ const _instancePathToOption = (
           let scopePath: string;
           if (modBinding) {
             const depth = modBinding.modificationDepth || 1;
-            const sliceAmount = modBinding.fromClassDefinition
-              ? -depth
-              : -(depth + 1);
-            scopePath = curInstancePath
-              .split(".")
-              .slice(0, sliceAmount)
-              .join(".");
+            scopePath = enclosingName(
+              curInstancePath,
+              modBinding.fromClassDefinition ? depth : depth + 1,
+            );
           } else {
-            scopePath = curInstancePath.split(".").slice(0, -1).join(".");
+            scopePath = enclosingName(curInstancePath);
           }
 
           const resolvedBindingPath = scopePath
@@ -357,24 +362,18 @@ const _instancePathToOption = (
   };
 };
 
-const IDENT = /[a-zA-Z_][a-zA-Z0-9_]*/;
-const MODELICA_NAME_RE = new RegExp(
-  `^\\.?(${IDENT.source})(\\.${IDENT.source})*$`,
-);
-
 /** Returns true if `name` is a syntactically valid Modelica name.
- * Identifier: `IDENT = NON-DIGIT { DIGIT | NON-DIGIT }`,
- * Name = [ `.` ] IDENT { `.` IDENT }
- *
- * Technical debt: Q-IDENT = "'" { Q-CHAR | S-ESCAPE } "'" is not supported yet.
+ * Name = [ `.` ] IDENT { `.` IDENT }, where IDENT may be a quoted identifier
  */
 export function isValidModelicaName(name: string): boolean {
-  return MODELICA_NAME_RE.test(name);
+  return isName(name);
 }
 
 const LOADED_LIBRARIES = ["Modelica", "Buildings"];
 const TEST_LIBRARIES =
-  process.env.NODE_ENV === "test" ? ["TestRecord", "TestPackage"] : [];
+  process.env.NODE_ENV === "test"
+    ? ["TestRecord", "TestPackage", "QuotedPackage"]
+    : [];
 
 /**
  * Returns true if `path` is a syntactically valid Modelica name whose root
@@ -392,7 +391,7 @@ function isFullyQualifiedName(
     return false;
   }
   // Extract root package name (get rid of optional leading `.`)
-  const root = path.replace(/^\./, "").split(".")[0];
+  const root = firstIdent(path.replace(/^\./, ""));
   return (
     loadedLibraries.some((lib) => root === lib) ||
     testLibraries.some((lib) => root === lib)
@@ -492,7 +491,7 @@ export const resolveToValue = (
   }
 
   const { instancePath, optionPath } = resolvePaths(operand, context, scope);
-  const instancePathScope = instancePath.split(".").slice(0, -1).join(".");
+  const instancePathScope = enclosingName(instancePath);
   // have the actual instance path, check for cached value
   let value = context._getCachedValue(instancePath);
   // if no value, check instance path now that scope should be properly applied
@@ -541,11 +540,10 @@ export const evaluateModifier = (
   if (mod?.redeclare && !mod?.expression) {
     return mod.redeclare;
   }
-  const sliceAmount = mod?.fromClassDefinition ? -1 : -2;
-  const expressionScope = instancePath
-    .split(".")
-    .slice(0, sliceAmount)
-    .join(".");
+  const expressionScope = enclosingName(
+    instancePath,
+    mod?.fromClassDefinition ? 1 : 2,
+  );
   return evaluate(mod?.expression, context, expressionScope);
 };
 
@@ -687,7 +685,7 @@ const addToModObject = (
       relativeInstancePath = k.slice(optionModelicaPath.length + 1);
     } else {
       // Fallback: use last segment
-      relativeInstancePath = k.split(".").pop() || "";
+      relativeInstancePath = lastIdent(k);
     }
 
     // Build the modifier key by appending the relative instance path to the base instance path
@@ -698,7 +696,7 @@ const addToModObject = (
     // Calculate the modification depth (number of segments in the nested path)
     // e.g., "eff.per.pressure" has depth 3
     const modificationDepth = relativeInstancePath
-      ? relativeInstancePath.split(".").length
+      ? splitName(relativeInstancePath).length
       : 0;
 
     // Do not add a key that is already present. The assumption is that
@@ -749,9 +747,7 @@ const getReplaceableType = (
     // so the short class element name is necessarily within the same variable namespace as the instance
     selectionPath = constructSelectionPath(
       typeOption.modelicaPath,
-      instancePath.split(".").slice(0, -1).join(".") +
-        "." +
-        typeOption.type.split(".").pop(),
+      enclosingName(instancePath) + "." + lastIdent(typeOption.type),
     );
   } else if (option.replaceable) {
     // for replaceable components, the selection path is directly created from the instance path
@@ -800,7 +796,7 @@ const buildModsHelper = (
   }
 
   // fetch all modifiers from up the inheritance hierarchy
-  const name = option.modelicaPath.split(".").pop();
+  const name = lastIdent(option.modelicaPath);
   const newBase =
     option.definition && !option.shortExclType // short class definitions are treated as instances
       ? baseInstancePath
@@ -956,7 +952,7 @@ export const buildMods = (
   const mods: { [key: string]: Modifier } = {};
   const selectionModelicaPaths: { [key: string]: null } = {}; // Object.keys(selections)
   Object.keys(selections).map((s) => {
-    const [modelicaPath] = s.split("-");
+    const [modelicaPath] = splitSelectionKey(s);
     selectionModelicaPaths[modelicaPath] = null;
   });
 
@@ -1103,7 +1099,7 @@ export class ConfigContext {
     }
 
     // return whatever value is present on the original option definition
-    const optionScope = instancePath.split(".").slice(0, -1).join(".");
+    const optionScope = enclosingName(instancePath);
     const option = this.options[optionPath];
     // - For replaceable elements: value is "" if no binding, use type instead
     // - For non-replaceable elements: use value directly
@@ -1124,7 +1120,7 @@ export class ConfigContext {
     const okDepth = depth !== null ? depth > 0 : true;
     if (typeOption && !isOuter && okDepth) {
       typeOption.options?.map((o) => {
-        const paramName = o.split(".").pop();
+        const paramName = lastIdent(o);
         const childInstancePath = [instancePath, paramName]
           .filter((p) => p !== "")
           .join(".");
@@ -1147,7 +1143,7 @@ export class ConfigContext {
     const rootOption = this.getRootOption();
 
     rootOption.options?.map((o) => {
-      const paramName = o.split(".").pop();
+      const paramName = lastIdent(o);
       if (paramName) {
         this._visitChildNodes(paramName, depth);
       }
@@ -1166,7 +1162,7 @@ export class ConfigContext {
   }
 
   isValidSelection(selectionPath: string) {
-    const paths = selectionPath.split("-");
+    const paths = splitSelectionKey(selectionPath);
     if (paths.length == 2) {
       const [, instancePath] = paths;
       const instance = this.getOptionInstance(instancePath);
@@ -1195,14 +1191,14 @@ export class ConfigContext {
     if (option?.enable === undefined) {
       return false;
     }
-    const scope = instancePath.split(".").slice(0, -1).join(".");
+    const scope = enclosingName(instancePath);
     const enable = evaluate(option.enable, this, scope);
     // an unresolvable expression is NOT treated as disabled
     return !isExpression(enable) && !enable;
   }
 
   _isAncestorDisabled(instancePath: string): boolean {
-    const segments = instancePath.split(".");
+    const segments = splitName(instancePath);
     for (let i = segments.length - 1; i > 0; i--) {
       if (this._isInstanceDisabled(segments.slice(0, i).join("."))) {
         return true;
@@ -1259,11 +1255,7 @@ export class ConfigContext {
     // scope only requiring one level to be popped off (slice(0, -1))
     const enable =
       option && "enable" in option
-        ? evaluate(
-            option?.enable,
-            this,
-            instancePath.split(".").slice(0, -1).join("."),
-          )
+        ? evaluate(option?.enable, this, enclosingName(instancePath))
         : false;
     display = !isExpression(enable) ? !!enable : display;
     display = outerOption
