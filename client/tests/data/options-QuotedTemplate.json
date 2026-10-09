@@ -1,0 +1,387 @@
+{
+  "template": {
+    "modelicaPath": "QuotedPackage.Template.QuotedTemplate",
+    "scheduleOptionPaths": [],
+    "systemTypes": [
+      "QuotedPackage.Template"
+    ],
+    "pathModifiers": {},
+    "name": "Template with quoted identifiers"
+  },
+  "options": {
+    "QuotedPackage.Template.QuotedTemplate.'rep.1'": {
+      "modelicaPath": "QuotedPackage.Template.QuotedTemplate.'rep.1'",
+      "type": "QuotedPackage.Component.First",
+      "name": "Replaceable component with a quoted name",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "modifiers": {},
+      "enable": true,
+      "choiceModifiers": {},
+      "replaceable": true,
+      "options": [
+        "QuotedPackage.Component.First",
+        "QuotedPackage.Component.Second"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    "QuotedPackage.Component.Partial.'a.b'": {
+      "modelicaPath": "QuotedPackage.Component.Partial.'a.b'",
+      "type": "Boolean",
+      "value": true,
+      "name": "Parameter with a dot",
+      "group": "Quoted",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    "QuotedPackage.Component.Partial.'val-1'": {
+      "modelicaPath": "QuotedPackage.Component.Partial.'val-1'",
+      "type": "QuotedPackage.Types.Valve",
+      "value": "QuotedPackage.Types.Valve.'two-way'",
+      "name": "Enumeration parameter with a dash",
+      "group": "Quoted",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [
+        "QuotedPackage.Types.Valve.'two-way'",
+        "QuotedPackage.Types.Valve.'three.way'",
+        "QuotedPackage.Types.Valve.'13\\'H'",
+        "QuotedPackage.Types.Valve.plain"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    "QuotedPackage.Types.Valve": {
+      "modelicaPath": "QuotedPackage.Types.Valve",
+      "name": "Enumeration with quoted literals",
+      "type": "QuotedPackage.Types.Valve",
+      "value": "QuotedPackage.Types.Valve",
+      "visible": true,
+      "replaceable": false,
+      "options": [
+        "QuotedPackage.Types.Valve.'two-way'",
+        "QuotedPackage.Types.Valve.'three.way'",
+        "QuotedPackage.Types.Valve.'13\\'H'",
+        "QuotedPackage.Types.Valve.plain"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "QuotedPackage.Types.Valve"
+      ]
+    },
+    "QuotedPackage.Types.Valve.'two-way'": {
+      "modelicaPath": "QuotedPackage.Types.Valve.'two-way'",
+      "name": "Literal with a dash",
+      "type": "QuotedPackage.Types.Valve",
+      "value": "QuotedPackage.Types.Valve.'two-way'",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "QuotedPackage.Types.Valve"
+      ]
+    },
+    "QuotedPackage.Types.Valve.'three.way'": {
+      "modelicaPath": "QuotedPackage.Types.Valve.'three.way'",
+      "name": "Literal with a dot",
+      "type": "QuotedPackage.Types.Valve",
+      "value": "QuotedPackage.Types.Valve.'three.way'",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "QuotedPackage.Types.Valve"
+      ]
+    },
+    "QuotedPackage.Types.Valve.'13\\'H'": {
+      "modelicaPath": "QuotedPackage.Types.Valve.'13\\'H'",
+      "name": "Literal with an escaped quote",
+      "type": "QuotedPackage.Types.Valve",
+      "value": "QuotedPackage.Types.Valve.'13\\'H'",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "QuotedPackage.Types.Valve"
+      ]
+    },
+    "QuotedPackage.Types.Valve.plain": {
+      "modelicaPath": "QuotedPackage.Types.Valve.plain",
+      "name": "Unquoted literal",
+      "type": "QuotedPackage.Types.Valve",
+      "value": "QuotedPackage.Types.Valve.plain",
+      "visible": false,
+      "replaceable": false,
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "QuotedPackage.Types.Valve"
+      ]
+    },
+    "QuotedPackage.Component.Partial.'k\\?'": {
+      "modelicaPath": "QuotedPackage.Component.Partial.'k\\?'",
+      "type": "Real",
+      "value": 1,
+      "name": "Parameter with a redundant escape, enabled by a quoted parameter",
+      "group": "Quoted",
+      "tab": "",
+      "visible": true,
+      "enable": "'a.b'",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    "QuotedPackage.Component.Partial": {
+      "modelicaPath": "QuotedPackage.Component.Partial",
+      "type": "QuotedPackage.Component.Partial",
+      "name": "Interface with quoted parameters",
+      "visible": false,
+      "replaceable": false,
+      "options": [
+        "QuotedPackage.Component.Partial.'a.b'",
+        "QuotedPackage.Component.Partial.'val-1'",
+        "QuotedPackage.Component.Partial.'k\\?'"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "QuotedPackage.Component.Partial"
+      ]
+    },
+    "QuotedPackage.Component.First": {
+      "modelicaPath": "QuotedPackage.Component.First",
+      "type": "QuotedPackage.Component.First",
+      "name": "First component",
+      "visible": false,
+      "replaceable": false,
+      "options": [
+        "QuotedPackage.Component.Partial.'a.b'",
+        "QuotedPackage.Component.Partial.'val-1'",
+        "QuotedPackage.Component.Partial.'k\\?'"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "QuotedPackage.Component.First",
+        "QuotedPackage.Component.Partial"
+      ]
+    },
+    "QuotedPackage.Component.Second.'only-second'": {
+      "modelicaPath": "QuotedPackage.Component.Second.'only-second'",
+      "type": "Boolean",
+      "value": false,
+      "name": "Parameter of the second component only",
+      "group": "Quoted",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    "QuotedPackage.Component.Second": {
+      "modelicaPath": "QuotedPackage.Component.Second",
+      "type": "QuotedPackage.Component.Second",
+      "name": "Second component",
+      "visible": false,
+      "modifiers": {
+        "QuotedPackage.Component.Second.'val-1'": {
+          "expression": "QuotedPackage.Types.Valve.'13\\'H'",
+          "final": false
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "QuotedPackage.Component.Second.'only-second'",
+        "QuotedPackage.Component.Partial.'a.b'",
+        "QuotedPackage.Component.Partial.'val-1'",
+        "QuotedPackage.Component.Partial.'k\\?'"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "QuotedPackage.Component.Second",
+        "QuotedPackage.Component.Partial"
+      ]
+    },
+    "QuotedPackage.Template.QuotedTemplate.'c-d'": {
+      "modelicaPath": "QuotedPackage.Template.QuotedTemplate.'c-d'",
+      "type": "QuotedPackage.Component.First",
+      "name": "Component with a quoted name",
+      "group": "",
+      "tab": "",
+      "visible": false,
+      "enable": true,
+      "modifiers": {
+        "QuotedPackage.Template.QuotedTemplate.'c-d'.'a.b'": {
+          "expression": false,
+          "final": false
+        },
+        "QuotedPackage.Template.QuotedTemplate.'c-d'.'val-1'": {
+          "expression": "QuotedPackage.Types.Valve.'three.way'",
+          "final": false
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "QuotedPackage.Component.Partial.'a.b'",
+        "QuotedPackage.Component.Partial.'val-1'",
+        "QuotedPackage.Component.Partial.'k\\?'"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    "QuotedPackage.Template.QuotedTemplate.'with-dash'": {
+      "modelicaPath": "QuotedPackage.Template.QuotedTemplate.'with-dash'",
+      "type": "Boolean",
+      "value": true,
+      "name": "Parameter with a dash",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    "QuotedPackage.Template.QuotedTemplate.'why\\?'": {
+      "modelicaPath": "QuotedPackage.Template.QuotedTemplate.'why\\?'",
+      "type": "Boolean",
+      "value": "'c-d'.'a.b'",
+      "name": "Parameter with a redundant escape, bound to a quoted path",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": "'with-dash'",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    "QuotedPackage.Template.QuotedTemplate.unquoted": {
+      "modelicaPath": "QuotedPackage.Template.QuotedTemplate.unquoted",
+      "type": "Boolean",
+      "value": "'why\\?'",
+      "name": "Unquoted parameter bound to a quoted parameter",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": "'why\\?'",
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    "QuotedPackage.Template.QuotedTemplate.valve": {
+      "modelicaPath": "QuotedPackage.Template.QuotedTemplate.valve",
+      "type": "QuotedPackage.Types.Valve",
+      "value": "QuotedPackage.Types.Valve.'13\\'H'",
+      "name": "Enumeration parameter with a quoted literal",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [
+        "QuotedPackage.Types.Valve.'two-way'",
+        "QuotedPackage.Types.Valve.'three.way'",
+        "QuotedPackage.Types.Valve.'13\\'H'",
+        "QuotedPackage.Types.Valve.plain"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    "QuotedPackage.Template.QuotedTemplate": {
+      "modelicaPath": "QuotedPackage.Template.QuotedTemplate",
+      "type": "QuotedPackage.Template.QuotedTemplate",
+      "name": "Template with quoted identifiers",
+      "visible": false,
+      "replaceable": false,
+      "options": [
+        "QuotedPackage.Template.QuotedTemplate.'rep.1'",
+        "QuotedPackage.Template.QuotedTemplate.'c-d'",
+        "QuotedPackage.Template.QuotedTemplate.'with-dash'",
+        "QuotedPackage.Template.QuotedTemplate.'why\\?'",
+        "QuotedPackage.Template.QuotedTemplate.unquoted",
+        "QuotedPackage.Template.QuotedTemplate.valve"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "QuotedPackage.Template.QuotedTemplate"
+      ]
+    },
+    "datAll": {
+      "modelicaPath": "datAll",
+      "name": "datAll",
+      "type": "Buildings.Templates.Data.AllSystems",
+      "visible": false,
+      "modifiers": {
+        "Buildings.Templates.Data.AllSystems.projectSetting": {
+          "expression": false,
+          "final": false
+        }
+      },
+      "replaceable": false,
+      "options": [
+        "Buildings.Templates.Data.AllSystems"
+      ],
+      "definition": false,
+      "shortExclType": false
+    },
+    "Buildings.Templates.Data.AllSystems.projectSetting": {
+      "modelicaPath": "Buildings.Templates.Data.AllSystems.projectSetting",
+      "type": "Boolean",
+      "value": false,
+      "name": "Example Project setting",
+      "group": "",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
+    },
+    "Buildings.Templates.Data.AllSystems": {
+      "modelicaPath": "Buildings.Templates.Data.AllSystems",
+      "type": "Buildings.Templates.Data.AllSystems",
+      "name": "Top-level (whole building) system parameters",
+      "visible": false,
+      "replaceable": false,
+      "options": [
+        "Buildings.Templates.Data.AllSystems.projectSetting"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Templates.Data.AllSystems"
+      ]
+    }
+  }
+}

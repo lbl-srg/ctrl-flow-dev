@@ -7,6 +7,7 @@ import {
   OptionInstance,
   constructSelectionPath,
 } from "./interpreter";
+import { enclosingName, lastIdent } from "../utils/names";
 
 export interface FlatConfigOptionGroup {
   groupName: string;
@@ -116,7 +117,7 @@ export function _formatDisplayGroup(
   // class) to the first (the class itself).
   const treeList = option.treeList ?? [];
   const declaringClassRank = (path: string) =>
-    treeList.indexOf(path.split(".").slice(0, -1).join("."));
+    treeList.indexOf(enclosingName(path));
   const orderedOptions = [...(option.options ?? [])].sort(
     (a, b) => declaringClassRank(b) - declaringClassRank(a),
   );
@@ -184,7 +185,7 @@ export function _formatDisplayGroup(
       );
       childItems = childGroup ? [childGroup] : [];
     } else {
-      const paramName = o.split(".").pop();
+      const paramName = lastIdent(o);
       const childInstancePath = [paramInstance.instancePath, paramName]
         .filter((p) => p !== "")
         .join(".");

@@ -50,7 +50,7 @@ Examples:
 
   Keys sharing a prefix are written as one nested modifier, and the modifications of the elements of a redeclared component go into its redeclaration, as in the last row. This is the merged form defined by MLS §7.2.4.
 
-## Parsing and normalization
+## Parsing
 
 `rootClass` contains no `Q-IDENT`, hence no `-`: the first `-` of a key always separates `rootClass` from `elementPath`.
 
@@ -60,7 +60,7 @@ A component `Q-IDENT` may contain `.`, `-` and escaped quotes (`'13\'H'`). Names
 2. Inside a `Q-IDENT`, `\` escapes the next character (so `\'` does not close the identifier) and `'` closes it.
 3. A key is invalid if it has no `-`, if `rootClass` does not match `className`, if a `Q-IDENT` is not closed, or if `elementPath` does not match `elementName`.
 
-MLS §2.3.1 states that the redundant escapes `\?` and `\"` are the same as `?` and `"`. Different spellings of the same identifier would yield different keys, so keys are built from the **normalized** spelling, where `\?` and `\"` are replaced with `?` and `"`. All other escapes (`\'`, `\\`, `\a`, `\b`, `\f`, `\n`, `\r`, `\t`, `\v`) are kept as written.
+**Escapes are kept as written.** MLS §2.3.1 states that the redundant escapes `\?` and `\"` are the same as `?` and `"`, so `'a\?'` and `'a?'` would be the same identifier. Dymola and OCT treat them as distinct identifiers: they reject a reference `'a?'` to a declaration `'a\?'`. Keys use the spelling of the declaration, so that the modifications written from them are accepted by these tools, and remain valid under the MLS. A source that spells the same identifier in different ways is not supported (see Known limitations).
 
 The same scanner provides the name helpers (split into identifiers, last identifier, enclosing name). They replace every plain `split(".")` and `split("-")` applied to Modelica names in the client (interpreter, display mapping, modifier and expression helpers), the server parser, and the sequence document pipeline (Python port of the scanner).
 
@@ -88,7 +88,7 @@ enumLiteral = className "." E-IDENT      (enumeration type, then literal: quoted
 - **Consumers that only need values.** The MBL templates bind a `typ` parameter in every class that can be redeclared (type introspection: Modelica has no `isOfType()`, its type system being structural). Consumers that do not write Modelica, such as the sequence document, read `value` only, through these `typ` parameters (see Mappings).
 
 - **Enumeration literals** may be quoted (`type Valve = enumeration('two-way', threeWay)`), but the enumeration type must not be (see the quoted class identifier rule). The literal is the last identifier of the value, extracted with the scanner. `P.Types.Valve.'two-way'` and `P.Types.Valve.two_way` are distinct values.
-- **Normalization.** Quoted literals are normalized like quoted component identifiers, so that values compare equal (client `==`, mogrifier `EQUALS`/`ANY`/`NOT_EQUALS`) whatever the escape spelling in the source.
+- **Spelling.** Quoted literals are kept as written, like quoted component identifiers (see Parsing): values compare equal (client `==`, mogrifier `EQUALS`/`ANY`/`NOT_EQUALS`) if the source spells the literal consistently.
 - **Recognizing a value as a name.** `isValidModelicaName` and `isFullyQualifiedName` accept a trailing quoted identifier, so a quoted literal is resolved as an enumeration value and not parsed as a string literal.
 
 ## Resolution rules for `elementPath`
@@ -115,7 +115,7 @@ enumLiteral = className "." E-IDENT      (enumeration type, then literal: quoted
 
 | Function | Responsibility |
 |---|---|
-| `names.ts` | Quote-aware name helpers (see Parsing and normalization). |
+| `names.ts` | Quote-aware name helpers (see Parsing). |
 | `selectionKey.ts` | `selectionKey(rootClass, elementPath)`, `parseSelectionKey(key)`. |
 | `applyPathModifiers(path, pathModifiers)` | Inner/outer rewriting. |
 | `memberOption(classPath, name, ctx)` | Declared or inherited element `name` of class `classPath`, or `null`. The template is handled like any other class. |
@@ -293,3 +293,4 @@ Issues found by the probe, unrelated to quoted identifiers:
 ## Known limitations
 
 - **Replaceable short classes.** On `main`, short-class choices are written under one key (`…ShortClass-ShortClass`), read under another (`…ShortClass-.FirstComponent`), and the parameters of the selected class are displayed and keyed under the class name (`ShortClass.container`) rather than under the instance. Selecting another class does not change how the instance resolves. No template in `templates.json` uses a replaceable short class in the configuration panel. This refactoring fixes the key (rule 4); the display and resolution of short class instances are tracked separately.
+- **Spellings of quoted identifiers.** A source that spells a quoted identifier with and without a redundant escape (`'a\?'` and `'a?'`, `'a\"'` and `'a"'`) is not supported: ctrl-flow keeps identifiers as written, like Dymola and OCT, which reject such a source, although MLS §2.3.1 makes both spellings the same identifier.
