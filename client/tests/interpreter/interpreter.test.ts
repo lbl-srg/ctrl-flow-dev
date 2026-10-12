@@ -77,6 +77,24 @@ describe("Path Modifier tests", () => {
 
     expect(modifiedPath).toBe(longPath);
   });
+
+  it("Keeps every identifier after the outer element, in order", () => {
+    const pathMods = { "ctl.secOutRel": "secOutRel" };
+
+    expect(applyPathModifiers("ctl.secOutRel", pathMods)).toBe("secOutRel");
+    expect(applyPathModifiers("ctl.secOutRel.typ", pathMods)).toBe(
+      "secOutRel.typ",
+    );
+    expect(applyPathModifiers("ctl.secOutRel.secOut.damOut", pathMods)).toBe(
+      "secOutRel.secOut.damOut",
+    );
+    expect(applyPathModifiers("ctl.secOutRel.a.b.c", pathMods)).toBe(
+      "secOutRel.a.b.c",
+    );
+    expect(applyPathModifiers("ctl.secOutRel.a.b.c.d", pathMods)).toBe(
+      "secOutRel.a.b.c.d",
+    );
+  });
 });
 
 describe("Basic Context generation without selections", () => {
