@@ -149,12 +149,6 @@
   "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.have_recHea-secOutRel.have_recHea": [
     false
   ],
-  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.mAirRet_flow_nominal-secOutRel.mAirRet_flow_nominal": [
-    "Buildings.Templates.Components.Data.Damper"
-  ],
-  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.mAirSup_flow_nominal-secOutRel.mAirSup_flow_nominal": [
-    "Buildings.Templates.Components.Data.Damper"
-  ],
   "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.nFanRel-secOutRel.nFanRel": [
     0
   ],
@@ -196,9 +190,6 @@
   ],
   "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.have_recHea-secOutRel.secOut.have_recHea": [
     false
-  ],
-  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.m_flow_nominal-secOutRel.secOut.m_flow_nominal": [
-    "Buildings.Templates.Components.Data.Damper"
   ],
   "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.typ-secOutRel.secOut.typ": [
     "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
@@ -394,15 +385,6 @@
   ],
   "Buildings.Templates.Components.Data.Coil.typ-dat.coiHeaPre.typ": [
     "Buildings.Templates.Components.Types.Coil.None"
-  ],
-  "Buildings.Templates.Components.Data.Damper.m_flow_nominal-dat.damOut.m_flow_nominal": [
-    "Buildings.Templates.Components.Data.Damper"
-  ],
-  "Buildings.Templates.Components.Data.Damper.m_flow_nominal-dat.damRel.m_flow_nominal": [
-    "Buildings.Templates.Components.Data.Damper"
-  ],
-  "Buildings.Templates.Components.Data.Damper.m_flow_nominal-dat.damRet.m_flow_nominal": [
-    "Buildings.Templates.Components.Data.Damper"
   ],
   "Buildings.Templates.Components.Interfaces.PartialCoil.Q_flow_nominal-coiCoo.Q_flow_nominal": [
     "-1*abs(cap_nominal)"

@@ -195,8 +195,10 @@ export function effectiveClass(
 
 /**
  * Path of the record bound to the element at `path`, declared by `option`,
- * or null if the element is not bound to a record. The elements of a bound
- * record are reached through the binding (docs/selection-keys.md, rule 2).
+ * null if the element is not bound to a record, or false if it is bound to
+ * an expression that is not a name, as a record constructor
+ * (`rec = Rec(p=1)`). The elements of a bound record are reached through the
+ * binding (docs/selection-keys.md, rule 2).
  *
  * The binding is a modifier at the instantiation site (`Mod mod(rec=localRec)`)
  * or the value of the declaration (`Rec localRec = rec`). Modifier bindings
@@ -206,15 +208,18 @@ export function bindingRedirect(
   path: string,
   option: OptionInterface,
   ctx: ResolutionContext,
-): string | null {
+): string | null | false {
   const mod = ctx.mods[path]?.recordBinding ? ctx.mods[path] : null;
   const binding = mod
     ? mod.expression
     : option.recordBinding
       ? option.value
       : undefined;
-  if (!binding) {
+  if (binding === undefined || binding === "") {
     return null;
+  }
+  if (typeof binding !== "string" || !isName(binding)) {
+    return false;
   }
   // The binding is relative to the scope of the modifier: modifier bindings
   // use modificationDepth/fromClassDefinition, class-definition bindings are
@@ -226,9 +231,7 @@ export function bindingRedirect(
   } else {
     scope = enclosingName(path);
   }
-  // As on main, a record constructor (`rec = Rec(p=1)`) is followed as if it
-  // were a name, giving a path that cannot be resolved
-  return scope ? `${scope}.${binding}` : `${binding}`;
+  return scope ? `${scope}.${binding}` : binding;
 }
 
 export interface ResolvedInstance {
@@ -242,15 +245,6 @@ export interface ResolvedInstance {
   isOuter: boolean;
   /** Option of the element reached through the outer declaration, if any */
   outerOptionPath: string | null;
-}
-
-/** Path that cannot be resolved */
-interface Unresolved {
-  optionPath: null;
-  resolvedPath: string;
-  isOuter: boolean;
-  /** See `resolvePaths` */
-  legacyOptionPath: string | null;
 }
 
 /**
@@ -269,15 +263,6 @@ export function resolveInstance(
   context: ConfigContext,
   applyPathMods = true,
 ): ResolvedInstance | null {
-  const resolution = _resolution(path, context, applyPathMods);
-  return resolution.optionPath !== null ? resolution : null;
-}
-
-const _resolution = (
-  path: string,
-  context: ConfigContext,
-  applyPathMods: boolean,
-): ResolvedInstance | Unresolved => {
   const cache = applyPathMods
     ? context._resolvedInstances
     : context._resolvedOuterInstances;
@@ -285,7 +270,7 @@ const _resolution = (
     cache[path] = _resolveInstance(path, context, applyPathMods);
   }
   return cache[path];
-};
+}
 
 /**
  * Option path of the element `name` of the template, or null. An inner
@@ -310,7 +295,7 @@ const _resolveInstance = (
   path: string,
   context: ConfigContext,
   applyPathMods: boolean,
-): ResolvedInstance | Unresolved => {
+): ResolvedInstance | null => {
   const { options } = context;
   const resolvedPath = applyPathMods
     ? applyPathModifiers(path, context.template.pathModifiers)
@@ -321,11 +306,7 @@ const _resolveInstance = (
   let elementPath = first;
   let optionPath = templateMember(first, context);
   if (!optionPath) {
-    const legacyOptionPath =
-      (rest.length === 0 &&
-        context.getRootOption().options?.find((o) => o.endsWith(first))) ||
-      `${context.template.modelicaPath}.${first}`;
-    return { optionPath: null, resolvedPath, isOuter, legacyOptionPath };
+    return null;
   }
   while (rest.length > 0) {
     const classPath = effectiveClass(elementPath, options[optionPath], context);
@@ -333,9 +314,7 @@ const _resolveInstance = (
     elementPath = `${elementPath}.${name}`;
     optionPath = memberOption(classPath, name, context);
     if (!optionPath) {
-      const legacyOptionPath =
-        rest.length === 0 && classPath in options ? classPath : null;
-      return { optionPath: null, resolvedPath, isOuter, legacyOptionPath };
+      return null;
     }
     // Only the elements of a bound record are reached through the binding,
     // not the record itself
@@ -343,8 +322,17 @@ const _resolveInstance = (
       rest.length > 0
         ? bindingRedirect(elementPath, options[optionPath], context)
         : null;
+    // The elements of a record bound to an expression cannot be modified,
+    // and their values are not known
+    if (binding === false) {
+      return null;
+    }
     if (binding) {
-      return _resolution([binding, ...rest].join("."), context, applyPathMods);
+      return resolveInstance(
+        [binding, ...rest].join("."),
+        context,
+        applyPathMods,
+      );
     }
   }
   return {
@@ -399,17 +387,11 @@ function isFullyQualifiedName(
  * instance path, and the original option definition
  *
  * This creates the behavior of popping off scope to check
- * for a variable reference
- *
- * As on main (`_instancePathToOption`), a candidate path that cannot be
- * resolved still gives an option path, and the next candidates are not tried
- * (`legacyOptionPath`):
- * - a name that is not an element of the template gives `<template>.<name>`,
- *   which is not an option;
- * - a last identifier that is not an element of the class of the enclosing
- *   element gives the path of that class, e.g. `dat.damOut.mAirSup_flow_nominal`
- *   gives `Buildings.Templates.Components.Data.Damper`.
- * These wrong answers are kept until the selection keys change (#620).
+ * for a variable reference, e.g. `mAirSup_flow_nominal` in scope `dat.damOut`
+ * is `dat.mAirSup_flow_nominal`, because `dat.damOut.mAirSup_flow_nominal` is
+ * not an element. As in Modelica (MLS 5.3.1), only the first identifier is
+ * looked up in the enclosing scopes: if it is found, the rest of the path is
+ * resolved in that element only.
  */
 export function resolvePaths(
   path: string,
@@ -422,9 +404,10 @@ export function resolvePaths(
   classPath?: string;
   isOuter?: boolean;
 } {
-  for (const p of createPossiblePaths(scope, path)) {
-    const resolution = _resolution(p, context, true);
-    if (resolution.optionPath !== null) {
+  const heads = createPossiblePaths(scope, firstIdent(path));
+  for (const [i, p] of createPossiblePaths(scope, path).entries()) {
+    const resolution = resolveInstance(p, context);
+    if (resolution) {
       return {
         optionPath: resolution.optionPath,
         instancePath: resolution.resolvedPath,
@@ -433,13 +416,8 @@ export function resolvePaths(
         isOuter: resolution.isOuter,
       };
     }
-    if (resolution.legacyOptionPath) {
-      return {
-        optionPath: resolution.legacyOptionPath,
-        instancePath: resolution.resolvedPath,
-        outerOptionPath: null,
-        isOuter: resolution.isOuter,
-      };
+    if (heads[i] !== p && resolveInstance(heads[i], context)) {
+      break;
     }
   }
   return { optionPath: null, instancePath: path, outerOptionPath: null };
@@ -899,9 +877,8 @@ export class ConfigContext implements ResolutionContext {
   _resolvedValues: {
     [key: string]: { value: Literal | null; optionPath: string };
   } = {};
-  _resolvedInstances: { [key: string]: ResolvedInstance | Unresolved } = {};
-  _resolvedOuterInstances: { [key: string]: ResolvedInstance | Unresolved } =
-    {};
+  _resolvedInstances: { [key: string]: ResolvedInstance | null } = {};
+  _resolvedOuterInstances: { [key: string]: ResolvedInstance | null } = {};
   _previousInstancePath: string | null = null;
 
   constructor(

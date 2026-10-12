@@ -391,6 +391,56 @@ describe("Path resolution", () => {
     expect(optionPath).toBeDefined();
   });
 
+  it("Looks up a name in the enclosing scope if it is not an element", () => {
+    // Data.PartialAirHandler: damOut(m_flow_nominal=mAirSup_flow_nominal)
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+      createSelections(),
+    );
+
+    const { instancePath } = resolvePaths(
+      "mAirSup_flow_nominal",
+      context,
+      "dat.damOut",
+    );
+    expect(instancePath).toBe("dat.mAirSup_flow_nominal");
+    // dat.mAirSup_flow_nominal has no value: the value is not the class of
+    // dat.damOut (Buildings.Templates.Components.Data.Damper)
+    expect(context.getValue("dat.damOut.m_flow_nominal")).toBeUndefined();
+  });
+
+  it("Looks up only the first identifier in the enclosing scopes", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+      createSelections(),
+    );
+
+    // secOutRel.dat is found and has no element fanSup: dat.fanSup of the
+    // template is not tried (MLS 5.3.1)
+    expect(resolvePaths("dat.fanSup", context, "secOutRel").optionPath).toBe(
+      null,
+    );
+    expect(resolvePaths("dat.fanSup", context).instancePath).toBe("dat.fanSup");
+  });
+
+  it("Does not resolve a name that is not an element", () => {
+    const context = new ConfigContext(
+      mzTemplate as TemplateInterface,
+      mzConfig as ConfigInterface,
+      allOptions,
+      createSelections(),
+    );
+
+    expect(resolvePaths("notAnElement", context).optionPath).toBe(null);
+    expect(resolvePaths("dat.damOut.notAnElement", context).optionPath).toBe(
+      null,
+    );
+  });
+
   /**
    * 'typ' has a redeclare modifier assigned
    */
