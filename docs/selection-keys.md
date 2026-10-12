@@ -131,6 +131,8 @@ The class of the element at `path`, declared by `declaredOption`, is the first o
 2. the redeclaration in `ctx.mods[path]` (from the template and its classes);
 3. the declared type of `declaredOption`.
 
+A binding never changes the class: an element bound to a record (`ctl(dat=dat.ctl)`) has the class of its declaration or redeclaration, and the record is its value. `buildMods` keeps an inner redeclaration when an outer modification of the same element has none (MLS §7.2.4): `ctl(dat=dat.ctl)` in `Buildings.Templates.ZoneEquipment.Interfaces.VAVBox` and `extends PartialController(redeclare Data.VAVBoxController dat)` in the class of `ctl` give `ctl.dat` the class `Data.VAVBoxController`.
+
 If the result is a short class, the short class element is resolved the same way (rule 4), and the alias chain is followed to a long class definition. The special case for `datAll` (`Buildings.Templates.Data.AllSystems`) is handled here and nowhere else.
 
 Every computation of an element's class uses `effectiveClass`: `resolveInstance`, `buildMods`, `getOptionInstance`, and the display mapping (`_formatDisplayItem`).

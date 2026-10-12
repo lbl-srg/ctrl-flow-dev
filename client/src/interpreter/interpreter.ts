@@ -712,6 +712,12 @@ const addToModObject = (
         ...{ ["fromClassDefinition"]: fromClassDefinition },
         ...{ ["modificationDepth"]: modificationDepth },
       };
+    } else if (mod.redeclare && !mods[modKey].redeclare) {
+      // An outer binding does not override an inner redeclaration
+      // (MLS 7.2.4): `ctl(dat=dat.ctl)` in the template and
+      // `extends PartialController(redeclare VAVBoxController dat)` in the
+      // class of ctl give dat=dat.ctl and the class VAVBoxController
+      mods[modKey] = { ...mods[modKey], redeclare: mod.redeclare };
     }
   });
 };

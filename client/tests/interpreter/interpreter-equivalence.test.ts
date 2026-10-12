@@ -6,8 +6,8 @@
  * `./legacy` holds the interpreter and the display mapping as they were before
  * the split. For every template and every reachable instance path, both
  * resolve the same option and value (see `comparable`). For each case, they
- * also build the same modifiers, display mapping, evaluated values and valid
- * selections. This test and `./legacy` are removed when the selection keys
+ * also build the same modifiers (see `comparableMods`), display mapping,
+ * evaluated values and valid selections. This test and `./legacy` are removed when the selection keys
  * change (#620), which changes the behavior.
  *
  * Cases: default values, and each choice of each replaceable element
@@ -252,6 +252,34 @@ const comparable = (
   value: r.value,
 });
 
+type Mods = legacy.ConfigContext["mods"];
+
+/**
+ * Current modifiers without what the legacy interpreter drops: an inner
+ * redeclaration at an instance path that has an outer modifier, e.g.
+ * `extends PartialController(redeclare VAVBoxController dat)` in the class
+ * of ctl, with `ctl(dat=dat.ctl)` in the template. The current modifiers have
+ * the redeclaration, and the modifiers of the elements of the redeclared
+ * class.
+ */
+const comparableMods = (legacyMods: Mods, currentMods: Mods): Mods => {
+  const redeclared = Object.keys(currentMods).filter(
+    (k) =>
+      currentMods[k].redeclare && k in legacyMods && !legacyMods[k].redeclare,
+  );
+  return Object.fromEntries(
+    Object.entries(currentMods)
+      .filter(
+        ([k]) =>
+          k in legacyMods || !redeclared.some((r) => k.startsWith(`${r}.`)),
+      )
+      .map(([k, mod]) => [
+        k,
+        redeclared.includes(k) ? { ...mod, redeclare: undefined } : mod,
+      ]),
+  );
+};
+
 /** Differences between the legacy and the current interpreter for a case */
 function differences(dataset: Dataset, selections: ConfigValues) {
   const diffs: { [key: string]: { legacy: unknown; current: unknown } } = {};
@@ -267,7 +295,11 @@ function differences(dataset: Dataset, selections: ConfigValues) {
   };
   const legacyContext = createContext(legacy, dataset, selections);
   const currentContext = createContext(current, dataset, selections);
-  compare("mods", legacyContext.mods, currentContext.mods);
+  compare(
+    "mods",
+    legacyContext.mods,
+    comparableMods(legacyContext.mods, currentContext.mods),
+  );
   walk(legacyContext, (instancePath) => {
     const a = resolution(legacy, legacyContext, instancePath);
     const b = resolution(current, currentContext, instancePath);
