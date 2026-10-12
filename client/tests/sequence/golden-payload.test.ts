@@ -108,10 +108,7 @@ function configure(configCase: ConfigCase, project: Values): ConfigInterface {
       );
     }
     // Selection key as written by SlideOut.updateSelectedConfigOption
-    selected = {
-      ...selected,
-      [`${option.modelicaPath}-${option.scope}`]: value,
-    };
+    selected = { ...selected, [option.selectionKey]: value };
   });
   const context = createContext(template, selected);
   mapToDisplayOptions(context); // configuration panel rendered before saving

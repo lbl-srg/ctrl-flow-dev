@@ -8,8 +8,8 @@ import {
   isName,
   lastIdent,
   splitName,
-  splitSelectionKey,
 } from "../utils/names";
+import { parseSelectionKey, selectionKey } from "../utils/selection-key";
 
 export type Literal = boolean | string | number;
 
@@ -27,17 +27,6 @@ function isExpression(item: any): item is Expression {
 
 const allElementsEqual = (arr: any[]) =>
   !!arr.reduce((a: any, b: any) => (Object.is(a, b) ? a : NaN));
-
-export const constructSelectionPath = (
-  optionPath: string,
-  instancePath: string,
-) => {
-  // TODO: datAll params should follow other params in how we write them
-  // but it doesn't
-  return optionPath.includes("Buildings.Templates.Data.AllSystems")
-    ? optionPath
-    : `${optionPath}-${instancePath}`;
-};
 
 interface Modifier {
   expression?: Expression | string;
@@ -135,7 +124,7 @@ export function selectedClasses(selections: ConfigValues): {
 } {
   const classes: { [key: string]: string } = {};
   Object.entries(selections).forEach(([key, value]) => {
-    const [, instancePath] = splitSelectionKey(key);
+    const { instancePath } = parseSelectionKey(key);
     if (instancePath !== undefined && typeof value === "string") {
       classes[instancePath] = value;
     }
@@ -983,7 +972,7 @@ export class ConfigContext implements ResolutionContext {
       return null; // PUNCH-OUT! Unable to resolve value
     }
 
-    const selectionPath = constructSelectionPath(optionPath, instancePath);
+    const selectionPath = selectionKey(optionPath, instancePath);
     // check selections
     if (this.selections && selectionPath in this.selections) {
       this._previousInstancePath = null;
@@ -1065,13 +1054,12 @@ export class ConfigContext implements ResolutionContext {
   }
 
   isValidSelection(selectionPath: string) {
-    const paths = splitSelectionKey(selectionPath);
-    if (paths.length == 2) {
-      const [, instancePath] = paths;
+    const { instancePath } = parseSelectionKey(selectionPath);
+    if (instancePath !== undefined) {
       const instance = this.getOptionInstance(instancePath);
       return !!instance?.display;
     } else {
-      return true; // AllSystem settings don't have a dash
+      return true; // project settings have no instance path
     }
   }
 
@@ -1196,7 +1184,7 @@ export class ConfigContext implements ResolutionContext {
         value !== undefined || option.type === "String";
 
       if (addToResolvedValues) {
-        const selectionPath = constructSelectionPath(optionPath, key);
+        const selectionPath = selectionKey(optionPath, key);
         evaluatedValues[selectionPath] = value;
       }
     });

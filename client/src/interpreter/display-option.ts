@@ -2,15 +2,13 @@
 
 import { OptionInterface } from "../../src/data/template";
 
-import {
-  ConfigContext,
-  OptionInstance,
-  constructSelectionPath,
-} from "./interpreter";
+import { ConfigContext, OptionInstance } from "./interpreter";
 import { enclosingName, lastIdent } from "../utils/names";
+import { selectionKey } from "../utils/selection-key";
 
 export interface FlatConfigOptionGroup {
   groupName: string;
+  /** Identifier of the group in the display, not a selection key */
   selectionPath: string;
   items: DisplayItem[];
   /** Set for groups created from Dialog tab/group annotations, which are
@@ -28,6 +26,8 @@ export interface FlatConfigOption {
   booleanChoices?: string[];
   value: any;
   scope: string;
+  /** Key of the value of the option in the stores */
+  selectionKey: string;
   selectionType: string;
 }
 
@@ -68,6 +68,10 @@ export function _formatDisplayOption(
     value: optionInstance.value?.toString(),
     selectionType: type,
     scope: optionInstance.instancePath,
+    selectionKey: selectionKey(
+      option.modelicaPath,
+      optionInstance.instancePath,
+    ),
   };
 
   if (type === "Boolean") {
@@ -105,11 +109,7 @@ export function _formatDisplayGroup(
   paramInstance: OptionInstance,
   context: ConfigContext,
 ) {
-  const instancePath = `${paramInstance.instancePath}.__group`;
-  const selectionPath = constructSelectionPath(
-    option.modelicaPath,
-    instancePath,
-  );
+  const selectionPath = `${option.modelicaPath}-${paramInstance.instancePath}.__group`;
   // `option.options` lists the parameters declared in the class itself first,
   // followed by the inherited parameters. Modelica tools display inherited
   // parameters first, starting with the deepest class in the inheritance tree:
@@ -145,10 +145,7 @@ export function _formatDisplayGroup(
     if (!container) {
       container = {
         groupName: group || tab,
-        selectionPath: constructSelectionPath(
-          option.modelicaPath,
-          `${paramInstance.instancePath}.__dialog.${key}`,
-        ),
+        selectionPath: `${option.modelicaPath}-${paramInstance.instancePath}.__dialog.${key}`,
         items: [],
         dialog: group ? "group" : "tab",
       };

@@ -6,11 +6,7 @@ import { FlatConfigOption } from "./SlideOut";
 
 export interface OptionSelectProps {
   option: FlatConfigOption;
-  updateSelectedOption: (
-    modelicaPath: string,
-    scope: string,
-    choice: string | null,
-  ) => void;
+  updateSelectedOption: (selectionKey: string, choice: string | null) => void;
 }
 
 const OptionSelect = ({
@@ -24,17 +20,9 @@ const OptionSelect = ({
         event.target.value === "true" || event.target.value === "false"
           ? JSON.parse(event.target.value)
           : null;
-      updateSelectedOption(
-        option.modelicaPath,
-        option.scope,
-        value,
-      );
+      updateSelectedOption(option.selectionKey, value);
     } else {
-      updateSelectedOption(
-        option.modelicaPath,
-        option.scope,
-        event.target.value || null,
-      );
+      updateSelectedOption(option.selectionKey, event.target.value || null);
     }
   }
 
