@@ -132,6 +132,19 @@ describe("Evaluation succeeds with record bindings", () => {
     expect(resolveToValue("mod1.localRec.p", context, "nesExt1")).toBe(-3);
     expect(resolveToValue("mod1.rec.p", context, "nesExt1")).toBe(-3);
   });
+
+  it("does not follow a record constructor binding", () => {
+    // mod3(rec=Rec(p=2)): the elements of rec cannot be modified, and their
+    // values are not known (the arguments of the constructor are not parsed)
+    expect(resolvePaths("mod3.rec.p", context).optionPath).toBe(null);
+    expect(resolveToValue("rec.p", context, "mod3")).toBe(null);
+    // Mod: localRec = rec
+    expect(resolveToValue("localRec.p", context, "mod3")).toBe(null);
+    // The record itself is resolved
+    expect(resolvePaths("mod3.rec", context).optionPath).toBe(
+      "TestRecord.BaseModel.rec",
+    );
+  });
 });
 
 describe("Record bindings in real-world plant template", () => {
