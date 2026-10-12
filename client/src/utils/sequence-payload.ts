@@ -1,4 +1,5 @@
 import { ConfigInterface } from "../data/config";
+import { splitSelectionKey } from "./names";
 
 /**
  * Merges the values of all configurations into a single object mapping
@@ -21,7 +22,7 @@ export function getSequenceData(projectConfigs: ConfigInterface[]) {
           seqData[key].push(configData[key]);
         }
       } else {
-        const [modelicaPath] = key.split("-");
+        const [modelicaPath] = splitSelectionKey(key);
         if (modelicaPath !== configData[key]) {
           seqData[key] = [configData[key]];
         }

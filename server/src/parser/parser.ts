@@ -27,6 +27,7 @@ import {
   getExpression,
 } from "./expression";
 import * as mj from "./mj-types";
+import { enclosingName, firstIdent, lastIdent, splitName } from "./names";
 
 export const EXTEND_NAME = "__extend";
 const PROJECT_PATH = "Buildings.Templates.Data.AllSystems";
@@ -96,9 +97,8 @@ class Store {
       return this._store.get(path);
     } else {
       // walk inheritance chain to attempt to find correct element
-      const pathList = path.split(".");
-      const name = pathList.pop();
-      const basePath = pathList.join(".");
+      const name = lastIdent(path);
+      const basePath = enclosingName(path);
 
       // avoid infinite recursion
       if (basePath !== path) {
@@ -168,12 +168,12 @@ class Store {
     // package (e.g. a local class "Buildings") would shadow it; such a reference
     // is misresolved here — but it already failed before this shortcut existed,
     // and the pattern is not used in MBL.
-    const firstSegment = path?.split(".")[0];
+    const firstSegment = path && firstIdent(path);
     if (firstSegment && getTopLevelPackageNames().has(firstSegment)) {
       return [path];
     }
 
-    const splitBasePath = basePath ? basePath.split(".") : [];
+    const splitBasePath = basePath ? splitName(basePath) : [];
 
     const pathList: string[] = [];
     while (splitBasePath.length > 0) {
@@ -195,8 +195,8 @@ class Store {
     file.elementList.map((e) => {
       // find the element that matches as much as the path as possible
       let pathCount = 0;
-      const pList = e.modelicaPath.split(".");
-      e.modelicaPath.split(".").forEach((segment, i) => {
+      const pList = splitName(e.modelicaPath);
+      pList.forEach((segment, i) => {
         if (segment !== undefined && pList[i] === undefined) {
           pathCount = pList[i] === segment ? pathCount + 1 : pathCount;
         }
@@ -267,7 +267,7 @@ export function createProjectInputs(): { [key: string]: TemplateInput } {
     [key: string]: TemplateInput;
   };
   const spoofedModList = Object.values(projectInputs).map((i) => {
-    const modName = i.modelicaPath.split(".").pop();
+    const modName = lastIdent(i.modelicaPath);
     return new Modification(PROJECT_PATH, modName, i.value);
   });
 
@@ -503,9 +503,7 @@ export abstract class Element {
   }
 
   get baseType(): string {
-    const pathList = this.modelicaPath.split(".");
-    pathList.pop();
-    return pathList.join(".");
+    return enclosingName(this.modelicaPath);
   }
 
   /**
@@ -1427,7 +1425,7 @@ export class File {
   public elementList: Element[] = [];
   constructor(obj: any, className: string) {
     this.package = obj.within;
-    const splitFilePath = className.split(".");
+    const splitFilePath = splitName(className);
     if (this.package) {
       // FIXME: The assumption below is not consistent with MLS.
       // A one-to-one relationship between class names and file paths cannot be generically assumed.
@@ -1437,7 +1435,7 @@ export class File {
       // a mismatch means an incorrectly typed or structured package
       // Folder and file should always line up, e.g.
       // TestPackage/Interface/stuff.mo should have a within path of 'TestPackage.Interface'
-      this.package.split(".").forEach((value, index) => {
+      splitName(this.package).forEach((value, index) => {
         if (index < splitFilePath.length && value !== splitFilePath[index]) {
           throw new Error(
             "Malformed Modelica Package or Incorrect type assigned",

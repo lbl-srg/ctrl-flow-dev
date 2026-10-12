@@ -12,6 +12,7 @@ import * as parser from "./parser";
 import { Expression, Literal } from "./expression";
 import { Modification } from "./modification";
 import { buildParameterTable, Table } from "./schedule";
+import { enclosingName } from "./names";
 
 const templateStore = new Map<string, Template>();
 const systemTypeStore = new Map<string, SystemTypeN>();
@@ -170,7 +171,7 @@ export function _getTreeList(option: Option) {
       treeElement = o;
     } else {
       // remove the trailing '*.<instanceName>' to retrieve the class name from the instance path
-      treeElement = o.split(".").slice(0, -1).join(".");
+      treeElement = enclosingName(o);
     }
     if (!treeList.includes(treeElement)) {
       treeList.push(treeElement);
@@ -266,13 +267,10 @@ export class Template {
   }
 
   _extractSystemTypes(element: parser.Element) {
-    const path = element.modelicaPath.split(".");
-    path.pop();
-
     // Fix for https://github.com/lbl-srg/ctrl-flow-dev/issues/422
     // Currently the UI does not support nested system types.
     // Therefore, we only add the Modelica class name of the containing package.
-    const type = parser.findElement(path.join("."));
+    const type = parser.findElement(enclosingName(element.modelicaPath));
     if (type && type.entryPoint) {
       if (!type.description) {
         console.error(

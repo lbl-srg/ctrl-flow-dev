@@ -17,7 +17,7 @@ All design choices comply with the [Modelica Language Specification 3.7](https:/
 
 ```
 key         = rootClass "-" elementPath
-rootClass   = className      (fully qualified name of the template class, without leading "."; config.templatePath)
+rootClass   = className      (fully qualified name of the class to extend, without leading "."; see Resolution rules)
 elementPath = elementName    (path of the element relative to rootClass)
 
 className   = C-IDENT { "." C-IDENT }
@@ -39,15 +39,18 @@ Examples:
 - **Why not `rootClass.elementPath`.** In Modelica, `A.c` only references an element of `A` if `A` is a package. Templates are models: their components have no formal path until instantiated. The dotted form is therefore not a valid Modelica reference, and it cannot be split without looking up which prefix is a class.
 - **Quoted component identifiers.** The single quotes are part of the identifier: `'x'` and `x` are distinct identifiers (MLS §2.3.1), hence distinct keys. Quotes are never added or removed.
 - **No quoted class identifiers.** MLS allows `Q-IDENT` for classes, but a quoted class cannot be stored with the directory hierarchy mapping (MLS §13.4.1): `'Test'.mo` and `Test.mo` are the same file name. Tools fall back to storing such a class in the enclosing `package.mo`. This dead angle of the specification is not supported. A quoted identifier anywhere in a class name (template, class of a component, short class, redeclared class, enumeration type) is rejected with an explicit error by the server parser, and keys containing one are invalid. Values are never silently misinterpreted.
-- **Mapping to Modelica.** `rootClass` is the class to extend; `elementPath` is the component reference in the class modification:
+- **Mapping to Modelica.** `rootClass` is the class to extend; `elementPath` is the name of the modified element in the class modification. The attributes of the value (see Values) give the kind of modification, without any lookup:
 
   | Key | Value | Modelica |
   |---|---|---|
-  | `T-a.b.p` | `true` | `extends T(a(b(p=true)))` |
-  | `T-a.b` | `P.C` (replaceable component) | `extends T(a(redeclare P.C b))` |
-  | `T-a.S` | `P.C` (replaceable short class `S`) | `extends T(a(redeclare model S = P.C))` |
+  | `T-a.b.p` | `{ "value": true }` | `extends T(a(b(p=true)))` |
+  | `T-a.b` | `{ "redeclare": "P.C" }` (replaceable component) | `extends T(a(redeclare P.C b))` |
+  | `T-a.S` | `{ "redeclare": "P.C", "kindOfClass": "model" }` (replaceable short class `S`) | `extends T(a(redeclare model S = P.C))` |
+  | `T-a.b` and `T-a.b.p` | `{ "redeclare": "P.C" }`, `{ "value": true }` | `extends T(a(redeclare P.C b(p=true)))` |
 
-## Parsing and normalization
+  Keys sharing a prefix are written as one nested modifier, and the modifications of the elements of a redeclared component go into its redeclaration, as in the last row. This is the merged form defined by MLS §7.2.4.
+
+## Parsing
 
 `rootClass` contains no `Q-IDENT`, hence no `-`: the first `-` of a key always separates `rootClass` from `elementPath`.
 
@@ -57,32 +60,44 @@ A component `Q-IDENT` may contain `.`, `-` and escaped quotes (`'13\'H'`). Names
 2. Inside a `Q-IDENT`, `\` escapes the next character (so `\'` does not close the identifier) and `'` closes it.
 3. A key is invalid if it has no `-`, if `rootClass` does not match `className`, if a `Q-IDENT` is not closed, or if `elementPath` does not match `elementName`.
 
-MLS §2.3.1 states that the redundant escapes `\?` and `\"` are the same as `?` and `"`. Different spellings of the same identifier would yield different keys, so keys are built from the **normalized** spelling, where `\?` and `\"` are replaced with `?` and `"`. All other escapes (`\'`, `\\`, `\a`, `\b`, `\f`, `\n`, `\r`, `\t`, `\v`) are kept as written.
+**Escapes are kept as written.** MLS §2.3.1 states that the redundant escapes `\?` and `\"` are the same as `?` and `"`, so `'a\?'` and `'a?'` would be the same identifier. Dymola and OCT treat them as distinct identifiers: they reject a reference `'a?'` to a declaration `'a\?'`. Keys use the spelling of the declaration, so that the modifications written from them are accepted by these tools, and remain valid under the MLS. A source that spells the same identifier in different ways is not supported (see Known limitations).
 
 The same scanner provides the name helpers (split into identifiers, last identifier, enclosing name). They replace every plain `split(".")` and `split("-")` applied to Modelica names in the client (interpreter, display mapping, modifier and expression helpers), the server parser, and the sequence document pipeline (Python port of the scanner).
 
 ## Values
 
+A key holds an assignment, a redeclaration, or both, in separate attributes named as in `templates.json` (#495): `value` as the `value` of an option, `redeclare` as the `redeclare` of a modifier.
+
 ```
-value       = Boolean | number | string | className | enumLiteral
+value       = Boolean | number | string | enumLiteral
+redeclare   = className
+kindOfClass = class-prefixes without "partial" (MLS appendix A), e.g. "model", "record", "package", "expandable connector"
 enumLiteral = className "." E-IDENT      (enumeration type, then literal: quoted literals are supported)
 ```
 
-| Element | Value | Example |
+| Element | Attributes | Example |
 |---|---|---|
-| Replaceable component or short class | `className` of the redeclared class | `Buildings.Templates.Components.Coils.WaterBasedHeating` |
-| Enumeration parameter | `enumLiteral` | `P.Types.Valve.TwoWayModulating`, `P.Types.Valve.'two-way'` |
-| Other parameters | Boolean, number, or string | `true`, `0.7` |
+| Replaceable component | `redeclare`: class of the component | `{ "redeclare": "Buildings.Templates.Components.Coils.WaterBasedHeating" }` |
+| Replaceable short class | `redeclare`: class of the short class; `kindOfClass` | `{ "redeclare": "P.C", "kindOfClass": "model" }` |
+| Enumeration parameter | `value`: `enumLiteral` | `P.Types.Valve.TwoWayModulating`, `P.Types.Valve.'two-way'` |
+| Other parameters | `value`: Boolean, number, or string | `true`, `0.7` |
+| Replaceable record with a binding (`redeclare R rec = localRec`) | `redeclare` and `value` | not produced by the configuration panel today |
+
+- **Kind of modification.** The attributes are set from the declaration of the element when the value is written to the stores. They are never inferred from the value.
+- **`kindOfClass`** is present if and only if the redeclared element is a class (short class element), and absent for a component. It holds the class prefixes of the replaceable class declaration (the specialized class keyword, MLS §4.7, with its `operator`, `expandable`, `pure` or `impure` prefix), i.e. the prefixes repeated in the redeclaration: `redeclare <kindOfClass> S = P.C`. With it, the payload is sufficient to write the modification without looking up `templates.json`.
+- **Consumers that only need values.** The MBL templates bind a `typ` parameter in every class that can be redeclared (type introspection: Modelica has no `isOfType()`, its type system being structural). Consumers that do not write Modelica, such as the sequence document, read `value` only, through these `typ` parameters (see Mappings).
 
 - **Enumeration literals** may be quoted (`type Valve = enumeration('two-way', threeWay)`), but the enumeration type must not be (see the quoted class identifier rule). The literal is the last identifier of the value, extracted with the scanner. `P.Types.Valve.'two-way'` and `P.Types.Valve.two_way` are distinct values.
-- **Normalization.** Quoted literals are normalized like quoted component identifiers, so that values compare equal (client `==`, mogrifier `EQUALS`/`ANY`/`NOT_EQUALS`) whatever the escape spelling in the source.
+- **Spelling.** Quoted literals are kept as written, like quoted component identifiers (see Parsing): values compare equal (client `==`, mogrifier `EQUALS`/`ANY`/`NOT_EQUALS`) if the source spells the literal consistently.
 - **Recognizing a value as a name.** `isValidModelicaName` and `isFullyQualifiedName` accept a trailing quoted identifier, so a quoted literal is resolved as an enumeration value and not parsed as a string literal.
 
 ## Resolution rules for `elementPath`
 
 `elementPath` is the **resolved** path, i.e., the path returned by `resolvePaths`:
 
-1. **Inner/outer.** Path modifiers (`template.pathModifiers`) are applied: an element reached through an `outer` component is keyed at the `inner` declaration.
+1. **Inner/outer.** An `outer` component is a reference to the `inner` component with the same name in an enclosing instance (MLS §5.4). The elements of the referenced component can only be modified at the `inner` declaration, so they are keyed there:
+   - **`inner` declared in the template.** The path is rewritten with `template.pathModifiers`, which the parser builds by mapping the path of each `outer` component to the path of its `inner`. In `Buildings.Templates.AirHandlersFans.VAVMultiZone`, the controller `ctl` holds an `outer` reference to the coil `coiCoo` (`inner replaceable … coiCoo`), and `pathModifiers` holds `ctl.coiCoo → coiCoo`. The parameter `ctl.coiCoo.typ` is keyed `Buildings.Templates.AirHandlersFans.VAVMultiZone-coiCoo.typ`.
+   - **`inner` declared outside the template.** This is the case of `datAll` (`outer parameter Buildings.Templates.Data.AllSystems datAll` in the controllers), whose `inner` is declared once in the model that instantiates all the configurations of a project. `rootClass` is then the class of the `outer` declaration, and the value is a project-level value (`project.values`): `ctl.datAll.stdEne` is keyed `Buildings.Templates.Data.AllSystems-stdEne`. The Modelica export writes it into the project data record: `extends Buildings.Templates.Data.AllSystems(stdEne=…)`.
 2. **Record bindings.** A parameter reached through a bound record (`mod(rec=localRec)` or `Rec rec = localRec`) is keyed at the binding target (`localRec.p`, not `mod.rec.p`), which is the only place the value can be modified.
 3. **Replaceable components.** The choice is keyed at the component: `T-coiHea`.
 4. **Replaceable short classes.** The choice is keyed at the short class element, in the scope of the class that declares it: `T-<scope>.<ShortClassName>`, or `T-<ShortClassName>` when declared in the template itself (no leading dot). One key sets the type of every instance declared with that short class in that scope.
@@ -100,7 +115,7 @@ enumLiteral = className "." E-IDENT      (enumeration type, then literal: quoted
 
 | Function | Responsibility |
 |---|---|
-| `names.ts` | Quote-aware name helpers (see Parsing and normalization). |
+| `names.ts` | Quote-aware name helpers (see Parsing). |
 | `selectionKey.ts` | `selectionKey(rootClass, elementPath)`, `parseSelectionKey(key)`. |
 | `applyPathModifiers(path, pathModifiers)` | Inner/outer rewriting. |
 | `memberOption(classPath, name, ctx)` | Declared or inherited element `name` of class `classPath`, or `null`. The template is handled like any other class. |
@@ -126,19 +141,12 @@ Every computation of an element's class uses `effectiveClass`: `resolveInstance`
 - An identifier that cannot be resolved yields `null`. On `main`, `_instancePathToOption` instead returns the path of the enclosing class (`interpreter.ts:342-344`), which is a silently wrong answer.
 - Results are cached per `ConfigContext`, by path prefix. This is valid because a context is rebuilt whenever a selection changes.
 
-## Keys exempt from the grammar
-
-| Key | Example | Reason |
-|---|---|---|
-| Project-level settings | `Buildings.Templates.Data.AllSystems.stdEne` | Project singleton bound to the `outer datAll` of every template; unambiguous. Kept unchanged (normalizing to `Buildings.Templates.Data.AllSystems-stdEne` is deferred). |
-
-The system type of a configuration and the pipeline flags (`DEL_INFO_BOX` on `main`) are not keys: they are fields of the payload (see Payload).
-
 ## Stores
 
-- `config.selections`: values entered by the user. This is the only source for Modelica export.
-- `config.evaluatedValues`: values derived by the interpreter, same key space. Never exported.
-- `project.selections`, `project.evaluatedValues`: project-level settings (exempt keys).
+- `config.selections`: values entered by the user. This is the only source of the class modification of an exported configuration class.
+- `config.evaluatedValues`: values derived by the interpreter, same key space. Never written to the class modification. Records derived from a configuration use them: the configuration record holds the evaluated `cfg.*` values as `final` modifications (see [ModelicaExport](https://github.com/AntoineGautier/ModelicaExport), `UserProject.*.Configuration`).
+- `project.selections`, `project.evaluatedValues`: project-level values, keyed `Buildings.Templates.Data.AllSystems-<elementPath>` (rule 1). On `main` they are keyed `Buildings.Templates.Data.AllSystems.<name>` (`EditDetailsModal`, interpreter, mappings).
+- **Value objects.** All four stores map each key to `{ value?, redeclare?, kindOfClass? }`: the value objects of the payload without `origin`, which is given by the store. The attributes are set once, when the value is written, by the code that holds the option of the element (`SlideOut` and `EditDetailsModal` for selections, `getEvaluatedValues` for evaluated values). Every reader (interpreter, display mapping, payload builder) takes them from the stores. This supersedes the flat selection schema of #495.
 - **Persistence.** No migration: the local storage key includes the client version, which is bumped on every build.
 - **Projects.** Every configuration belongs to exactly one existing project:
   - `ConfigInterface.projectId` (required) is set by `configStore.add()` to the active project id.
@@ -162,9 +170,9 @@ The payload is the exchange format between the client and every consumer (sequen
   "projects": [
     {
       "id": "6f0c…",
-      "name": "Office building",
+      "description": "Office building",
       "values": {
-        "Buildings.Templates.Data.AllSystems.stdEne": {
+        "Buildings.Templates.Data.AllSystems-stdEne": {
           "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
           "origin": "user"
         }
@@ -172,11 +180,13 @@ The payload is the exchange format between the client and every consumer (sequen
       "configurations": [
         {
           "id": "a41e…",
-          "name": "Perimeter boxes",
+          "description": "Perimeter boxes",
           "quantity": 12,
           "systemType": "Buildings.Templates.ZoneEquipment",
           "template": "Buildings.Templates.ZoneEquipment.VAVBoxReheat",
           "values": {
+            "Buildings.Templates.ZoneEquipment.VAVBoxReheat-coiHea": { "redeclare": "Buildings.Templates.Components.Coils.ElectricHeating", "origin": "user" },
+            "Buildings.Templates.ZoneEquipment.VAVBoxReheat-coiHea.typ": { "value": "Buildings.Templates.Components.Types.Coil.ElectricHeating", "origin": "evaluated" },
             "Buildings.Templates.ZoneEquipment.VAVBoxReheat-ctl.have_occSen": { "value": true, "origin": "user" },
             "Buildings.Templates.ZoneEquipment.VAVBoxReheat-ctl.have_CO2Sen": { "value": false, "origin": "evaluated" }
           }
@@ -190,13 +200,16 @@ The payload is the exchange format between the client and every consumer (sequen
 ### Rules
 
 - **Addresses.** A value is addressed by `(project.id, configuration.id, key)`, or `(project.id, key)` for project-level settings. This address is unambiguous across projects, configurations and templates. Keys are unique within a `values` object, so each key holds a single value.
-- **Identifiers.** `id`s are the UUIDs of the client stores, stable across sessions. `name`s are labels: they are not required to be unique and are never used as identifiers.
+- **Identifiers.** `id`s are the UUIDs of the client stores, stable across sessions.
+- **Descriptions.** `description` is the label entered by the user (configuration name and project name in the UI). It is not required to be unique, is never used as an identifier, and becomes the description string of the exported class or package.
+- **Reserved: `name`.** In Modelica, a name is an identifier. `name` is reserved for the simple name of the exported class (configuration) or package (project): an `IDENT`, unique within the enclosing package (`<project>.<last identifier of systemType>` for a configuration). It will be added with the Modelica export, together with an input field.
 - **Value attributes.** Each key maps to an object, never to a bare value, so that attributes can be added without breaking consumers:
-  - `value` (required): see Values. There are no `null` values: an element without a value is absent.
-  - `origin` (required): `"user"` for a value entered by the user (`selections`), `"evaluated"` for a value derived by the interpreter (`evaluatedValues`). When both exist, the user value wins. Modelica export writes `"user"` values only.
+  - `value`, `redeclare`, `kindOfClass`: see Values. At least one of `value` and `redeclare` is present. There are no `null` values: an element without a value is absent.
+  - `origin` (required): `"user"` for a value entered by the user (`selections`), `"evaluated"` for a value derived by the interpreter (`evaluatedValues`). When both exist, the user value wins. The class modification of an exported configuration class is made of `"user"` values only (see Stores).
   - Further attributes (unit, bounds, description, etc.) may be added; consumers ignore attributes they do not know.
 - **Payload-wide attributes** go in `meta` (versions of ctrl-flow and of the libraries the templates were generated from), never on each value.
 - **Consumer options** go in `options`. They are not Modelica values. `deleteInfoBox` replaces `DEL_INFO_BOX`.
+- **Not keys.** The system type and the template of a configuration are fields of the configuration, not keys.
 - **Versioning.** `schemaVersion` is an integer, incremented on any breaking change. Adding optional attributes or fields is not breaking. Consumers reject a payload whose `schemaVersion` they do not support.
 - **Order.** `projects` and `configurations` follow the order of the client stores.
 
@@ -218,21 +231,30 @@ This reproduces the merge done by the client on `main`. Merging now happens in t
 
 ### Mappings
 
-The `Modelica Parameter` column of the mappings file holds either an exempt key, or a **key pattern**:
+The `Modelica Parameter` column of the mappings file holds a key, or a **key pattern** listing several classes:
 
 ```
-pattern  = selector "-" elementPath
-selector = name    (a template class, or a package containing templates)
+pattern      = selector "-" elementPath
+selector     = className | [ className "." ] "{" alternatives "}"
+alternatives = className { "|" className }
 ```
 
-A pattern matches every key whose `elementPath` is equal and whose `rootClass` is the selector or lies within the selector package. Both comparisons are made on identifier sequences produced by the scanner, never on string prefixes: `P.A` lies within `P`, but `P.AB` does not lie within `P.A`. The mogrifier evaluates a toggle against the union of the values of all matching keys. A condition on a subset of templates is expressed by the selector, or by a new mapping entry.
+A pattern is shorthand for the set of keys obtained by expanding the alternatives, e.g. `P.{A|B}-c.p` stands for `P.A-c.p` and `P.B-c.p`. Each expanded `rootClass` is a class where `elementPath` is declared (a template, or `Buildings.Templates.Data.AllSystems`), never an enclosing package. `{`, `|` and `}` cannot occur in a class name (no quoted class identifiers), so the expansion is unambiguous. Keys are then matched by equality. A test checks that every expanded key resolves in its template.
 
-The `Current G36 Decisions` mappings are rewritten with the narrowest selector that covers the templates whose values are merged today, so that the generated document is unchanged, e.g.:
+The mogrifier evaluates a toggle against the union of the values of all keys of the pattern. A condition on a subset of templates is expressed by the alternatives, or by a new mapping entry.
+
+The `Current G36 Decisions` mappings are rewritten so that the generated document is unchanged:
+
+- Each pattern lists the templates whose values are merged today.
+- Project-level settings use the keys of rule 1.
+- The five entries that read the class of a replaceable component (`PREHEAT`, `REHEAT`, `COOL`, `OA`, `TERM_HT`) read its `typ` parameter instead, and their value rows (`Modelica Path` column) use the enumeration literals, which match the classes one to one (`Coils.WaterBasedCooling` → `Types.Coil.WaterBasedCooling`). The mogrifier then reads `value` only.
 
 | Short ID | `main` | New |
 |---|---|---|
-| `OCC` | `Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_occSen-ctl.have_occSen` | `Buildings.Templates.ZoneEquipment-ctl.have_occSen` |
-| `COOL` | `Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo` | `Buildings.Templates.AirHandlersFans.VAVMultiZone-coiCoo` |
+| `OCC` | `Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_occSen-ctl.have_occSen` | `Buildings.Templates.ZoneEquipment.{VAVBoxCoolingOnly\|VAVBoxReheat}-ctl.have_occSen` |
+| `ENERGY` | `Buildings.Templates.Data.AllSystems.stdEne` | `Buildings.Templates.Data.AllSystems-stdEne` |
+| `COOL` | `Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo-coiCoo` | `Buildings.Templates.AirHandlersFans.VAVMultiZone-coiCoo.typ` |
+| `OA` | `Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut-secOutRel.secOut` | `Buildings.Templates.AirHandlersFans.VAVMultiZone-secOutRel.typSecOut` |
 
 ### Golden tests
 
@@ -251,6 +273,7 @@ Verified on 2026-10-08 with a probe package (quoted components and parameters co
 - **The server parser** preserves them in option paths (`…Template.'c-d'`), modifier keys (`…Template.'c-d'.'a.b'`), enumeration literals and values (`…Types.Valve.'13\'H'`), `enable` expressions (`'with-dash'`), `if` expressions and record bindings (`'rec-1'`).
 - **To be implemented:**
   - The parser accepts a quoted class without error (`…Classes.'Q'`). It must reject it.
+  - `templates.json` does not record the kind of a class definition: options of class definitions only have `definition: true`. The parser derives it from modelica-json's `class_prefixes` (`elementType` in `_constructElement`), but drops `expandable`. Class definition options get a `kindOfClass` field (class prefixes without `partial`), from which the client sets the `kindOfClass` attribute of values.
   - Six plain `split(".")` sites in the parser apply to element paths, so they would mis-split a component identifier containing `.`. They must use the scanner. The probe showed no symptom: `parser.ts:99` (inherited element lookup), `parser.ts:270`, `parser.ts:506` (`baseType`), `modification.ts:162`, `template.ts:173` (tree list), `schedule.ts:178`. The other seven sites only apply to class names, which are never quoted.
 
 Issues found by the probe, unrelated to quoted identifiers:
@@ -270,3 +293,4 @@ Issues found by the probe, unrelated to quoted identifiers:
 ## Known limitations
 
 - **Replaceable short classes.** On `main`, short-class choices are written under one key (`…ShortClass-ShortClass`), read under another (`…ShortClass-.FirstComponent`), and the parameters of the selected class are displayed and keyed under the class name (`ShortClass.container`) rather than under the instance. Selecting another class does not change how the instance resolves. No template in `templates.json` uses a replaceable short class in the configuration panel. This refactoring fixes the key (rule 4); the display and resolution of short class instances are tracked separately.
+- **Spellings of quoted identifiers.** A source that spells a quoted identifier with and without a redundant escape (`'a\?'` and `'a?'`, `'a\"'` and `'a"'`) is not supported: ctrl-flow keeps identifiers as written, like Dymola and OCT, which reject such a source, although MLS §2.3.1 makes both spellings the same identifier.

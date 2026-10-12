@@ -3,6 +3,7 @@ import fs from "fs";
 import { execSync } from "child_process";
 
 import { typeStore } from "./parser";
+import { hasQuotedIdent } from "./names";
 import config from "../../src/config";
 
 // The following arrays are populated with the ***full class names***
@@ -233,6 +234,54 @@ function getPathFromClassName(
   return fs.existsSync(jsonFile) ? jsonFile : null;
 }
 
+// Keys of class names
+const CLASS_NAME_KEYS = new Set(["type_specifier", "within"]);
+// Keys of objects holding class names
+const CLASS_NAMES_IN: { [key: string]: (value: any) => string[] } = {
+  long_class_specifier: (v) => [v.identifier],
+  short_class_specifier: (v) => [v.identifier, v.value?.name],
+  der_class_specifier: (v) => [
+    v.identifier,
+    v.der_class_specifier_value?.type_specifier,
+  ],
+  extends_clause: (v) => [v.name],
+  constraining_clause: (v) => [v.name],
+  import_clause: (v) => [v.identifier, v.name],
+};
+
+// Parsed files by path: an object is parsed once, as the parser keys
+// constructed files by object
+const jsonCache = new Map<string, Object>();
+
+/**
+ * Reads a modelica-json file, rejecting quoted class identifiers: a quoted
+ * class cannot be stored with the directory hierarchy mapping (MLS §13.4.1).
+ * See docs/selection-keys.md, "Grammar".
+ */
+function readJson(jsonFile: string): Object {
+  const cached = jsonCache.get(jsonFile);
+  if (cached) {
+    return cached;
+  }
+  const json = JSON.parse(fs.readFileSync(jsonFile, "utf8"), (key, value) => {
+    const classNames =
+      typeof value === "string"
+        ? CLASS_NAME_KEYS.has(key)
+          ? [value]
+          : []
+        : (CLASS_NAMES_IN[key]?.(value) ?? []);
+    const quoted = classNames.find((name) => name && hasQuotedIdent(name));
+    if (quoted) {
+      throw new Error(
+        `Quoted class identifiers are not supported: ${quoted} in ${jsonFile}`,
+      );
+    }
+    return value;
+  });
+  jsonCache.set(jsonFile, json);
+  return json;
+}
+
 // Resolving a class name to a file on disk walks the directory tree with
 // synchronous fs.existsSync calls. The same class name is looked up
 // repeatedly (often thousands of times) while parsing, so cache the result
@@ -259,7 +308,7 @@ export function loader(className: string): Object | undefined {
     for (const dir of MODELICA_JSON_PATH) {
       const jsonFile = getPathFromClassName(className, dir);
       if (jsonFile && fs.existsSync(jsonFile)) {
-        result = require(jsonFile);
+        result = readJson(jsonFile);
         break;
       }
     }
