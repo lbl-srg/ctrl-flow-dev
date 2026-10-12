@@ -260,15 +260,12 @@ export function _formatDisplayItem(
   if (context._isInstanceDisabled(optionInstance.instancePath)) {
     return displayList;
   }
-  // check if the type needs to be rendered
-  // Use optionInstance.value for type lookup:
-  // - For non-replaceable components with no binding (value is undefined), lookup fails -> no nested components rendered
-  // - For replaceable components with no binding (value is undefined), use option.type instead
-  const type =
-    option["replaceable"] && !optionInstance.value
-      ? option.type
-      : optionInstance.value;
-  const typeOption = context.options[type as string];
+  // Only the elements of the template and of replaceable elements are
+  // rendered: the elements of non-replaceable components are not
+  const typeOption =
+    option.replaceable || option.definition
+      ? context.options[optionInstance.type]
+      : undefined;
   if (typeOption === undefined) {
     return displayList;
   }

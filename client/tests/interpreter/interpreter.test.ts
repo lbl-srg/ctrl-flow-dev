@@ -144,6 +144,26 @@ describe("Modifiers", () => {
     const coiCooMod = mods[coiCooPath];
     expect(coiCooMod.final).toBeTruthy();
   });
+
+  it("Keeps an inner redeclaration under an outer binding", () => {
+    // VAVBox: ctl(final dat=dat.ctl)
+    // PartialControllerVAVBox:
+    //   extends PartialController(redeclare Data.VAVBoxController dat(...))
+    const context = new ConfigContext(
+      zoneReheatTemplate,
+      zoneReheatConfig,
+      allOptions,
+      createSelections(),
+    );
+    const dataController =
+      "Buildings.Templates.ZoneEquipment.Components.Data.VAVBoxController";
+
+    const mod = context.mods["ctl.dat"];
+    expect(mod.expression).toEqual("dat.ctl");
+    expect(mod.redeclare).toEqual(dataController);
+    // The binding gives the value, never the class
+    expect(context.getOptionInstance("ctl.dat")?.type).toEqual(dataController);
+  });
 });
 
 const buildExpression = (operator: OperatorType, operands: any[]) => {

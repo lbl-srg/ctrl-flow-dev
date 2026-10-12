@@ -121,7 +121,7 @@ enumLiteral = className "." E-IDENT      (enumeration type, then literal: quoted
 | `memberOption(classPath, name, ctx)` | Declared or inherited element `name` of class `classPath`, or `null`. The template is handled like any other class. |
 | `effectiveClass(path, declaredOption, ctx)` | Class of the element at `path` (see below). |
 | `bindingRedirect(path, option, ctx)` | Rewritten path if the element at `path` is reached through a record binding (rule 2), or `null`. |
-| `resolveInstance(path, ctx)` | Walks `path` one identifier at a time: `memberOption`, then `bindingRedirect`, then `effectiveClass`. Returns `{ optionPath, classPath, resolvedPath, outerOptionPath }`, or `null` if any identifier cannot be resolved. |
+| `resolveInstance(path, ctx)` | Walks `path` one identifier at a time: `memberOption`, then `bindingRedirect`, then `effectiveClass`. Returns `{ optionPath, classPath, resolvedPath, isOuter, outerOptionPath }`, or `null` if any identifier cannot be resolved. |
 
 ### `effectiveClass`
 
@@ -131,6 +131,8 @@ The class of the element at `path`, declared by `declaredOption`, is the first o
 2. the redeclaration in `ctx.mods[path]` (from the template and its classes);
 3. the declared type of `declaredOption`.
 
+A binding never changes the class: an element bound to a record (`ctl(dat=dat.ctl)`) has the class of its declaration or redeclaration, and the record is its value. `buildMods` keeps an inner redeclaration when an outer modification of the same element has none (MLS §7.2.4): `ctl(dat=dat.ctl)` in `Buildings.Templates.ZoneEquipment.Interfaces.VAVBox` and `extends PartialController(redeclare Data.VAVBoxController dat)` in the class of `ctl` give `ctl.dat` the class `Data.VAVBoxController`.
+
 If the result is a short class, the short class element is resolved the same way (rule 4), and the alias chain is followed to a long class definition. The special case for `datAll` (`Buildings.Templates.Data.AllSystems`) is handled here and nowhere else.
 
 Every computation of an element's class uses `effectiveClass`: `resolveInstance`, `buildMods`, `getOptionInstance`, and the display mapping (`_formatDisplayItem`).
@@ -138,8 +140,9 @@ Every computation of an element's class uses `effectiveClass`: `resolveInstance`
 ### `resolveInstance`
 
 - `resolvedPath` is the `elementPath` used in keys (rules 1 and 2).
-- An identifier that cannot be resolved yields `null`. On `main`, `_instancePathToOption` instead returns the path of the enclosing class (`interpreter.ts:342-344`), which is a silently wrong answer.
-- Results are cached per `ConfigContext`, by path prefix. This is valid because a context is rebuilt whenever a selection changes.
+- `isOuter` is true if `path` goes through an `outer` element, i.e. if it is rewritten with `template.pathModifiers` (rule 1).
+- An identifier that cannot be resolved yields `null`. On `main`, `_instancePathToOption` instead returns the path of the enclosing class (`interpreter.ts:342-344`), which is a silently wrong answer: in `Buildings.Templates.AirHandlersFans.VAVMultiZone`, the modifier `damOut(m_flow_nominal=mAirSup_flow_nominal)` evaluates to `Buildings.Templates.Components.Data.Damper`, because `dat.damOut.mAirSup_flow_nominal` resolves to the class of `dat.damOut` before `dat.mAirSup_flow_nominal` is tried. `resolvePaths` keeps this answer until the selection keys change, so that the split of `_instancePathToOption` (#636) does not change any value.
+- Results are cached per `ConfigContext`, by path. This is valid because a context is rebuilt whenever a selection changes.
 
 ## Stores
 
