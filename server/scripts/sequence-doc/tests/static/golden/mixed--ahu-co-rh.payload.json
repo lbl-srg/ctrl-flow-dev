@@ -242,6 +242,12 @@
   "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.fanRet-secOutRel.secRel.fanRet": [
     "Buildings.Templates.Components.Fans.SingleVariable"
   ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.have_souChiWat-cfg.have_souChiWat": [
+    true
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.have_souHeaWat-cfg.have_souHeaWat": [
+    false
+  ],
   "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.nFanRel-cfg.nFanRel": [
     0
   ],
@@ -251,8 +257,20 @@
   "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.nFanSup-cfg.nFanSup": [
     1
   ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typ-cfg.typ": [
+    "Buildings.Templates.AirHandlersFans.Types.Configuration.SingleDuct"
+  ],
   "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typCtl-cfg.typCtl": [
     "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typFanRel-cfg.typFanRel": [
+    "Buildings.Templates.Components.Types.Fan.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typFanRet-cfg.typFanRet": [
+    "Buildings.Templates.Components.Types.Fan.SingleVariable"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typFanSup-cfg.typFanSup": [
+    "Buildings.Templates.Components.Types.Fan.SingleVariable"
   ],
   "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.buiPreCon-cfg.buiPreCon": [
     "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir"
@@ -288,7 +306,7 @@
     "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
   ],
   "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typValCoiHeaPre-cfg.typValCoiHeaPre": [
-    "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+    "Buildings.Templates.Components.Types.Valve.None"
   ],
   "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typValCoiHeaReh-cfg.typValCoiHeaReh": [
     "Buildings.Templates.Components.Types.Valve.None"
@@ -377,9 +395,6 @@
   "Buildings.Templates.Components.Coils.WaterBasedCooling.hex-coiCoo.hex": [
     "Buildings.Fluid.HeatExchangers.WetCoilEffectivenessNTU"
   ],
-  "Buildings.Templates.Components.Data.Coil.Q_flow_nominal-coiHea.dat.Q_flow_nominal": [
-    "-1*abs(cap_nominal)"
-  ],
   "Buildings.Templates.Components.Data.Coil.Q_flow_nominal-dat.coiCoo.Q_flow_nominal": [
     "-1*abs(cap_nominal)"
   ],
@@ -405,6 +420,7 @@
     "Buildings.Templates.Components.Types.Coil.ElectricHeating"
   ],
   "Buildings.Templates.Components.Data.Coil.typ-datCoiHea.typ": [
+    "Buildings.Templates.Components.Types.Coil.None",
     "Buildings.Templates.Components.Types.Coil.ElectricHeating"
   ],
   "Buildings.Templates.Components.Interfaces.PartialCoil.Q_flow_nominal-coiCoo.Q_flow_nominal": [
@@ -447,6 +463,7 @@
     "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
   ],
   "Buildings.Templates.Components.Interfaces.PartialCoil.typ-coiHea.typ": [
+    "Buildings.Templates.Components.Types.Coil.None",
     "Buildings.Templates.Components.Types.Coil.ElectricHeating"
   ],
   "Buildings.Templates.Components.Interfaces.PartialCoil.typ-coiHeaPre.typ": [
@@ -459,10 +476,10 @@
     "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
   ],
   "Buildings.Templates.Components.Interfaces.PartialCoil.typVal-coiHea.typVal": [
-    "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+    "Buildings.Templates.Components.Types.Valve.None"
   ],
   "Buildings.Templates.Components.Interfaces.PartialCoil.typVal-coiHeaPre.typVal": [
-    "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+    "Buildings.Templates.Components.Types.Valve.None"
   ],
   "Buildings.Templates.Components.Interfaces.PartialCoil.typVal-coiHeaReh.typVal": [
     "Buildings.Templates.Components.Types.Valve.None"
@@ -569,6 +586,16 @@
   "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox.stdVen-ctl.stdVen": [
     "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
   ],
+  "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal.have_souChiWat-cfg.have_souChiWat": [
+    false
+  ],
+  "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal.have_souHeaWat-cfg.have_souHeaWat": [
+    false
+  ],
+  "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal.typ-cfg.typ": [
+    "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxCoolingOnly",
+    "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat"
+  ],
   "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal.typCtl-cfg.typCtl": [
     "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly",
     "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
@@ -577,13 +604,14 @@
     "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
   ],
   "Buildings.Templates.ZoneEquipment.Configuration.VAVBox.typCoiHea-cfg.typCoiHea": [
+    "Buildings.Templates.Components.Types.Coil.None",
     "Buildings.Templates.Components.Types.Coil.ElectricHeating"
   ],
   "Buildings.Templates.ZoneEquipment.Configuration.VAVBox.typDamVAV-cfg.typDamVAV": [
     "Buildings.Templates.Components.Types.Damper.Modulating"
   ],
   "Buildings.Templates.ZoneEquipment.Configuration.VAVBox.typValCoiHea-cfg.typValCoiHea": [
-    "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
+    "Buildings.Templates.Components.Types.Valve.None"
   ],
   "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.ctl-dat.ctl": [
     "Buildings.Templates.ZoneEquipment.Components.Data.VAVBoxController"

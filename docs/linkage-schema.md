@@ -113,6 +113,7 @@ An option represents a 'node' of info from the template that _could_ be rendered
 `modifiers`: instance data that can overwrite the values present in an `Option`.
 `options`: available selections for a given option OR
 `choiceModifiers`: some instance data is only applied if a specific choice is made. Those modifiers are included grouped by the 'choice' path (which )
+`constrainingModifiers`: for a replaceable element with a constraining clause, the modifiers of that clause. When the element is redeclared, they replace `modifiers` (MLS 7.3.2). Absent if there is no constraining clause.
 ```
 
 ```typescript
@@ -128,6 +129,7 @@ export interface OptionInterface {
   enable?: Expression;
   modifiers: { [key: string]: { expression: Expression | Literal; final: boolean } };
   choiceModifiers?: { [key: string]: Modifiers };
+  constrainingModifiers?: Modifiers;
   definition: boolean;
   replaceable: boolean;
 }

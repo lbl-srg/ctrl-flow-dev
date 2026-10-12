@@ -104,6 +104,15 @@
   "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox.stdVen-ctl.stdVen": [
     "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
   ],
+  "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal.have_souChiWat-cfg.have_souChiWat": [
+    false
+  ],
+  "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal.have_souHeaWat-cfg.have_souHeaWat": [
+    true
+  ],
+  "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal.typ-cfg.typ": [
+    "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat"
+  ],
   "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal.typCtl-cfg.typCtl": [
     "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
   ],

@@ -210,6 +210,33 @@
       },
       "enable": true,
       "choiceModifiers": {},
+      "constrainingModifiers": {
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut.MediumAir": {
+          "final": true,
+          "redeclare": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.MediumAir"
+        },
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut.energyDynamics": {
+          "expression": "energyDynamics",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut.allowFlowReversal": {
+          "expression": "allowFlowReversal",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut.dat": {
+          "expression": "dat",
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut.have_recHea": {
+          "expression": "have_recHea",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut.typCtlEco": {
+          "expression": "typCtlEco",
+          "final": true
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper",
@@ -5311,6 +5338,7 @@
         ]
       },
       "choiceModifiers": {},
+      "constrainingModifiers": {},
       "replaceable": true,
       "options": [
         "Buildings.Fluid.Movers.Data.Generic"
@@ -8213,6 +8241,22 @@
         }
       },
       "choiceModifiers": {},
+      "constrainingModifiers": {
+        "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res1.Medium": {
+          "final": true,
+          "redeclare": "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.Medium"
+        },
+        "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res1.allowFlowReversal": {
+          "expression": {
+            "operator": "==",
+            "operands": [
+              "portFlowDirection_1",
+              "Modelica.Fluid.Types.PortFlowDirection.Bidirectional"
+            ]
+          },
+          "final": false
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
@@ -8244,6 +8288,22 @@
         }
       },
       "choiceModifiers": {},
+      "constrainingModifiers": {
+        "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res2.Medium": {
+          "final": true,
+          "redeclare": "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.Medium"
+        },
+        "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res2.allowFlowReversal": {
+          "expression": {
+            "operator": "==",
+            "operands": [
+              "portFlowDirection_2",
+              "Modelica.Fluid.Types.PortFlowDirection.Bidirectional"
+            ]
+          },
+          "final": false
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
@@ -8275,6 +8335,22 @@
         }
       },
       "choiceModifiers": {},
+      "constrainingModifiers": {
+        "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res3.Medium": {
+          "final": true,
+          "redeclare": "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.Medium"
+        },
+        "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.res3.allowFlowReversal": {
+          "expression": {
+            "operator": "==",
+            "operands": [
+              "portFlowDirection_3",
+              "Modelica.Fluid.Types.PortFlowDirection.Bidirectional"
+            ]
+          },
+          "final": false
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface"
@@ -9596,6 +9672,37 @@
       },
       "enable": true,
       "choiceModifiers": {},
+      "constrainingModifiers": {
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel.MediumAir": {
+          "final": true,
+          "redeclare": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.MediumAir"
+        },
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel.energyDynamics": {
+          "expression": "energyDynamics",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel.allowFlowReversal": {
+          "expression": "allowFlowReversal",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel.dat": {
+          "expression": "dat",
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel.have_recHea": {
+          "expression": "have_recHea",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel.typCtlFanRet": {
+          "expression": "typCtlFanRet",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel.typCtlEco": {
+          "expression": "typCtlEco",
+          "final": true
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan",
@@ -9715,6 +9822,39 @@
       },
       "enable": true,
       "choiceModifiers": {},
+      "constrainingModifiers": {
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.fanRet.Medium": {
+          "final": true,
+          "redeclare": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection.MediumAir"
+        },
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.fanRet.dat": {
+          "expression": "dat.fanRet",
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.fanRet.energyDynamics": {
+          "expression": "energyDynamics",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.fanRet.allowFlowReversal": {
+          "expression": "allowFlowReversal",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.fanRet.have_senFlo": {
+          "expression": {
+            "operator": "==",
+            "operands": [
+              "typCtlFanRet",
+              "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowMeasured"
+            ]
+          },
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.fanRet.text_flip": {
+          "expression": true,
+          "final": true
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Templates.Components.Fans.SingleVariable",
@@ -9877,6 +10017,7 @@
       "modifiers": {},
       "enable": true,
       "choiceModifiers": {},
+      "constrainingModifiers": {},
       "replaceable": true,
       "options": [
         "Buildings.Fluid.Movers.Data.Generic"
@@ -13337,6 +13478,37 @@
       },
       "enable": true,
       "choiceModifiers": {},
+      "constrainingModifiers": {
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel.Medium": {
+          "final": true,
+          "redeclare": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection.MediumAir"
+        },
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel.dat": {
+          "expression": "dat.fanRel",
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel.energyDynamics": {
+          "expression": "energyDynamics",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel.allowFlowReversal": {
+          "expression": "allowFlowReversal",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel.have_senFlo": {
+          "expression": false,
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel.text_flip": {
+          "expression": true,
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel.typSin": {
+          "expression": "Buildings.Templates.Components.Types.FanSingle.Propeller",
+          "final": false
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Templates.Components.Fans.SingleVariable",
@@ -13634,6 +13806,16 @@
         }
       },
       "choiceModifiers": {},
+      "constrainingModifiers": {
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.recHea.MediumAir": {
+          "final": true,
+          "redeclare": "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.MediumAir"
+        },
+        "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.recHea.allowFlowReversal": {
+          "expression": "allowFlowReversal",
+          "final": true
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.HeatRecovery.None"
@@ -15098,6 +15280,35 @@
         ]
       },
       "choiceModifiers": {},
+      "constrainingModifiers": {
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupBlo.Medium": {
+          "final": true,
+          "redeclare": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.MediumAir"
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupBlo.energyDynamics": {
+          "expression": "energyDynamics",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupBlo.allowFlowReversal": {
+          "expression": "allowFlowReversalAir",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupBlo.dat": {
+          "expression": "dat.fanSup",
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupBlo.have_senFlo": {
+          "expression": {
+            "operator": "==",
+            "operands": [
+              "ctl.typCtlFanRet",
+              "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowMeasured"
+            ]
+          },
+          "final": true
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Templates.Components.Fans.None",
@@ -15332,6 +15543,35 @@
         ]
       },
       "choiceModifiers": {},
+      "constrainingModifiers": {
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupDra.Medium": {
+          "final": true,
+          "redeclare": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.MediumAir"
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupDra.energyDynamics": {
+          "expression": "energyDynamics",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupDra.allowFlowReversal": {
+          "expression": "allowFlowReversalAir",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupDra.dat": {
+          "expression": "dat.fanSup",
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupDra.have_senFlo": {
+          "expression": {
+            "operator": "==",
+            "operands": [
+              "ctl.typCtlFanRet",
+              "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowMeasured"
+            ]
+          },
+          "final": true
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Templates.Components.Fans.None",
@@ -16841,6 +17081,33 @@
             "expression": "Buildings.Templates.Components.Types.Valve.TwoWayModulating",
             "final": true
           }
+        }
+      },
+      "constrainingModifiers": {
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaPre.dat": {
+          "expression": "dat.coiHeaPre",
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaPre.MediumAir": {
+          "final": true,
+          "redeclare": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.MediumAir"
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaPre.energyDynamics": {
+          "expression": "energyDynamics",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaPre.allowFlowReversalAir": {
+          "expression": "allowFlowReversalAir",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaPre.allowFlowReversalLiq": {
+          "expression": "allowFlowReversalLiq",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaPre.show_T": {
+          "expression": "show_T",
+          "final": true
         }
       },
       "replaceable": true,
@@ -19235,6 +19502,56 @@
         }
       },
       "choiceModifiers": {},
+      "constrainingModifiers": {
+        "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.vol.Medium": {
+          "final": true,
+          "redeclare": "Buildings.Fluid.Interfaces.PartialTwoPort.Medium"
+        },
+        "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.vol.nPorts": {
+          "expression": 2,
+          "final": false
+        },
+        "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.vol.V": {
+          "expression": "m_flow_nominal*tau/rho_default",
+          "final": false
+        },
+        "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.vol.allowFlowReversal": {
+          "expression": "allowFlowReversal",
+          "final": true
+        },
+        "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.vol.mSenFac": {
+          "expression": 1,
+          "final": true
+        },
+        "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.vol.m_flow_nominal": {
+          "expression": "m_flow_nominal",
+          "final": true
+        },
+        "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.vol.energyDynamics": {
+          "expression": "energyDynamics",
+          "final": true
+        },
+        "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.vol.massDynamics": {
+          "expression": "energyDynamics",
+          "final": true
+        },
+        "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.vol.p_start": {
+          "expression": "p_start",
+          "final": true
+        },
+        "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.vol.T_start": {
+          "expression": "T_start",
+          "final": true
+        },
+        "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.vol.X_start": {
+          "expression": "X_start",
+          "final": true
+        },
+        "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.vol.C_start": {
+          "expression": "C_start",
+          "final": true
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Fluid.MixingVolumes.MixingVolume"
@@ -19731,6 +20048,33 @@
           }
         }
       },
+      "constrainingModifiers": {
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo.dat": {
+          "expression": "dat.coiCoo",
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo.MediumAir": {
+          "final": true,
+          "redeclare": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.MediumAir"
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo.energyDynamics": {
+          "expression": "energyDynamics",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo.allowFlowReversalAir": {
+          "expression": "allowFlowReversalAir",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo.allowFlowReversalLiq": {
+          "expression": "allowFlowReversalLiq",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiCoo.show_T": {
+          "expression": "show_T",
+          "final": true
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Templates.Components.Coils.None",
@@ -20165,6 +20509,33 @@
           }
         }
       },
+      "constrainingModifiers": {
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaReh.dat": {
+          "expression": "dat.coiHeaReh",
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaReh.MediumAir": {
+          "final": true,
+          "redeclare": "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.MediumAir"
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaReh.energyDynamics": {
+          "expression": "energyDynamics",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaReh.allowFlowReversalAir": {
+          "expression": "allowFlowReversalAir",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaReh.allowFlowReversalLiq": {
+          "expression": "allowFlowReversalLiq",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.coiHeaReh.show_T": {
+          "expression": "show_T",
+          "final": true
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Templates.Components.Coils.None",
@@ -20489,6 +20860,41 @@
         }
       },
       "choiceModifiers": {},
+      "constrainingModifiers": {
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.ctl.dat": {
+          "expression": "dat.ctl",
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.ctl.nZon": {
+          "expression": "nZon",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.ctl.typFanSup": {
+          "expression": "typFanSup",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.ctl.typFanRel": {
+          "expression": "typFanRel",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.ctl.typFanRet": {
+          "expression": "typFanRet",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.ctl.nFanSup": {
+          "expression": "nFanSup",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.ctl.nFanRel": {
+          "expression": "nFanRel",
+          "final": true
+        },
+        "Buildings.Templates.AirHandlersFans.VAVMultiZone.ctl.nFanRet": {
+          "expression": "nFanRet",
+          "final": true
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone"
@@ -51221,6 +51627,7 @@
         ]
       },
       "choiceModifiers": {},
+      "constrainingModifiers": {},
       "replaceable": true,
       "options": [
         "Buildings.Fluid.DXSystems.Cooling.AirSource.Data.SingleSpeed.Carrier_Centurion_50PG06"
@@ -51596,6 +52003,33 @@
           }
         }
       },
+      "constrainingModifiers": {
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea.MediumAir": {
+          "final": true,
+          "redeclare": "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.MediumAir"
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea.dat": {
+          "expression": "datCoiHea",
+          "final": true,
+          "recordBinding": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea.energyDynamics": {
+          "expression": "energyDynamics",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea.allowFlowReversalAir": {
+          "expression": "allowFlowReversalAir",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea.allowFlowReversalLiq": {
+          "expression": "allowFlowReversalLiq",
+          "final": true
+        },
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea.show_T": {
+          "expression": "show_T",
+          "final": true
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Templates.Components.Coils.WaterBasedHeating",
@@ -51691,6 +52125,13 @@
         }
       },
       "choiceModifiers": {},
+      "constrainingModifiers": {
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.ctl.dat": {
+          "expression": "dat.ctl",
+          "final": true,
+          "recordBinding": true
+        }
+      },
       "replaceable": true,
       "options": [
         "Buildings.Templates.ZoneEquipment.Components.Controls.OpenLoop"

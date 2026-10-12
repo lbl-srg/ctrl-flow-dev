@@ -242,6 +242,12 @@
   "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.fanRet-secOutRel.secRel.fanRet": [
     "Buildings.Templates.Components.Fans.SingleVariable"
   ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.have_souChiWat-cfg.have_souChiWat": [
+    true
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.have_souHeaWat-cfg.have_souHeaWat": [
+    true
+  ],
   "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.nFanRel-cfg.nFanRel": [
     0
   ],
@@ -251,8 +257,20 @@
   "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.nFanSup-cfg.nFanSup": [
     1
   ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typ-cfg.typ": [
+    "Buildings.Templates.AirHandlersFans.Types.Configuration.SingleDuct"
+  ],
   "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typCtl-cfg.typCtl": [
     "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typFanRel-cfg.typFanRel": [
+    "Buildings.Templates.Components.Types.Fan.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typFanRet-cfg.typFanRet": [
+    "Buildings.Templates.Components.Types.Fan.SingleVariable"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typFanSup-cfg.typFanSup": [
+    "Buildings.Templates.Components.Types.Fan.SingleVariable"
   ],
   "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.buiPreCon-cfg.buiPreCon": [
     "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir"

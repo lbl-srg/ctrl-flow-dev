@@ -149,6 +149,9 @@
   "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.have_recHea-secOutRel.have_recHea": [
     false
   ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.mAirSup_flow_nominal-secOutRel.mAirSup_flow_nominal": [
+    0
+  ],
   "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.nFanRel-secOutRel.nFanRel": [
     0
   ],
@@ -190,6 +193,9 @@
   ],
   "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.have_recHea-secOutRel.secOut.have_recHea": [
     false
+  ],
+  "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.m_flow_nominal-secOutRel.secOut.m_flow_nominal": [
+    0
   ],
   "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.typ-secOutRel.secOut.typ": [
     "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.SingleDamper"
@@ -242,6 +248,12 @@
   "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.fanRet-secOutRel.secRel.fanRet": [
     "Buildings.Templates.Components.Fans.SingleVariable"
   ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.have_souChiWat-cfg.have_souChiWat": [
+    true
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.have_souHeaWat-cfg.have_souHeaWat": [
+    true
+  ],
   "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.nFanRel-cfg.nFanRel": [
     0
   ],
@@ -251,8 +263,20 @@
   "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.nFanSup-cfg.nFanSup": [
     0
   ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typ-cfg.typ": [
+    "Buildings.Templates.AirHandlersFans.Types.Configuration.SingleDuct"
+  ],
   "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typCtl-cfg.typCtl": [
     "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typFanRel-cfg.typFanRel": [
+    "Buildings.Templates.Components.Types.Fan.None"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typFanRet-cfg.typFanRet": [
+    "Buildings.Templates.Components.Types.Fan.SingleVariable"
+  ],
+  "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typFanSup-cfg.typFanSup": [
+    "Buildings.Templates.Components.Types.Fan.None"
   ],
   "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.buiPreCon-cfg.buiPreCon": [
     "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReturnFanMeasuredAir"
@@ -299,6 +323,9 @@
   "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.id-dat.id": [
     ""
   ],
+  "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.mAirSup_flow_nominal-dat.mAirSup_flow_nominal": [
+    0
+  ],
   "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.QChiWat_flow_nominal-QChiWat_flow_nominal": [
     "-1*abs(cap_nominal)"
   ],
@@ -319,6 +346,9 @@
   ],
   "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.id-id": [
     ""
+  ],
+  "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.mAirSup_flow_nominal-mAirSup_flow_nominal": [
+    0
   ],
   "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.nFanRel-nFanRel": [
     0
@@ -383,11 +413,20 @@
   "Buildings.Templates.Components.Data.Coil.Q_flow_nominal-dat.coiHeaPre.Q_flow_nominal": [
     "-1*abs(cap_nominal)"
   ],
+  "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal-dat.coiCoo.mAir_flow_nominal": [
+    0
+  ],
+  "Buildings.Templates.Components.Data.Coil.mAir_flow_nominal-dat.coiHeaPre.mAir_flow_nominal": [
+    0
+  ],
   "Buildings.Templates.Components.Data.Coil.typ-dat.coiCoo.typ": [
     "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"
   ],
   "Buildings.Templates.Components.Data.Coil.typ-dat.coiHeaPre.typ": [
     "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
+  ],
+  "Buildings.Templates.Components.Data.Damper.m_flow_nominal-dat.damOut.m_flow_nominal": [
+    0
   ],
   "Buildings.Templates.Components.Interfaces.PartialCoil.Q_flow_nominal-coiCoo.Q_flow_nominal": [
     "-1*abs(cap_nominal)"
@@ -409,6 +448,12 @@
   ],
   "Buildings.Templates.Components.Interfaces.PartialCoil.have_weaBus-coiHeaPre.have_weaBus": [
     false
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialCoil.mAir_flow_nominal-coiCoo.mAir_flow_nominal": [
+    0
+  ],
+  "Buildings.Templates.Components.Interfaces.PartialCoil.mAir_flow_nominal-coiHeaPre.mAir_flow_nominal": [
+    0
   ],
   "Buildings.Templates.Components.Interfaces.PartialCoil.typ-coiCoo.typ": [
     "Buildings.Templates.Components.Types.Coil.WaterBasedCooling"

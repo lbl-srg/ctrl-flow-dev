@@ -84,6 +84,10 @@ export interface Option {
     };
   };
   choiceModifiers?: { [key: string]: Mods };
+  /** Modifiers of the constraining clause of a replaceable element: only
+   * these apply to a redeclaration (MLS 7.3.2). Undefined if there is no
+   * constraining clause. */
+  constrainingModifiers?: Mods;
   replaceable: boolean;
   elementType: string;
   definition: boolean;
@@ -201,6 +205,12 @@ export function _mapInputToOption(input: parser.TemplateInput): Option {
     const flattenedMods = flattenModifiers(input.modifiers);
     delete flattenedMods[input.modelicaPath]; // don't include 'default path'
     option.modifiers = flattenedMods;
+  }
+
+  if (input.constrainingModifiers) {
+    const flattenedMods = flattenModifiers(input.constrainingModifiers);
+    delete flattenedMods[input.modelicaPath]; // don't include 'default path'
+    option.constrainingModifiers = flattenedMods;
   }
 
   if (input.choiceModifiers) {

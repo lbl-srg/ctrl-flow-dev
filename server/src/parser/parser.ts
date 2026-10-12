@@ -318,6 +318,10 @@ export interface TemplateInput {
   enable?: any;
   modifiers?: Modification[];
   choiceModifiers?: { [key: string]: Modification[] };
+  /** Modifications of the constraining clause of a replaceable element: only
+   * these apply to a redeclaration (MLS 7.3.2). Undefined if there is no
+   * constraining clause. */
+  constrainingModifiers?: Modification[];
   elementType: ElementType;
   replaceable?: boolean;
   /** True if value is a binding to a record type component */
@@ -329,6 +333,8 @@ interface Replaceable extends Element {
   choices?: string[];
   choiceMods?: { [key: string]: Modification[] };
   constraint?: Element;
+  /** See TemplateInput.constrainingModifiers */
+  constraintMods?: Modification[];
   mods?: Modification[];
   value?: any;
 }
@@ -375,17 +381,16 @@ function initializeReplaceable(
       constraintDef.name,
       basePath,
     ) as Element;
+    instance.constraintMods = [];
     if (constraintDef?.class_modification) {
-      instance.mods = [
-        ...instance.mods,
-        // Use instance.modelicaPath (the component's full path) for modifier keys,
-        // not basePath (the parent class path)
-        ...getModificationList(
-          constraintDef,
-          instance.modelicaPath,
-          instance.constraint.modelicaPath,
-        ),
-      ];
+      // Use instance.modelicaPath (the component's full path) for modifier keys,
+      // not basePath (the parent class path)
+      instance.constraintMods = getModificationList(
+        constraintDef,
+        instance.modelicaPath,
+        instance.constraint.modelicaPath,
+      );
+      instance.mods = [...instance.mods, ...instance.constraintMods];
     }
   }
 
@@ -448,6 +453,7 @@ function getReplaceableInputs(
     elementType: instance.elementType,
     enable: instance.enable,
     choiceModifiers: choiceMods,
+    constrainingModifiers: instance.constraintMods,
     replaceable: instance.replaceable,
   };
 
