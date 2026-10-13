@@ -96,7 +96,7 @@ export function applyPathModifiers(
     return path;
   }
   const splitScopePath = splitName(path);
-  let postFix: string | undefined = "";
+  let postFix = "";
   let modifiedPath = path;
 
   while (splitScopePath.length > 0) {
@@ -107,9 +107,7 @@ export function applyPathModifiers(
         .join(".");
       break;
     }
-    postFix = postFix
-      ? [postFix, splitScopePath.pop()].filter((p) => p === "").join(".")
-      : splitScopePath.pop();
+    postFix = [splitScopePath.pop(), postFix].filter((p) => p !== "").join(".");
   }
   return modifiedPath;
 }
