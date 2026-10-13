@@ -90,7 +90,7 @@ A key is `<template>-<elementPath>`, see [selection-keys.md](selection-keys.md).
 
 A short ID maps to one key or key pattern, wherever it is used in the source document. Which one to use depends on the section:
 
-- A section of a single system type (toggled by a system type, e.g. `[EQUALS VAV RH]`) uses short IDs of the template of that system type, e.g. `TERM_HT_RH` → `Buildings.Templates.ZoneEquipment.VAVBoxReheat-coiHea.typ`. Otherwise the values of another template would keep or delete the section. `tests/test_section_scope.py` checks that such a section reads no key of another template of the same system type. Keys of other system types are not restricted: e.g. a section of the AHU reads the CO2 sensors of all zones.
+- A section of a single system type (toggled by a system type, e.g. `[EQUALS VAV RH]`) uses short IDs of the template of that system type, e.g. `TERM_HT_RH` → `Buildings.Templates.ZoneEquipment.VAVBoxReheat-coiHea.typ`. Otherwise the values of another template would keep or delete the section. A section toggled by several templates of a system type, e.g. `[ANY VAV PFBCV SFBCV]`, combines short IDs of these templates, e.g. `[OR [YES NC_PFBCV] [YES NC_SFBCV]]`. `tests/test_section_scope.py` checks that such sections read no key of another template of the same system type, and that the sections of the templates listed for the default version are found. Keys of other system types are not restricted: e.g. a section of the AHU reads the CO2 sensors of all zones.
 - A section shared by several system types uses a key pattern, whose values are merged across the templates (e.g. `CO2`: kept if any zone has a CO2 sensor), or combines short IDs of each template, e.g. `[OR [YES CO2_PFBCV] [YES CO2_SFBCV]]`.
 
 Combined toggles have the following limits:
@@ -117,6 +117,7 @@ The source document and the mappings file are in `server/scripts/sequence-doc/sr
 - Write the `Modelica Parameter` column with selection keys or key patterns of elements that hold a value (see Mappings).
 - Run the tests:
   - `client/tests/sequence/mappings.test.ts` checks that every key of the mappings is the key under which ctrl-flow stores the value of the element, and that the element is not replaceable: otherwise the key has no value in the payload, and the toggle treats the value as missing.
+  - `server/scripts/sequence-doc/tests/test_section_scope.py` checks that every toggle has a valid format and uses short IDs of the mappings, and that the sections of system types read the keys of their templates only (see Sections of System Types). Add the templates of a new version to `SECTIONS`.
   - `server/scripts/sequence-doc/tests/test_golden.py` compares the generated documents to the expected texts. If the changes of the document are intended, regenerate the expected texts with `UPDATE_GOLDEN=1` and review their diff.
 
 Always update both the mappings and source file.
