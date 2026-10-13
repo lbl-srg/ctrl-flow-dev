@@ -1,24 +1,45 @@
 ,Short ID,Mutually Exclusive? (Y/N),Modelica Parameter,Modelica Path,Question/Comments
-Terminal Unit:,VAV,N,Buildings.Templates.ZoneEquipment,Buildings.Templates.ZoneEquipment.Types.Configuration,
+Terminal Unit:,VAV,N,Buildings.Templates.ZoneEquipment,Buildings.Templates.ZoneEquipment.Types.Configuration,System type: not a key. Its values are the templates of the configurations of the project with this system type (systemType and template of each configuration of the payload). The short IDs below map to templates.
 Cooling-Only VAV,CO,,Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly,Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxCoolingOnly,
 VAV with Reheat,RH,,Buildings.Templates.ZoneEquipment.VAVBoxReheat,Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat,
 "Parallel Fan-Powered, Constant Volume",PFBCV,,Buildings.Templates.ZoneEquipment.VAVBoxFanParallelConstant,Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxFanParallelConstant,
 "Series Fan-Powered, Constant Volume",SFBCV,,Buildings.Templates.ZoneEquipment.VAVBoxFanSeriesConstant,Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxFanSeriesConstant,
-Occupancy Sensor:,OCC,N,Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_occSen-ctl.have_occSen,Boolean,
+Occupancy Sensor:,OCC,N,Buildings.Templates.ZoneEquipment.{VAVBoxCoolingOnly|VAVBoxReheat|VAVBoxFanParallelConstant|VAVBoxFanSeriesConstant}-ctl.have_occSen,Boolean,Shared by the sections of several system types: the values of all templates are merged. Not used in the source document.
 Yes,,,,TRUE,
 No,,,,FALSE,
-Relative Humidity Sensor:,RHS,N,Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_relHumSen-ctl.have_relHumSen,Boolean,
+Relative Humidity Sensor:,RHS,N,Buildings.Templates.ZoneEquipment.{VAVBoxCoolingOnly|VAVBoxReheat|VAVBoxFanParallelConstant|VAVBoxFanSeriesConstant}-ctl.have_relHumSen,Boolean,Shared by the sections of several system types: the values of all templates are merged. Not used in the source document.
 Yes,,,,TRUE,
 No,,,,FALSE,
-CO2 Sensor:,CO2,N,Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox.have_CO2Sen-ctl.have_CO2Sen,Boolean,
+CO2 Sensor:,CO2,N,Buildings.Templates.ZoneEquipment.{VAVBoxCoolingOnly|VAVBoxReheat|VAVBoxFanParallelConstant|VAVBoxFanSeriesConstant}-ctl.have_CO2Sen,Boolean,Shared by the sections of several system types: the values of all templates are merged. Not used in the source document.
 Yes,,,,TRUE,
 No,,,,FALSE,
-Need Cool Request:,NC,N,Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_reqNeeCoo-ctl.have_reqNeeCoo,Boolean,
+Need Cool Request (Cooling-Only VAV):,NC_CO,N,Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-ctl.have_reqNeeCoo,Boolean,Section of the cooling-only VAV terminal unit
 Yes,,,,TRUE,
 No,,,,FALSE,
-Need Heat Request:,NH,N,Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat.have_reqNeeHea-ctl.have_reqNeeHea,Boolean,
+Need Cool Request (VAV with Reheat):,NC_RH,N,Buildings.Templates.ZoneEquipment.VAVBoxReheat-ctl.have_reqNeeCoo,Boolean,Section of the VAV terminal unit with reheat
 Yes,,,,TRUE,
 No,,,,FALSE,
-Terminal Heat Source:,TERM_HT,Y,Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea-coiHea,Buildings.Templates.Components.Coils,
-Hot Water Coil,HW,,,Buildings.Templates.Components.Coils.WaterBasedHeating,
-Modulating Electric Heating Coil,ELEC,,,Buildings.Templates.Components.Coils.ElectricHeating,
+"Need Cool Request (Parallel Fan-Powered, Constant Volume):",NC_PFBCV,N,Buildings.Templates.ZoneEquipment.VAVBoxFanParallelConstant-ctl.have_reqNeeCoo,Boolean,"Section of the fan-powered VAV terminal units, combined with the series fan-powered terminal unit"
+Yes,,,,TRUE,
+No,,,,FALSE,
+"Need Cool Request (Series Fan-Powered, Constant Volume):",NC_SFBCV,N,Buildings.Templates.ZoneEquipment.VAVBoxFanSeriesConstant-ctl.have_reqNeeCoo,Boolean,"Section of the fan-powered VAV terminal units, combined with the parallel fan-powered terminal unit"
+Yes,,,,TRUE,
+No,,,,FALSE,
+Need Heat Request (VAV with Reheat):,NH_RH,N,Buildings.Templates.ZoneEquipment.VAVBoxReheat-ctl.have_reqNeeHea,Boolean,Section of the VAV terminal unit with reheat
+Yes,,,,TRUE,
+No,,,,FALSE,
+"Need Heat Request (Parallel Fan-Powered, Constant Volume):",NH_PFBCV,N,Buildings.Templates.ZoneEquipment.VAVBoxFanParallelConstant-ctl.have_reqNeeHea,Boolean,"Section of the fan-powered VAV terminal units, combined with the series fan-powered terminal unit"
+Yes,,,,TRUE,
+No,,,,FALSE,
+"Need Heat Request (Series Fan-Powered, Constant Volume):",NH_SFBCV,N,Buildings.Templates.ZoneEquipment.VAVBoxFanSeriesConstant-ctl.have_reqNeeHea,Boolean,"Section of the fan-powered VAV terminal units, combined with the parallel fan-powered terminal unit"
+Yes,,,,TRUE,
+No,,,,FALSE,
+Terminal Heat Source (VAV with Reheat):,TERM_HT_RH,N,Buildings.Templates.ZoneEquipment.VAVBoxReheat-coiHea.typ,Buildings.Templates.Components.Types.Coil,Section of the VAV terminal unit with reheat
+Hot Water Coil,HW,,,Buildings.Templates.Components.Types.Coil.WaterBasedHeating,
+Modulating Electric Heating Coil,ELEC,,,Buildings.Templates.Components.Types.Coil.ElectricHeating,
+"Terminal Heat Source (Parallel Fan-Powered, Constant Volume):",TERM_HT_PFBCV,N,Buildings.Templates.ZoneEquipment.VAVBoxFanParallelConstant-coiHea.typ,Buildings.Templates.Components.Types.Coil,"Section of the fan-powered VAV terminal units, combined with the series fan-powered terminal unit"
+Hot Water Coil,,,,Buildings.Templates.Components.Types.Coil.WaterBasedHeating,No short id since the short id is the same as above for TERM_HT_RH
+Modulating Electric Heating Coil,,,,Buildings.Templates.Components.Types.Coil.ElectricHeating,No short id since the short id is the same as above for TERM_HT_RH
+"Terminal Heat Source (Series Fan-Powered, Constant Volume):",TERM_HT_SFBCV,N,Buildings.Templates.ZoneEquipment.VAVBoxFanSeriesConstant-coiHea.typ,Buildings.Templates.Components.Types.Coil,"Section of the fan-powered VAV terminal units, combined with the parallel fan-powered terminal unit"
+Hot Water Coil,,,,Buildings.Templates.Components.Types.Coil.WaterBasedHeating,No short id since the short id is the same as above for TERM_HT_RH
+Modulating Electric Heating Coil,,,,Buildings.Templates.Components.Types.Coil.ElectricHeating,No short id since the short id is the same as above for TERM_HT_RH
