@@ -3,8 +3,9 @@
  *
  * Builds the payload sent to the sequence document endpoint for a set of
  * projects, through the same code path as the UI: options are selected in the
- * configuration panel (display mapping), the configuration is saved
- * (getConfigValuesToSave) and the payload is built (buildSequencePayload).
+ * project details modal and in the configuration panel (display mapping), the
+ * project and the configurations are saved (getConfigValuesToSave) and the
+ * payload is built (buildSequencePayload).
  *
  * Cases are defined by instance paths and values, not by selection keys, so
  * that they remain valid when the key format changes.
@@ -20,16 +21,19 @@ import * as fs from "fs";
 import * as path from "path";
 import RootStore from "../../src/data";
 import { ConfigInterface } from "../../src/data/config";
+import { ProjectInterface } from "../../src/data/project";
 import { TemplateInterface } from "../../src/data/template";
-import { ConfigContext } from "../../src/interpreter/interpreter";
+import {
+  ConfigContext,
+  projectContext,
+} from "../../src/interpreter/interpreter";
 import {
   mapToDisplayOptions,
   FlatConfigOption,
 } from "../../src/interpreter/display-option";
 import { getConfigValuesToSave } from "../../src/interpreter/config-values";
 import { buildSequencePayload } from "../../src/utils/sequence-payload";
-import { ConfigValues } from "../../src/utils/modifier-helpers";
-import { ALL_SYSTEMS, selectionKey } from "../../src/utils/selection-key";
+import { ConfigValues, storedValue } from "../../src/utils/modifier-helpers";
 
 const GOLDEN_DIR = path.resolve(
   __dirname,
@@ -50,25 +54,27 @@ type Values = { [instancePath: string]: string | boolean };
 type ConfigCase = { template: string; values?: Values };
 type ProjectCase = { name: string; project: Values; configs: ConfigCase[] };
 
-// Project settings (docs/selection-keys.md, rule 1)
+// Project settings, by element of Buildings.Templates.Data.AllSystems
 const ASHRAE_IP: Values = {
-  [selectionKey(ALL_SYSTEMS, "stdEne")]:
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
-  [selectionKey(ALL_SYSTEMS, "stdVen")]:
+  stdEne: "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
+  stdVen:
     "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1",
-  [selectionKey(ALL_SYSTEMS, "ashCliZon")]:
+  ashCliZon:
     "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_4A",
-  [selectionKey(ALL_SYSTEMS, "sysUni")]: "Buildings.Templates.Types.Units.IP",
+  sysUni: "Buildings.Templates.Types.Units.IP",
 };
 const TITLE24_SI: Values = {
-  [selectionKey(ALL_SYSTEMS, "stdEne")]:
+  stdEne:
     "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24",
-  [selectionKey(ALL_SYSTEMS, "stdVen")]:
+  stdVen:
     "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
-  [selectionKey(ALL_SYSTEMS, "tit24CliZon")]:
+  tit24CliZon:
     "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_3",
-  [selectionKey(ALL_SYSTEMS, "sysUni")]: "Buildings.Templates.Types.Units.SI",
+  sysUni: "Buildings.Templates.Types.Units.SI",
 };
+
+// Fixed, so that the payloads do not change with the versions
+const META = { ctrlFlow: "golden", libraries: { Buildings: "golden" } };
 
 const flatten = (items: any[], out: FlatConfigOption[] = []) => {
   items.forEach((i) =>
@@ -85,39 +91,81 @@ const createContext = (template: TemplateInterface, selected: ConfigValues) =>
     selected,
   );
 
-const displayedOptions = (
-  template: TemplateInterface,
-  selected: ConfigValues,
-) => flatten(mapToDisplayOptions(createContext(template, selected)));
-
 /**
- * Configures a template as a user would in the configuration panel: each value
- * is selected in turn in the displayed option with the given instance path
+ * Selects each value in turn in the displayed option with the given instance
+ * path, as a user would, and saves the values (getConfigValuesToSave)
  */
-function configure(configCase: ConfigCase, project: Values): ConfigInterface {
-  const template = allTemplates[configCase.template];
-  let selected: ConfigValues = { ...project };
-  Object.entries(configCase.values ?? {}).forEach(([instancePath, value]) => {
-    const option = displayedOptions(template, selected).find(
+function select(
+  createContext: (selected: ConfigValues) => ConfigContext,
+  initial: ConfigValues,
+  values: Values,
+) {
+  let selected = { ...initial };
+  Object.entries(values).forEach(([instancePath, value]) => {
+    const context = createContext(selected);
+    const option = flatten(mapToDisplayOptions(context)).find(
       (o) => o.scope === instancePath,
     );
     if (!option) {
       throw new Error(
-        `${instancePath} is not displayed in ${template.modelicaPath}`,
+        `${instancePath} is not displayed in ${context.template.modelicaPath}`,
       );
     }
-    // Selection key as written by SlideOut.updateSelectedConfigOption
-    selected = { ...selected, [option.selectionKey]: value };
+    // Value as written by SlideOut and EditDetailsModal
+    selected = {
+      ...selected,
+      [option.selectionKey]: storedValue(
+        allOptions[option.modelicaPath],
+        value,
+      ),
+    };
   });
-  const context = createContext(template, selected);
-  mapToDisplayOptions(context); // configuration panel rendered before saving
-  const { selections, evaluatedValues } = getConfigValuesToSave(
-    context,
-    selected,
+  const context = createContext(selected);
+  mapToDisplayOptions(context); // panel rendered before saving
+  return getConfigValuesToSave(context, selected);
+}
+
+/** Configures the project settings in the project details modal */
+function configureProject(name: string, values: Values): ProjectInterface {
+  const { selections, evaluatedValues } = select(
+    (selected) => projectContext(allOptions, selected),
+    {},
+    values,
   );
   return {
-    id: "",
-    projectId: store.projectStore.activeProjectId,
+    id: name,
+    projectDetails: {
+      name,
+      address: "",
+      type: "",
+      size: 0,
+      notes: "",
+      selections,
+      evaluatedValues,
+    },
+  };
+}
+
+/**
+ * Configures a template in the configuration panel, which reads the project
+ * settings (SlideOut)
+ */
+function configure(
+  configCase: ConfigCase,
+  project: ProjectInterface,
+  index: number,
+): ConfigInterface {
+  const template = allTemplates[configCase.template];
+  const { selections, evaluatedValues } = select(
+    (selected) => createContext(template, selected),
+    project.projectDetails.selections,
+    configCase.values ?? {},
+  );
+  return {
+    id: `${project.id}-${index}`,
+    projectId: project.id,
+    name: `${template.name} ${index}`,
+    quantity: 1,
     isLocked: false,
     systemPath: template.systemTypes[0],
     templatePath: template.modelicaPath,
@@ -143,7 +191,12 @@ function singleChoiceCases(): ProjectCase[] {
       project: ASHRAE_IP,
       configs: [{ template: templatePath }],
     });
-    displayedOptions(template, { ...ASHRAE_IP }).forEach((o) => {
+    const project = configureProject("default", ASHRAE_IP);
+    flatten(
+      mapToDisplayOptions(
+        createContext(template, project.projectDetails.selections),
+      ),
+    ).forEach((o) => {
       const choices: (string | boolean)[] = o.booleanChoices
         ? [true, false]
         : (o.choices ?? []).map((c) => c.modelicaPath);
@@ -213,18 +266,28 @@ const MIXED_CASES: ProjectCase[] = [
 
 const toFileName = (name: string) => name.replace(/[^A-Za-z0-9_.=-]/g, "_");
 
+/** Sorts the values by key, for stable diffs */
+const sortValues = (key: string, value: any) =>
+  key === "values"
+    ? Object.fromEntries(
+        Object.entries(value).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
+      )
+    : value;
+
 describe("Sequence document golden payloads", () => {
   const cases = [...singleChoiceCases(), ...MIXED_CASES];
   const payloads: { [file: string]: string } = {};
   cases.forEach((c) => {
-    const configs = c.configs.map((cc) => configure(cc, c.project));
-    const payload = buildSequencePayload(configs, false);
-    // Sorted keys for stable diffs
-    const sorted = Object.fromEntries(
-      Object.entries(payload).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
-    );
+    const project = configureProject(c.name, c.project);
+    const configs = c.configs.map((cc, i) => configure(cc, project, i + 1));
+    const payload = buildSequencePayload({
+      meta: META,
+      deleteInfoBox: false,
+      project,
+      configs,
+    });
     payloads[`${toFileName(c.name)}.payload.json`] =
-      JSON.stringify(sorted, null, 2) + "\n";
+      JSON.stringify(payload, sortValues, 2) + "\n";
   });
 
   if (UPDATE) {

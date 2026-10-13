@@ -1,6 +1,6 @@
 # Sequence Document
 
-The sequence document is a dynamically generated document, taking in selections from ctrl-flow and generating a docx.
+The sequence document is a dynamically generated document, taking in the values of a project from ctrl-flow (the payload, see the "Payload" section of [selection-keys.md](selection-keys.md)) and generating a docx. The endpoint rejects a payload with an unsupported `schemaVersion` or without exactly one project.
 
 This document describes the process of updating the sequence document and how to use annotations.
 
@@ -51,6 +51,8 @@ Short ID: Short name used in annotations
 Modelica Parameter: the selection key of the value in ctrl-flow, or a key pattern
 Modelica Path: the value of that selection
 
+The annotations read the `value` of an element only. The class of a replaceable element is a redeclaration, not a value: it is read through the `typ` parameter of the class, whose enumeration literals match the classes one to one. For instance, `COOL` maps to `Buildings.Templates.AirHandlersFans.VAVMultiZone-coiCoo.typ`, and `CHW` to `Buildings.Templates.Components.Types.Coil.WaterBasedCooling`.
+
 Going back to the example annotation:
 
 ```
@@ -79,9 +81,9 @@ Information boxes are hidden by applying either of these styles (exactly as list
 The source document and the mappings file are in `server/scripts/sequence-doc/src/version/Current G36 Decisions`. Only the current version is kept: earlier versions are in the git history. They were removed because their mappings use selection keys that ctrl-flow no longer produces.
 
 - Replace both files, keeping their names: `Guideline 36-2021 (mappings).csv` and `Guideline 36-2021 (sequence selection source).docx`.
-- Write the `Modelica Parameter` column with selection keys or key patterns (see Mappings).
+- Write the `Modelica Parameter` column with selection keys or key patterns of elements that hold a value (see Mappings).
 - Run the tests:
-  - `client/tests/sequence/mappings.test.ts` checks that every key of the mappings is the key under which ctrl-flow stores the value of the element: otherwise the key is never in the payload, and the toggle treats the value as missing.
+  - `client/tests/sequence/mappings.test.ts` checks that every key of the mappings is the key under which ctrl-flow stores the value of the element, and that the element is not replaceable: otherwise the key has no value in the payload, and the toggle treats the value as missing.
   - `server/scripts/sequence-doc/tests/test_golden.py` compares the generated documents to the expected texts. If the changes of the document are intended, regenerate the expected texts with `UPDATE_GOLDEN=1` and review their diff.
 
 Always update both the mappings and source file.

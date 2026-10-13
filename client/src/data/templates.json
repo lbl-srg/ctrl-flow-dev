@@ -1,4 +1,7 @@
 {
+  "libraries": {
+    "Buildings": "14.0.0"
+  },
   "templates": [
     {
       "modelicaPath": "Buildings.Templates.AirHandlersFans.VAVMultiZone",
@@ -336,6 +339,7 @@
       "value": "Buildings.Templates.Components.Types.Damper",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.Components.Types.Damper.Modulating",
         "Buildings.Templates.Components.Types.Damper.None",
@@ -662,6 +666,7 @@
       "value": "Buildings.Templates.Components.Types.DamperBlades",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.Components.Types.DamperBlades.Opposed",
         "Buildings.Templates.Components.Types.DamperBlades.Parallel",
@@ -1721,6 +1726,7 @@
       "name": "Partial component with two ports",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
         "Buildings.Fluid.Interfaces.PartialTwoPort.port_a",
@@ -1748,6 +1754,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_nominal",
         "Buildings.Fluid.Interfaces.PartialTwoPortInterface.m_flow_small",
@@ -1837,6 +1844,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.BaseClasses.PartialResistance.homotopyInitialization",
         "Buildings.Fluid.BaseClasses.PartialResistance.from_dp",
@@ -1869,6 +1877,7 @@
       "name": "Partial model that implements the filtered opening for valves and dampers",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.use_strokeTime",
         "Buildings.Fluid.Actuators.BaseClasses.ActuatorSignal.strokeTime",
@@ -1916,6 +1925,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential.dpDamper_nominal",
         "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential.dpFixed_nominal",
@@ -1976,6 +1986,7 @@
       "name": "Air damper with exponential opening characteristics",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential.dpDamper_nominal",
         "Buildings.Fluid.Actuators.BaseClasses.PartialDamperExponential.dpFixed_nominal",
@@ -2212,6 +2223,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Actuators.Dampers.PressureIndependent.phi",
         "Buildings.Fluid.Actuators.Dampers.PressureIndependent.l2",
@@ -2457,6 +2469,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.FixedResistances.PressureDrop.n",
         "Buildings.Fluid.FixedResistances.PressureDrop.deltaM",
@@ -2578,6 +2591,7 @@
       "name": "Convert Boolean to Real signal",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal.realTrue",
         "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal.realFalse",
@@ -2711,6 +2725,7 @@
       "name": "Output y is true, if input u is less than threshold with hysteresis",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.LessThreshold.t",
         "Buildings.Controls.OBC.CDL.Reals.LessThreshold.h",
@@ -2831,6 +2846,7 @@
       "name": "Output y is true, if input u is greater than threshold with hysteresis",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold.t",
         "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold.h",
@@ -2864,6 +2880,7 @@
       "name": "Multiple-configuration damper",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Actuators.Damper.typ",
         "Buildings.Templates.Components.Actuators.Damper.dat",
@@ -2973,6 +2990,7 @@
       "value": "Buildings.Templates.Components.Types.SensorVolumeFlowRate",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.Components.Types.SensorVolumeFlowRate.AFMS",
         "Buildings.Templates.Components.Types.SensorVolumeFlowRate.FlowCross",
@@ -3225,6 +3243,7 @@
       "name": "Partial component to model sensors that measure flow properties",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Sensors.BaseClasses.PartialFlowSensor.m_flow_nominal",
         "Buildings.Fluid.Sensors.BaseClasses.PartialFlowSensor.m_flow_small",
@@ -3245,6 +3264,7 @@
       "name": "Partial component to model sensors that measure flow properties using a dynamic model",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Sensors.BaseClasses.PartialDynamicFlowSensor.tau",
         "Buildings.Fluid.Sensors.BaseClasses.PartialDynamicFlowSensor.initType",
@@ -3274,6 +3294,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Sensors.VolumeFlowRate.d_start",
         "Buildings.Fluid.Sensors.VolumeFlowRate.T_start",
@@ -3346,6 +3367,7 @@
       "value": "Buildings.Templates.Components.Types.IntegrationPoint",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.Components.Types.IntegrationPoint.None",
         "Buildings.Templates.Components.Types.IntegrationPoint.Return",
@@ -3402,6 +3424,7 @@
       "name": "Direct fluid pass-through",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Routing.PassThroughFluid.icon_pipe",
         "Buildings.Fluid.Interfaces.PartialTwoPort.allowFlowReversal",
@@ -3514,6 +3537,7 @@
       "name": "Interface class for sensor",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Interfaces.PartialSensor.have_sen",
         "Buildings.Templates.Components.Interfaces.PartialSensor.isDifPreSen",
@@ -3556,6 +3580,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Sensors.VolumeFlowRate.typ",
         "Buildings.Templates.Components.Sensors.VolumeFlowRate.senVolFlo",
@@ -3662,6 +3687,7 @@
       "value": "Buildings.Templates.Components.Types.SensorTemperature",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.Components.Types.SensorTemperature.Standard",
         "Buildings.Templates.Components.Types.SensorTemperature.Averaging",
@@ -3852,6 +3878,7 @@
       "name": "Ideal two port temperature sensor",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Sensors.TemperatureTwoPort.T",
         "Buildings.Fluid.Sensors.TemperatureTwoPort.T_start",
@@ -3918,6 +3945,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Sensors.Temperature.typ",
         "Buildings.Templates.Components.Sensors.Temperature.senTem",
@@ -4113,6 +4141,7 @@
       "name": "Ideal two port sensor for the specific enthalpy",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Sensors.SpecificEnthalpyTwoPort.h_out_start",
         "Buildings.Fluid.Sensors.SpecificEnthalpyTwoPort.h_out",
@@ -4176,6 +4205,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Sensors.SpecificEnthalpy.senSpeEnt",
         "Buildings.Templates.Components.Sensors.SpecificEnthalpy.pas",
@@ -4230,6 +4260,7 @@
       "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure",
@@ -4452,6 +4483,7 @@
       "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.FixedDryBulb",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ControlEconomizer.DifferentialDryBulb",
@@ -4662,6 +4694,7 @@
       "value": "Buildings.Templates.Components.Types.Fan",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.Components.Types.Fan.None",
         "Buildings.Templates.Components.Types.Fan.SingleConstant",
@@ -5020,6 +5053,7 @@
       "name": "Record for damper model",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.Components.Data.Damper.typ",
         "Buildings.Templates.Components.Data.Damper.m_flow_nominal",
@@ -5420,6 +5454,7 @@
       "name": "Record for flow parameters",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Fluid.Movers.BaseClasses.Characteristics.flowParameters.V_flow",
         "Buildings.Fluid.Movers.BaseClasses.Characteristics.flowParameters.dp"
@@ -5574,6 +5609,7 @@
       "value": "Buildings.Fluid.Movers.BaseClasses.Types.HydraulicEfficiencyMethod",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Fluid.Movers.BaseClasses.Types.HydraulicEfficiencyMethod.NotProvided",
         "Buildings.Fluid.Movers.BaseClasses.Types.HydraulicEfficiencyMethod.Efficiency_VolumeFlowRate",
@@ -5688,6 +5724,7 @@
       "value": "Buildings.Fluid.Movers.BaseClasses.Types.MotorEfficiencyMethod",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Fluid.Movers.BaseClasses.Types.MotorEfficiencyMethod.NotProvided",
         "Buildings.Fluid.Movers.BaseClasses.Types.MotorEfficiencyMethod.Efficiency_VolumeFlowRate",
@@ -5861,6 +5898,7 @@
       "name": "Record for efficiency parameters vs. volumetric flow rate",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters.V_flow",
         "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters.eta"
@@ -5979,6 +6017,7 @@
       "name": "Record for efficiency parameters vs. motor part load ratio",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters_yMot.y",
         "Buildings.Fluid.Movers.BaseClasses.Characteristics.efficiencyParameters_yMot.eta"
@@ -6065,6 +6104,7 @@
       "name": "Record for electrical power parameters",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Fluid.Movers.BaseClasses.Characteristics.powerParameters.V_flow",
         "Buildings.Fluid.Movers.BaseClasses.Characteristics.powerParameters.P"
@@ -6175,6 +6215,7 @@
       "name": "Record for the operation condition at peak efficiency",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Fluid.Movers.BaseClasses.Euler.peak.V_flow",
         "Buildings.Fluid.Movers.BaseClasses.Euler.peak.dp",
@@ -6536,6 +6577,7 @@
       "name": "Generic data record for movers",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Fluid.Movers.Data.Generic.pressure",
         "Buildings.Fluid.Movers.Data.Generic.V_flow_max",
@@ -6571,6 +6613,7 @@
       "name": "Record for fan model",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.Components.Data.Fan.typ",
         "Buildings.Templates.Components.Data.Fan.nFan",
@@ -6625,6 +6668,7 @@
       "name": "Record for outdoor/relief/return air section",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamOut",
         "Buildings.Templates.AirHandlersFans.Components.Data.OutdoorReliefReturnSection.typDamOutMin",
@@ -7054,6 +7098,7 @@
       "name": "Control bus for air handler",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "expandable connector",
       "options": [
         "Buildings.Templates.AirHandlersFans.Interfaces.Bus.fanSup",
         "Buildings.Templates.AirHandlersFans.Interfaces.Bus.fanRel",
@@ -7077,6 +7122,7 @@
       "name": "Interface class for outdoor air section",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.typ",
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSection.typDamOut",
@@ -7112,6 +7158,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper.damOut",
         "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.SingleDamper.VOut_flow",
@@ -7600,6 +7647,7 @@
       "name": "Ideal relative pressure sensor",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Sensors.RelativePressure.port_a",
         "Buildings.Fluid.Sensors.RelativePressure.port_b",
@@ -7635,6 +7683,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Sensors.DifferentialPressure.senRelPre",
         "Buildings.Templates.Components.Interfaces.PartialSensor.have_sen",
@@ -9031,6 +9080,7 @@
       "name": "Declarations for lumped volumes",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.energyDynamics",
         "Buildings.Fluid.Interfaces.LumpedVolumeDeclarations.massDynamics",
@@ -9055,6 +9105,7 @@
       "name": "Partial mixing volume with inlet and outlet ports (flow reversal is allowed)",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume.initialize_p",
         "Buildings.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume.prescribedHeatFlowRate",
@@ -9116,6 +9167,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.MixingVolumes.MixingVolume.use_C_flow",
         "Buildings.Fluid.MixingVolumes.MixingVolume.heatPort",
@@ -9176,6 +9228,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Delays.DelayFirstOrder.tau",
         "Buildings.Fluid.MixingVolumes.MixingVolume.use_C_flow",
@@ -9234,6 +9287,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.port_1",
         "Buildings.Fluid.BaseClasses.PartialThreeWayResistance.port_2",
@@ -9390,6 +9444,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.FixedResistances.Junction.homotopyInitialization",
         "Buildings.Fluid.FixedResistances.Junction.m_flow_nominal",
@@ -9510,6 +9565,7 @@
       "name": "Base class for modeling separate dampers for ventilation and economizer",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSectionDedicatedDampers.damOut",
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSectionDedicatedDampers.damOutMin",
@@ -9554,6 +9610,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSectionDedicatedDampers.damOut",
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSectionDedicatedDampers.damOutMin",
@@ -9599,6 +9656,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSectionDedicatedDampers.damOut",
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorSectionDedicatedDampers.damOutMin",
@@ -10051,6 +10109,7 @@
       "value": "Buildings.Fluid.Types.InputType",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Fluid.Types.InputType.Constant",
         "Buildings.Fluid.Types.InputType.Stages",
@@ -10602,6 +10661,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.per",
         "Buildings.Fluid.Movers.BaseClasses.PartialFlowMachine.inputType",
@@ -10708,6 +10768,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Movers.SpeedControlled_y.y_start",
         "Buildings.Fluid.Movers.SpeedControlled_y.y",
@@ -10771,6 +10832,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.BaseClasses.MoverSpeedControlled_y.m_flow_nominal",
         "Buildings.Fluid.Movers.SpeedControlled_y.y_start",
@@ -10908,6 +10970,7 @@
       "name": "Output product of the two inputs",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.Multiply.u1",
         "Buildings.Controls.OBC.CDL.Reals.Multiply.u2",
@@ -11041,6 +11104,7 @@
       "value": "Buildings.Templates.Components.Types.FanSingle",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.Components.Types.FanSingle.Housed",
         "Buildings.Templates.Components.Types.FanSingle.Plug",
@@ -11249,6 +11313,7 @@
       "name": "Interface class for fan",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Interfaces.PartialFan.typ",
         "Buildings.Templates.Components.Interfaces.PartialFan.have_senFlo",
@@ -11285,6 +11350,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Fans.SingleVariable.fan",
         "Buildings.Templates.Components.Fans.SingleVariable.sigSta",
@@ -11577,6 +11643,7 @@
       "name": "Model that multiplies the mass flow rate",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.BaseClasses.MassFlowRateMultiplier.use_input",
         "Buildings.Fluid.BaseClasses.MassFlowRateMultiplier.k",
@@ -11847,6 +11914,7 @@
       "name": "Sum of Reals, y = k[1]*u[1] + k[2]*u[2] + ... + k[n]*u[n]",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.MultiSum.nin",
         "Buildings.Controls.OBC.CDL.Reals.MultiSum.k",
@@ -11924,6 +11992,7 @@
       "name": "Pass through the largest signal",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.Max.u1",
         "Buildings.Controls.OBC.CDL.Reals.Max.u2",
@@ -11990,6 +12059,7 @@
       "name": "Output constant signal of type Real",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.Sources.Constant.k",
         "Buildings.Controls.OBC.CDL.Reals.Sources.Constant.y"
@@ -12071,6 +12141,7 @@
       "name": "Logical MultiOr, y = u[1] or u[2] or u[3] or ...",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Logical.MultiOr.nin",
         "Buildings.Controls.OBC.CDL.Logical.MultiOr.u",
@@ -12088,6 +12159,7 @@
       "name": "Block that converts command signals for multiple units",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Templates.Components.Controls.MultipleCommands.nUni",
         "Buildings.Templates.Components.Controls.MultipleCommands.y1",
@@ -12194,6 +12266,7 @@
       "name": "Boolean signal replicator",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Routing.BooleanScalarReplicator.nout",
         "Buildings.Controls.OBC.CDL.Routing.BooleanScalarReplicator.u",
@@ -12217,6 +12290,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Fans.ArrayVariable.fan",
         "Buildings.Templates.Components.Fans.ArrayVariable.sigSta",
@@ -12274,6 +12348,7 @@
       "value": "Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.NoRelief",
         "Buildings.Templates.AirHandlersFans.Types.ReliefReturnSection.NoReturn",
@@ -12543,6 +12618,7 @@
       "value": "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.AirflowMeasured",
         "Buildings.Templates.AirHandlersFans.Types.ControlFanReturn.BuildingPressure"
@@ -13273,6 +13349,7 @@
       "name": "Interface class for relief/return air section",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection.typ",
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection.typDamRel",
@@ -13336,6 +13413,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.damRel",
         "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReturnFan.fanRet",
@@ -13549,6 +13627,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.damRel",
         "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan.fanRel",
@@ -13687,6 +13766,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefDamper.damRel",
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialReliefReturnSection.typ",
@@ -13849,6 +13929,7 @@
       "value": "Buildings.Templates.AirHandlersFans.Types.HeatRecovery",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.AirHandlersFans.Types.HeatRecovery.None",
         "Buildings.Templates.AirHandlersFans.Types.HeatRecovery.FlatPlate",
@@ -14149,6 +14230,7 @@
       "name": "Interface class for heat recovery",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialHeatRecovery.typ",
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialHeatRecovery.allowFlowReversal",
@@ -14176,6 +14258,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialHeatRecovery.typ",
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialHeatRecovery.allowFlowReversal",
@@ -14218,6 +14301,7 @@
       "value": "Buildings.Templates.AirHandlersFans.Types.OutdoorReliefReturnSection",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.AirHandlersFans.Types.OutdoorReliefReturnSection.HundredPctOutdoorAir",
         "Buildings.Templates.AirHandlersFans.Types.OutdoorReliefReturnSection.MixedAirWithDamper",
@@ -15033,6 +15117,7 @@
       "name": "Interface class for outdoor/relief/return air section",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.typ",
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialOutdoorReliefReturnSection.typSecOut",
@@ -15138,6 +15223,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut",
         "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secRel",
@@ -15334,6 +15420,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Interfaces.PartialFan.typ",
         "Buildings.Templates.Components.Interfaces.PartialFan.have_senFlo",
@@ -16212,6 +16299,7 @@
       "name": "Data bus that stores weather data",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "expandable connector",
       "options": [
         "Buildings.BoundaryConditions.WeatherData.Bus.TDryBul",
         "Buildings.BoundaryConditions.WeatherData.Bus.TWetBul",
@@ -16307,6 +16395,7 @@
       "name": "Partial component air source with one fluid connector",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.nPorts",
         "Buildings.Fluid.Sources.BaseClasses.PartialAirSource.verifyInputs",
@@ -16330,6 +16419,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Sources.BaseClasses.Outside.use_C_in",
         "Buildings.Fluid.Sources.BaseClasses.Outside.C",
@@ -16352,6 +16442,7 @@
       "name": "Boundary that takes weather data, and optionally trace substances, as an input",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Sources.BaseClasses.Outside.use_C_in",
         "Buildings.Fluid.Sources.BaseClasses.Outside.C",
@@ -16773,6 +16864,7 @@
       "name": "Partial component source with one fluid connector",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Sources.BaseClasses.PartialSource.nPorts",
         "Buildings.Fluid.Sources.BaseClasses.PartialSource.verifyInputs",
@@ -16790,6 +16882,7 @@
       "name": "Partial component source with parameter definitions for Xi and C",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Sources.BaseClasses.PartialSource_Xi_C.use_X_in",
         "Buildings.Fluid.Sources.BaseClasses.PartialSource_Xi_C.use_Xi_in",
@@ -16816,6 +16909,7 @@
       "name": "Boundary with prescribed pressure, temperature, composition and trace substances",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Sources.Boundary_pT.use_p_in",
         "Buildings.Fluid.Sources.Boundary_pT.p",
@@ -17147,6 +17241,7 @@
       "value": "Buildings.Templates.Components.Types.Coil",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.Components.Types.Coil.ElectricHeating",
         "Buildings.Templates.Components.Types.Coil.EvaporatorMultiStage",
@@ -17263,6 +17358,7 @@
       "value": "Buildings.Templates.Components.Types.Valve",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.Components.Types.Valve.None",
         "Buildings.Templates.Components.Types.Valve.ThreeWayModulating",
@@ -17861,6 +17957,7 @@
       "name": "Record for valve model",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.Components.Data.Valve.typ",
         "Buildings.Templates.Components.Data.Valve.m_flow_nominal",
@@ -17880,6 +17977,7 @@
       "name": "Interface class for coil",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Interfaces.PartialCoil.typ",
         "Buildings.Templates.Components.Interfaces.PartialCoil.typVal",
@@ -17921,6 +18019,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Interfaces.PartialCoil.typ",
         "Buildings.Templates.Components.Interfaces.PartialCoil.typVal",
@@ -18911,6 +19010,7 @@
       "name": "Multiple-configuration valve",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Actuators.Valve.typ",
         "Buildings.Templates.Components.Actuators.Valve.is_twoWay",
@@ -19156,6 +19256,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Coils.WaterBasedHeating.mWat_flow_nominal",
         "Buildings.Templates.Components.Coils.WaterBasedHeating.dpWat_nominal",
@@ -19737,6 +19838,7 @@
       "name": "Parameters for flow resistance for models with two ports",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.computeFlowResistance",
         "Buildings.Fluid.Interfaces.TwoPortFlowResistanceParameters.from_dp",
@@ -19771,6 +19873,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.homotopyInitialization",
         "Buildings.Fluid.Interfaces.TwoPortHeatMassExchanger.tau",
@@ -19910,6 +20013,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Fluid.HeatExchangers.HeaterCooler_u.Q_flow_nominal",
         "Buildings.Fluid.HeatExchangers.HeaterCooler_u.u",
@@ -19966,6 +20070,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Coils.ElectricHeating.hex",
         "Buildings.Templates.Components.Interfaces.PartialCoil.typ",
@@ -20415,6 +20520,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Coils.WaterBasedCooling.mWat_flow_nominal",
         "Buildings.Templates.Components.Coils.WaterBasedCooling.dpWat_nominal",
@@ -21014,6 +21120,7 @@
       "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Not_Specified",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A",
@@ -21314,6 +21421,7 @@
       "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_1",
@@ -21811,6 +21919,7 @@
       "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.CoolingCoil",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.CoolingCoil.None",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.CoolingCoil.WaterBased",
@@ -21947,6 +22056,7 @@
       "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.None",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.HeatingCoil.WaterBased",
@@ -22583,6 +22693,7 @@
       "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24"
@@ -22643,6 +22754,7 @@
       "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
@@ -22799,6 +22911,7 @@
       "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.No_freeze_stat",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.FreezeStat.Hardwired_to_equipment",
@@ -22896,6 +23009,7 @@
       "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.BarometricRelief",
         "Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReliefDamper",
@@ -23315,6 +23429,7 @@
       "value": "Buildings.Controls.OBC.CDL.Types.SimpleController",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Controls.OBC.CDL.Types.SimpleController.P",
         "Buildings.Controls.OBC.CDL.Types.SimpleController.PI",
@@ -26235,6 +26350,7 @@
       "name": "Output y is true, if input u is greater than a threshold",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Integers.GreaterThreshold.t",
         "Buildings.Controls.OBC.CDL.Integers.GreaterThreshold.u",
@@ -26326,6 +26442,7 @@
       "name": "Switch between two integer signals",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Integers.Switch.u1",
         "Buildings.Controls.OBC.CDL.Integers.Switch.u2",
@@ -27617,6 +27734,7 @@
       "name": "Freeze protection sequence for multizone air handling unit",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.have_frePro",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.FreezeProtection.buiPreCon",
@@ -27954,6 +28072,7 @@
       "name": "Output plant requests for multizone air handling unit",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.heaCoi",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.PlantRequests.cooCoi",
@@ -30700,6 +30819,7 @@
       "name": "Output the difference of the two inputs",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.Subtract.u1",
         "Buildings.Controls.OBC.CDL.Reals.Subtract.u2",
@@ -30781,6 +30901,7 @@
       "name": "Output the product of a gain value with the input signal",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter.k",
         "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter.u",
@@ -30928,6 +31049,7 @@
       "name": "Output the integral of the input signal",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.IntegratorWithReset.k",
         "Buildings.Controls.OBC.CDL.Reals.IntegratorWithReset.y_start",
@@ -31056,6 +31178,7 @@
       "name": "Block that approximates the derivative of the input",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.Derivative.y_start",
         "Buildings.Controls.OBC.CDL.Reals.Derivative.k",
@@ -31226,6 +31349,7 @@
       "name": "Limit the range of a signal",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.Limiter.uMax",
         "Buildings.Controls.OBC.CDL.Reals.Limiter.uMin",
@@ -31244,6 +31368,7 @@
       "name": "P, PI, PD, and PID controller with output reset",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.PIDWithReset.controllerType",
         "Buildings.Controls.OBC.CDL.Reals.PIDWithReset.k",
@@ -31284,6 +31409,7 @@
       "name": "Outdoor air and return air damper position limits for units with separated minimum outdoor air damper and airflow measurement",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithAFMS.minSpe",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithAFMS.minOAConTyp",
@@ -32082,6 +32208,7 @@
       "name": "Outdoor air and return air damper position limits for units with separated minimum outdoor air damper and differential pressure control",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithDP.venStd",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.SeparateWithDP.have_CO2Sen",
@@ -32653,6 +32780,7 @@
       "name": "Outdoor air and return air damper position limits for units with common damper",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.Common.controllerType",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Limits.Common.k",
@@ -33278,6 +33406,7 @@
       "name": "Block that holds an output signal for at least a specified duration",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold.trueHoldDuration",
         "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold.falseHoldDuration",
@@ -33355,6 +33484,7 @@
       "name": "Logical 'and': y = u1 and u2",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Logical.And.u1",
         "Buildings.Controls.OBC.CDL.Logical.And.u2",
@@ -33372,6 +33502,7 @@
       "name": "Multi zone VAV AHU economizer enable/disable switch",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Enable.use_enthalpy",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Enable.delTOutHis",
@@ -33648,6 +33779,7 @@
       "name": "Modulates dampers of economizer in buildings using return fan to control the pressure",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Modulations.ReturnFan.have_dirCon",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Modulations.ReturnFan.uMin",
@@ -33966,6 +34098,7 @@
       "name": "Modulates dampers of economizer in buildings using relief damper or fan to control the pressure",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Modulations.Reliefs.uMin",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Subsequences.Modulations.Reliefs.uMax",
@@ -34246,6 +34379,7 @@
       "name": "Specify the economizer high liimits",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.eneStd",
         "Buildings.Controls.OBC.ASHRAE.G36.Generic.AirEconomizerHighLimits.ecoHigLimCon",
@@ -34268,6 +34402,7 @@
       "name": "Multi zone VAV AHU economizer control sequence",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.minOADes",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Economizers.Controller.buiPreCon",
@@ -35254,6 +35389,7 @@
       "name": "Delay a rising edge of the input, but do not delay a falling edge",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Logical.TrueDelay.delayTime",
         "Buildings.Controls.OBC.CDL.Logical.TrueDelay.delayOnInit",
@@ -35365,6 +35501,7 @@
       "name": "Switch between two Real signals",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.Switch.u1",
         "Buildings.Controls.OBC.CDL.Reals.Switch.u2",
@@ -35552,6 +35689,7 @@
       "name": "Output the input signal with a unit delay",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Discrete.UnitDelay.samplePeriod",
         "Buildings.Controls.OBC.CDL.Discrete.UnitDelay.y_start",
@@ -35719,6 +35857,7 @@
       "name": "Ideal sampler of a continuous signal",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Discrete.Sampler.samplePeriod",
         "Buildings.Controls.OBC.CDL.Discrete.Sampler.u",
@@ -35815,6 +35954,7 @@
       "name": "Block to inplement trim and respond logic",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Generic.TrimAndRespond.have_hol",
         "Buildings.Controls.OBC.ASHRAE.G36.Generic.TrimAndRespond.iniSet",
@@ -35930,6 +36070,7 @@
       "name": "Block to control multi zone VAV AHU supply fan",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.SupplyFan.have_perZonRehBox",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.SupplyFan.iniSet",
@@ -36449,6 +36590,7 @@
       "name": "Multizone VAV AHU supply air temperature control loop and coil valves position",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.SupplySignals.have_heaCoi",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.SupplySignals.have_cooCoi",
@@ -36898,6 +37040,7 @@
       "name": "Supply air temperature setpoint for multi zone system",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.SupplyTemperature.TSupCoo_min",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.SupplyTemperature.TSupCoo_max",
@@ -37342,6 +37485,7 @@
       "name": "Output the sum of the two inputs",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.Add.u1",
         "Buildings.Controls.OBC.CDL.Reals.Add.u2",
@@ -37418,6 +37562,7 @@
       "name": "Pass through the smallest signal",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.Min.u1",
         "Buildings.Controls.OBC.CDL.Reals.Min.u2",
@@ -37494,6 +37639,7 @@
       "name": "Output first input divided by second input",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.Divide.u1",
         "Buildings.Controls.OBC.CDL.Reals.Divide.u2",
@@ -37575,6 +37721,7 @@
       "name": "Output the sum of an input plus a parameter",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.AddParameter.p",
         "Buildings.Controls.OBC.CDL.Reals.AddParameter.u",
@@ -37775,6 +37922,7 @@
       "name": "Outdoor airflow related calculations at the AHU level",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.ASHRAE62_1.AHU.minOADes",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.ASHRAE62_1.AHU.VUncDesOutAir_flow",
@@ -37938,6 +38086,7 @@
       "name": "Relief damper control for AHUs using actuated dampers without fan",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReliefDamper.dpBuiSet",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReliefDamper.k",
@@ -38480,6 +38629,7 @@
       "name": "Block to output moving average",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.MovingAverage.delta",
         "Buildings.Controls.OBC.CDL.Reals.MovingAverage.u",
@@ -39089,6 +39239,7 @@
       "name": "P, PI, PD, and PID controller",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.PID.controllerType",
         "Buildings.Controls.OBC.CDL.Reals.PID.k",
@@ -39263,6 +39414,7 @@
       "name": "Output the value of the input x along a line specified by two points",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.Line.limitBelow",
         "Buildings.Controls.OBC.CDL.Reals.Line.limitAbove",
@@ -39400,6 +39552,7 @@
       "name": "Return fan control with direct building pressure control",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReturnFanDirectPressure.dpBuiSet",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReturnFanDirectPressure.p_rel_RetFan_min",
@@ -39822,6 +39975,7 @@
       "name": "Return fan control for AHUs using return fan with airflow tracking",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReturnFanAirflowTracking.difFloSet",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReturnFanAirflowTracking.conTyp",
@@ -40503,6 +40657,7 @@
       "name": "AHU level setpoint calculation",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.Title24.AHU.minOADes",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.Title24.AHU.have_CO2Sen",
@@ -41062,6 +41217,7 @@
       "name": "Timer measuring the time from the time instant where the Boolean input became true",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Logical.Timer.t",
         "Buildings.Controls.OBC.CDL.Logical.Timer.u",
@@ -41156,6 +41312,7 @@
       "name": "Maintains a true signal until cleared",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Logical.Latch.u",
         "Buildings.Controls.OBC.CDL.Logical.Latch.clr",
@@ -41351,6 +41508,7 @@
       "name": "Logical 'or': y = u1 or u2",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Logical.Or.u1",
         "Buildings.Controls.OBC.CDL.Logical.Or.u2",
@@ -41420,6 +41578,7 @@
       "name": "Sequence for control of relief fan in AHU",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReliefFan.relFanSpe_min",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.ReliefFan.dpBuiSet",
@@ -41463,6 +41622,7 @@
       "name": "Multizone VAV air handling unit controller",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.eneStd",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller.venStd",
@@ -42180,6 +42340,7 @@
       "name": "Output the product of a gain matrix with the input signal vector",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.MatrixGain.K",
         "Buildings.Controls.OBC.CDL.Reals.MatrixGain.u",
@@ -42500,6 +42661,7 @@
       "name": "Output the maximum element of the input vector",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.MultiMax.nin",
         "Buildings.Controls.OBC.CDL.Reals.MultiMax.u",
@@ -42577,6 +42739,7 @@
       "name": "Output constant signal of type Integer",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Integers.Sources.Constant.k",
         "Buildings.Controls.OBC.CDL.Integers.Sources.Constant.y"
@@ -42652,6 +42815,7 @@
       "name": "Output y is true, if input u1 is equal to input u2",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Integers.Equal.u1",
         "Buildings.Controls.OBC.CDL.Integers.Equal.u2",
@@ -42735,6 +42899,7 @@
       "name": "Calculate the sum of zone level setpoints",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.ASHRAE62_1.SumZone.nZon",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.ASHRAE62_1.SumZone.nGro",
@@ -43339,6 +43504,7 @@
       "name": "Sum of the zone level setpoints calculation",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.Title24.SumZone.nZon",
         "Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.SetPoints.OutdoorAirFlow.Title24.SumZone.nGro",
@@ -44341,6 +44507,7 @@
       "name": "Duplicate zone status output",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneStatusDuplicator.nZon",
         "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneStatusDuplicator.nZonGro",
@@ -45295,6 +45462,7 @@
       "name": "Logical not",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Logical.Not.u",
         "Buildings.Controls.OBC.CDL.Logical.Not.y"
@@ -45311,6 +45479,7 @@
       "name": "Block that outputs the zone group status",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.nBuiZon",
         "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.nGroZon",
@@ -45713,6 +45882,7 @@
       "name": "Block that outputs the operation mode",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.nZon",
         "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.preWarCooTim",
@@ -45811,6 +45981,7 @@
       "name": "Real signal replicator",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Routing.RealScalarReplicator.nout",
         "Buildings.Controls.OBC.CDL.Routing.RealScalarReplicator.u",
@@ -45935,6 +46106,7 @@
       "name": "Sum of Integers, y = k[1]*u[1] + k[2]*u[2] + ... + k[n]*u[n]",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Integers.MultiSum.nin",
         "Buildings.Controls.OBC.CDL.Integers.MultiSum.k",
@@ -46040,6 +46212,7 @@
       "name": "Output constant signal of type Boolean",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Logical.Sources.Constant.k",
         "Buildings.Controls.OBC.CDL.Logical.Sources.Constant.y"
@@ -46206,6 +46379,7 @@
       "name": "Integer vector signal replicator",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Routing.IntegerVectorReplicator.nin",
         "Buildings.Controls.OBC.CDL.Routing.IntegerVectorReplicator.nout",
@@ -46348,6 +46522,7 @@
       "name": "Convert Integer to Real signals",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Conversions.IntegerToReal.u",
         "Buildings.Controls.OBC.CDL.Conversions.IntegerToReal.y"
@@ -46429,6 +46604,7 @@
       "name": "Output the minimum element of the input vector",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.MultiMin.nin",
         "Buildings.Controls.OBC.CDL.Reals.MultiMin.u",
@@ -46490,6 +46666,7 @@
       "name": "Convert Real to Integer signal",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Conversions.RealToInteger.u",
         "Buildings.Controls.OBC.CDL.Conversions.RealToInteger.y"
@@ -46520,6 +46697,7 @@
       "name": "Compute the AHU operating mode from the group operating mode",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneGroupSystem.nGro",
         "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneGroupSystem.uOpeMod",
@@ -46952,6 +47130,7 @@
       "value": "Buildings.Templates.AirHandlersFans.Types.Controller",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.AirHandlersFans.Types.Controller.G36VAVMultiZone",
         "Buildings.Templates.AirHandlersFans.Types.Controller.OpenLoop"
@@ -47046,6 +47225,7 @@
       "value": "Buildings.Templates.Types.Units",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.Types.Units.SI",
         "Buildings.Templates.Types.Units.IP"
@@ -47209,6 +47389,7 @@
       "name": "Top-level (whole building) system parameters",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "class",
       "options": [
         "Buildings.Templates.Data.AllSystems.sysUni",
         "Buildings.Templates.Data.AllSystems.stdEne",
@@ -47435,6 +47616,7 @@
       "name": "Record for controller interface class",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Data.PartialController.typ",
         "Buildings.Templates.AirHandlersFans.Components.Data.PartialController.typFanSup",
@@ -47522,6 +47704,7 @@
       "name": "Control bus for zone equipment",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "expandable connector",
       "options": [
         "Buildings.Templates.ZoneEquipment.Interfaces.Bus.damVAV",
         "Buildings.Templates.ZoneEquipment.Interfaces.Bus.coiHea"
@@ -47538,6 +47721,7 @@
       "name": "Interface class for AHU controller",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.typ",
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialController.nZon",
@@ -47582,6 +47766,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.secOutRel",
         "Buildings.Templates.AirHandlersFans.Components.Interfaces.PartialControllerVAVMultizone.coiCoo",
@@ -47629,6 +47814,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.idZon",
         "Buildings.Templates.AirHandlersFans.Components.Controls.G36VAVMultiZone.namGro",
@@ -47737,6 +47923,7 @@
       "value": "Buildings.Templates.AirHandlersFans.Types.Configuration",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.AirHandlersFans.Types.Configuration.SupplyOnly",
         "Buildings.Templates.AirHandlersFans.Types.Configuration.ExhaustOnly",
@@ -48132,6 +48319,7 @@
       "name": "Configuration parameters for air handler interface class",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.nZon",
         "Buildings.Templates.AirHandlersFans.Configuration.PartialAirHandler.typ",
@@ -48335,6 +48523,7 @@
       "name": "Record for air handler interface class",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.cfg",
         "Buildings.Templates.AirHandlersFans.Data.PartialAirHandler.id",
@@ -49221,6 +49410,7 @@
       "name": "Interface class for air handler",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.typ",
         "Buildings.Templates.AirHandlersFans.Interfaces.PartialAirHandler.cfg",
@@ -49669,6 +49859,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.AirHandlersFans.VAVMultiZone.have_senPreBui",
         "Buildings.Templates.AirHandlersFans.VAVMultiZone.secOutRel",
@@ -50427,6 +50618,7 @@
       "name": "Record for multiple-zone VAV controller",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.idZon",
         "Buildings.Templates.AirHandlersFans.Components.Data.VAVMultiZoneController.namGro",
@@ -50723,6 +50915,7 @@
       "name": "Configuration parameters for multiple-zone VAV",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typCoiHeaPre",
         "Buildings.Templates.AirHandlersFans.Configuration.VAVMultiZone.typCoiCoo",
@@ -51641,6 +51834,7 @@
       "name": "Record for coil model",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.Components.Data.Coil.typ",
         "Buildings.Templates.Components.Data.Coil.typVal",
@@ -51912,6 +52106,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.fanSup",
         "Buildings.Templates.AirHandlersFans.Data.VAVMultiZone.coiHeaPre",
@@ -52255,6 +52450,7 @@
       "value": "Buildings.Templates.ZoneEquipment.Types.Controller",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly",
         "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat",
@@ -52351,6 +52547,7 @@
       "name": "Record for controller interface class",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.ZoneEquipment.Components.Data.PartialController.typ"
       ],
@@ -52403,6 +52600,7 @@
       "name": "Interface class for terminal unit controller",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController.typ",
         "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController.dat",
@@ -52431,6 +52629,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox.have_CO2Sen",
         "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox.stdVen",
@@ -52459,6 +52658,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Templates.ZoneEquipment.Components.Controls.OpenLoop.yDamVAV",
         "Buildings.Templates.ZoneEquipment.Components.Controls.OpenLoop.yCoiHea",
@@ -52800,6 +53000,7 @@
       "value": "Buildings.Templates.ZoneEquipment.Types.Configuration",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "Buildings.Templates.ZoneEquipment.Types.Configuration.DualDuct",
         "Buildings.Templates.ZoneEquipment.Types.Configuration.FanPowered",
@@ -52980,6 +53181,7 @@
       "name": "Configuration parameters for air terminal unit interface class",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal.typ",
         "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal.have_souChiWat",
@@ -53180,6 +53382,7 @@
       "name": "Record for air terminal unit interface class",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.cfg",
         "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.id",
@@ -53695,6 +53898,7 @@
       "name": "Interface class for air terminal unit",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.typ",
         "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.cfg",
@@ -53835,6 +54039,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea",
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.damVAV",
@@ -53946,6 +54151,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea",
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.damVAV",
@@ -54441,6 +54647,7 @@
       "name": "Record for VAV terminal unit controller",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.ZoneEquipment.Components.Data.VAVBoxController.stdVen",
         "Buildings.Templates.ZoneEquipment.Components.Data.VAVBoxController.VOutMinOcc_flow",
@@ -54546,6 +54753,7 @@
       "name": "Configuration parameters for VAV terminal unit",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.ZoneEquipment.Configuration.VAVBox.typDamVAV",
         "Buildings.Templates.ZoneEquipment.Configuration.VAVBox.typCoiHea",
@@ -54662,6 +54870,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "record",
       "options": [
         "Buildings.Templates.ZoneEquipment.Data.VAVBox.damVAV",
         "Buildings.Templates.ZoneEquipment.Data.VAVBox.coiHea",
@@ -56776,6 +56985,7 @@
       "name": "Controller for room VAV box with reheat",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller.venStd",
         "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.Reheat.Controller.have_winSen",
@@ -58412,6 +58622,7 @@
       "name": "Active maximum and minimum setpoints for cooling only terminal unit",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.ActiveAirFlow.VCooMax_flow",
         "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.ActiveAirFlow.uOpeMod",
@@ -58856,6 +59067,7 @@
       "name": "Output system requests for VAV cooling only terminal unit",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.SystemRequests.thrTemDif",
         "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.SystemRequests.twoTemDif",
@@ -59295,6 +59507,7 @@
       "name": "Heating and cooling control loops",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops.kCooCon",
         "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops.TiCooCon",
@@ -59837,6 +60050,7 @@
       "name": "Output y is true, if input u1 is less than input u2",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.Less.h",
         "Buildings.Controls.OBC.CDL.Reals.Less.pre_y_start",
@@ -60003,6 +60217,7 @@
       "name": "Output y is true, if input u1 is greater than input u2 with hysteresis",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Reals.Greater.h",
         "Buildings.Controls.OBC.CDL.Reals.Greater.pre_y_start",
@@ -60221,6 +60436,7 @@
       "name": "Convert Boolean to Integer signal",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger.integerTrue",
         "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger.integerFalse",
@@ -60356,6 +60572,7 @@
       "name": "Output product of the two inputs",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Integers.Multiply.u1",
         "Buildings.Controls.OBC.CDL.Integers.Multiply.u2",
@@ -60455,6 +60672,7 @@
       "name": "Print a warning message when input becomes false",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.CDL.Utilities.Assert.message",
         "Buildings.Controls.OBC.CDL.Utilities.Assert.u"
@@ -61022,6 +61240,7 @@
       "name": "Generate alarms of cooling only terminal unit",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.Alarms.staPreMul",
         "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.Alarms.VCooMax_flow",
@@ -61283,6 +61502,7 @@
       "name": "Calculate a time-delay period after change in set point",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.Generic.TimeSuppression.chaRat",
         "Buildings.Controls.OBC.ASHRAE.G36.Generic.TimeSuppression.maxTim",
@@ -61949,6 +62169,7 @@
       "name": "Specify zone minimum outdoor air and minimum airflow set points for compliance with ASHRAE standard 62.1",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.have_winSen",
         "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.have_occSen",
@@ -62490,6 +62711,7 @@
       "name": "Output signals for controlling VAV cooling only box damper position",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.Dampers.VMin_flow",
         "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Subsequences.Dampers.VCooMax_flow",
@@ -62615,6 +62837,7 @@
       "name": "Select the zone state",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ZoneStates.uLow",
         "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ZoneStates.uHigh",
@@ -63161,6 +63384,7 @@
       "name": "Specify zone minimum outdoor air and minimum airflow set points for compliance with California Title 24",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints.have_winSen",
         "Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints.have_occSen",
@@ -63197,6 +63421,7 @@
       "name": "Controller for cooling only VAV box",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Controller.venStd",
         "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Controller.have_winSen",
@@ -63939,6 +64164,7 @@
       "name": "Block outputs thermal zone cooling and heating active setpoint",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.have_occSen",
         "Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.have_winSen",
@@ -64409,6 +64635,7 @@
       "name": "Block that outputs zone temperature status",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneStatus.bouLim",
         "Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.ZoneStatus.have_winSen",
@@ -64569,6 +64796,7 @@
       "name": "Guideline 36 controller for VAV terminal unit",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_occSen",
         "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_winSen",
@@ -64622,6 +64850,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_occSen",
         "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_winSen",
@@ -64680,6 +64909,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea",
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.damVAV",
@@ -64733,6 +64963,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "block",
       "options": [
         "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_occSen",
         "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_winSen",

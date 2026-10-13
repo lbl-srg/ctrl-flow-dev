@@ -60,8 +60,8 @@ describe("Quoted identifiers", () => {
 
   it("applies selections keyed with quoted names", () => {
     const context = createContext({
-      [selectionKey(T, "'rep.1'")]: `${C}.Second`,
-      [selectionKey(T, "'rep.1'.'a.b'")]: false,
+      [selectionKey(T, "'rep.1'")]: { redeclare: `${C}.Second` },
+      [selectionKey(T, "'rep.1'.'a.b'")]: { value: false },
     });
     expect(context.getValue("'rep.1'")).toEqual(`${C}.Second`);
     // Modifier of the extends clause of Second

@@ -12,7 +12,7 @@ import {
 } from "../../../interpreter/display-option";
 import { ConfigContext } from "../../../interpreter/interpreter";
 import { getConfigValuesToSave } from "../../../interpreter/config-values";
-import { ConfigValues } from "../../../utils/modifier-helpers";
+import { ConfigValues, storedValue } from "../../../utils/modifier-helpers";
 
 import "../../../styles/components/config-slide-out.scss";
 
@@ -70,20 +70,24 @@ const SlideOut = ({
   // );
 
   function updateSelectedConfigOption(
-    selectionPath: string,
-    choice: string | null,
+    option: FlatConfigOption,
+    choice: string | boolean | null,
   ) {
     // startLoading();
     setSelectedValues((prevState: any) => {
 
       if (choice === null) {
-        delete prevState[selectionPath];
+        delete prevState[option.selectionKey];
         return prevState;
       }
 
+      // The attributes of the value are set from the declaration
       return {
         ...prevState,
-        [selectionPath]: choice,
+        [option.selectionKey]: storedValue(
+          allOptions[option.modelicaPath],
+          choice,
+        ),
       };
     });
   }

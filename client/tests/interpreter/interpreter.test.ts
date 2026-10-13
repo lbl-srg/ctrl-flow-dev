@@ -1,6 +1,6 @@
 import RootStore from "../../src/data";
 import { ConfigInterface } from "../../src/data/config";
-import { ConfigValues } from "../../src/utils/modifier-helpers";
+import { ConfigValues, storedValue } from "../../src/utils/modifier-helpers";
 import { TemplateInterface, OptionInterface } from "../../src/data/template";
 import {
   FlatConfigOption,
@@ -159,8 +159,9 @@ describe("Modifiers", () => {
   it("Adds coiCoo.val to modifiers", () => {
     const mzOption = allOptions[mzTemplatePath];
     const selections = {
-      [selectionKey(mzTemplatePath, "coiCoo")]:
-        "Buildings.Templates.Components.Coils.WaterBasedCooling",
+      [selectionKey(mzTemplatePath, "coiCoo")]: {
+        redeclare: "Buildings.Templates.Components.Coils.WaterBasedCooling",
+      },
     };
     const mods = buildMods(mzOption, selections, allOptions);
     const coiCooPath = "coiCoo.typVal";
@@ -225,8 +226,9 @@ describe("Modifiers", () => {
 
     // The same with a selection: VAVBoxReheat, coiHea=ElectricHeating
     const selections = {
-      [selectionKey(zoneReheatTemplatePath, "coiHea")]:
-        "Buildings.Templates.Components.Coils.ElectricHeating",
+      [selectionKey(zoneReheatTemplatePath, "coiHea")]: {
+        redeclare: "Buildings.Templates.Components.Coils.ElectricHeating",
+      },
     };
     const reheat = new ConfigContext(
       zoneReheatTemplate,
@@ -574,7 +576,7 @@ describe("Path resolution", () => {
     // outside of the template (docs/selection-keys.md, rule 1)
     expect(resolvePaths("ctl.datAll.stdEne", context).key).toEqual(stdEne);
     expect(context.getValue("ctl.datAll.stdEne")).toEqual(
-      createSelections()[stdEne],
+      createSelections()[stdEne].value,
     );
     // datAll itself is an element of neither the template nor AllSystems
     expect(resolvePaths("ctl.datAll", context).key).toBeNull();
@@ -591,7 +593,7 @@ describe("resolveToValue tests using context and evaluation", () => {
       "Config with false boolean selection",
       mzTemplate,
       createSelections({
-        [selectionKey(mzTemplatePath, "have_senPreBui")]: false,
+        [selectionKey(mzTemplatePath, "have_senPreBui")]: { value: false },
       }),
     );
     let context = new ConfigContext(
@@ -605,7 +607,7 @@ describe("resolveToValue tests using context and evaluation", () => {
       "Config with true boolean selection",
       mzTemplate,
       createSelections({
-        [selectionKey(mzTemplatePath, "have_senPreBui")]: true,
+        [selectionKey(mzTemplatePath, "have_senPreBui")]: { value: true },
       }),
     );
     context = new ConfigContext(
@@ -632,8 +634,9 @@ describe("resolveToValue tests using context and evaluation", () => {
   it("Gets a value that interacts with a modifier redeclare and choice redeclare", () => {
     const instancePath = "secOutRel.secRel.fanRet";
     const selections = {
-      [selectionKey(mzTemplatePath, "secOutRel.secRel.fanRet")]:
-        "Buildings.Templates.Components.Fans.ArrayVariable",
+      [selectionKey(mzTemplatePath, "secOutRel.secRel.fanRet")]: {
+        redeclare: "Buildings.Templates.Components.Fans.ArrayVariable",
+      },
     };
     const config = addNewConfig(
       "Config to test Choice Modifiers and modifier redeclares",
@@ -681,8 +684,9 @@ describe("Testing context getValue", () => {
   it("Fetches the correct value for a replaceable type after a selection is made", () => {
     const configName = "VAVMultiZone Config with selections";
     const selections = {
-      [selectionKey(mzTemplatePath, "fanSupBlo")]:
-        "Buildings.Templates.Components.Fans.SingleVariable",
+      [selectionKey(mzTemplatePath, "fanSupBlo")]: {
+        redeclare: "Buildings.Templates.Components.Fans.SingleVariable",
+      },
     };
 
     const configWithSelections = addNewConfig(
@@ -779,7 +783,9 @@ describe("ctl.have_CO2Sen enable expression", () => {
       "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersAirflow";
 
     const selections = {
-      [selectionKey(mzTemplatePath, "secOutRel.secOut")]: secOutValue,
+      [selectionKey(mzTemplatePath, "secOutRel.secOut")]: {
+        redeclare: secOutValue,
+      },
     };
     const configWithSecOut = addNewConfig(
       "Another Config With secOut selected",
@@ -830,8 +836,10 @@ describe("ctl.have_CO2Sen enable expression", () => {
 
     // make a context after selection for DedicatedDampersPressure for secOut
     const selections = {
-      [selectionKey(mzTemplatePath, "secOutRel.secOut")]:
-        "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersAirflow",
+      [selectionKey(mzTemplatePath, "secOutRel.secOut")]: {
+        redeclare:
+          "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersAirflow",
+      },
     };
 
     const configWithSecOut = addNewConfig(
@@ -952,8 +960,9 @@ describe("Display Enable is set as expected", () => {
 
     const configName = "VAVMultiZone Config with fanSupDra selection";
     const selections = {
-      [selectionKey(mzTemplatePath, "fanSupDra")]:
-        "Buildings.Templates.Components.Fans.None",
+      [selectionKey(mzTemplatePath, "fanSupDra")]: {
+        redeclare: "Buildings.Templates.Components.Fans.None",
+      },
     };
     const configWithSelections = addNewConfig(
       configName,
@@ -975,8 +984,10 @@ describe("Display Enable is set as expected", () => {
 
   it("Sets ctl.have_CO2Sen param to true", () => {
     const selections = {
-      [selectionKey(mzTemplatePath, "secOutRel.secOut")]:
-        "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure",
+      [selectionKey(mzTemplatePath, "secOutRel.secOut")]: {
+        redeclare:
+          "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure",
+      },
     };
 
     const configWithSecOut = addNewConfig(
@@ -1015,10 +1026,13 @@ describe("Valid selection", () => {
   it("Returns an invalid selection", () => {
     // you should NOT be able to select secOutRel.secRel.fanRel if a ReliefDamper is specified for secOutRel.secRel
     const selections = {
-      [selectionKey(mzTemplatePath, "secOutRel.secRel")]:
-        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefDamper",
-      [selectionKey(mzTemplatePath, "secOutRel.secRel.fanRel")]:
-        "Buildings.Templates.Components.Fans.ArrayVariable",
+      [selectionKey(mzTemplatePath, "secOutRel.secRel")]: {
+        redeclare:
+          "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefDamper",
+      },
+      [selectionKey(mzTemplatePath, "secOutRel.secRel.fanRel")]: {
+        redeclare: "Buildings.Templates.Components.Fans.ArrayVariable",
+      },
     };
 
     const context = new ConfigContext(
@@ -1038,10 +1052,13 @@ describe("Valid selection", () => {
   it("Returns an valid selection", () => {
     // you SHOULD be able to select secOutRel.secRel.fanRel if a ReliefDamper is specified for secOutRel.secRel
     const selections = {
-      [selectionKey(mzTemplatePath, "secOutRel.secRel")]:
-        "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan",
-      [selectionKey(mzTemplatePath, "secOutRel.secRel.fanRel")]:
-        "Buildings.Templates.Components.Fans.ArrayVariable",
+      [selectionKey(mzTemplatePath, "secOutRel.secRel")]: {
+        redeclare:
+          "Buildings.Templates.AirHandlersFans.Components.ReliefReturnSection.ReliefFan",
+      },
+      [selectionKey(mzTemplatePath, "secOutRel.secRel.fanRel")]: {
+        redeclare: "Buildings.Templates.Components.Fans.ArrayVariable",
+      },
     };
 
     const context = new ConfigContext(
@@ -1058,10 +1075,12 @@ describe("Valid selection", () => {
     ).toEqual(true);
   });
 
-  it("Handles AllSystem paths", () => {
+  it("Does not save the project settings with a configuration", () => {
     const selections = {
-      [selectionKey(ALL_SYSTEMS, "ashCliZon")]:
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A",
+      [selectionKey(ALL_SYSTEMS, "ashCliZon")]: {
+        value:
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A",
+      },
     };
 
     const context = new ConfigContext(
@@ -1071,9 +1090,13 @@ describe("Valid selection", () => {
       createSelections(selections),
     );
 
+    // The project settings are read, but saved with the project only
+    expect(context.getValue("ctl.datAll.ashCliZon")).toEqual(
+      selections[selectionKey(ALL_SYSTEMS, "ashCliZon")].value,
+    );
     expect(
       context.isValidSelection(selectionKey(ALL_SYSTEMS, "ashCliZon")),
-    ).toEqual(true);
+    ).toEqual(false);
   });
 });
 
@@ -1327,8 +1350,9 @@ describe("Specific parameter debugging", () => {
 
   it("coiCoo.typVal should NOT show for any selection of coiCoo", () => {
     const selections = {
-      [selectionKey(mzTemplatePath, "coiCoo")]:
-        "Buildings.Templates.Components.Coils.WaterBasedCooling",
+      [selectionKey(mzTemplatePath, "coiCoo")]: {
+        redeclare: "Buildings.Templates.Components.Coils.WaterBasedCooling",
+      },
     };
     const coiCooConfig = addNewConfig(
       "MZ Template with coiCoo Selected",
@@ -1370,7 +1394,7 @@ describe("Specific parameter debugging", () => {
 
   it("Comparison with literal string assignment", () => {
     const selections = {
-      [selectionKey(mzTemplatePath, "coiCoo")]: '"coiCoo.typVal"', // literal string matching an instance name
+      [selectionKey(mzTemplatePath, "coiCoo")]: { value: '"coiCoo.typVal"' }, // literal string matching an instance name
     };
     const coiCooConfig = addNewConfig(
       "MZ Template with dummy coiCoo assignment",
@@ -1825,15 +1849,33 @@ describe("Selection keys", () => {
       testTemplate,
       {} as ConfigInterface,
       testTemplateOptions,
-      { [key]: second },
+      { [key]: { redeclare: second, kindOfClass: "model" } },
     );
     expect(context.getValue("ShortClass")).toEqual(second);
     expect(context.isValidSelection(key)).toBe(true);
+    // The kind of class is set from the declaration of the short class
+    expect(
+      storedValue(
+        testTemplateOptions[`${testTemplatePath}.ShortClass`],
+        second,
+      ),
+    ).toEqual({
+      redeclare: second,
+      kindOfClass: "model",
+    });
   });
 
   it("Reads the classes selected for the elements of the root class only", () => {
     expect(
-      selectedClasses({ "P.A-a": "P.C", "P.B-b": "P.D", "P.A-c": true }, "P.A"),
+      selectedClasses(
+        {
+          "P.A-a": { redeclare: "P.C" },
+          "P.B-b": { redeclare: "P.D" },
+          "P.A-c": { value: true },
+          "P.A-d": { value: "P.E" },
+        },
+        "P.A",
+      ),
     ).toEqual({ a: "P.C" });
   });
 
@@ -1850,11 +1892,39 @@ describe("Selection keys", () => {
     expect(context.getValue(coilClass)).toEqual(coilClass);
     const keys = Object.keys(context.getEvaluatedValues());
     expect(keys.length).toBeGreaterThan(0);
+    // The project settings are stored with the project only
     keys.forEach((key) =>
-      expect([mzTemplatePath, ALL_SYSTEMS]).toContain(
-        parseSelectionKey(key).rootClass,
-      ),
+      expect(parseSelectionKey(key).rootClass).toEqual(mzTemplatePath),
     );
+  });
+
+  it("Stores the class of a bound record as a redeclaration (#642)", () => {
+    const context = new ConfigContext(
+      zoneReheatTemplate,
+      zoneReheatConfig,
+      allOptions,
+      createSelections(),
+    );
+    mapToDisplayOptions(context);
+    // ctl(dat=dat.ctl), and ctl.dat is redeclared in the class of ctl
+    const controller =
+      "Buildings.Templates.ZoneEquipment.Components.Data.VAVBoxController";
+    expect(context.getValue("ctl.dat")).toEqual(controller);
+    const evaluatedValues = context.getEvaluatedValues();
+    expect(
+      evaluatedValues[selectionKey(zoneReheatTemplatePath, "ctl.dat")],
+    ).toEqual({ redeclare: controller });
+    // Enumeration and Boolean parameters hold a value
+    expect(
+      evaluatedValues[selectionKey(zoneReheatTemplatePath, "coiHea.typ")],
+    ).toEqual({
+      value: "Buildings.Templates.Components.Types.Coil.WaterBasedHeating",
+    });
+    expect(
+      evaluatedValues[selectionKey(zoneReheatTemplatePath, "coiHea")],
+    ).toEqual({
+      redeclare: "Buildings.Templates.Components.Coils.WaterBasedHeating",
+    });
   });
 });
 
@@ -1867,11 +1937,15 @@ describe("Project settings", () => {
 
   it("Displays the climate zone of the selected energy standard only", () => {
     const selected = {
-      [stdEne]: ashrae,
-      [ashCliZon]:
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_4A",
-      [tit24CliZon]:
-        "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_3",
+      [stdEne]: { value: ashrae },
+      [ashCliZon]: {
+        value:
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_4A",
+      },
+      [tit24CliZon]: {
+        value:
+          "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_3",
+      },
     };
     const context = projectContext(allOptions, selected);
     const keys = flatten(mapToDisplayOptions(context)).map(
@@ -1884,7 +1958,7 @@ describe("Project settings", () => {
     // The zone of the other standard is discarded when saving
     const { selections } = getConfigValuesToSave(context, selected);
     expect(selections).toEqual({
-      [stdEne]: ashrae,
+      [stdEne]: { value: ashrae },
       [ashCliZon]: selected[ashCliZon],
     });
   });

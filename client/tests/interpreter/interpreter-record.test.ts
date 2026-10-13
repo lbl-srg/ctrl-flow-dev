@@ -81,7 +81,7 @@ const createPlantConfig = (
     selections: createSelections(selections),
     isLocked: false,
     systemPath: "Buildings.Templates.Plants.HeatPumps",
-  }) as ConfigInterface;
+  } as ConfigInterface);
 
 const plantConfig = createPlantConfig("HP Plant");
 
@@ -146,6 +146,16 @@ describe("Evaluation succeeds with record bindings", () => {
       "TestRecord.BaseModel.rec",
     );
   });
+
+  it("does not derive the value of a record from its binding (#642)", () => {
+    // bm(rec=subRec): rec is declared as BaseRecord, subRec as Rec, a subtype
+    expect(context.getValue("bm.rec")).toBe("TestRecord.BaseRecord");
+    expect(
+      context.getEvaluatedValues()[selectionKey("TestRecord", "bm.rec")],
+    ).toEqual({ redeclare: "TestRecord.BaseRecord" });
+    // Mod: localRec = rec, not replaceable: no value
+    expect(context.getValue("mod.localRec")).toBe(null);
+  });
 });
 
 describe("Record bindings in real-world plant template", () => {
@@ -161,7 +171,7 @@ describe("Record bindings in real-world plant template", () => {
     expect(resolveToValue("cfg.have_chiWat", context, "ctl")).toBe(true);
 
     const selections = {
-      [selectionKey(plantTemplatePath, "have_chiWat")]: false,
+      [selectionKey(plantTemplatePath, "have_chiWat")]: { value: false },
     };
 
     const configWithSelections = createPlantConfig(
@@ -195,7 +205,7 @@ describe("Record bindings in real-world plant template", () => {
     expect(evaluate(enableExpr, context, "ctl")).toBe(true);
 
     const selections = {
-      [selectionKey(plantTemplatePath, "have_chiWat")]: false,
+      [selectionKey(plantTemplatePath, "have_chiWat")]: { value: false },
     };
 
     const configWithSelections = createPlantConfig(

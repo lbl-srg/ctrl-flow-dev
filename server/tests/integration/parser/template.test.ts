@@ -228,4 +228,24 @@ describe("'Project' items are extracted", () => {
       "TestPackage.Component.SecondComponent",
     ]);
   });
+
+  it("Gives the kind of class of class definitions", () => {
+    const { options } = getOptions();
+    const kindOfClass = (path: string) =>
+      options.find((o) => o.modelicaPath === path)?.kindOfClass;
+    expect(kindOfClass(TEMPLATE_PATH)).toEqual("model");
+    // Without `partial`
+    expect(kindOfClass("TestPackage.Interface.PartialComponent")).toEqual(
+      "model",
+    );
+    // Replaceable short class: the prefixes repeated in a redeclaration
+    expect(kindOfClass(`${TEMPLATE_PATH}.ShortClass`)).toEqual("model");
+    expect(kindOfClass("TestPackage.Types.Container")).toEqual("type");
+    // Components and enumeration literals are not class definitions
+    expect(kindOfClass(`${TEMPLATE_PATH}.shortClassInstance`)).toBeUndefined();
+    expect(
+      options.find((o) => o.modelicaPath.startsWith("TestPackage.Types.Container."))
+        ?.kindOfClass,
+    ).toBeUndefined();
+  });
 });

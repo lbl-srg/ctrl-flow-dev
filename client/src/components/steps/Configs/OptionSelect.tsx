@@ -6,7 +6,10 @@ import { FlatConfigOption } from "./SlideOut";
 
 export interface OptionSelectProps {
   option: FlatConfigOption;
-  updateSelectedOption: (selectionKey: string, choice: string | null) => void;
+  updateSelectedOption: (
+    option: FlatConfigOption,
+    choice: string | boolean | null,
+  ) => void;
 }
 
 const OptionSelect = ({
@@ -20,9 +23,9 @@ const OptionSelect = ({
         event.target.value === "true" || event.target.value === "false"
           ? JSON.parse(event.target.value)
           : null;
-      updateSelectedOption(option.selectionKey, value);
+      updateSelectedOption(option, value);
     } else {
-      updateSelectedOption(option.selectionKey, event.target.value || null);
+      updateSelectedOption(option, event.target.value || null);
     }
   }
 

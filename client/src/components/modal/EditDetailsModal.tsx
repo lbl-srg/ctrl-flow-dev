@@ -14,7 +14,7 @@ import { getConfigValuesToSave } from "../../interpreter/config-values";
 import OptionSelect from "../steps/Configs/OptionSelect";
 import { useDebouncedCallback } from "use-debounce";
 import { ALL_SYSTEMS, selectionKey } from "../../utils/selection-key";
-import { ConfigValues } from "../../utils/modifier-helpers";
+import { ConfigValues, storedValue } from "../../utils/modifier-helpers";
 
 // Climate zones are not displayed as "Not specified": only the zones of the
 // selected energy standard are displayed
@@ -94,18 +94,22 @@ const EditDetailsModal = observer(
     }
 
     function updateSelectedOption(
-      selectionPath: string,
-      choice: string | null,
+      option: FlatConfigOption,
+      choice: string | boolean | null,
     ) {
       setSelectedValues((prevState: any) => {
         if (choice == null) {
-          delete prevState[selectionPath];
+          delete prevState[option.selectionKey];
           return prevState;
         }
 
+        // The attributes of the value are set from the declaration
         return {
           ...prevState,
-          [selectionPath]: choice,
+          [option.selectionKey]: storedValue(
+            allOptions[option.modelicaPath],
+            choice,
+          ),
         };
       });
     }

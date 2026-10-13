@@ -3,7 +3,9 @@ import { useState, ChangeEvent } from "react";
 import itl from "../../translations";
 import { useStores } from "../../data";
 import { ConfigInterface } from "../../data/config";
+import { ProjectInterface } from "../../data/project";
 import { buildSequencePayload } from "../../utils/sequence-payload";
+import npmPkg from "../../../package.json";
 
 import Spinner from '../Spinner';
 
@@ -22,7 +24,7 @@ const DOWNLOADABLE_FILE_LIST = [
 ];
 
 function DownloadModal({ isOpen, close }: ModalInterface) {
-  const { projectStore, configStore } = useStores();
+  const { projectStore, configStore, templateStore } = useStores();
   // const [checked, setChecked] = useState(
   //   DOWNLOADABLE_FILE_LIST.map(({ label }) => label),
   // );
@@ -68,7 +70,17 @@ function DownloadModal({ isOpen, close }: ModalInterface) {
       const response = await fetch(`${import.meta.env.VITE_API}/sequence`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(buildSequencePayload(projectConfigs, false)),
+        body: JSON.stringify(
+          buildSequencePayload({
+            meta: {
+              ctrlFlow: npmPkg.version,
+              libraries: templateStore.libraries,
+            },
+            deleteInfoBox: false,
+            project: projectStore.activeProject as ProjectInterface,
+            configs: projectConfigs,
+          }),
+        ),
       });
 
       // TODO: Handle error responses which do not contain an actual file

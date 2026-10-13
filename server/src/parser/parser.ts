@@ -279,6 +279,8 @@ export interface TemplateInput {
    * constraining clause. */
   constrainingModifiers?: Modification[];
   elementType: ElementType;
+  /** See Element.kindOfClass */
+  kindOfClass?: string;
   replaceable?: boolean;
   /** True if value is a binding to a record type component */
   recordBinding?: boolean;
@@ -411,6 +413,7 @@ function getReplaceableInputs(
     choiceModifiers: choiceMods,
     constrainingModifiers: instance.constraintMods,
     replaceable: instance.replaceable,
+    ...(instance.kindOfClass && { kindOfClass: instance.kindOfClass }),
   };
 
   if (recursive) {
@@ -433,6 +436,10 @@ export abstract class Element {
   entryPoint = false;
   duplicate = false;
   elementType!: ElementType;
+  /** Class prefixes of a class definition without `partial`, as "model" or
+   * "expandable connector" (docs/selection-keys.md, "Values"). Undefined for
+   * other elements. */
+  kindOfClass?: string;
   replaceable: boolean = false;
   /** Never synthesized to `false`: undefined marks a non-selectable composite
    * group whose children remain live, while a defined `false` (or an
@@ -534,6 +541,19 @@ function getRawCtrlFlowEnable(
   return undefined;
 }
 
+/**
+ * Class prefixes of a class definition without `partial`, as written in a
+ * redeclaration: `redeclare <kindOfClass> S = P.C` (MLS 4.7, appendix A)
+ */
+function getKindOfClass(definition: any): string {
+  const classPrefixes: string =
+    definition.class_definition?.class_prefixes ?? definition.class_prefixes;
+  return classPrefixes
+    .replace(/\bpartial\b/, "")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
 export class ShortClass extends Element {
   mods?: Modification[];
   value?: string; // undefined for short class definitions (no binding)
@@ -543,6 +563,7 @@ export class ShortClass extends Element {
     public elementType: ElementType,
   ) {
     super();
+    this.kindOfClass = getKindOfClass(definition);
     const specifier = (definition.class_definition ?? definition)
       .class_specifier.short_class_specifier;
     this.name = specifier.identifier;
@@ -703,6 +724,7 @@ export class LongClass extends Element {
     public elementType: ElementType,
   ) {
     super();
+    this.kindOfClass = getKindOfClass(definition);
     const specifier = (definition.class_definition ?? definition)
       .class_specifier.long_class_specifier;
     this.name = specifier.identifier;
@@ -825,6 +847,7 @@ export class LongClass extends Element {
       elementType: this.elementType,
       modifiers: this.mods,
       replaceable: this.replaceable,
+      ...(this.kindOfClass && { kindOfClass: this.kindOfClass }),
     };
 
     return inputs;
@@ -1133,6 +1156,7 @@ export class Enumeration extends Element {
     public elementType: ElementType,
   ) {
     super();
+    this.kindOfClass = getKindOfClass(definition);
     const specifier = (definition.class_definition ?? definition)
       .class_specifier.short_class_specifier;
     this.name = specifier.identifier;
@@ -1172,6 +1196,7 @@ export class Enumeration extends Element {
       inputs: this.enumList.map((e) => e.modelicaPath),
       elementType: this.elementType,
       replaceable: this.replaceable,
+      ...(this.kindOfClass && { kindOfClass: this.kindOfClass }),
     };
 
     // outputs a parent input, then an input for each enum type

@@ -87,6 +87,9 @@ export interface Option {
   elementType: string;
   definition: boolean;
   shortExclType: boolean; // Short class definition excluding `type` definition
+  /** Class prefixes of a class definition without `partial`, as "model":
+   * undefined for components and enumeration literals */
+  kindOfClass?: string;
   /** True if value is a binding to a record type component */
   recordBinding?: boolean;
 }

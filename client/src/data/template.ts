@@ -35,6 +35,9 @@ export interface OptionInterface {
   treeList?: string[];
   definition: boolean;
   shortExclType: boolean; // Short class definition excluding `type` definition
+  /** Class prefixes of a class definition without `partial`, as "model":
+   * undefined for components and enumeration literals */
+  kindOfClass?: string;
   replaceable: boolean;
   /** True if value is a binding to a record type component */
   recordBinding?: boolean;
@@ -73,10 +76,13 @@ export default class Template {
   optionList: OptionInterface[];
   _options: { [key: string]: OptionInterface } = {};
   systemTypes: SystemTypeInterface[];
+  /** Versions of the libraries the templates are generated from */
+  libraries: { [name: string]: string | undefined };
   rootStore: RootStore;
 
   constructor(rootStore: RootStore) {
     this.templates = tplData.templates;
+    this.libraries = tplData.libraries;
     this.optionList = tplData.options;
     this.systemTypes = tplData.systemTypes;
     this.rootStore = rootStore;
