@@ -47126,7 +47126,7 @@
       "enable": {
         "operator": "==",
         "operands": [
-          "Buildings.Templates.Data.AllSystems.stdEne",
+          "stdEne",
           "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1"
         ]
       },
@@ -47170,7 +47170,7 @@
       "enable": {
         "operator": "==",
         "operands": [
-          "Buildings.Templates.Data.AllSystems.stdEne",
+          "stdEne",
           "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24"
         ]
       },
@@ -64774,192 +64774,7 @@
         "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox",
         "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController"
       ]
-    },
-    {
-      "modelicaPath": "datAll",
-      "name": "datAll",
-      "type": "Buildings.Templates.Data.AllSystems",
-      "visible": false,
-      "modifiers": {
-        "Buildings.Templates.Data.AllSystems.Units": {
-          "expression": "Buildings.Templates.Types.Units",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.SI": {
-          "expression": "Buildings.Templates.Types.Units.SI",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.IP": {
-          "expression": "Buildings.Templates.Types.Units.IP",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.EnergyStandard": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.ASHRAE90_1": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.California_Title_24": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.VentilationStandard": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.ASHRAE62_1": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.ASHRAEClimateZone": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Not_Specified": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Not_Specified",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_1A": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1A",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_1B": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_2A": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_2A",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_2B": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_2B",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_3A": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_3A",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_3B": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_3B",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_3C": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_3C",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_4A": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_4A",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_4B": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_4B",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_4C": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_4C",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_5A": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_5A",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_5B": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_5B",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_5C": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_5C",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_6A": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_6A",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_6B": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_6B",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_7": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_7",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_8": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_8",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Title24ClimateZone": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_1": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_1",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_2": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_2",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_3": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_3",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_4": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_4",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_5": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_5",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_6": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_6",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_9": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_9",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_10": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_10",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_11": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_11",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_12": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_12",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_13": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_13",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_14": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_14",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_15": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_15",
-          "final": false
-        },
-        "Buildings.Templates.Data.AllSystems.Zone_16": {
-          "expression": "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_16",
-          "final": false
-        }
-      },
-      "replaceable": false,
-      "options": [
-        "Buildings.Templates.Data.AllSystems"
-      ],
-      "definition": false,
-      "shortExclType": false
     }
   ],
-  "scheduleOptions": [],
-  "project": {
-    "modelicaPath": "datAll"
-  }
+  "scheduleOptions": []
 }

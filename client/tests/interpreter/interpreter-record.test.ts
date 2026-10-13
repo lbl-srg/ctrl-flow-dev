@@ -8,6 +8,7 @@ import {
 
 import { ConfigInterface } from "../../src/data/config";
 import { ConfigValues } from "../../src/utils/modifier-helpers";
+import { selectionKey } from "../../src/utils/selection-key";
 
 import {
   _formatDisplayOption,
@@ -160,7 +161,7 @@ describe("Record bindings in real-world plant template", () => {
     expect(resolveToValue("cfg.have_chiWat", context, "ctl")).toBe(true);
 
     const selections = {
-      "Buildings.Templates.Plants.HeatPumps.Interfaces.PartialHeatPumpPlant.have_chiWat-have_chiWat": false,
+      [selectionKey(plantTemplatePath, "have_chiWat")]: false,
     };
 
     const configWithSelections = createPlantConfig(
@@ -194,7 +195,7 @@ describe("Record bindings in real-world plant template", () => {
     expect(evaluate(enableExpr, context, "ctl")).toBe(true);
 
     const selections = {
-      "Buildings.Templates.Plants.HeatPumps.Interfaces.PartialHeatPumpPlant.have_chiWat-have_chiWat": false,
+      [selectionKey(plantTemplatePath, "have_chiWat")]: false,
     };
 
     const configWithSelections = createPlantConfig(

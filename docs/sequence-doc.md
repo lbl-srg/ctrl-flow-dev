@@ -48,8 +48,8 @@ Table annotations
 A mappings file is used to map from 'short codes' to exact template locations.
 
 Short ID: Short name used in annotations
-Modelica-Parameter: ctrl-flow's selection path
-Modelica-Path: the value of that selection
+Modelica Parameter: the selection key of the value in ctrl-flow, or a key pattern
+Modelica Path: the value of that selection
 
 Going back to the example annotation:
 
@@ -57,11 +57,13 @@ Going back to the example annotation:
 [EQUALS BSP RELIEFDMPR]
 ```
 
-`BSP` maps to: `Buildings.Templates.AirHandlersFans.Components.Controls.Interfaces.PartialVAVMultizone.buiPreCon-ctl.buiPreCon`
+`BSP` maps to: `Buildings.Templates.AirHandlersFans.VAVMultiZone-ctl.buiPreCon`
 
-`RELIEFDMPR` maps to: `Buildings.Controls.OBC.ASHRAE.G36.Types.BuildingPressureControlTypes.ReliefFan`
+`RELIEFDMPR` maps to: `Buildings.Controls.OBC.ASHRAE.G36.Types.PressureControl.ReliefFan`
 
 These long paths can then be used to resolve the annotation in the script.
+
+A key is `<template>-<elementPath>`, see [selection-keys.md](selection-keys.md). A key pattern lists several templates, e.g. `CO2` maps to `Buildings.Templates.ZoneEquipment.{VAVBoxCoolingOnly|VAVBoxReheat}-ctl.have_CO2Sen`: the annotation is evaluated against the values of `ctl.have_CO2Sen` in all configurations of both templates (see the "Mappings" section of [selection-keys.md](selection-keys.md)).
 
 TODO: add info about each column
 
@@ -74,10 +76,12 @@ Information boxes are hidden by applying either of these styles (exactly as list
 
 ## Updating the Source Document and Mappings File
 
-In `server/scripts/sequence-doc/src/version`, check the creation date of the source document and mappings file in the `current` directory.
+The source document and the mappings file are in `server/scripts/sequence-doc/src/version/Current G36 Decisions`. Only the current version is kept: earlier versions are in the git history. They were removed because their mappings use selection keys that ctrl-flow no longer produces.
 
-- Create a folder in `version` matching the format of previous sequence document versions: `<YYYY-MM-DD> G36 Decision`, e.g. `2022-12-15 G36 Decisions`.
-- Move both the csv and docx from the `current` folder into the dated folder just created
-- Move the updated source document and mappings csv into current, matching the nameing: `Guideline36-2021 (mappings).csv` and `Guideline36-2021 (sequence selection source).docx`
+- Replace both files, keeping their names: `Guideline 36-2021 (mappings).csv` and `Guideline 36-2021 (sequence selection source).docx`.
+- Write the `Modelica Parameter` column with selection keys or key patterns (see Mappings).
+- Run the tests:
+  - `client/tests/sequence/mappings.test.ts` checks that every key of the mappings is the key under which ctrl-flow stores the value of the element: otherwise the key is never in the payload, and the toggle treats the value as missing.
+  - `server/scripts/sequence-doc/tests/test_golden.py` compares the generated documents to the expected texts. If the changes of the document are intended, regenerate the expected texts with `UPDATE_GOLDEN=1` and review their diff.
 
 Always update both the mappings and source file.

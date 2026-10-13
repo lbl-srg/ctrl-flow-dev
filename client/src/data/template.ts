@@ -1,7 +1,7 @@
 import tplData from "./templates.json";
 import RootStore from ".";
-import { buildModifiers, Modifiers } from "../utils/modifier-helpers";
-import { Expression } from "../utils/expression-helpers";
+import { Modifiers } from "../utils/modifier-helpers";
+import type { Expression } from "../interpreter/interpreter";
 
 export interface TemplateInterface {
   modelicaPath: string;
@@ -20,7 +20,6 @@ export interface OptionInterface {
   tab?: string;
   visible?: boolean;
   options?: string[];
-  childOptions?: OptionInterface[];
   valueExpression?: any; //{ expression: string; modelicaPath: string };
   /** Never synthesized to `false` by the parser: undefined for non-selectable
    * composite groups; a defined value evaluating to false (explicit
@@ -69,7 +68,6 @@ const icons = [
 ];
 
 export default class Template {
-  _mods: Modifiers | undefined; // internal cache so we don't recompute... doesn't help
   templates: TemplateInterface[];
   _templates: { [key: string]: TemplateInterface } = {};
   optionList: OptionInterface[];
@@ -112,43 +110,9 @@ export default class Template {
     );
   }
 
-  get nestedOptions(): OptionInterface[] {
-    const allOptions = this.optionList;
-
-    return this.optionList.map((option) => {
-      if (option.options) {
-        option.childOptions = option.options.reduce((acc, path) => {
-          const match = allOptions.find((opt) => opt.modelicaPath === path);
-          return match ? acc.concat(match) : acc;
-        }, [] as OptionInterface[]);
-      }
-
-      return option;
-    });
-  }
-
   getIconForSystem(systemPath: string): string | undefined {
     const match = icons.find((item) => item.systemPath === systemPath);
     return match ? match.iconClass : "";
-  }
-
-  getOptionsForProject(): OptionInterface[] {
-    return this.nestedOptions.filter((opt) => opt.modelicaPath === "datAll");
-  }
-
-  getOptionsForTemplate(path: string): OptionInterface[] {
-    return this.nestedOptions.filter((opt) => opt.modelicaPath === path);
-  }
-
-  getModifiersForTemplate(path: string): Modifiers {
-    if (!this._mods) {
-      const templateOption = this.optionList.find(
-        (opt) => opt.modelicaPath === path,
-      ) as OptionInterface;
-      this._mods = buildModifiers(templateOption, "", {}, "", this._options);
-    }
-
-    return this._mods;
   }
 
   getAllTemplates() {

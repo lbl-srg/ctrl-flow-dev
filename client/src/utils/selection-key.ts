@@ -1,39 +1,40 @@
-import { splitSelectionKey } from "./names";
+import { isClassName, isName } from "./names";
 
 /**
  * Selection keys (docs/selection-keys.md). This is the only module that
  * builds and parses the keys of the stores (selections, evaluated values).
  *
- * A key is `<optionPath>-<instancePath>`, where `optionPath` is the option of
- * the declaration of the element and `instancePath` its resolved instance
- * path. A project setting (Buildings.Templates.Data.AllSystems) is keyed by
- * its option path only.
+ * A key is `<rootClass>-<elementPath>`, where `rootClass` is the class to
+ * extend (the template, or Buildings.Templates.Data.AllSystems for a project
+ * setting) and `elementPath` the resolved path of the element in this class.
  */
 
-const ALL_SYSTEMS = "Buildings.Templates.Data.AllSystems";
+/** Class of the project settings (docs/selection-keys.md, rule 1) */
+export const ALL_SYSTEMS = "Buildings.Templates.Data.AllSystems";
 
-export function selectionKey(optionPath: string, instancePath: string): string {
-  return optionPath.includes(ALL_SYSTEMS)
-    ? optionPath
-    : `${optionPath}-${instancePath}`;
+export function selectionKey(rootClass: string, elementPath: string): string {
+  return `${rootClass}-${elementPath}`;
 }
 
 /**
- * Key of a project setting, declared by `optionPath` in
- * Buildings.Templates.Data.AllSystems
- */
-export function projectSelectionKey(optionPath: string): string {
-  return optionPath;
-}
-
-/**
- * Option path and instance path of a key. The instance path is undefined for
- * a project setting.
+ * Root class and element path of a key. `rootClass` has no quoted
+ * identifier, so the first "-" is the separator.
+ * Throws if the key is invalid (docs/selection-keys.md, "Parsing").
  */
 export function parseSelectionKey(key: string): {
-  optionPath: string;
-  instancePath?: string;
+  rootClass: string;
+  elementPath: string;
 } {
-  const [optionPath, instancePath] = splitSelectionKey(key);
-  return { optionPath, instancePath };
+  const i = key.indexOf("-");
+  const rootClass = key.slice(0, i);
+  const elementPath = key.slice(i + 1);
+  if (
+    i === -1 ||
+    !isClassName(rootClass) ||
+    !isName(elementPath) ||
+    elementPath.startsWith(".")
+  ) {
+    throw new Error(`Invalid selection key: ${key}`);
+  }
+  return { rootClass, elementPath };
 }

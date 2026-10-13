@@ -5,10 +5,10 @@ import {
   enclosingName,
   firstIdent,
   hasQuotedIdent,
+  isClassName,
   isName,
   lastIdent,
   splitName,
-  splitSelectionKey,
 } from "../../src/utils/names";
 
 describe("Modelica names", () => {
@@ -69,15 +69,13 @@ describe("Modelica names", () => {
     ].forEach((name) => expect(isName(name)).toBe(false));
   });
 
-  it("splits selection keys at the first dash outside quoted identifiers", () => {
-    expect(splitSelectionKey("P.T.p-a.p")).toEqual(["P.T.p", "a.p"]);
-    expect(splitSelectionKey("P.'p-1'-'c-d'.'p-1'")).toEqual([
-      "P.'p-1'",
-      "'c-d'.'p-1'",
-    ]);
-    expect(splitSelectionKey("P.AllSystems.stdEne")).toEqual([
-      "P.AllSystems.stdEne",
-    ]);
+  it("validates class names", () => {
+    ["A", "P.A", "P_1.a2"].forEach((name) =>
+      expect(isClassName(name)).toBe(true),
+    );
+    ["", ".P.A", "P.'A'", "'P'.A", "P.A-b", "P..A", "1P"].forEach((name) =>
+      expect(isClassName(name)).toBe(false),
+    );
   });
 
   it("keeps escapes as written", () => {

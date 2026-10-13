@@ -295,17 +295,17 @@ When a user makes a selection related to a component in `ctrl-flow`, (e.g., when
 
 ```json
 {
-  "Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut-secOutRel.secOut": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure"
+  "Buildings.Templates.AirHandlersFans.VAVMultiZone-secOutRel.secOut": "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure"
 }
 ```
 
-The 'key' is composed of two parts, a modelica path and an instance path. The 'value' of the component is a modelica path.
+The 'key' is composed of two parts, the template and the path of the element in the template. The 'value' of the component is a modelica path.
 
 ```
-modelicaPath: Buildings.Templates.AirHandlersFans.Components.OutdoorReliefReturnSection.MixedAirWithDamper.secOut
-instancePath: secOutRel.secOut
+rootClass: Buildings.Templates.AirHandlersFans.VAVMultiZone
+elementPath: secOutRel.secOut
 
 value: "Buildings.Templates.AirHandlersFans.Components.OutdoorSection.DedicatedDampersPressure"
 ```
 
-The instance path is required as components can be re-used within the same template.
+The key identifies the element across all templates. See [selection-keys.md](selection-keys.md) for the grammar and the resolution rules.

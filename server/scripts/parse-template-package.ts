@@ -6,7 +6,6 @@ import {
   getTemplates,
   getSystemTypes,
   getOptions,
-  getProject
 } from "../src/parser";
 
 loadPackage("Buildings.Templates");
@@ -18,7 +17,6 @@ const data = {
   systemTypes: getSystemTypes(),
   options: options,
   scheduleOptions: scheduleOptions,
-  project: getProject()
 };
 
 const dest = path.resolve(
