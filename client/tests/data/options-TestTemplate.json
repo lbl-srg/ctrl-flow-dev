@@ -352,6 +352,52 @@
         }
       }
     },
+    "constrainingModifiers": {
+      "TestPackage.Template.TestTemplate.selectable_component.container": {
+        "expression": "TestPackage.Types.Container.Cone",
+        "final": true
+      },
+      "TestPackage.Template.TestTemplate.selectable_component.icecream": {
+        "expression": {
+          "operator": "if_elseif",
+          "operands": [
+            {
+              "operator": "if",
+              "operands": [
+                {
+                  "operator": "!=",
+                  "operands": [
+                    "first.icecream",
+                    "TestPackage.Types.IceCream.Chocolate"
+                  ]
+                },
+                "first.icecream"
+              ]
+            },
+            {
+              "operator": "else_if",
+              "operands": [
+                {
+                  "operator": "!=",
+                  "operands": [
+                    "third.icecream",
+                    "TestPackage.Types.IceCream.Chocolate"
+                  ]
+                },
+                "third.icecream"
+              ]
+            },
+            {
+              "operator": "else",
+              "operands": [
+                "TestPackage.Types.IceCream.Chocolate"
+              ]
+            }
+          ]
+        },
+        "final": true
+      }
+    },
     "replaceable": true,
     "options": [
       "TestPackage.Component.SecondComponent",
@@ -1229,6 +1275,16 @@
     },
     "enable": true,
     "choiceModifiers": {},
+    "constrainingModifiers": {
+      "TestPackage.Template.TestTemplate.selectable_component_with_element_mods.container": {
+        "expression": "TestPackage.Types.Container.Cone",
+        "final": true
+      },
+      "TestPackage.Template.TestTemplate.selectable_component_with_element_mods.icecream": {
+        "expression": "third.icecream",
+        "final": false
+      }
+    },
     "replaceable": true,
     "options": [
       "TestPackage.Component.SecondComponent",
@@ -1292,6 +1348,52 @@
     },
     "enable": true,
     "choiceModifiers": {},
+    "constrainingModifiers": {
+      "TestPackage.Template.TestTemplate.selectable_component_with_relative_paths.container": {
+        "expression": "Types.Container.Cone",
+        "final": true
+      },
+      "TestPackage.Template.TestTemplate.selectable_component_with_relative_paths.icecream": {
+        "expression": {
+          "operator": "if_elseif",
+          "operands": [
+            {
+              "operator": "if",
+              "operands": [
+                {
+                  "operator": "!=",
+                  "operands": [
+                    "first.icecream",
+                    "TestPackage.Types.IceCream.Chocolate"
+                  ]
+                },
+                "first.icecream"
+              ]
+            },
+            {
+              "operator": "else_if",
+              "operands": [
+                {
+                  "operator": "!=",
+                  "operands": [
+                    "third.icecream",
+                    "TestPackage.Types.IceCream.Chocolate"
+                  ]
+                },
+                "third.icecream"
+              ]
+            },
+            {
+              "operator": "else",
+              "operands": [
+                "TestPackage.Types.IceCream.Chocolate"
+              ]
+            }
+          ]
+        },
+        "final": true
+      }
+    },
     "replaceable": true,
     "options": [
       "TestPackage.Component.SecondComponent",
@@ -1310,6 +1412,7 @@
     "modifiers": {},
     "enable": true,
     "choiceModifiers": {},
+    "constrainingModifiers": {},
     "replaceable": true,
     "options": [
       "TestPackage.Component.FirstComponent",

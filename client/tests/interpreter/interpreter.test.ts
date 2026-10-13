@@ -164,6 +164,65 @@ describe("Modifiers", () => {
     // The binding gives the value, never the class
     expect(context.getOptionInstance("ctl.dat")?.type).toEqual(dataController);
   });
+
+  it("Keeps the bindings of a declaration redeclared final", () => {
+    // PartialAirHandler: replaceable ... cfg(final typFanSup=typFanSup, ...)
+    // VAVMultiZone: redeclare final Configuration.VAVMultiZone cfg(...)
+    const context = new ConfigContext(
+      mzTemplate,
+      mzConfig,
+      allOptions,
+      createSelections(),
+    );
+
+    const mod = context.mods["cfg.typFanSup"];
+    expect(mod.expression).toEqual("typFanSup");
+    expect(mod.final).toBe(true);
+    expect(context.getValue("cfg.typFanSup")).toEqual(
+      "Buildings.Templates.Components.Types.Fan.SingleVariable",
+    );
+  });
+
+  it("Keeps only the constraining clause modifiers in a redeclaration", () => {
+    // VAVBox: replaceable WaterBasedHeating coiHea(final typVal=TwoWayModulating)
+    //   constrainedby PartialCoil(final dat=datCoiHea, ...)
+    // VAVBoxCoolingOnly: redeclare final Coils.None coiHea
+    // Coils.None: extends PartialCoil(final typVal=Valve.None, ...)
+    const valveNone = "Buildings.Templates.Components.Types.Valve.None";
+    const coolingOnly = new ConfigContext(
+      zoneTemplate,
+      zoneConfig,
+      allOptions,
+      createSelections(),
+    );
+    expect(coolingOnly.mods["coiHea.dat"].expression).toEqual("datCoiHea");
+    expect(coolingOnly.getValue("coiHea.typVal")).toEqual(valveNone);
+
+    // The same with a selection: VAVBoxReheat, coiHea=ElectricHeating
+    const selections = {
+      "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea-coiHea":
+        "Buildings.Templates.Components.Coils.ElectricHeating",
+    };
+    const reheat = new ConfigContext(
+      zoneReheatTemplate,
+      addNewConfig("VAV Box Reheat Electric", zoneReheatTemplate, selections),
+      allOptions,
+      createSelections(selections),
+    );
+    expect(reheat.mods["coiHea.dat"].expression).toEqual("datCoiHea");
+    expect(reheat.getValue("coiHea.typVal")).toEqual(valveNone);
+
+    // Not redeclared: the modifiers of the declaration apply
+    const reheatDefault = new ConfigContext(
+      zoneReheatTemplate,
+      zoneReheatConfig,
+      allOptions,
+      createSelections(),
+    );
+    expect(reheatDefault.getValue("coiHea.typVal")).toEqual(
+      "Buildings.Templates.Components.Types.Valve.TwoWayModulating",
+    );
+  });
 });
 
 const buildExpression = (operator: OperatorType, operands: any[]) => {

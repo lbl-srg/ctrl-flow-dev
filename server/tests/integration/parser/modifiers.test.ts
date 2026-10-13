@@ -186,6 +186,27 @@ describe("Modifications", () => {
     expect(mods[elementModPath].final).toBe(true);
   });
 
+  it("Keeps the constraining-clause modifiers apart for redeclarations", () => {
+    // Only the constraining-clause modifiers apply to a redeclaration
+    // (MLS 7.3.2), including those overridden by the declaration
+    const path =
+      "TestPackage.Template.TestTemplate.selectable_component_with_element_mods";
+    const mods = tOptions[path].constrainingModifiers ?? {};
+
+    expect(Object.keys(mods).sort()).toEqual([
+      `${path}.container`,
+      `${path}.icecream`,
+    ]);
+    expect(mods[`${path}.container`].final).toBe(true);
+    expect(mods[`${path}.icecream`].expression).toEqual("third.icecream");
+    expect(mods[`${path}.icecream`].final).toBe(false);
+    // No constraining clause
+    expect(
+      tOptions["TestPackage.Component.FourthComponent.replaceable_param"]
+        .constrainingModifiers,
+    ).toBeUndefined();
+  });
+
   it("Doesn't have a modifier that matches the option path (the 'default mod')", () => {
     const path = "TestPackage.Template.TestTemplate.typ";
     const option = tOptions[path];

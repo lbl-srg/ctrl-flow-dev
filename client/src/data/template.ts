@@ -29,6 +29,10 @@ export interface OptionInterface {
   enable?: any; // { modelicaPath: string; expression: string };
   modifiers?: any;
   choiceModifiers?: { [key: string]: Modifiers | undefined };
+  /** Modifiers of the constraining clause of a replaceable element: only
+   * these apply to a redeclaration (MLS 7.3.2). Undefined if there is no
+   * constraining clause. */
+  constrainingModifiers?: Modifiers;
   treeList?: string[];
   definition: boolean;
   shortExclType: boolean; // Short class definition excluding `type` definition

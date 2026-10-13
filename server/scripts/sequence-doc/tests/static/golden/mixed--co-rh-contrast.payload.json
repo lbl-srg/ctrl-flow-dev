@@ -5,9 +5,6 @@
   "Buildings.Templates.Components.Coils.WaterBasedHeating.hex-coiHea.hex": [
     "Buildings.Fluid.HeatExchangers.DryCoilEffectivenessNTU"
   ],
-  "Buildings.Templates.Components.Data.Coil.Q_flow_nominal-coiHea.dat.Q_flow_nominal": [
-    "-1*abs(cap_nominal)"
-  ],
   "Buildings.Templates.Components.Data.Coil.Q_flow_nominal-dat.coiHea.Q_flow_nominal": [
     "-1*abs(cap_nominal)"
   ],
@@ -24,6 +21,7 @@
     "ctl.VAirHeaSet_flow_max*1.2"
   ],
   "Buildings.Templates.Components.Data.Coil.typ-datCoiHea.typ": [
+    "Buildings.Templates.Components.Types.Coil.None",
     "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
   ],
   "Buildings.Templates.Components.Interfaces.PartialCoil.Q_flow_nominal-coiHea.Q_flow_nominal": [
@@ -43,9 +41,11 @@
     "ctl.VAirHeaSet_flow_max*1.2"
   ],
   "Buildings.Templates.Components.Interfaces.PartialCoil.typ-coiHea.typ": [
+    "Buildings.Templates.Components.Types.Coil.None",
     "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
   ],
   "Buildings.Templates.Components.Interfaces.PartialCoil.typVal-coiHea.typVal": [
+    "Buildings.Templates.Components.Types.Valve.None",
     "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
   ],
   "Buildings.Templates.Data.AllSystems.ashCliZon": [
@@ -114,6 +114,17 @@
   "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox.stdVen-ctl.stdVen": [
     "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
   ],
+  "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal.have_souChiWat-cfg.have_souChiWat": [
+    false
+  ],
+  "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal.have_souHeaWat-cfg.have_souHeaWat": [
+    false,
+    true
+  ],
+  "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal.typ-cfg.typ": [
+    "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxCoolingOnly",
+    "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat"
+  ],
   "Buildings.Templates.ZoneEquipment.Configuration.PartialAirTerminal.typCtl-cfg.typCtl": [
     "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly",
     "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxReheat"
@@ -122,12 +133,14 @@
     "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
   ],
   "Buildings.Templates.ZoneEquipment.Configuration.VAVBox.typCoiHea-cfg.typCoiHea": [
+    "Buildings.Templates.Components.Types.Coil.None",
     "Buildings.Templates.Components.Types.Coil.WaterBasedHeating"
   ],
   "Buildings.Templates.ZoneEquipment.Configuration.VAVBox.typDamVAV-cfg.typDamVAV": [
     "Buildings.Templates.Components.Types.Damper.Modulating"
   ],
   "Buildings.Templates.ZoneEquipment.Configuration.VAVBox.typValCoiHea-cfg.typValCoiHea": [
+    "Buildings.Templates.Components.Types.Valve.None",
     "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
   ],
   "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal.ctl-dat.ctl": [
