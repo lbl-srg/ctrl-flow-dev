@@ -137,8 +137,10 @@ The modification object is used throughout the parser where it attempts to do co
 The template class 'flattens' all modifiers that have an assigned `modelicaPath` (instance path) into the following shape:
 
 ```typescript
-{[key: modelicaPath]: {expression: Expression, final: boolean}}
+{[key: modelicaPath]: {expression?: Literal | Expression, final: boolean, redeclare?: string, recordBinding?: boolean}}
 ```
+
+`expression` is undefined if the modifier has no binding, e.g. a redeclaration.
 
 If you have the following parameter declaration:
 
