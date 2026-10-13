@@ -88,7 +88,7 @@ Single Common OA Damper with AFMS,SINGLE,,,Buildings.Controls.OBC.ASHRAE.G36.Typ
 Dedicated minimum OA damper with AFMS,SEP_AFMS,,,Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersAirflow,
 Dedicated minimum OA damper DPT,SEP_DP,,,Buildings.Controls.OBC.ASHRAE.G36.Types.OutdoorAirSection.DedicatedDampersPressure,
 Damper mapping (SZVAV-only),MAPSPD,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
-Multiple Relief Fans:,,N,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
+Multiple Relief Fans:,MULT_RELIEF,N,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 Yes,,,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.
 No,,,,,
 Common Relief Fan Inlet Plenum:,,N,,,NOT implemented in Templates (nor in Buildings.Controls.OBC.ASHRAE.G36). Covered by G36.

@@ -43,6 +43,25 @@ Table annotations
         + `[COLUMN YES CO2]` - Keep this column if a CO2 sensor is present. Otherwise remove.
         + `[COLUMN AND [any toggle] [any toggle]]` - Keep this column if both nested toggles would keep the column. Otherwise remove.
 
+### Scope of an Annotation
+
+The section removed by an annotation depends on the style of the paragraph that starts with the annotation:
+
+- Heading (`Heading N`): the heading and everything below it, up to the next heading of the same or a higher level.
+- Information box (`Info. box`, `InfoboxList`, `InfoTableTitle`): the paragraph only.
+- Any other style: the paragraph only, and any table that directly follows it.
+
+### Units
+
+`[UNITS [<SI>] [<IP>]]` is replaced by `<SI>` or `<IP>` depending on the unit system of the project (`UNITS`), e.g. `[UNITS [12 Pa] [0.05 in.]]`. SI comes first. The whole annotation, including both alternatives, has the `Toggle` style and is within one paragraph. The replacement takes the format of the first run of the annotation, so formatting within the alternatives is lost.
+
+The script only reads text: an alternative that is an equation, a picture or any other content than text cannot be in a `UNITS` annotation. Use one paragraph for each unit system instead, SI first, and do not apply the `Toggle` style to the content:
+
+```
+[EQUALS UNITS SI]<SI equation or picture>
+[EQUALS UNITS IP]<IP equation or picture>
+```
+
 ## Mappings
 
 A mappings file is used to map from 'short codes' to exact template locations.
