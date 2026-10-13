@@ -19,6 +19,7 @@
       "modifiers": {},
       "enable": true,
       "choiceModifiers": {},
+      "constrainingModifiers": {},
       "replaceable": true,
       "options": [
         "QuotedPackage.Component.First",
@@ -334,24 +335,6 @@
       "treeList": [
         "QuotedPackage.Template.QuotedTemplate"
       ]
-    },
-    "datAll": {
-      "modelicaPath": "datAll",
-      "name": "datAll",
-      "type": "Buildings.Templates.Data.AllSystems",
-      "visible": false,
-      "modifiers": {
-        "Buildings.Templates.Data.AllSystems.projectSetting": {
-          "expression": false,
-          "final": false
-        }
-      },
-      "replaceable": false,
-      "options": [
-        "Buildings.Templates.Data.AllSystems"
-      ],
-      "definition": false,
-      "shortExclType": false
     },
     "Buildings.Templates.Data.AllSystems.projectSetting": {
       "modelicaPath": "Buildings.Templates.Data.AllSystems.projectSetting",

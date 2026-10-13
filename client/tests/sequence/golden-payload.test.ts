@@ -29,6 +29,7 @@ import {
 import { getConfigValuesToSave } from "../../src/interpreter/config-values";
 import { buildSequencePayload } from "../../src/utils/sequence-payload";
 import { ConfigValues } from "../../src/utils/modifier-helpers";
+import { ALL_SYSTEMS, selectionKey } from "../../src/utils/selection-key";
 
 const GOLDEN_DIR = path.resolve(
   __dirname,
@@ -49,26 +50,24 @@ type Values = { [instancePath: string]: string | boolean };
 type ConfigCase = { template: string; values?: Values };
 type ProjectCase = { name: string; project: Values; configs: ConfigCase[] };
 
-// Project settings, keyed as saved by EditDetailsModal
+// Project settings (docs/selection-keys.md, rule 1)
 const ASHRAE_IP: Values = {
-  "Buildings.Templates.Data.AllSystems.stdEne":
+  [selectionKey(ALL_SYSTEMS, "stdEne")]:
     "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
-  "Buildings.Templates.Data.AllSystems.stdVen":
+  [selectionKey(ALL_SYSTEMS, "stdVen")]:
     "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1",
-  "Buildings.Templates.Data.AllSystems.ashCliZon":
+  [selectionKey(ALL_SYSTEMS, "ashCliZon")]:
     "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_4A",
-  "Buildings.Templates.Data.AllSystems.sysUni":
-    "Buildings.Templates.Types.Units.IP",
+  [selectionKey(ALL_SYSTEMS, "sysUni")]: "Buildings.Templates.Types.Units.IP",
 };
 const TITLE24_SI: Values = {
-  "Buildings.Templates.Data.AllSystems.stdEne":
+  [selectionKey(ALL_SYSTEMS, "stdEne")]:
     "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24",
-  "Buildings.Templates.Data.AllSystems.stdVen":
+  [selectionKey(ALL_SYSTEMS, "stdVen")]:
     "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
-  "Buildings.Templates.Data.AllSystems.tit24CliZon":
+  [selectionKey(ALL_SYSTEMS, "tit24CliZon")]:
     "Buildings.Controls.OBC.ASHRAE.G36.Types.Title24ClimateZone.Zone_3",
-  "Buildings.Templates.Data.AllSystems.sysUni":
-    "Buildings.Templates.Types.Units.SI",
+  [selectionKey(ALL_SYSTEMS, "sysUni")]: "Buildings.Templates.Types.Units.SI",
 };
 
 const flatten = (items: any[], out: FlatConfigOption[] = []) => {

@@ -4,7 +4,6 @@ import { OptionInterface } from "../../src/data/template";
 
 import { ConfigContext, OptionInstance } from "./interpreter";
 import { enclosingName, lastIdent } from "../utils/names";
-import { selectionKey } from "../utils/selection-key";
 
 export interface FlatConfigOptionGroup {
   groupName: string;
@@ -60,6 +59,9 @@ export function _formatDisplayOption(
 ): FlatConfigOption {
   const option = optionInstance.option;
   const type = optionInstance.option.type === "Boolean" ? "Boolean" : "Normal";
+  if (optionInstance.key === null) {
+    throw new Error(`No selection key for ${optionInstance.instancePath}`);
+  }
 
   const flatOptionSetup: Partial<FlatConfigOption> = {
     parentModelicaPath,
@@ -68,10 +70,7 @@ export function _formatDisplayOption(
     value: optionInstance.value?.toString(),
     selectionType: type,
     scope: optionInstance.instancePath,
-    selectionKey: selectionKey(
-      option.modelicaPath,
-      optionInstance.instancePath,
-    ),
+    selectionKey: optionInstance.key,
   };
 
   if (type === "Boolean") {

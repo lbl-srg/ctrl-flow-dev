@@ -9,7 +9,11 @@ import {
   lastIdent,
   splitName,
 } from "../utils/names";
-import { parseSelectionKey, selectionKey } from "../utils/selection-key";
+import {
+  ALL_SYSTEMS,
+  parseSelectionKey,
+  selectionKey,
+} from "../utils/selection-key";
 
 export type Literal = boolean | string | number;
 
@@ -101,8 +105,6 @@ export function applyPathModifiers(
   return modifiedPath;
 }
 
-const ALL_SYSTEMS = "Buildings.Templates.Data.AllSystems";
-
 /**
  * What the resolution functions read from a ConfigContext. buildMods passes
  * the modifiers it is building.
@@ -115,18 +117,20 @@ interface ResolutionContext {
 }
 
 /**
- * Selections that may hold a class, by instance path: string values of keys
- * with an instance path. If several keys have the same instance path, the
- * last one wins.
+ * Selections that may hold a class, by element path: string values of the
+ * keys of `rootClass`
  */
-export function selectedClasses(selections: ConfigValues): {
+export function selectedClasses(
+  selections: ConfigValues,
+  rootClass: string,
+): {
   [key: string]: string;
 } {
   const classes: { [key: string]: string } = {};
   Object.entries(selections).forEach(([key, value]) => {
-    const { instancePath } = parseSelectionKey(key);
-    if (instancePath !== undefined && typeof value === "string") {
-      classes[instancePath] = value;
+    const { rootClass: keyClass, elementPath } = parseSelectionKey(key);
+    if (keyClass === rootClass && typeof value === "string") {
+      classes[elementPath] = value;
     }
   });
   return classes;
@@ -232,6 +236,12 @@ export interface ResolvedInstance {
   isOuter: boolean;
   /** Option of the element reached through the outer declaration, if any */
   outerOptionPath: string | null;
+  /**
+   * Selection key of the element (docs/selection-keys.md, rule 1), or null
+   * for an inner element declared outside of the template itself, or for the
+   * outer declaration (`applyPathMods` false)
+   */
+  key: string | null;
 }
 
 /**
@@ -262,20 +272,27 @@ export function resolveInstance(
 /**
  * Option path of the element `name` of the template, or null. An inner
  * element declared outside of the template, as datAll
- * (docs/selection-keys.md, rule 1), is declared by its outer declaration.
+ * (docs/selection-keys.md, rule 1), is declared by its outer declaration:
+ * `outside` is then true.
  */
-const templateMember = (name: string, context: ConfigContext) => {
+const templateMember = (
+  name: string,
+  context: ConfigContext,
+): { optionPath: string; outside: boolean } | null => {
+  const optionPath = memberOption(context.template.modelicaPath, name, context);
+  if (optionPath) {
+    return { optionPath, outside: false };
+  }
   const pathModifiers = context.template.pathModifiers ?? {};
   const outerPath = Object.keys(pathModifiers).find(
     (p) => pathModifiers[p] === name,
   );
-  return (
-    memberOption(context.template.modelicaPath, name, context) ??
-    (outerPath
-      ? resolveInstance(outerPath, context, false)?.optionPath
-      : null) ??
-    null
-  );
+  const outerOptionPath = outerPath
+    ? resolveInstance(outerPath, context, false)?.optionPath
+    : null;
+  return outerOptionPath
+    ? { optionPath: outerOptionPath, outside: true }
+    : null;
 };
 
 const _resolveInstance = (
@@ -290,11 +307,18 @@ const _resolveInstance = (
   const isOuter = resolvedPath !== path;
 
   const [first, ...rest] = splitName(resolvedPath);
-  let elementPath = first;
-  let optionPath = templateMember(first, context);
-  if (!optionPath) {
+  const member = templateMember(first, context);
+  if (!member) {
     return null;
   }
+  let elementPath = first;
+  let optionPath: string | null = member.optionPath;
+  // An inner element declared outside of the template is the root of the
+  // keys of its elements, as Buildings.Templates.Data.AllSystems for datAll
+  const rootClass = member.outside
+    ? effectiveClass(first, options[optionPath], context)
+    : context.template.modelicaPath;
+  const keyPath = member.outside ? rest.join(".") : resolvedPath;
   while (rest.length > 0) {
     const classPath = effectiveClass(elementPath, options[optionPath], context);
     const name = rest.shift() as string;
@@ -330,6 +354,7 @@ const _resolveInstance = (
     outerOptionPath: isOuter
       ? (resolveInstance(path, context, false)?.optionPath ?? null)
       : null,
+    key: applyPathMods && keyPath ? selectionKey(rootClass, keyPath) : null,
   };
 };
 
@@ -390,6 +415,7 @@ export function resolvePaths(
   outerOptionPath: string | null | undefined;
   classPath?: string;
   isOuter?: boolean;
+  key: string | null;
 } {
   const heads = createPossiblePaths(scope, firstIdent(path));
   for (const [i, p] of createPossiblePaths(scope, path).entries()) {
@@ -401,13 +427,19 @@ export function resolvePaths(
         outerOptionPath: resolution.outerOptionPath,
         classPath: resolution.classPath,
         isOuter: resolution.isOuter,
+        key: resolution.key,
       };
     }
     if (heads[i] !== p && resolveInstance(heads[i], context)) {
       break;
     }
   }
-  return { optionPath: null, instancePath: path, outerOptionPath: null };
+  return {
+    optionPath: null,
+    instancePath: path,
+    outerOptionPath: null,
+    key: null,
+  };
 }
 
 ///////////////// Expression Evaluation
@@ -852,7 +884,11 @@ export const buildMods = (
   buildModsHelper(
     /* option */ startOption,
     /* baseInstancePath */ "",
-    /* ctx */ { options, mods, selectedClasses: selectedClasses(selections) },
+    /* ctx */ {
+      options,
+      mods,
+      selectedClasses: selectedClasses(selections, startOption.modelicaPath),
+    },
     /* isRootTemplate */ true,
   );
 
@@ -870,6 +906,8 @@ export interface OptionInstance {
   instancePath: string;
   isOuter: boolean;
   type: string;
+  /** Selection key, see `ResolvedInstance` */
+  key: string | null;
 }
 
 /**
@@ -896,7 +934,11 @@ export class ConfigContext implements ResolutionContext {
   mods: { [key: string]: Modifier } = {};
   selectedClasses: { [key: string]: string };
   _resolvedValues: {
-    [key: string]: { value: Literal | null; optionPath: string };
+    [key: string]: {
+      value: Literal | null;
+      optionPath: string;
+      key: string | null;
+    };
   } = {};
   _resolvedInstances: { [key: string]: ResolvedInstance | null } = {};
   _resolvedOuterInstances: { [key: string]: ResolvedInstance | null } = {};
@@ -908,7 +950,7 @@ export class ConfigContext implements ResolutionContext {
     public options: { [key: string]: OptionInterface },
     public selections: ConfigValues = {},
   ) {
-    this.selectedClasses = selectedClasses(selections);
+    this.selectedClasses = selectedClasses(selections, template.modelicaPath);
     this.mods = buildMods(
       this.options[template.modelicaPath],
       selections,
@@ -916,9 +958,9 @@ export class ConfigContext implements ResolutionContext {
     );
   }
 
-  addToCache(path: string, optionPath: string, val: any) {
+  addToCache(path: string, optionPath: string, key: string | null, val: any) {
     if (!isExpression(val) && val !== undefined && val !== null) {
-      this._resolvedValues[path] = { value: val as Literal, optionPath };
+      this._resolvedValues[path] = { value: val as Literal, optionPath, key };
     }
   }
 
@@ -947,13 +989,16 @@ export class ConfigContext implements ResolutionContext {
     let val = null;
     let optionPath: string | null = "";
     let instancePath = path;
+    // Only the elements of the template have a key, not the classes nor
+    // the elements reached by a fully qualified name
+    let key: string | null = null;
 
     if (isFullyQualifiedName(path)) {
       const option = this.options[path];
       if (option) {
         if (option.definition) {
           this._previousInstancePath = null;
-          this.addToCache(path, optionPath, path);
+          this.addToCache(path, optionPath, null, path);
           return path;
         }
         optionPath = path;
@@ -964,6 +1009,7 @@ export class ConfigContext implements ResolutionContext {
       const paths = resolvePaths(path, this, scope);
       optionPath = paths.optionPath;
       instancePath = paths.instancePath;
+      key = paths.key;
     }
 
     if (!optionPath) {
@@ -972,12 +1018,11 @@ export class ConfigContext implements ResolutionContext {
       return null; // PUNCH-OUT! Unable to resolve value
     }
 
-    const selectionPath = selectionKey(optionPath, instancePath);
     // check selections
-    if (this.selections && selectionPath in this.selections) {
+    if (key !== null && this.selections && key in this.selections) {
       this._previousInstancePath = null;
-      this.addToCache(path, optionPath, this.selections[selectionPath]);
-      return this.selections[selectionPath];
+      this.addToCache(path, optionPath, key, this.selections[key]);
+      return this.selections[key];
     }
 
     // Check if a value is on a modifier
@@ -986,7 +1031,7 @@ export class ConfigContext implements ResolutionContext {
       val = evaluateModifier(this.mods[instancePath], this, instancePath);
       if (val !== undefined && val !== null) {
         this._previousInstancePath = null;
-        this.addToCache(path, optionPath, val);
+        this.addToCache(path, optionPath, key, val);
         return val;
       }
     }
@@ -999,7 +1044,7 @@ export class ConfigContext implements ResolutionContext {
     const optionValue =
       option?.replaceable && !option?.value ? option?.type : option?.value;
     val = evaluate(optionValue, this, optionScope);
-    this.addToCache(path, optionPath, val);
+    this.addToCache(path, optionPath, key, val);
     this._previousInstancePath = null;
     return val;
   }
@@ -1053,14 +1098,12 @@ export class ConfigContext implements ResolutionContext {
     return this.options[this.template.modelicaPath];
   }
 
-  isValidSelection(selectionPath: string) {
-    const { instancePath } = parseSelectionKey(selectionPath);
-    if (instancePath !== undefined) {
-      const instance = this.getOptionInstance(instancePath);
-      return !!instance?.display;
-    } else {
-      return true; // project settings have no instance path
+  isValidSelection(key: string) {
+    const { rootClass, elementPath } = parseSelectionKey(key);
+    if (rootClass !== this.template.modelicaPath) {
+      return true; // project settings are not elements of the template
     }
+    return !!this.getOptionInstance(elementPath)?.display;
   }
 
   /**
@@ -1103,7 +1146,7 @@ export class ConfigContext implements ResolutionContext {
    * bakes in useful info related to make it easier to map to a display format
    */
   getOptionInstance(path: string, scope = ""): OptionInstance | undefined {
-    const { instancePath, optionPath, classPath, isOuter } = resolvePaths(
+    const { instancePath, optionPath, classPath, isOuter, key } = resolvePaths(
       path,
       this,
       scope,
@@ -1129,6 +1172,7 @@ export class ConfigContext implements ResolutionContext {
       instancePath,
       isOuter: !!isOuter,
       type,
+      key,
     };
 
     const mod = this.mods[instancePath];
@@ -1163,6 +1207,7 @@ export class ConfigContext implements ResolutionContext {
       instancePath: "",
       isOuter: false,
       type: this.template.modelicaPath,
+      key: null,
     };
   }
 
@@ -1175,19 +1220,43 @@ export class ConfigContext implements ResolutionContext {
     // resolved. If more evaluations are needed by the sequence document call this:
     // this.visitTemplateNodes();
     const resolvedValues = removeEmpty(this._resolvedValues) as {
-      [key: string]: { value: Literal | null | undefined; optionPath: string };
+      [path: string]: {
+        value: Literal | null | undefined;
+        optionPath: string;
+        key: string | null;
+      };
     };
-    Object.entries(resolvedValues).map(([key, val]) => {
-      const { optionPath, value } = val;
+    Object.values(resolvedValues).forEach(({ optionPath, key, value }) => {
+      if (key === null) {
+        return; // not an element of the template
+      }
       const option = this.options[optionPath];
-      const addToResolvedValues =
-        value !== undefined || option.type === "String";
-
-      if (addToResolvedValues) {
-        const selectionPath = selectionKey(optionPath, key);
-        evaluatedValues[selectionPath] = value;
+      if (value !== undefined || option.type === "String") {
+        evaluatedValues[key] = value;
       }
     });
     return evaluatedValues;
   }
+}
+
+/**
+ * Context of the project settings: the elements of
+ * Buildings.Templates.Data.AllSystems, keyed in this class
+ * (docs/selection-keys.md, rule 1)
+ */
+export function projectContext(
+  options: { [key: string]: OptionInterface },
+  selections: ConfigValues,
+): ConfigContext {
+  const template: TemplateInterface = {
+    modelicaPath: ALL_SYSTEMS,
+    name: options[ALL_SYSTEMS]?.name ?? "",
+    systemTypes: [],
+  };
+  return new ConfigContext(
+    template,
+    {} as ConfigInterface,
+    options,
+    selections,
+  );
 }

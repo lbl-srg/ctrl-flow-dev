@@ -121,7 +121,7 @@ enumLiteral = className "." E-IDENT      (enumeration type, then literal: quoted
 | `memberOption(classPath, name, ctx)` | Declared or inherited element `name` of class `classPath`, or `null`. The template is handled like any other class. |
 | `effectiveClass(path, declaredOption, ctx)` | Class of the element at `path` (see below). |
 | `bindingRedirect(path, option, ctx)` | Rewritten path if the element at `path` is reached through a record binding (rule 2), `false` if the record is bound to an expression that is not a name, or `null`. |
-| `resolveInstance(path, ctx)` | Walks `path` one identifier at a time: `memberOption`, then `bindingRedirect`, then `effectiveClass`. Returns `{ optionPath, classPath, resolvedPath, isOuter, outerOptionPath }`, or `null` if any identifier cannot be resolved. |
+| `resolveInstance(path, ctx)` | Walks `path` one identifier at a time: `memberOption`, then `bindingRedirect`, then `effectiveClass`. Returns `{ optionPath, classPath, resolvedPath, isOuter, outerOptionPath, key }`, or `null` if any identifier cannot be resolved. |
 
 ### `effectiveClass`
 
@@ -142,6 +142,7 @@ Every computation of an element's class uses `effectiveClass`: `resolveInstance`
 ### `resolveInstance`
 
 - `resolvedPath` is the `elementPath` used in keys (rules 1 and 2).
+- `key` is `selectionKey(templatePath, resolvedPath)`. For an element of an `inner` component declared outside the template (rule 1), it is `selectionKey(<class of the component>, <path relative to the component>)`: `ctl.datAll.stdEne` gives `Buildings.Templates.Data.AllSystems-stdEne`. It is `null` for the `inner` component itself, which is not an element of the template, and for the outer declaration. `getValue`, `getOptionInstance`, the display mapping, `isValidSelection` and `getEvaluatedValues` take the key from here. Only elements have a key: a class, which evaluates to its own name, is never stored, so the payload builder does not filter the stores.
 - `isOuter` is true if `path` goes through an `outer` element, i.e. if it is rewritten with `template.pathModifiers` (rule 1).
 - An identifier that cannot be resolved yields `null`. `resolvePaths` then looks up the name in the enclosing scopes as in Modelica (MLS §5.3.1): only the first identifier is looked up there, and once it is found, the rest of the path is resolved in that element only. In `Buildings.Templates.AirHandlersFans.VAVMultiZone`, the modifier `damOut(m_flow_nominal=mAirSup_flow_nominal)` refers to `dat.mAirSup_flow_nominal`, because `dat.damOut` has no element `mAirSup_flow_nominal`. Before #639, the class of the enclosing element was returned instead, and the modifier evaluated to `Buildings.Templates.Components.Data.Damper`.
 - Results are cached per `ConfigContext`, by path. This is valid because a context is rebuilt whenever a selection changes.
@@ -150,7 +151,7 @@ Every computation of an element's class uses `effectiveClass`: `resolveInstance`
 
 - `config.selections`: values entered by the user. This is the only source of the class modification of an exported configuration class.
 - `config.evaluatedValues`: values derived by the interpreter, same key space. Never written to the class modification. Records derived from a configuration use them: the configuration record holds the evaluated `cfg.*` values as `final` modifications (see [ModelicaExport](https://github.com/AntoineGautier/ModelicaExport), `UserProject.*.Configuration`).
-- `project.selections`, `project.evaluatedValues`: project-level values, keyed `Buildings.Templates.Data.AllSystems-<elementPath>` (rule 1). On `main` they are keyed `Buildings.Templates.Data.AllSystems.<name>` (`EditDetailsModal`, interpreter, mappings).
+- `project.selections`, `project.evaluatedValues`: project-level values, keyed `Buildings.Templates.Data.AllSystems-<elementPath>` (rule 1). The project details modal evaluates, displays and saves them with a `ConfigContext` whose root class is `Buildings.Templates.Data.AllSystems` (`projectContext`), as for a configuration: the selections of options that are not displayed, such as the climate zone of the other energy standard, are discarded. Before #649, they were keyed `Buildings.Templates.Data.AllSystems.<name>`, and the parser rewrote `stdEne` in the `enable` expressions of the climate zones as `Buildings.Templates.Data.AllSystems.stdEne` for the legacy evaluator of the modal.
 - **Value objects.** All four stores map each key to `{ value?, redeclare?, kindOfClass? }`: the value objects of the payload without `origin`, which is given by the store. The attributes are set once, when the value is written, by the code that holds the option of the element (`SlideOut` and `EditDetailsModal` for selections, `getEvaluatedValues` for evaluated values). Every reader (interpreter, display mapping, payload builder) takes them from the stores. This supersedes the flat selection schema of #495.
 - **Persistence.** No migration: the local storage key includes the client version, which is bumped on every build.
 - **Projects.** Every configuration belongs to exactly one existing project:
@@ -244,7 +245,7 @@ selector     = className | [ className "." ] "{" alternatives "}"
 alternatives = className { "|" className }
 ```
 
-A pattern is shorthand for the set of keys obtained by expanding the alternatives, e.g. `P.{A|B}-c.p` stands for `P.A-c.p` and `P.B-c.p`. Each expanded `rootClass` is a class where `elementPath` is declared (a template, or `Buildings.Templates.Data.AllSystems`), never an enclosing package. `{`, `|` and `}` cannot occur in a class name (no quoted class identifiers), so the expansion is unambiguous. Keys are then matched by equality. A test checks that every expanded key resolves in its template.
+A pattern is shorthand for the set of keys obtained by expanding the alternatives, e.g. `P.{A|B}-c.p` stands for `P.A-c.p` and `P.B-c.p`. Each expanded `rootClass` is a class where `elementPath` is declared (a template, or `Buildings.Templates.Data.AllSystems`), never an enclosing package. `{`, `|` and `}` cannot occur in a class name (no quoted class identifiers), so the expansion is unambiguous (`keys.py`). Keys are then matched by equality. A test checks that every expanded key resolves in its template (`client/tests/sequence/mappings.test.ts`).
 
 The mogrifier evaluates a toggle against the union of the values of all keys of the pattern. A condition on a subset of templates is expressed by the alternatives, or by a new mapping entry.
 
@@ -252,7 +253,7 @@ The `Current G36 Decisions` mappings are rewritten so that the generated documen
 
 - Each pattern lists the templates whose values are merged today.
 - Project-level settings use the keys of rule 1.
-- The five entries that read the class of a replaceable component (`PREHEAT`, `REHEAT`, `COOL`, `OA`, `TERM_HT`) read its `typ` parameter instead, and their value rows (`Modelica Path` column) use the enumeration literals, which match the classes one to one (`Coils.WaterBasedCooling` → `Types.Coil.WaterBasedCooling`). The mogrifier then reads `value` only.
+- The five entries that read the class of a replaceable component (#650) (`PREHEAT`, `REHEAT`, `COOL`, `OA`, `TERM_HT`) read its `typ` parameter instead, and their value rows (`Modelica Path` column) use the enumeration literals, which match the classes one to one (`Coils.WaterBasedCooling` → `Types.Coil.WaterBasedCooling`). The mogrifier then reads `value` only.
 
 | Short ID | `main` | New |
 |---|---|---|
@@ -297,5 +298,5 @@ Issues found by the probe, unrelated to quoted identifiers:
 
 ## Known limitations
 
-- **Replaceable short classes.** On `main`, short-class choices are written under one key (`…ShortClass-ShortClass`), read under another (`…ShortClass-.FirstComponent`), and the parameters of the selected class are displayed and keyed under the class name (`ShortClass.container`) rather than under the instance. Selecting another class does not change how the instance resolves. No template in `templates.json` uses a replaceable short class in the configuration panel. This refactoring fixes the key (rule 4); the display and resolution of short class instances are tracked separately.
+- **Replaceable short classes.** Before #620, short-class choices were written under one key (`…ShortClass-ShortClass`) and read under another (`…ShortClass-.FirstComponent`). The choice is now written and read at the short class element (rule 4, `T-ShortClass`). The parameters of the selected class are still displayed and keyed under the class name (`T-ShortClass.container`) rather than under the instance, and selecting another class does not change how the instance resolves. No template in `templates.json` uses a replaceable short class in the configuration panel. The display and resolution of short class instances are tracked separately.
 - **Spellings of quoted identifiers.** A source that spells a quoted identifier with and without a redundant escape (`'a\?'` and `'a?'`, `'a\"'` and `'a"'`) is not supported: ctrl-flow keeps identifiers as written, like Dymola and OCT, which reject such a source, although MLS §2.3.1 makes both spellings the same identifier.

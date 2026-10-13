@@ -9,6 +9,7 @@ from docx.text.paragraph import Paragraph
 from docx.table import Table
 import logging
 import utils
+import keys
 from typing import Dict, List
 
 P_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p'
@@ -98,7 +99,7 @@ def remove_info_box(paragraph, run_op_lookup: Dict):
     for sib_el in paragraph._element.itersiblings(P_TAG):
         sib_p = Paragraph(sib_el, paragraph._parent)
         sib_level = get_heading_level(sib_p)
-        
+
         if (sib_level == 0):
             for run in sib_p.runs:
                 if run.element in run_op_lookup and run_op_lookup[run.element]['op'] in ('VENT', 'ENERGY'):
@@ -107,7 +108,7 @@ def remove_info_box(paragraph, run_op_lookup: Dict):
         else:
             # reached end of info box, stop
             return
-                
+
         remove_node(sib_p)
 
 def remove_section(paragraph: Paragraph, run_op_lookup: Dict):
@@ -115,7 +116,7 @@ def remove_section(paragraph: Paragraph, run_op_lookup: Dict):
     '''
     style = get_paragraph_style_name(paragraph)
     level = get_heading_level(paragraph)
-    
+
     if style in ('Info. box', 'InfoboxList', 'InfoTableTitle'):
         return remove_info_box(paragraph, run_op_lookup)
 
@@ -288,7 +289,7 @@ def evaluate_annotation(op, name_map, selections: Selections):
         if short_name not in name_map:
             logging.error('%s not found, deleting', short_name)
             return True
-            
+
         long_name = name_map[short_name]
 
         # 2: check if relevant selection is available
@@ -298,7 +299,7 @@ def evaluate_annotation(op, name_map, selections: Selections):
         # 3: apply the operation type
         elif not utils.reduce_to_boolean(selections[long_name]):
             return True
-            
+
     if op['op'] == 'NO':
         tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
         if len(tokens) == 2:
@@ -310,7 +311,7 @@ def evaluate_annotation(op, name_map, selections: Selections):
         if short_name not in name_map:
             logging.error('%s not found, deleting', short_name)
             return True
-            
+
         long_name = name_map[short_name]
 
         if long_name not in selections:
@@ -327,7 +328,7 @@ def evaluate_annotation(op, name_map, selections: Selections):
         else:
             logging.error('Invalid operation: %s, deleting', op['text'])
             return True
-        
+
         if short_name not in name_map:
             logging.error('%s not found, deleting', short_name)
             return True
@@ -338,7 +339,7 @@ def evaluate_annotation(op, name_map, selections: Selections):
 
         long_name = name_map[short_name]
         long_compare = name_map[short_compare]
-                
+
         if long_name not in selections:
             logging.info('Path "%s" not found in store, deleting', long_name)
             return True
@@ -353,7 +354,7 @@ def evaluate_annotation(op, name_map, selections: Selections):
         else:
             logging.error('Invalid operation: %s, deleting', op['text'])
             return True
-        
+
         if short_name not in name_map:
             logging.error('%s not found, deleting', short_name)
             return True
@@ -364,13 +365,13 @@ def evaluate_annotation(op, name_map, selections: Selections):
 
         long_name = name_map[short_name]
         long_compare = name_map[short_compare]
-                
+
         if long_name not in selections:
             logging.info('Path "%s" not found in store, keeping', long_name)
             return False
         elif long_compare in selections[long_name]:
             return True
-            
+
     if op['op'] == 'ANY':
         tokens = [token for token in re.split(r'\W+', op['text']) if token]
         if len(tokens) >= 3:
@@ -383,16 +384,16 @@ def evaluate_annotation(op, name_map, selections: Selections):
         if short_name not in name_map:
             logging.error('%s not found, deleting', short_name)
             return True
-            
+
         long_name = name_map[short_name]
         long_compare = map(lambda name: name_map[name], short_compare)
-                
+
         if long_name not in selections:
             logging.info('Path "%s" not found in store, deleting', long_name)
             return True
         elif not utils.common_member(selections[long_name], long_compare):
             return True
-            
+
     if op['op'] == 'DELETE':
         return True
 
@@ -455,7 +456,7 @@ def evaluate_annotation(op, name_map, selections: Selections):
     return False
 
 def apply_selections(control_structure, name_map, run_op_lookup, selections: Selections):
-    ''' 
+    '''
         Determines how to handle toggles, section vs table
 
         Example section toggles:
@@ -528,7 +529,7 @@ def convert_units(control_structure, name_map, selections: Selections):
                 continue
             unit_selection = selections[long_name][0]
             if unit_selection == si_long_name:
-                # TODO: use this as an approach for 'writes' to the docx 
+                # TODO: use this as an approach for 'writes' to the docx
                 op['runs'][0].text = match.group(1)
                 op['runs'][0].style = None
             elif unit_selection == ip_long_name:
@@ -553,10 +554,29 @@ def remove_toggles(doc):
                         if get_run_style_name(run) == ANNOTATION_STYLE:
                             remove_node(run)
 
+def aggregate_patterns(name_map: Dict, selections: Selections) -> Selections:
+    ''' Adds the values of each key pattern of the mappings to the selections:
+        the union of the values of its keys (docs/selection-keys.md,
+        "Mappings"). A pattern none of whose keys has a value is not added.
+    '''
+    aggregated = dict(selections)  # Works on a copy, so the payload is left unchanged.
+    for long_name in name_map.values():
+        if long_name in selections or not keys.is_pattern(long_name):
+            continue
+        pattern_keys = [k for k in keys.expand_pattern(long_name) if k in selections]
+        if not pattern_keys:
+            continue
+        values = []
+        for key in pattern_keys:
+            values += [v for v in selections[key] if v not in values]
+        aggregated[long_name] = values
+    return aggregated
+
 def mogrify_doc(doc: Document, name_map: Dict, selections: Selections) -> Document:
     ''' Applies selections to the provided document. This mutates the provided
         document
     '''
+    selections = aggregate_patterns(name_map, selections)
     initialize_remove_list()
     # walk through source_doc to find each conditional point in the doc
     control_structure, run_op_lookup = create_control_structures(doc)

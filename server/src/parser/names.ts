@@ -16,6 +16,9 @@ const S_ESCAPE = `\\\\['"?\\\\abfnrtv]`;
 const Q_IDENT = `'(?:${Q_CHAR}|${S_ESCAPE})+'`;
 const IDENT = `(?:${UNQUOTED_IDENT}|${Q_IDENT})`;
 const NAME_RE = new RegExp(`^\\.?${IDENT}(?:\\.${IDENT})*$`);
+const CLASS_NAME_RE = new RegExp(
+  `^${UNQUOTED_IDENT}(?:\\.${UNQUOTED_IDENT})*$`,
+);
 
 /**
  * Calls `visit` for each character outside quoted identifiers and string
@@ -109,10 +112,9 @@ export function enclosingName(name: string, count = 1): string {
 }
 
 /**
- * Splits a selection key at its first "-" outside quoted identifiers:
- * returns [modelicaPath, instancePath], or [key] for a key without "-"
+ * True if `name` is a class name without leading ".": its identifiers are
+ * not quoted (docs/selection-keys.md, "No quoted class identifiers")
  */
-export function splitSelectionKey(key: string): string[] {
-  const [i] = indicesOf(key, "-");
-  return i === undefined ? [key] : [key.slice(0, i), key.slice(i + 1)];
+export function isClassName(name: string): boolean {
+  return CLASS_NAME_RE.test(name);
 }

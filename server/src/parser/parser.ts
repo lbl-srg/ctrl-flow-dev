@@ -31,7 +31,6 @@ import { enclosingName, firstIdent, lastIdent, splitName } from "./names";
 
 export const EXTEND_NAME = "__extend";
 const PROJECT_PATH = "Buildings.Templates.Data.AllSystems";
-const PROJECT_INSTANCE_PATH = "datAll";
 
 export const MLS_PREDEFINED_TYPES = ["String", "Boolean", "Real", "Integer"];
 export const MLS_SPECIALIZED_CLASSES = [
@@ -253,57 +252,14 @@ function assertType(type: string) {
   }
 }
 
-export function getProject() {
-  const inputs = createProjectInputs();
-  return inputs[PROJECT_INSTANCE_PATH];
-}
-
 /**
- * We have to spoof an instance of the project settings
+ * Inputs of the project settings: the class of the project settings and its
+ * elements. The templates only reference them through outer components
+ * (docs/selection-keys.md, rule 1).
  */
-export function createProjectInputs(): { [key: string]: TemplateInput } {
+export function getProjectInputs(): { [key: string]: TemplateInput } {
   const allSystems = typeStore.find(PROJECT_PATH);
-  const projectInputs = allSystems?.getInputs() as {
-    [key: string]: TemplateInput;
-  };
-  const spoofedModList = Object.values(projectInputs).map((i) => {
-    const modName = lastIdent(i.modelicaPath);
-    return new Modification(PROJECT_PATH, modName, i.value);
-  });
-
-  const spoofedDatAllInstance: TemplateInput = {
-    modelicaPath: PROJECT_INSTANCE_PATH,
-    name: PROJECT_INSTANCE_PATH,
-    type: PROJECT_PATH,
-    visible: false,
-    modifiers: spoofedModList,
-    inputs: [PROJECT_PATH],
-    elementType: "component_clause",
-    replaceable: false,
-  };
-
-  const optionPatchPaths = [
-    "Buildings.Templates.Data.AllSystems.ashCliZon",
-    "Buildings.Templates.Data.AllSystems.tit24CliZon",
-  ];
-
-  optionPatchPaths.map((p) => {
-    const option = projectInputs[p];
-    if (option) {
-      const prefix = "Buildings.Templates.Data.AllSystems";
-      // patch enable expression with full path so project evaluation
-      // continues to work
-      const enableExpr = option.enable;
-      const oldOperand = enableExpr.operands[0];
-      if (!oldOperand.startsWith(prefix)) {
-        const newOperand = `${prefix}.${enableExpr.operands[0]}`;
-        enableExpr.operands[0] = newOperand;
-        option.enable = enableExpr;
-        projectInputs[p] = option;
-      }
-    }
-  });
-  return { [PROJECT_INSTANCE_PATH]: spoofedDatAllInstance, ...projectInputs };
+  return (allSystems?.getInputs() ?? {}) as { [key: string]: TemplateInput };
 }
 
 export interface TemplateInput {

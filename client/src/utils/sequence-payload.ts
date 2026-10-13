@@ -1,9 +1,11 @@
 import { ConfigInterface } from "../data/config";
-import { parseSelectionKey } from "./selection-key";
 
 /**
  * Merges the values of all configurations into a single object mapping
- * each selection path to the array of distinct values it takes
+ * each selection key to the array of distinct values it takes, and each
+ * system type to its templates.
+ * The stores only hold values of elements: a class, which evaluates to its
+ * own name, has no key and is never stored (`getEvaluatedValues`).
  */
 export function getSequenceData(projectConfigs: ConfigInterface[]) {
   const seqData: { [key: string]: any } = {};
@@ -22,10 +24,7 @@ export function getSequenceData(projectConfigs: ConfigInterface[]) {
           seqData[key].push(configData[key]);
         }
       } else {
-        const { optionPath } = parseSelectionKey(key);
-        if (optionPath !== configData[key]) {
-          seqData[key] = [configData[key]];
-        }
+        seqData[key] = [configData[key]];
       }
     });
   });
