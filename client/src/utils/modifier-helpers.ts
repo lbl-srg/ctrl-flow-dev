@@ -41,7 +41,7 @@ export function valueOf(stored: StoredValue): Literal | undefined {
 
 export type Modifiers = {
   [key: string]: {
-    expression?: Expression | string;
+    expression?: Literal | Expression;
     final: boolean;
     redeclare?: string;
   };
