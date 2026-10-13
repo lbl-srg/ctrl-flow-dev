@@ -81,7 +81,7 @@ The source document and the mappings file are in `server/scripts/sequence-doc/sr
 - Replace both files, keeping their names: `Guideline 36-2021 (mappings).csv` and `Guideline 36-2021 (sequence selection source).docx`.
 - Write the `Modelica Parameter` column with selection keys or key patterns (see Mappings).
 - Run the tests:
-  - `client/tests/sequence/mappings.test.ts` checks that every key of the mappings resolves in its template.
+  - `client/tests/sequence/mappings.test.ts` checks that every key of the mappings is the key under which ctrl-flow stores the value of the element: otherwise the key is never in the payload, and the toggle treats the value as missing.
   - `server/scripts/sequence-doc/tests/test_golden.py` compares the generated documents to the expected texts. If the changes of the document are intended, regenerate the expected texts with `UPDATE_GOLDEN=1` and review their diff.
 
 Always update both the mappings and source file.

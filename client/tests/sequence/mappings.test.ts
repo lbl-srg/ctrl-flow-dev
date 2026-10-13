@@ -1,11 +1,13 @@
 /**
- * The keys of the sequence document mappings resolve in their templates
+ * The keys of the sequence document mappings are keys of the payload
  * (docs/selection-keys.md, "Mappings").
  *
  * The `Modelica Parameter` column of the mappings holds a key or a key
  * pattern: `P.{A|B}-c.p` stands for `P.A-c.p` and `P.B-c.p`. Each expanded key
- * must be the key of an element of its root class, as computed by the
- * interpreter.
+ * must be the key under which the client stores the value of the element:
+ * resolving its element path in its root class, with the default selections,
+ * gives the same key. A path through an outer component or a bound record
+ * gives another key (rules 1 and 2), and a missing element no key.
  */
 import * as fs from "fs";
 import * as path from "path";
@@ -93,7 +95,7 @@ describe("Sequence document mappings", () => {
     expect(expandPattern("P.{A|B}-c.p")).toEqual(["P.A-c.p", "P.B-c.p"]);
   });
 
-  it.each(patterns.flatMap(expandPattern))("%s resolves", (key) => {
+  it.each(patterns.flatMap(expandPattern))("%s is the key of an element", (key) => {
     const { rootClass, elementPath } = parseSelectionKey(key);
     expect([ALL_SYSTEMS, ...Object.keys(allTemplates)]).toContain(rootClass);
     const context =

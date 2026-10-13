@@ -245,7 +245,7 @@ selector     = className | [ className "." ] "{" alternatives "}"
 alternatives = className { "|" className }
 ```
 
-A pattern is shorthand for the set of keys obtained by expanding the alternatives, e.g. `P.{A|B}-c.p` stands for `P.A-c.p` and `P.B-c.p`. Each expanded `rootClass` is a class where `elementPath` is declared (a template, or `Buildings.Templates.Data.AllSystems`), never an enclosing package. `{`, `|` and `}` cannot occur in a class name (no quoted class identifiers), so the expansion is unambiguous (`keys.py`). Keys are then matched by equality. A test checks that every expanded key resolves in its template (`client/tests/sequence/mappings.test.ts`).
+A pattern is shorthand for the set of keys obtained by expanding the alternatives, e.g. `P.{A|B}-c.p` stands for `P.A-c.p` and `P.B-c.p`. Each expanded `rootClass` is a class where `elementPath` is declared (a template, or `Buildings.Templates.Data.AllSystems`), never an enclosing package. `{`, `|` and `}` cannot occur in a class name (no quoted class identifiers), so the expansion is unambiguous (`keys.py`). Keys are then matched by equality. A test checks that every expanded key is the key under which the client stores the value of the element, with the default selections (`client/tests/sequence/mappings.test.ts`).
 
 The mogrifier evaluates a toggle against the union of the values of all keys of the pattern. A condition on a subset of templates is expressed by the alternatives, or by a new mapping entry.
 
