@@ -1,4 +1,7 @@
 ,Short ID,Mutually Exclusive? (Y/N),Modelica Parameter,Modelica Path,Question/Comments
+Unit of Measurement:,UNITS,Y,Buildings.Templates.Data.AllSystems-sysUni,Buildings.Templates.Data.AllSystems.sysUni,
+1 = SI,SI,,,Buildings.Templates.Types.Units.SI,
+2 = IP,IP,,,Buildings.Templates.Types.Units.IP,
 Terminal Unit:,VAV,N,Buildings.Templates.ZoneEquipment,Buildings.Templates.ZoneEquipment.Types.Configuration,System type: not a key. Its values are the templates of the configurations of the project with this system type (systemType and template of each configuration of the payload). The short IDs below map to templates.
 Cooling-Only VAV,CO,,Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly,Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxCoolingOnly,
 VAV with Reheat,RH,,Buildings.Templates.ZoneEquipment.VAVBoxReheat,Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxReheat,
