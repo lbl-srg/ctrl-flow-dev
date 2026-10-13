@@ -9,6 +9,7 @@ import { FlatConfigOption } from "../steps/Configs/SlideOut";
 import OptionSelect from "../steps/Configs/OptionSelect";
 import { useDebouncedCallback } from "use-debounce";
 import { removeEmpty } from "../../utils/utils";
+import { projectSelectionKey } from "../../utils/selection-key";
 import {
   applyValueModifiers,
   applyVisibilityModifiers,
@@ -53,7 +54,7 @@ const EditDetailsModal = observer(
       let evaluatedValues: ConfigValues = {};
 
       options.forEach((option) => {
-        const selectionPath = option.modelicaPath;
+        const selectionPath = projectSelectionKey(option.modelicaPath);
 
         evaluatedValues = {
           ...evaluatedValues,
@@ -90,7 +91,7 @@ const EditDetailsModal = observer(
       let displayOptions: FlatConfigOption[] = [];
 
       options.forEach((option) => {
-        const selectionPath = option.modelicaPath;
+        const selectionPath = projectSelectionKey(option.modelicaPath);
         const isVisible = applyVisibilityModifiers(
           option,
           "",
@@ -117,6 +118,7 @@ const EditDetailsModal = observer(
               value:
                 selectedValues[selectionPath] || evaluatedValues[selectionPath],
               scope: "",
+              selectionKey: selectionPath,
               selectionType: "Normal",
             },
           ];
@@ -181,13 +183,10 @@ const EditDetailsModal = observer(
     }
 
     function updateSelectedOption(
-      parentModelicaPath: string,
-      scope: string,
+      selectionPath: string,
       choice: string | null,
     ) {
       setSelectedValues((prevState: any) => {
-        const selectionPath = parentModelicaPath;
-
         if (choice == null) {
           delete prevState[selectionPath];
           return prevState;
@@ -204,27 +203,31 @@ const EditDetailsModal = observer(
     // This was done due to time and was a bug found last min.
     function adjustProjectSelections() {
       const projectSelectedItems = selectedValues;
-      const energyStandard =
-        projectSelectedItems["Buildings.Templates.Data.AllSystems.stdEne"];
+      const stdEneKey = projectSelectionKey(
+        "Buildings.Templates.Data.AllSystems.stdEne",
+      );
+      const tit24CliZonKey = projectSelectionKey(
+        "Buildings.Templates.Data.AllSystems.tit24CliZon",
+      );
+      const ashCliZonKey = projectSelectionKey(
+        "Buildings.Templates.Data.AllSystems.ashCliZon",
+      );
+      const energyStandard = projectSelectedItems[stdEneKey];
 
       if (
         energyStandard ===
           "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1" &&
-        projectSelectedItems["Buildings.Templates.Data.AllSystems.tit24CliZon"]
+        projectSelectedItems[tit24CliZonKey]
       ) {
-        delete projectSelectedItems[
-          "Buildings.Templates.Data.AllSystems.tit24CliZon"
-        ];
+        delete projectSelectedItems[tit24CliZonKey];
       }
 
       if (
         energyStandard ===
           "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24" &&
-        projectSelectedItems["Buildings.Templates.Data.AllSystems.ashCliZon"]
+        projectSelectedItems[ashCliZonKey]
       ) {
-        delete projectSelectedItems[
-          "Buildings.Templates.Data.AllSystems.ashCliZon"
-        ];
+        delete projectSelectedItems[ashCliZonKey];
       }
 
       return projectSelectedItems;

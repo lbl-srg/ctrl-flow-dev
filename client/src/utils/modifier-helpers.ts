@@ -7,12 +7,7 @@ import {
   isExpression,
   resolveValue,
 } from "./expression-helpers";
-import {
-  enclosingName,
-  lastIdent,
-  splitName,
-  splitSelectionKey,
-} from "./names";
+import { lastIdent, splitName } from "./names";
 
 export interface ConfigValues {
   [key: string]: boolean | string | number | null | undefined;
@@ -280,45 +275,4 @@ export function applyVisibilityModifiers(
   }
 
   return !!(visible && enable);
-}
-
-export function getUpdatedModifiers(
-  values: ConfigValues,
-  modifiers: Modifiers,
-  allOptions: { [key: string]: OptionInterface },
-) {
-  const optionKeys: string[] = Object.keys(values);
-  let updatedModifiers: Modifiers = deepCopy(modifiers);
-
-  optionKeys.forEach((key) => {
-    const value = values[key];
-    // Only string values (Modelica paths) can be used for option lookup
-    if (typeof value === "string") {
-      const selectedType = value;
-      const [modelicaPath, selectedInstancePath = ""] = splitSelectionKey(key);
-      const instancePath = enclosingName(selectedInstancePath);
-      const option = allOptions[modelicaPath] as OptionInterface;
-      let choiceModifiers: Modifiers = {};
-
-      if (option?.choiceModifiers) {
-        choiceModifiers = option?.choiceModifiers[value] || {};
-        // take modifiers and change to instace keys, instancePath above and add to updatedModifiers as the last item.
-      }
-
-      updatedModifiers = {
-        ...updatedModifiers,
-        ...buildModifiers(
-          option,
-          instancePath,
-          updatedModifiers,
-          selectedType,
-          allOptions,
-          false,
-        ),
-        ...choiceModifiers,
-      };
-    }
-  });
-
-  return updatedModifiers;
 }

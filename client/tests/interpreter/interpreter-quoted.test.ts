@@ -2,15 +2,13 @@
  * Quoted identifiers (MLS 3.7 §2.3.1, docs/selection-keys.md)
  */
 import { TemplateInterface, OptionInterface } from "../../src/data/template";
-import {
-  ConfigContext,
-  constructSelectionPath,
-} from "../../src/interpreter/interpreter";
+import { ConfigContext } from "../../src/interpreter/interpreter";
 import {
   mapToDisplayOptions,
   FlatConfigOption,
 } from "../../src/interpreter/display-option";
 import { ConfigValues } from "../../src/utils/modifier-helpers";
+import { selectionKey } from "../../src/utils/selection-key";
 
 /**
  * Options generated from server/tests/static-data/QuotedPackage via server parser.
@@ -63,8 +61,8 @@ describe("Quoted identifiers", () => {
   it("applies selections keyed with quoted names", () => {
     const rep = `${T}.'rep.1'`;
     const context = createContext({
-      [constructSelectionPath(rep, "'rep.1'")]: `${C}.Second`,
-      [constructSelectionPath(`${C}.Partial.'a.b'`, "'rep.1'.'a.b'")]: false,
+      [selectionKey(rep, "'rep.1'")]: `${C}.Second`,
+      [selectionKey(`${C}.Partial.'a.b'`, "'rep.1'.'a.b'")]: false,
     });
     expect(context.getValue("'rep.1'")).toEqual(`${C}.Second`);
     // Modifier of the extends clause of Second

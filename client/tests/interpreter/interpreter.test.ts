@@ -17,8 +17,8 @@ import {
   resolvePaths,
   OptionInstance,
   evaluateModifier,
-  constructSelectionPath,
 } from "../../src/interpreter/interpreter";
+import { selectionKey } from "../../src/utils/selection-key";
 
 import {
   mapToDisplayOptions,
@@ -1243,7 +1243,7 @@ describe("Specific parameter debugging", () => {
     const instancePath = "coiHea";
     const evaluatedValues = context.getEvaluatedValues();
     const optionInstance = context.getOptionInstance(instancePath);
-    const selectionPath = constructSelectionPath(
+    const selectionPath = selectionKey(
       optionInstance?.option.modelicaPath as string,
       instancePath,
     );
@@ -1274,7 +1274,7 @@ describe("Specific parameter debugging", () => {
     expect(context._resolvedValues[path]).toBeUndefined();
     const optionInstance = context.getOptionInstance(path);
     const evaluatedValues = context.getEvaluatedValues();
-    const selectionPath = constructSelectionPath(
+    const selectionPath = selectionKey(
       optionInstance?.option.modelicaPath as string,
       path,
     );

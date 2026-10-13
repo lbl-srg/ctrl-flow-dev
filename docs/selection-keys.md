@@ -116,7 +116,7 @@ enumLiteral = className "." E-IDENT      (enumeration type, then literal: quoted
 | Function | Responsibility |
 |---|---|
 | `names.ts` | Quote-aware name helpers (see Parsing). |
-| `selectionKey.ts` | `selectionKey(rootClass, elementPath)`, `parseSelectionKey(key)`. |
+| `selection-key.ts` | `selectionKey(rootClass, elementPath)`, `parseSelectionKey(key)`. |
 | `applyPathModifiers(path, pathModifiers)` | Inner/outer rewriting. |
 | `memberOption(classPath, name, ctx)` | Declared or inherited element `name` of class `classPath`, or `null`. The template is handled like any other class. |
 | `effectiveClass(path, declaredOption, ctx)` | Class of the element at `path` (see below). |
