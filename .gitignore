@@ -10,6 +10,9 @@ server/public/templates/**
 !.env.example
 .DS_Store
 
+# Personal instructions for Claude Code
+CLAUDE.local.md
+
 
 # Dependencies
 dependencies/*
