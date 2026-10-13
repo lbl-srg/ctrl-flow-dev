@@ -19,6 +19,7 @@
     "type": "TestRecord.Rec",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "record",
     "options": [
       "TestRecord.Rec.p"
     ],
@@ -50,6 +51,7 @@
     "type": "TestRecord.BaseModel",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestRecord.BaseModel.rec"
     ],
@@ -88,6 +90,7 @@
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestRecord.Mod.localRec",
       "TestRecord.BaseModel.rec"
@@ -133,6 +136,7 @@
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestRecord.Mod1.localRec",
       "TestRecord.BaseModel.rec"
@@ -213,6 +217,7 @@
     "type": "TestRecord.Nested",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestRecord.Nested.localRecFirst",
       "TestRecord.Nested.localRec",
@@ -255,6 +260,7 @@
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestRecord.NestedExtended.mod1",
       "TestRecord.Nested.localRecFirst",
@@ -412,11 +418,50 @@
     "definition": false,
     "shortExclType": false
   },
+  "TestRecord.subRec": {
+    "modelicaPath": "TestRecord.subRec",
+    "type": "TestRecord.Rec",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": true,
+    "modifiers": {},
+    "enable": true,
+    "choiceModifiers": {},
+    "replaceable": true,
+    "options": [
+      "TestRecord.Rec"
+    ],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.bm": {
+    "modelicaPath": "TestRecord.bm",
+    "type": "TestRecord.BaseModel",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "modifiers": {
+      "TestRecord.bm.rec": {
+        "expression": "subRec",
+        "final": false,
+        "recordBinding": true
+      }
+    },
+    "replaceable": false,
+    "options": [
+      "TestRecord.BaseModel.rec"
+    ],
+    "definition": false,
+    "shortExclType": false
+  },
   "TestRecord": {
     "modelicaPath": "TestRecord",
     "type": "TestRecord",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestRecord.Rec",
       "TestRecord.BaseModel",
@@ -430,7 +475,9 @@
       "TestRecord.mod3",
       "TestRecord.nes",
       "TestRecord.nesExt",
-      "TestRecord.nesExt1"
+      "TestRecord.nesExt1",
+      "TestRecord.subRec",
+      "TestRecord.bm"
     ],
     "definition": true,
     "shortExclType": false,

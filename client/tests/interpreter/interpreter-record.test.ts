@@ -8,6 +8,7 @@ import {
 
 import { ConfigInterface } from "../../src/data/config";
 import { ConfigValues } from "../../src/utils/modifier-helpers";
+import { selectionKey } from "../../src/utils/selection-key";
 
 import {
   _formatDisplayOption,
@@ -80,7 +81,7 @@ const createPlantConfig = (
     selections: createSelections(selections),
     isLocked: false,
     systemPath: "Buildings.Templates.Plants.HeatPumps",
-  }) as ConfigInterface;
+  } as ConfigInterface);
 
 const plantConfig = createPlantConfig("HP Plant");
 
@@ -132,6 +133,29 @@ describe("Evaluation succeeds with record bindings", () => {
     expect(resolveToValue("mod1.localRec.p", context, "nesExt1")).toBe(-3);
     expect(resolveToValue("mod1.rec.p", context, "nesExt1")).toBe(-3);
   });
+
+  it("does not follow a record constructor binding", () => {
+    // mod3(rec=Rec(p=2)): the elements of rec cannot be modified, and their
+    // values are not known (the arguments of the constructor are not parsed)
+    expect(resolvePaths("mod3.rec.p", context).optionPath).toBe(null);
+    expect(resolveToValue("rec.p", context, "mod3")).toBe(null);
+    // Mod: localRec = rec
+    expect(resolveToValue("localRec.p", context, "mod3")).toBe(null);
+    // The record itself is resolved
+    expect(resolvePaths("mod3.rec", context).optionPath).toBe(
+      "TestRecord.BaseModel.rec",
+    );
+  });
+
+  it("does not derive the value of a record from its binding (#642)", () => {
+    // bm(rec=subRec): rec is declared as BaseRecord, subRec as Rec, a subtype
+    expect(context.getValue("bm.rec")).toBe("TestRecord.BaseRecord");
+    expect(
+      context.getEvaluatedValues()[selectionKey("TestRecord", "bm.rec")],
+    ).toEqual({ redeclare: "TestRecord.BaseRecord" });
+    // Mod: localRec = rec, not replaceable: no value
+    expect(context.getValue("mod.localRec")).toBe(null);
+  });
 });
 
 describe("Record bindings in real-world plant template", () => {
@@ -147,7 +171,7 @@ describe("Record bindings in real-world plant template", () => {
     expect(resolveToValue("cfg.have_chiWat", context, "ctl")).toBe(true);
 
     const selections = {
-      "Buildings.Templates.Plants.HeatPumps.Interfaces.PartialHeatPumpPlant.have_chiWat-have_chiWat": false,
+      [selectionKey(plantTemplatePath, "have_chiWat")]: { value: false },
     };
 
     const configWithSelections = createPlantConfig(
@@ -181,7 +205,7 @@ describe("Record bindings in real-world plant template", () => {
     expect(evaluate(enableExpr, context, "ctl")).toBe(true);
 
     const selections = {
-      "Buildings.Templates.Plants.HeatPumps.Interfaces.PartialHeatPumpPlant.have_chiWat-have_chiWat": false,
+      [selectionKey(plantTemplatePath, "have_chiWat")]: { value: false },
     };
 
     const configWithSelections = createPlantConfig(

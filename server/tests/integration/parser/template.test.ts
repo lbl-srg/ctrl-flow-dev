@@ -5,7 +5,7 @@ import {
   Template,
   getOptions,
 } from "../../../src/parser/";
-import { getTemplates, getProject } from "../../../src/parser/template";
+import { getTemplates } from "../../../src/parser/template";
 
 const TEMPLATE_PATH = "TestPackage.Template.TestTemplate";
 const NESTED_TEMPLATE_PATH =
@@ -172,27 +172,20 @@ describe("'Project' items are extracted", () => {
     initializeTestModelicaJson();
     loadPackage('TestPackage');
   });
-  it("Project is populated and all project options are included in options", () => {
-    const project = getProject();
+  it("Includes the project settings in the options", () => {
+    const projectPath = "Buildings.Templates.Data.AllSystems";
     const { options } = getOptions();
-    const optionList = [];
+    const project = options.find((o) => o.modelicaPath === projectPath);
 
-    expect(project).toBeDefined();
-    expect(project.modelicaPath).toBe(PROJECT_INSTANCE_NAME);
-    // recursive helper to collect options
-    const optionAccumulator = (path: string) => {
-      const option = options.find((o) => o.modelicaPath === path);
-      if (option) {
-        optionList.push(option);
-        option.options
-          ?.filter((p) => p !== undefined)
-          .map((p) => optionAccumulator(p));
-      }
-    };
-
-    optionAccumulator(project.modelicaPath);
-    // More than 1 means the project option and child options have been found
-    expect(optionList.length).toBeGreaterThan(1);
+    expect(project?.options).toContain(`${projectPath}.projectSetting`);
+    expect(
+      options.find((o) => o.modelicaPath === `${projectPath}.projectSetting`),
+    ).toBeDefined();
+    // The inner component of the project settings is declared outside of
+    // the templates: it is not an option
+    expect(
+      options.find((o) => o.modelicaPath === PROJECT_INSTANCE_NAME),
+    ).toBeUndefined();
   });
 
   it("Path modifiers point to correct 'datAll'", () => {
@@ -234,5 +227,25 @@ describe("'Project' items are extracted", () => {
       "TestPackage.Component.FirstComponent",
       "TestPackage.Component.SecondComponent",
     ]);
+  });
+
+  it("Gives the kind of class of class definitions", () => {
+    const { options } = getOptions();
+    const kindOfClass = (path: string) =>
+      options.find((o) => o.modelicaPath === path)?.kindOfClass;
+    expect(kindOfClass(TEMPLATE_PATH)).toEqual("model");
+    // Without `partial`
+    expect(kindOfClass("TestPackage.Interface.PartialComponent")).toEqual(
+      "model",
+    );
+    // Replaceable short class: the prefixes repeated in a redeclaration
+    expect(kindOfClass(`${TEMPLATE_PATH}.ShortClass`)).toEqual("model");
+    expect(kindOfClass("TestPackage.Types.Container")).toEqual("type");
+    // Components and enumeration literals are not class definitions
+    expect(kindOfClass(`${TEMPLATE_PATH}.shortClassInstance`)).toBeUndefined();
+    expect(
+      options.find((o) => o.modelicaPath.startsWith("TestPackage.Types.Container."))
+        ?.kindOfClass,
+    ).toBeUndefined();
   });
 });

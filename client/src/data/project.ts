@@ -19,7 +19,7 @@ export interface ProjectInterface {
   projectDetails: ProjectDetailInterface;
 }
 
-const DEFAULT_PROJECT = {
+const createDefaultProject = (): ProjectInterface => ({
   id: uuid(),
   projectDetails: {
     name: "",
@@ -30,24 +30,32 @@ const DEFAULT_PROJECT = {
     selections: {},
     evaluatedValues: {},
   },
-};
+});
 
 export default class Project {
-  projects = [DEFAULT_PROJECT];
-  activeProjectId = DEFAULT_PROJECT.id;
+  projects = [createDefaultProject()];
+  activeProjectId = this.projects[0].id;
+  /** Resolves once the store is loaded from local storage */
+  hydrated: Promise<unknown> = Promise.resolve();
 
   rootStore;
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
 
-    makeAutoObservable(this);
+    makeAutoObservable(this, { hydrated: false });
 
     if (process.env.NODE_ENV !== "test") {
-      makePersistable(this, {
-        name: this.rootStore.getStorageKey("projects"),
-        properties: ["projects", "activeProjectId"],
-      });
+      this.hydrated = makePersistable(
+        this,
+        {
+          name: this.rootStore.getStorageKey("projects"),
+          properties: ["projects", "activeProjectId"],
+        },
+        // Save the default project once hydrated: its id, generated at page
+        // load, must not change on reload as configurations refer to it
+        { fireImmediately: true },
+      );
     }
   }
 

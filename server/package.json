@@ -1,10 +1,10 @@
 {
   "name": "linkage-api",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "dependencies": {
     "@types/cors": "^2.8.12",
     "bluebird": "^3.7.2",
-    "compression": "^1.8.1",
+    "compression": "^1.8.2",
     "cors": "^2.8.5",
     "dotenv": "^14.2.0",
     "express": "^5.2.1",
@@ -12,7 +12,7 @@
     "helmet": "^5.0.1",
     "jsonpath-plus": "^10.4.0",
     "marked": "^4.0.10",
-    "morgan": "^1.12.0",
+    "morgan": "^1.12.1",
     "tmp": "^0.2.7",
     "underscore": "^1.13.4",
     "winston": "^3.8.2"
@@ -50,7 +50,7 @@
     "debug": "nodemon --inspect=0.0.0.0:9229 --exec node -r ts-node/register src/index.ts",
     "build": "tsc",
     "install-modelica-deps": "./bin/install-modelica-dependencies.sh",
-    "install-python-deps": "python3 -m pip install -r scripts/sequence-doc/requirements.txt -r scripts/sequence-doc/dev-requirements.txt",
+    "install-python-deps": "python3 -m pip install -e scripts/ctrlflow -r scripts/sequence-doc/requirements.txt -r scripts/sequence-doc/dev-requirements.txt",
     "format": "prettier --config ../.prettierrc.json --ignore-path ../.prettierignore --write .",
     "test": "jest",
     "test:ci": "jest --testPathIgnorePatterns=\\(/node_modules/ long\\)",

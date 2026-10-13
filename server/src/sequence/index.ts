@@ -15,7 +15,25 @@ export type Selections = {
 };
 
 export type SequenceData = {
-  [key: string]: any[];
+  [key: string]: any;
+}
+
+/** Payload schema version supported by the sequence document */
+export const SCHEMA_VERSION = 1;
+
+/**
+ * Reason why a sequence document cannot be generated from `payload`, or null:
+ * a document covers exactly one project (docs/selection-keys.md, "Scope")
+ */
+export function checkPayload(payload: any): string | null {
+  if (payload?.schemaVersion !== SCHEMA_VERSION) {
+    return `Unsupported payload schema version: ${payload?.schemaVersion}`;
+  }
+  const count = Array.isArray(payload.projects) ? payload.projects.length : 0;
+  if (count !== 1) {
+    return `A sequence document covers exactly one project, got ${count}`;
+  }
+  return null;
 }
 
 export async function getDocument(convertedDocumentPath: string) {
@@ -35,13 +53,16 @@ export async function generateDoc(selections: SequenceData, path: string) {
     scriptProcess.stdin.end();
 
     // stdout and stderr need to have callbacks to close the process
-    // TODO: figure out best place to log response
-    scriptProcess.stdout.on('data', (data) => console.log(`${data}`));
-    scriptProcess.stderr.on('data', (data) => console.log(`${data}`));
+    // The script logs warnings and errors to stderr: logged once on close
+    let log = "";
+    scriptProcess.stdout.on('data', (data) => (log += data));
+    scriptProcess.stderr.on('data', (data) => (log += data));
     scriptProcess.on("close", (code) => {
       if (code === 0) {
+        if (log) console.warn(log);
         resolve(scriptProcess);
       } else {
+        console.error(log);
         reject(code);
       }
     });

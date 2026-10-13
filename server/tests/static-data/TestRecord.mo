@@ -49,4 +49,8 @@ model TestRecord
 
   NestedExtended nesExt1(mod1(localRec(p=-3)));
 
+  // Record bound to a record of a subtype of its class
+  replaceable parameter Rec subRec;
+  BaseModel bm(rec=subRec);
+
 end TestRecord;

@@ -27,10 +27,10 @@ import {
   getExpression,
 } from "./expression";
 import * as mj from "./mj-types";
+import { enclosingName, firstIdent, lastIdent, splitName } from "./names";
 
 export const EXTEND_NAME = "__extend";
 const PROJECT_PATH = "Buildings.Templates.Data.AllSystems";
-const PROJECT_INSTANCE_PATH = "datAll";
 
 export const MLS_PREDEFINED_TYPES = ["String", "Boolean", "Real", "Integer"];
 export const MLS_SPECIALIZED_CLASSES = [
@@ -96,9 +96,8 @@ class Store {
       return this._store.get(path);
     } else {
       // walk inheritance chain to attempt to find correct element
-      const pathList = path.split(".");
-      const name = pathList.pop();
-      const basePath = pathList.join(".");
+      const name = lastIdent(path);
+      const basePath = enclosingName(path);
 
       // avoid infinite recursion
       if (basePath !== path) {
@@ -168,12 +167,12 @@ class Store {
     // package (e.g. a local class "Buildings") would shadow it; such a reference
     // is misresolved here — but it already failed before this shortcut existed,
     // and the pattern is not used in MBL.
-    const firstSegment = path?.split(".")[0];
+    const firstSegment = path && firstIdent(path);
     if (firstSegment && getTopLevelPackageNames().has(firstSegment)) {
       return [path];
     }
 
-    const splitBasePath = basePath ? basePath.split(".") : [];
+    const splitBasePath = basePath ? splitName(basePath) : [];
 
     const pathList: string[] = [];
     while (splitBasePath.length > 0) {
@@ -195,8 +194,8 @@ class Store {
     file.elementList.map((e) => {
       // find the element that matches as much as the path as possible
       let pathCount = 0;
-      const pList = e.modelicaPath.split(".");
-      e.modelicaPath.split(".").forEach((segment, i) => {
+      const pList = splitName(e.modelicaPath);
+      pList.forEach((segment, i) => {
         if (segment !== undefined && pList[i] === undefined) {
           pathCount = pList[i] === segment ? pathCount + 1 : pathCount;
         }
@@ -253,57 +252,14 @@ function assertType(type: string) {
   }
 }
 
-export function getProject() {
-  const inputs = createProjectInputs();
-  return inputs[PROJECT_INSTANCE_PATH];
-}
-
 /**
- * We have to spoof an instance of the project settings
+ * Inputs of the project settings: the class of the project settings and its
+ * elements. The templates only reference them through outer components
+ * (docs/selection-keys.md, rule 1).
  */
-export function createProjectInputs(): { [key: string]: TemplateInput } {
+export function getProjectInputs(): { [key: string]: TemplateInput } {
   const allSystems = typeStore.find(PROJECT_PATH);
-  const projectInputs = allSystems?.getInputs() as {
-    [key: string]: TemplateInput;
-  };
-  const spoofedModList = Object.values(projectInputs).map((i) => {
-    const modName = i.modelicaPath.split(".").pop();
-    return new Modification(PROJECT_PATH, modName, i.value);
-  });
-
-  const spoofedDatAllInstance: TemplateInput = {
-    modelicaPath: PROJECT_INSTANCE_PATH,
-    name: PROJECT_INSTANCE_PATH,
-    type: PROJECT_PATH,
-    visible: false,
-    modifiers: spoofedModList,
-    inputs: [PROJECT_PATH],
-    elementType: "component_clause",
-    replaceable: false,
-  };
-
-  const optionPatchPaths = [
-    "Buildings.Templates.Data.AllSystems.ashCliZon",
-    "Buildings.Templates.Data.AllSystems.tit24CliZon",
-  ];
-
-  optionPatchPaths.map((p) => {
-    const option = projectInputs[p];
-    if (option) {
-      const prefix = "Buildings.Templates.Data.AllSystems";
-      // patch enable expression with full path so project evaluation
-      // continues to work
-      const enableExpr = option.enable;
-      const oldOperand = enableExpr.operands[0];
-      if (!oldOperand.startsWith(prefix)) {
-        const newOperand = `${prefix}.${enableExpr.operands[0]}`;
-        enableExpr.operands[0] = newOperand;
-        option.enable = enableExpr;
-        projectInputs[p] = option;
-      }
-    }
-  });
-  return { [PROJECT_INSTANCE_PATH]: spoofedDatAllInstance, ...projectInputs };
+  return (allSystems?.getInputs() ?? {}) as { [key: string]: TemplateInput };
 }
 
 export interface TemplateInput {
@@ -318,7 +274,13 @@ export interface TemplateInput {
   enable?: any;
   modifiers?: Modification[];
   choiceModifiers?: { [key: string]: Modification[] };
+  /** Modifications of the constraining clause of a replaceable element: only
+   * these apply to a redeclaration (MLS 7.3.2). Undefined if there is no
+   * constraining clause. */
+  constrainingModifiers?: Modification[];
   elementType: ElementType;
+  /** See Element.kindOfClass */
+  kindOfClass?: string;
   replaceable?: boolean;
   /** True if value is a binding to a record type component */
   recordBinding?: boolean;
@@ -329,6 +291,8 @@ interface Replaceable extends Element {
   choices?: string[];
   choiceMods?: { [key: string]: Modification[] };
   constraint?: Element;
+  /** See TemplateInput.constrainingModifiers */
+  constraintMods?: Modification[];
   mods?: Modification[];
   value?: any;
 }
@@ -375,17 +339,16 @@ function initializeReplaceable(
       constraintDef.name,
       basePath,
     ) as Element;
+    instance.constraintMods = [];
     if (constraintDef?.class_modification) {
-      instance.mods = [
-        ...instance.mods,
-        // Use instance.modelicaPath (the component's full path) for modifier keys,
-        // not basePath (the parent class path)
-        ...getModificationList(
-          constraintDef,
-          instance.modelicaPath,
-          instance.constraint.modelicaPath,
-        ),
-      ];
+      // Use instance.modelicaPath (the component's full path) for modifier keys,
+      // not basePath (the parent class path)
+      instance.constraintMods = getModificationList(
+        constraintDef,
+        instance.modelicaPath,
+        instance.constraint.modelicaPath,
+      );
+      instance.mods = [...instance.mods, ...instance.constraintMods];
     }
   }
 
@@ -448,7 +411,9 @@ function getReplaceableInputs(
     elementType: instance.elementType,
     enable: instance.enable,
     choiceModifiers: choiceMods,
+    constrainingModifiers: instance.constraintMods,
     replaceable: instance.replaceable,
+    ...(instance.kindOfClass && { kindOfClass: instance.kindOfClass }),
   };
 
   if (recursive) {
@@ -471,6 +436,10 @@ export abstract class Element {
   entryPoint = false;
   duplicate = false;
   elementType!: ElementType;
+  /** Class prefixes of a class definition without `partial`, as "model" or
+   * "expandable connector" (docs/selection-keys.md, "Values"). Undefined for
+   * other elements. */
+  kindOfClass?: string;
   replaceable: boolean = false;
   /** Never synthesized to `false`: undefined marks a non-selectable composite
    * group whose children remain live, while a defined `false` (or an
@@ -503,9 +472,7 @@ export abstract class Element {
   }
 
   get baseType(): string {
-    const pathList = this.modelicaPath.split(".");
-    pathList.pop();
-    return pathList.join(".");
+    return enclosingName(this.modelicaPath);
   }
 
   /**
@@ -574,6 +541,19 @@ function getRawCtrlFlowEnable(
   return undefined;
 }
 
+/**
+ * Class prefixes of a class definition without `partial`, as written in a
+ * redeclaration: `redeclare <kindOfClass> S = P.C` (MLS 4.7, appendix A)
+ */
+function getKindOfClass(definition: any): string {
+  const classPrefixes: string =
+    definition.class_definition?.class_prefixes ?? definition.class_prefixes;
+  return classPrefixes
+    .replace(/\bpartial\b/, "")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
 export class ShortClass extends Element {
   mods?: Modification[];
   value?: string; // undefined for short class definitions (no binding)
@@ -583,6 +563,7 @@ export class ShortClass extends Element {
     public elementType: ElementType,
   ) {
     super();
+    this.kindOfClass = getKindOfClass(definition);
     const specifier = (definition.class_definition ?? definition)
       .class_specifier.short_class_specifier;
     this.name = specifier.identifier;
@@ -743,6 +724,7 @@ export class LongClass extends Element {
     public elementType: ElementType,
   ) {
     super();
+    this.kindOfClass = getKindOfClass(definition);
     const specifier = (definition.class_definition ?? definition)
       .class_specifier.long_class_specifier;
     this.name = specifier.identifier;
@@ -865,6 +847,7 @@ export class LongClass extends Element {
       elementType: this.elementType,
       modifiers: this.mods,
       replaceable: this.replaceable,
+      ...(this.kindOfClass && { kindOfClass: this.kindOfClass }),
     };
 
     return inputs;
@@ -1173,6 +1156,7 @@ export class Enumeration extends Element {
     public elementType: ElementType,
   ) {
     super();
+    this.kindOfClass = getKindOfClass(definition);
     const specifier = (definition.class_definition ?? definition)
       .class_specifier.short_class_specifier;
     this.name = specifier.identifier;
@@ -1212,6 +1196,7 @@ export class Enumeration extends Element {
       inputs: this.enumList.map((e) => e.modelicaPath),
       elementType: this.elementType,
       replaceable: this.replaceable,
+      ...(this.kindOfClass && { kindOfClass: this.kindOfClass }),
     };
 
     // outputs a parent input, then an input for each enum type
@@ -1427,7 +1412,7 @@ export class File {
   public elementList: Element[] = [];
   constructor(obj: any, className: string) {
     this.package = obj.within;
-    const splitFilePath = className.split(".");
+    const splitFilePath = splitName(className);
     if (this.package) {
       // FIXME: The assumption below is not consistent with MLS.
       // A one-to-one relationship between class names and file paths cannot be generically assumed.
@@ -1437,7 +1422,7 @@ export class File {
       // a mismatch means an incorrectly typed or structured package
       // Folder and file should always line up, e.g.
       // TestPackage/Interface/stuff.mo should have a within path of 'TestPackage.Interface'
-      this.package.split(".").forEach((value, index) => {
+      splitName(this.package).forEach((value, index) => {
         if (index < splitFilePath.length && value !== splitFilePath[index]) {
           throw new Error(
             "Malformed Modelica Package or Incorrect type assigned",

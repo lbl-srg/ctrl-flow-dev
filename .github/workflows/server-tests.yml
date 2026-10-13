@@ -40,11 +40,14 @@ jobs:
         run: npm run install-python-deps
       - name: Install NPM packages
         run: npm ci
+      - name: Run ctrlflow Python tests
+        working-directory: server/scripts/ctrlflow
+        run: python3 -m pytest
       - name: Run sequence-doc Python tests
         working-directory: server/scripts/sequence-doc
         run: python3 -m pytest -c pytest.toml
       - name: Run tests
         run: |
-          npm run start &
+          npx ts-node src/index.ts & # no nodemon: tests write files to the watched directory
           sleep 5 # wait for server to start
           npm run test:ci

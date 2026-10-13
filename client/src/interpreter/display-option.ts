@@ -2,14 +2,12 @@
 
 import { OptionInterface } from "../../src/data/template";
 
-import {
-  ConfigContext,
-  OptionInstance,
-  constructSelectionPath,
-} from "./interpreter";
+import { ConfigContext, OptionInstance } from "./interpreter";
+import { enclosingName, lastIdent } from "../utils/names";
 
 export interface FlatConfigOptionGroup {
   groupName: string;
+  /** Identifier of the group in the display, not a selection key */
   selectionPath: string;
   items: DisplayItem[];
   /** Set for groups created from Dialog tab/group annotations, which are
@@ -27,6 +25,8 @@ export interface FlatConfigOption {
   booleanChoices?: string[];
   value: any;
   scope: string;
+  /** Key of the value of the option in the stores */
+  selectionKey: string;
   selectionType: string;
 }
 
@@ -59,6 +59,9 @@ export function _formatDisplayOption(
 ): FlatConfigOption {
   const option = optionInstance.option;
   const type = optionInstance.option.type === "Boolean" ? "Boolean" : "Normal";
+  if (optionInstance.key === null) {
+    throw new Error(`No selection key for ${optionInstance.instancePath}`);
+  }
 
   const flatOptionSetup: Partial<FlatConfigOption> = {
     parentModelicaPath,
@@ -67,6 +70,7 @@ export function _formatDisplayOption(
     value: optionInstance.value?.toString(),
     selectionType: type,
     scope: optionInstance.instancePath,
+    selectionKey: optionInstance.key,
   };
 
   if (type === "Boolean") {
@@ -104,11 +108,7 @@ export function _formatDisplayGroup(
   paramInstance: OptionInstance,
   context: ConfigContext,
 ) {
-  const instancePath = `${paramInstance.instancePath}.__group`;
-  const selectionPath = constructSelectionPath(
-    option.modelicaPath,
-    instancePath,
-  );
+  const selectionPath = `${option.modelicaPath}-${paramInstance.instancePath}.__group`;
   // `option.options` lists the parameters declared in the class itself first,
   // followed by the inherited parameters. Modelica tools display inherited
   // parameters first, starting with the deepest class in the inheritance tree:
@@ -116,7 +116,7 @@ export function _formatDisplayGroup(
   // class) to the first (the class itself).
   const treeList = option.treeList ?? [];
   const declaringClassRank = (path: string) =>
-    treeList.indexOf(path.split(".").slice(0, -1).join("."));
+    treeList.indexOf(enclosingName(path));
   const orderedOptions = [...(option.options ?? [])].sort(
     (a, b) => declaringClassRank(b) - declaringClassRank(a),
   );
@@ -144,10 +144,7 @@ export function _formatDisplayGroup(
     if (!container) {
       container = {
         groupName: group || tab,
-        selectionPath: constructSelectionPath(
-          option.modelicaPath,
-          `${paramInstance.instancePath}.__dialog.${key}`,
-        ),
+        selectionPath: `${option.modelicaPath}-${paramInstance.instancePath}.__dialog.${key}`,
         items: [],
         dialog: group ? "group" : "tab",
       };
@@ -184,7 +181,7 @@ export function _formatDisplayGroup(
       );
       childItems = childGroup ? [childGroup] : [];
     } else {
-      const paramName = o.split(".").pop();
+      const paramName = lastIdent(o);
       const childInstancePath = [paramInstance.instancePath, paramName]
         .filter((p) => p !== "")
         .join(".");
@@ -259,15 +256,12 @@ export function _formatDisplayItem(
   if (context._isInstanceDisabled(optionInstance.instancePath)) {
     return displayList;
   }
-  // check if the type needs to be rendered
-  // Use optionInstance.value for type lookup:
-  // - For non-replaceable components with no binding (value is undefined), lookup fails -> no nested components rendered
-  // - For replaceable components with no binding (value is undefined), use option.type instead
-  const type =
-    option["replaceable"] && !optionInstance.value
-      ? option.type
-      : optionInstance.value;
-  const typeOption = context.options[type as string];
+  // Only the elements of the template and of replaceable elements are
+  // rendered: the elements of non-replaceable components are not
+  const typeOption =
+    option.replaceable || option.definition
+      ? context.options[optionInstance.type]
+      : undefined;
   if (typeOption === undefined) {
     return displayList;
   }

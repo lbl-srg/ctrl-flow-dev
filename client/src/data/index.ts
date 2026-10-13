@@ -37,6 +37,13 @@ class RootStore {
     this.templateStore = new TemplateStore(this);
     this.projectStore = new ProjectStore(this);
     this.configStore = new ConfigStore(this);
+
+    Promise.all([this.projectStore.hydrated, this.configStore.hydrated]).then(
+      () =>
+        this.configStore.attachOrphans(
+          this.projectStore.projects.map((project) => project.id),
+        ),
+    );
   }
 
   getStorageKey(suffix = ""): string {

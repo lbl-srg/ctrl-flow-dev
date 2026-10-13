@@ -2,15 +2,20 @@ import RootStore from "../../src/data";
 import { ConfigInterface } from "../../src/data/config";
 import { ConfigValues } from "../../src/utils/modifier-helpers";
 import { TemplateInterface } from "../../src/data/template";
+import { ALL_SYSTEMS, selectionKey } from "../../src/utils/selection-key";
 
 // Project-level selections used across tests
-export const projectSelections = {
-  "Buildings.Templates.Data.AllSystems.stdEne":
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
-  "Buildings.Templates.Data.AllSystems.stdVen":
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
-  "Buildings.Templates.Data.AllSystems.ashCliZon":
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
+export const projectSelections: ConfigValues = {
+  [selectionKey(ALL_SYSTEMS, "stdEne")]: {
+    value: "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
+  },
+  [selectionKey(ALL_SYSTEMS, "stdVen")]: {
+    value:
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
+  },
+  [selectionKey(ALL_SYSTEMS, "ashCliZon")]: {
+    value: "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
+  },
 };
 
 export const createSelections = (selections: ConfigValues = {}) => {

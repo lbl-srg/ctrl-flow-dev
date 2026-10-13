@@ -8,6 +8,7 @@ from docx import Document
 import os
 import csv
 from mogrifier import mogrify_doc
+from sequence_payload import project_selections, delete_info_box
 
 
 DEFAULT_DOC_VERSION = 'DOD_20260828'
@@ -19,8 +20,6 @@ MAPPINGS_MODELICA_INSTANCE = 'Modelica Parameter'
 MAPPINGS_MODELICA_VALUES = 'Modelica Path'
 
 ANNOTATION_STYLE = 'Toggle'
-
-logging.getLogger().setLevel(logging.DEBUG)
 
 def parse_args(args) -> str:
     parser = argparse.ArgumentParser(
@@ -55,12 +54,15 @@ def generate_name_map(mappings_path: str) -> dict:
 def get_local_path_prefix(version: str) -> Path:
     return Path(os.path.dirname(__file__), 'version', version)
 
-def generate_doc(selections, version) -> Document:
+def generate_doc(payload, version) -> Document:
     ''' Gathers source document and short code map and
-        passes everything on to doc mogrifier
+        passes everything on to doc mogrifier, with the values of the
+        project of the payload (raises PayloadError if the payload cannot
+        be read)
 
         This is separated from main for easier testing
     '''
+    selections = project_selections(payload)
     local_file_prefix = get_local_path_prefix(version)
 
     # load source document starting point
@@ -71,14 +73,16 @@ def generate_doc(selections, version) -> Document:
     short_code_path = local_file_prefix / MAPPING_FILE_PATH
     name_map = generate_name_map(short_code_path)
 
-    return mogrify_doc(document, name_map, selections)
+    return mogrify_doc(document, name_map, selections, delete_info_box(payload))
 
 def main():
     '''
     '''
+    # LOG_LEVEL=INFO or DEBUG for diagnostics
+    logging.basicConfig(level=os.environ.get('LOG_LEVEL', 'WARNING'))
     args = parse_args(sys.argv[1:])
-    selections = extract_input(sys.stdin)
-    document = generate_doc(selections, args.version)
+    payload = extract_input(sys.stdin)
+    document = generate_doc(payload, args.version)
     document.save(args.output)
 
     return 0

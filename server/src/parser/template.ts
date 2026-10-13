@@ -12,6 +12,7 @@ import * as parser from "./parser";
 import { Expression, Literal } from "./expression";
 import { Modification } from "./modification";
 import { buildParameterTable, Table } from "./schedule";
+import { enclosingName } from "./names";
 
 const templateStore = new Map<string, Template>();
 const systemTypeStore = new Map<string, SystemTypeN>();
@@ -22,11 +23,6 @@ export function getTemplates() {
 
 export function getSystemTypes() {
   return [...systemTypeStore.values()];
-}
-
-export function getProject(): Project {
-  const { modelicaPath } = parser.getProject() as parser.TemplateInput;
-  return { modelicaPath };
 }
 
 type Options = { [key: string]: Option };
@@ -49,7 +45,7 @@ export function getOptions(): {
 
   // append project options
   const projectOptions: { [key: string]: Option } = {};
-  Object.entries(parser.createProjectInputs()).map(
+  Object.entries(parser.getProjectInputs()).map(
     ([key, input]) => (projectOptions[key] = _mapInputToOption(input)),
   );
   allConfigOptions = { ...allConfigOptions, ...projectOptions };
@@ -83,16 +79,19 @@ export interface Option {
     };
   };
   choiceModifiers?: { [key: string]: Mods };
+  /** Modifiers of the constraining clause of a replaceable element: only
+   * these apply to a redeclaration (MLS 7.3.2). Undefined if there is no
+   * constraining clause. */
+  constrainingModifiers?: Mods;
   replaceable: boolean;
   elementType: string;
   definition: boolean;
   shortExclType: boolean; // Short class definition excluding `type` definition
+  /** Class prefixes of a class definition without `partial`, as "model":
+   * undefined for components and enumeration literals */
+  kindOfClass?: string;
   /** True if value is a binding to a record type component */
   recordBinding?: boolean;
-}
-
-export interface Project {
-  modelicaPath: string;
 }
 
 export interface ScheduleOption extends Option {
@@ -170,7 +169,7 @@ export function _getTreeList(option: Option) {
       treeElement = o;
     } else {
       // remove the trailing '*.<instanceName>' to retrieve the class name from the instance path
-      treeElement = o.split(".").slice(0, -1).join(".");
+      treeElement = enclosingName(o);
     }
     if (!treeList.includes(treeElement)) {
       treeList.push(treeElement);
@@ -200,6 +199,12 @@ export function _mapInputToOption(input: parser.TemplateInput): Option {
     const flattenedMods = flattenModifiers(input.modifiers);
     delete flattenedMods[input.modelicaPath]; // don't include 'default path'
     option.modifiers = flattenedMods;
+  }
+
+  if (input.constrainingModifiers) {
+    const flattenedMods = flattenModifiers(input.constrainingModifiers);
+    delete flattenedMods[input.modelicaPath]; // don't include 'default path'
+    option.constrainingModifiers = flattenedMods;
   }
 
   if (input.choiceModifiers) {
@@ -266,13 +271,10 @@ export class Template {
   }
 
   _extractSystemTypes(element: parser.Element) {
-    const path = element.modelicaPath.split(".");
-    path.pop();
-
     // Fix for https://github.com/lbl-srg/ctrl-flow-dev/issues/422
     // Currently the UI does not support nested system types.
     // Therefore, we only add the Modelica class name of the containing package.
-    const type = parser.findElement(path.join("."));
+    const type = parser.findElement(enclosingName(element.modelicaPath));
     if (type && type.entryPoint) {
       if (!type.description) {
         console.error(
