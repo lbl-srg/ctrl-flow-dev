@@ -1,28 +1,22 @@
 '''
-Reads the payload sent by the client (docs/selection-keys.md, "Payload").
+Values of a project for the sequence document (docs/selection-keys.md,
+"Sequence document").
 
 A sequence document covers one project. Toggles evaluate over the values of
 the project, gathered across its configurations ("Aggregation").
 '''
 from typing import Dict, List
-
-SCHEMA_VERSION = 1
+from ctrlflow.payload import PayloadError, check_schema_version
 
 # Values of a project, by key or system type
 Selections = Dict[str, List]
-
-
-class PayloadError(ValueError):
-    ''' A payload that cannot be read '''
 
 
 def check_payload(payload: Dict) -> None:
     ''' Raises PayloadError if the schema version is not supported or if the
         payload does not contain exactly one project
     '''
-    version = payload.get('schemaVersion') if isinstance(payload, dict) else None
-    if version != SCHEMA_VERSION:
-        raise PayloadError(f'Unsupported payload schema version: {version}')
+    check_schema_version(payload)
     projects = payload.get('projects', [])
     if len(projects) != 1:
         raise PayloadError(

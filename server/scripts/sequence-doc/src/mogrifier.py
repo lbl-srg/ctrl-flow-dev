@@ -9,8 +9,8 @@ from docx.text.paragraph import Paragraph
 from docx.table import Table
 import logging
 import utils
-import keys
-from payload import Selections
+from ctrlflow import keys
+from sequence_payload import Selections
 from typing import Dict
 
 P_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p'

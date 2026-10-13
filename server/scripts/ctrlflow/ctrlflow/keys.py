@@ -7,7 +7,7 @@ classes, e.g. `P.{A|B}-c.p` stands for `P.A-c.p` and `P.B-c.p`.
 '''
 import re
 from typing import List, Tuple
-from names import is_class_name, is_name, UNQUOTED_IDENT
+from ctrlflow.names import is_class_name, is_name, UNQUOTED_IDENT
 
 CLASS_NAME = rf'{UNQUOTED_IDENT}(?:\.{UNQUOTED_IDENT})*'
 SELECTOR_RE = re.compile(rf'(?:({CLASS_NAME})\.)?\{{({CLASS_NAME}(?:\|{CLASS_NAME})*)\}}')

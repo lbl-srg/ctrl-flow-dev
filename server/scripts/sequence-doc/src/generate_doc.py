@@ -8,7 +8,7 @@ from docx import Document
 import os
 import csv
 from mogrifier import mogrify_doc
-from payload import project_selections, delete_info_box
+from sequence_payload import project_selections, delete_info_box
 
 
 DEFAULT_DOC_VERSION = 'Current G36 Decisions'

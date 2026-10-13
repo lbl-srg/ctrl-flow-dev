@@ -1,7 +1,7 @@
 '''
 Modelica names, which may contain quoted identifiers (MLS 3.7 §2.3.1)
 
-Port of server/src/parser/names.ts. A quoted identifier may contain ".", "-"
+Port of server/src/parser/names.ts, for the consumers of the payload. A quoted identifier may contain ".", "-"
 and escaped quotes, as in 'a.b', 'with-dash' or '13\'H'. Names are therefore
 never split with a plain string split, but with the scanner below.
 Specification: docs/selection-keys.md, "Parsing".

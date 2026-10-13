@@ -62,7 +62,7 @@ A component `Q-IDENT` may contain `.`, `-` and escaped quotes (`'13\'H'`). Names
 
 **Escapes are kept as written.** MLS §2.3.1 states that the redundant escapes `\?` and `\"` are the same as `?` and `"`, so `'a\?'` and `'a?'` would be the same identifier. Dymola and OCT treat them as distinct identifiers: they reject a reference `'a?'` to a declaration `'a\?'`. Keys use the spelling of the declaration, so that the modifications written from them are accepted by these tools, and remain valid under the MLS. A source that spells the same identifier in different ways is not supported (see Known limitations).
 
-The same scanner provides the name helpers (split into identifiers, last identifier, enclosing name). They replace every plain `split(".")` and `split("-")` applied to Modelica names in the client (interpreter, display mapping, modifier and expression helpers), the server parser, and the sequence document pipeline (Python port of the scanner).
+The same scanner provides the name helpers (split into identifiers, last identifier, enclosing name). They replace every plain `split(".")` and `split("-")` applied to Modelica names in the client (interpreter, display mapping, modifier and expression helpers), the server parser, and the consumers of the payload (Python port of the scanner, `server/scripts/ctrlflow`).
 
 ## Values
 
@@ -227,7 +227,7 @@ The payload is the exchange format between the client and every consumer (sequen
 
 ### Scope
 
-A sequence document covers one project. The sequence endpoint rejects a payload that does not contain exactly one project, until generating documents for several projects is specified, and a payload whose `schemaVersion` is not supported (HTTP 400, `checkPayload`). The pipeline checks the same (`payload.py`).
+A sequence document covers one project. The sequence endpoint rejects a payload that does not contain exactly one project, until generating documents for several projects is specified, and a payload whose `schemaVersion` is not supported (HTTP 400, `checkPayload`). The pipeline checks the same (`sequence_payload.py`, on top of `ctrlflow.payload`, which checks the schema version for any consumer).
 
 ### Aggregation
 
@@ -237,7 +237,7 @@ Toggles evaluate over the values of a project, gathered across its configuration
 - **Key pattern** (see Mappings): the union of the `value`s of the matching keys in all configurations. Both origins are used, as on `main`. A `redeclare` is not read (see Mappings).
 - **Project-level setting**: the `value` in `project.values`.
 
-This reproduces the merge done by the client before #650. Merging now happens in the mogrifier (`payload.project_selections`, then `aggregate_patterns`), where toggle expressions covering several templates configured differently will be added later.
+This reproduces the merge done by the client before #650. Merging now happens in the mogrifier (`sequence_payload.project_selections`, then `aggregate_patterns`), where toggle expressions covering several templates configured differently will be added later.
 
 ### Mappings
 
@@ -249,7 +249,7 @@ selector     = className | [ className "." ] "{" alternatives "}"
 alternatives = className { "|" className }
 ```
 
-A pattern is shorthand for the set of keys obtained by expanding the alternatives, e.g. `P.{A|B}-c.p` stands for `P.A-c.p` and `P.B-c.p`. Each expanded `rootClass` is a class where `elementPath` is declared (a template, or `Buildings.Templates.Data.AllSystems`), never an enclosing package. `{`, `|` and `}` cannot occur in a class name (no quoted class identifiers), so the expansion is unambiguous (`keys.py`). Keys are then matched by equality. A test checks that every expanded key is the key under which the client stores the value of the element, with the default selections (`client/tests/sequence/mappings.test.ts`).
+A pattern is shorthand for the set of keys obtained by expanding the alternatives, e.g. `P.{A|B}-c.p` stands for `P.A-c.p` and `P.B-c.p`. Each expanded `rootClass` is a class where `elementPath` is declared (a template, or `Buildings.Templates.Data.AllSystems`), never an enclosing package. `{`, `|` and `}` cannot occur in a class name (no quoted class identifiers), so the expansion is unambiguous (`ctrlflow.keys`). Keys are then matched by equality. A test checks that every expanded key is the key under which the client stores the value of the element, with the default selections (`client/tests/sequence/mappings.test.ts`).
 
 The mogrifier evaluates a toggle against the union of the values of all keys of the pattern. A condition on a subset of templates is expressed by the alternatives, or by a new mapping entry.
 
@@ -274,6 +274,16 @@ The documents generated before and after the refactoring are compared by golden 
 - `server/scripts/sequence-doc/tests/test_golden.py` generates the document of each payload and compares its text to the expected text.
 
 Both are stored in `server/scripts/sequence-doc/tests/static/golden` and are regenerated with `UPDATE_GOLDEN=1`. The payload format changes the payloads, which are then regenerated. The expected text must not change. In the payloads of #650, flattened to the format of #649, the only changes are the project-level values, which are no longer repeated in the configurations, and the evaluated values of `dat.ctl`, `cfg.typCtl` and `cfg.nFan*`, which were only evaluated through the binding `ctl(dat=dat.ctl)` (#642) and are read by no mapping.
+
+## Python package
+
+`server/scripts/ctrlflow` is the Python package shared by the consumers of the payload: the sequence document today, DXF and XLS editing in the future. It is installed with `npm run install-python-deps` (`pip install -e`) and imported as `ctrlflow`.
+
+- `ctrlflow.names`: port of the name scanner (see Parsing).
+- `ctrlflow.keys`: `parse_key`, and the key patterns of mappings files (`expand_pattern`, `is_pattern`).
+- `ctrlflow.payload`: `SCHEMA_VERSION`, `PayloadError`, `check_schema_version`.
+
+How the values are gathered is left to each consumer: the sequence document takes the union of the values of a project across its configurations (`sequence_payload.py`), which an XLS editor of the values of each configuration must not do.
 
 ## Prerequisites
 

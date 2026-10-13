@@ -1,8 +1,10 @@
 '''
-Payload reader (docs/selection-keys.md, "Payload" and "Sequence document")
+Values of a project for the sequence document (docs/selection-keys.md,
+"Sequence document")
 '''
 import pytest
-from payload import PayloadError, delete_info_box, project_selections
+from ctrlflow.payload import PayloadError
+from sequence_payload import delete_info_box, project_selections
 
 T1 = 'P.Templates.A'
 T2 = 'P.Templates.B'
