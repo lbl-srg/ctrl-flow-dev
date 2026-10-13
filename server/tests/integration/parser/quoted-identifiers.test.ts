@@ -20,6 +20,10 @@ describe("Quoted identifiers", () => {
   beforeAll(() => {
     createModelicaJson("tests/static-data/QuotedPackage", tempDirPath);
     createModelicaJson("tests/static-data/QuotedClassPackage", tempDirPath);
+    // The project settings of the outer datAll come from the stub of
+    // Buildings.Templates.Data.AllSystems, not from the MBL: the options do
+    // not depend on whether another suite converted the stub first
+    createModelicaJson("tests/static-data/Buildings", tempDirPath);
     prependToModelicaJsonPath([fullTempDirPath]);
     loadPackage("QuotedPackage");
     options = Object.fromEntries(
