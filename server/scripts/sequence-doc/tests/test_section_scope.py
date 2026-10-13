@@ -11,6 +11,9 @@ test_mogrifier*.py, test_golden.py).
 Every toggle has a valid format and uses short IDs of the mappings: otherwise
 the mogrifier only logs an error and deletes the section.
 
+Every heading is numbered by a list, so that Word renumbers the headings that
+follow a removed section (see "Heading Numbering").
+
 A section toggled by templates of a system type, e.g. `[EQUALS VAV RH]` or
 `[ANY VAV PFBCV SFBCV]`, reads the values of these templates only: a key of
 another template of the same system type would let a configuration of that
@@ -134,6 +137,32 @@ def test_toggles_use_short_ids_of_the_mappings():
             continue
         if missing:
             errors.append(f"{op['text']}: {', '.join(missing)} not in the mappings")
+    assert errors == []
+
+
+def list_id(paragraph):
+    ''' ID of the list numbering a paragraph: set on the paragraph, else on its
+        style or the styles it is based on. None or 0 if not numbered.
+    '''
+    ppr = paragraph._p.pPr
+    if ppr is not None and ppr.numPr is not None and ppr.numPr.numId is not None:
+        return ppr.numPr.numId.val
+    style = paragraph.style
+    while style is not None:
+        ppr = style.element.pPr
+        if ppr is not None and ppr.numPr is not None and ppr.numPr.numId is not None:
+            return ppr.numPr.numId.val
+        style = style.base_style
+    return None
+
+
+def test_headings_are_numbered_by_a_list():
+    _, doc, _ = load()
+    errors = []
+    for p in doc.element.body.iter(mogrifier.P_TAG):
+        paragraph = Paragraph(p, doc)
+        if mogrifier.get_heading_level(paragraph) < 100 and not list_id(paragraph):
+            errors.append(f'{paragraph.style.name}: {paragraph.text}')
     assert errors == []
 
 
