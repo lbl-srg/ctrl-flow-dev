@@ -237,7 +237,7 @@ Toggles evaluate over the values of a project, gathered across its configuration
 - **Key pattern** (see Mappings): the union of the `value`s of the matching keys in all configurations. Both origins are used, as on `main`. A `redeclare` is not read (see Mappings).
 - **Project-level setting**: the `value` in `project.values`.
 
-This reproduces the merge done by the client before #650. Merging now happens in the mogrifier (`sequence_payload.project_selections`, then `aggregate_patterns`), where toggle expressions covering several templates configured differently will be added later.
+This reproduces the merge done by the client before #650. Merging now happens in the mogrifier (`sequence_payload.project_selections`, then `aggregate_patterns`). Which templates a toggle reads is set by the mappings: a section of a single system type uses short IDs of its template, and a section shared by several system types a key pattern or a combination of short IDs (see "Sections of System Types" in [sequence-doc.md](sequence-doc.md), #654).
 
 ### Mappings
 
@@ -307,10 +307,11 @@ Issues found by the probe, unrelated to quoted identifiers:
 - Modelica export and the record ⇄ Excel converter (this specification only guarantees that their addresses exist).
 - The multi-project UI (creating, switching and removing projects), and generating sequence documents for several projects. The stores and the payload already support them.
 - Name lookup in expressions and modifiers (`resolvePaths`, `createPossiblePaths`). It approximates Modelica lookup (MLS §5.3) by trimming the instance path instead of searching the enclosing class scopes.
-- Toggle expressions for sections covering several templates configured differently.
 - Display of parameters of short class instances (see Known limitations).
 
 ## Known limitations
+
+- **Configurations of the same template.** The sequence document has one section per system type: the values of the configurations of the same template are merged, and a section is kept if any configuration of that type needs it (see "Sections of System Types" in [sequence-doc.md](sequence-doc.md)).
 
 - **Replaceable short classes.** Before #620, short-class choices were written under one key (`…ShortClass-ShortClass`) and read under another (`…ShortClass-.FirstComponent`). The choice is now written and read at the short class element (rule 4, `T-ShortClass`). The parameters of the selected class are still displayed and keyed under the class name (`T-ShortClass.container`) rather than under the instance, and selecting another class does not change how the instance resolves. No template in `templates.json` uses a replaceable short class in the configuration panel. The display and resolution of short class instances are tracked separately.
 - **Spellings of quoted identifiers.** A source that spells a quoted identifier with and without a redundant escape (`'a\?'` and `'a?'`, `'a\"'` and `'a"'`) is not supported: ctrl-flow keeps identifiers as written, like Dymola and OCT, which reject such a source, although MLS §2.3.1 makes both spellings the same identifier.

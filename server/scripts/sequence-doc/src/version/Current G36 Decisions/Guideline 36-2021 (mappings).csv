@@ -132,6 +132,9 @@ No,,,,FALSE,
 CO2 Sensor:,CO2,N,Buildings.Templates.ZoneEquipment.{VAVBoxCoolingOnly|VAVBoxReheat}-ctl.have_CO2Sen,Boolean,
 Yes,,,,TRUE,"DEPT:  if any terminals have a CO2 sensor, this applies"
 No,,,,FALSE,
-Terminal Heat Source:,TERM_HT,N,Buildings.Templates.ZoneEquipment.{VAVBoxCoolingOnly|VAVBoxReheat}-coiHea.typ,Buildings.Templates.Components.Types.Coil,
+Terminal Heat Source:,TERM_HT,N,Buildings.Templates.ZoneEquipment.{VAVBoxCoolingOnly|VAVBoxReheat}-coiHea.typ,Buildings.Templates.Components.Types.Coil,"Only used in the sections of the system types not implemented in Templates (fan-powered terminal units). The section of a single system type uses the short ID of its template, e.g. TERM_HT_RH."
 Hot Water Coil,,,,Buildings.Templates.Components.Types.Coil.WaterBasedHeating,"DEPT:  if any terminals have a hot water coil, this applies, No short id since the short id is the same as above for VAVMultiZone"
+Modulating Electric Heating Coil,,,,Buildings.Templates.Components.Types.Coil.ElectricHeating,No short id since the short id is the same as above for VAVMultiZone
+Terminal Heat Source (VAV with Reheat):,TERM_HT_RH,N,Buildings.Templates.ZoneEquipment.VAVBoxReheat-coiHea.typ,Buildings.Templates.Components.Types.Coil,Section of the VAV terminal unit with reheat
+Hot Water Coil,,,,Buildings.Templates.Components.Types.Coil.WaterBasedHeating,No short id since the short id is the same as above for VAVMultiZone
 Modulating Electric Heating Coil,,,,Buildings.Templates.Components.Types.Coil.ElectricHeating,No short id since the short id is the same as above for VAVMultiZone

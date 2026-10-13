@@ -86,6 +86,20 @@ These long paths can then be used to resolve the annotation in the script.
 
 A key is `<template>-<elementPath>`, see [selection-keys.md](selection-keys.md). A key pattern lists several templates, e.g. `CO2` maps to `Buildings.Templates.ZoneEquipment.{VAVBoxCoolingOnly|VAVBoxReheat}-ctl.have_CO2Sen`: the annotation is evaluated against the values of `ctl.have_CO2Sen` in all configurations of both templates (see the "Mappings" section of [selection-keys.md](selection-keys.md)).
 
+### Sections of System Types
+
+A short ID maps to one key or key pattern, wherever it is used in the source document. Which one to use depends on the section:
+
+- A section of a single system type (toggled by a system type, e.g. `[EQUALS VAV RH]`) uses short IDs of the template of that system type, e.g. `TERM_HT_RH` → `Buildings.Templates.ZoneEquipment.VAVBoxReheat-coiHea.typ`. Otherwise the values of another template would keep or delete the section. `tests/test_section_scope.py` checks that such a section reads no key of another template of the same system type. Keys of other system types are not restricted: e.g. a section of the AHU reads the CO2 sensors of all zones.
+- A section shared by several system types uses a key pattern, whose values are merged across the templates (e.g. `CO2`: kept if any zone has a CO2 sensor), or combines short IDs of each template, e.g. `[OR [YES CO2_PFBCV] [YES CO2_SFBCV]]`.
+
+Combined toggles have the following limits:
+
+- `AND` and `OR` take exactly two operands, and a nested toggle is only parsed as the first operand: `[AND [YES C] [OR [YES A] [YES B]]]` is mis-split. Write `[AND [OR [YES A] [YES B]] [YES C]]` instead.
+- A system type the project doesn't use has no keys: `YES`, `NO`, `EQUALS` and `ANY` then delete the section, and `NOT_EQUALS` keeps it. In `[OR [YES CO2_PFBCV] [YES CO2_SFBCV]]`, a missing system type therefore doesn't delete the section.
+
+The configurations of the same template are merged: a section of a system type is kept if any configuration of that type needs it.
+
 TODO: add info about each column
 
 ## Information Boxes and Styles
