@@ -8,6 +8,10 @@
  * resolving its element path in its root class, with the default selections,
  * gives the same key. A path through an outer component or a bound record
  * gives another key (rules 1 and 2), and a missing element no key.
+ *
+ * The mogrifier reads `value` only: the element is not replaceable, as the
+ * class of a replaceable element is a redeclaration. The class is read through
+ * its `typ` parameter instead.
  */
 import * as fs from "fs";
 import * as path from "path";
@@ -95,18 +99,25 @@ describe("Sequence document mappings", () => {
     expect(expandPattern("P.{A|B}-c.p")).toEqual(["P.A-c.p", "P.B-c.p"]);
   });
 
-  it.each(patterns.flatMap(expandPattern))("%s is the key of an element", (key) => {
-    const { rootClass, elementPath } = parseSelectionKey(key);
-    expect([ALL_SYSTEMS, ...Object.keys(allTemplates)]).toContain(rootClass);
-    const context =
-      rootClass === ALL_SYSTEMS
-        ? projectContext(allOptions, {})
-        : new ConfigContext(
-            allTemplates[rootClass],
-            { selections: {} } as any,
-            allOptions,
-            {},
-          );
-    expect(resolveInstance(elementPath, context)?.key).toEqual(key);
-  });
+  it.each(patterns.flatMap(expandPattern))(
+    "%s is the key of an element with a value",
+    (key) => {
+      const { rootClass, elementPath } = parseSelectionKey(key);
+      expect([ALL_SYSTEMS, ...Object.keys(allTemplates)]).toContain(rootClass);
+      const context =
+        rootClass === ALL_SYSTEMS
+          ? projectContext(allOptions, {})
+          : new ConfigContext(
+              allTemplates[rootClass],
+              { selections: {} } as any,
+              allOptions,
+              {},
+            );
+      const resolution = resolveInstance(elementPath, context);
+      expect(resolution?.key).toEqual(key);
+      expect(allOptions[resolution?.optionPath as string].replaceable).toBe(
+        false,
+      );
+    },
+  );
 });

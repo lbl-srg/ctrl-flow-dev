@@ -1,7 +1,6 @@
 import { ConfigInterface } from "../../src/data/config";
 import { TemplateInterface, OptionInterface } from "../../src/data/template";
-import { removeEmpty } from "../../src/utils/utils";
-import { ConfigValues } from "../utils/modifier-helpers";
+import { ConfigValues, storedValue, valueOf } from "../utils/modifier-helpers";
 import {
   enclosingName,
   firstIdent,
@@ -117,8 +116,8 @@ interface ResolutionContext {
 }
 
 /**
- * Selections that may hold a class, by element path: string values of the
- * keys of `rootClass`
+ * Classes selected for the elements of `rootClass`, by element path: the
+ * redeclarations of the selections
  */
 export function selectedClasses(
   selections: ConfigValues,
@@ -127,10 +126,10 @@ export function selectedClasses(
   [key: string]: string;
 } {
   const classes: { [key: string]: string } = {};
-  Object.entries(selections).forEach(([key, value]) => {
+  Object.entries(selections).forEach(([key, { redeclare }]) => {
     const { rootClass: keyClass, elementPath } = parseSelectionKey(key);
-    if (keyClass === rootClass && typeof value === "string") {
-      classes[elementPath] = value;
+    if (keyClass === rootClass && redeclare !== undefined) {
+      classes[elementPath] = redeclare;
     }
   });
   return classes;
@@ -157,7 +156,8 @@ export function memberOption(
  * 1. the class selected by the user,
  * 2. the class of a redeclare modification,
  * 3. the declared type.
- * A short class is followed to the class it aliases.
+ * A short class is followed to the class it aliases, unless `followAliases`
+ * is false: the class is then the one of the redeclaration.
  *
  * The class is not necessarily an option, e.g. for predefined types.
  */
@@ -165,6 +165,7 @@ export function effectiveClass(
   path: string,
   declaredOption: OptionInterface,
   ctx: ResolutionContext,
+  followAliases = true,
 ): string {
   const { options } = ctx;
   let classPath: string | undefined;
@@ -178,7 +179,7 @@ export function effectiveClass(
     classPath = ALL_SYSTEMS;
   }
   classPath ??= declaredOption.type;
-  while (options[classPath]?.shortExclType) {
+  while (followAliases && options[classPath]?.shortExclType) {
     classPath = options[classPath].type;
   }
   return classPath;
@@ -937,6 +938,7 @@ export class ConfigContext implements ResolutionContext {
     [key: string]: {
       value: Literal | null;
       optionPath: string;
+      instancePath: string;
       key: string | null;
     };
   } = {};
@@ -958,9 +960,20 @@ export class ConfigContext implements ResolutionContext {
     );
   }
 
-  addToCache(path: string, optionPath: string, key: string | null, val: any) {
+  addToCache(
+    path: string,
+    optionPath: string,
+    instancePath: string,
+    key: string | null,
+    val: any,
+  ) {
     if (!isExpression(val) && val !== undefined && val !== null) {
-      this._resolvedValues[path] = { value: val as Literal, optionPath, key };
+      this._resolvedValues[path] = {
+        value: val as Literal,
+        optionPath,
+        instancePath,
+        key,
+      };
     }
   }
 
@@ -998,7 +1011,7 @@ export class ConfigContext implements ResolutionContext {
       if (option) {
         if (option.definition) {
           this._previousInstancePath = null;
-          this.addToCache(path, optionPath, null, path);
+          this.addToCache(path, optionPath, path, null, path);
           return path;
         }
         optionPath = path;
@@ -1019,32 +1032,48 @@ export class ConfigContext implements ResolutionContext {
     }
 
     // check selections
-    if (key !== null && this.selections && key in this.selections) {
+    const selected =
+      key !== null && this.selections?.[key]
+        ? valueOf(this.selections[key])
+        : undefined;
+    if (selected !== undefined) {
       this._previousInstancePath = null;
-      this.addToCache(path, optionPath, key, this.selections[key]);
-      return this.selections[key];
+      this.addToCache(path, optionPath, instancePath, key, selected);
+      return selected;
+    }
+
+    // A record bound to another record has no value: a replaceable record
+    // evaluates to the class of its declaration or redeclaration, not to the
+    // class of the binding target, which may be a subtype (#642)
+    const mod = this.mods[instancePath];
+    const option = this.options[optionPath];
+    if (mod?.recordBinding || option?.recordBinding) {
+      val = option.replaceable
+        ? effectiveClass(instancePath, option, this, false)
+        : null;
+      this.addToCache(path, optionPath, instancePath, key, val);
+      this._previousInstancePath = null;
+      return val;
     }
 
     // Check if a value is on a modifier
-    const mod = this.mods[instancePath];
     if (mod) {
       val = evaluateModifier(this.mods[instancePath], this, instancePath);
       if (val !== undefined && val !== null) {
         this._previousInstancePath = null;
-        this.addToCache(path, optionPath, key, val);
+        this.addToCache(path, optionPath, instancePath, key, val);
         return val;
       }
     }
 
     // return whatever value is present on the original option definition
     const optionScope = enclosingName(instancePath);
-    const option = this.options[optionPath];
     // - For replaceable elements: value is "" if no binding, use type instead
     // - For non-replaceable elements: use value directly
     const optionValue =
       option?.replaceable && !option?.value ? option?.type : option?.value;
     val = evaluate(optionValue, this, optionScope);
-    this.addToCache(path, optionPath, key, val);
+    this.addToCache(path, optionPath, instancePath, key, val);
     this._previousInstancePath = null;
     return val;
   }
@@ -1098,12 +1127,17 @@ export class ConfigContext implements ResolutionContext {
     return this.options[this.template.modelicaPath];
   }
 
+  /**
+   * True if `key` is the key of a displayed element of the template. The
+   * project settings are not elements of a configuration: they are saved with
+   * the project only.
+   */
   isValidSelection(key: string) {
     const { rootClass, elementPath } = parseSelectionKey(key);
-    if (rootClass !== this.template.modelicaPath) {
-      return true; // project settings are not elements of the template
-    }
-    return !!this.getOptionInstance(elementPath)?.display;
+    return (
+      rootClass === this.template.modelicaPath &&
+      !!this.getOptionInstance(elementPath)?.display
+    );
   }
 
   /**
@@ -1212,29 +1246,32 @@ export class ConfigContext implements ResolutionContext {
   }
 
   /**
-   * Maps the cache of values to the selection format
+   * Maps the cache of values to value objects, for the elements of the
+   * template (docs/selection-keys.md, "Values"): a replaceable element gets
+   * the redeclaration of its class, another element its value.
    */
-  getEvaluatedValues() {
-    const evaluatedValues: { [key: string]: Literal | null | undefined } = {};
+  getEvaluatedValues(): ConfigValues {
+    const evaluatedValues: ConfigValues = {};
     // Values are lazy loaded so only what is needed to display all of a templates options is
     // resolved. If more evaluations are needed by the sequence document call this:
     // this.visitTemplateNodes();
-    const resolvedValues = removeEmpty(this._resolvedValues) as {
-      [path: string]: {
-        value: Literal | null | undefined;
-        optionPath: string;
-        key: string | null;
-      };
-    };
-    Object.values(resolvedValues).forEach(({ optionPath, key, value }) => {
-      if (key === null) {
-        return; // not an element of the template
-      }
-      const option = this.options[optionPath];
-      if (value !== undefined || option.type === "String") {
-        evaluatedValues[key] = value;
-      }
-    });
+    Object.values(this._resolvedValues).forEach(
+      ({ optionPath, instancePath, key, value }) => {
+        if (
+          key === null ||
+          parseSelectionKey(key).rootClass !== this.template.modelicaPath
+        ) {
+          return; // not an element of the template
+        }
+        const option = this.options[optionPath];
+        evaluatedValues[key] = storedValue(
+          option,
+          option.replaceable
+            ? effectiveClass(instancePath, option, this, false)
+            : (value as Literal),
+        );
+      },
+    );
     return evaluatedValues;
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "lbl-linkage",
-  "version": "0.1.31",
+  "version": "0.2.0",
   "private": true,
   "homepage": "https://github.com/lbl-srg/ctrl-flow-dev",
   "dependencies": {
@@ -26,8 +26,8 @@
   },
   "scripts": {
     "start": "vite",
-    "build": "npm version patch && tsc --noEmit && vite build",
-    "buildForS3": "npm version patch && vite build",
+    "build": "tsc --noEmit && vite build",
+    "buildForS3": "vite build",
     "test": "jest",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",

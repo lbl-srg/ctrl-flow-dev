@@ -5,13 +5,17 @@ import { TemplateInterface } from "../../src/data/template";
 import { ALL_SYSTEMS, selectionKey } from "../../src/utils/selection-key";
 
 // Project-level selections used across tests
-export const projectSelections = {
-  [selectionKey(ALL_SYSTEMS, "stdEne")]:
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
-  [selectionKey(ALL_SYSTEMS, "stdVen")]:
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
-  [selectionKey(ALL_SYSTEMS, "ashCliZon")]:
-    "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
+export const projectSelections: ConfigValues = {
+  [selectionKey(ALL_SYSTEMS, "stdEne")]: {
+    value: "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
+  },
+  [selectionKey(ALL_SYSTEMS, "stdVen")]: {
+    value:
+      "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24",
+  },
+  [selectionKey(ALL_SYSTEMS, "ashCliZon")]: {
+    value: "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_1B",
+  },
 };
 
 export const createSelections = (selections: ConfigValues = {}) => {

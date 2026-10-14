@@ -62,7 +62,7 @@ A component `Q-IDENT` may contain `.`, `-` and escaped quotes (`'13\'H'`). Names
 
 **Escapes are kept as written.** MLS §2.3.1 states that the redundant escapes `\?` and `\"` are the same as `?` and `"`, so `'a\?'` and `'a?'` would be the same identifier. Dymola and OCT treat them as distinct identifiers: they reject a reference `'a?'` to a declaration `'a\?'`. Keys use the spelling of the declaration, so that the modifications written from them are accepted by these tools, and remain valid under the MLS. A source that spells the same identifier in different ways is not supported (see Known limitations).
 
-The same scanner provides the name helpers (split into identifiers, last identifier, enclosing name). They replace every plain `split(".")` and `split("-")` applied to Modelica names in the client (interpreter, display mapping, modifier and expression helpers), the server parser, and the sequence document pipeline (Python port of the scanner).
+The same scanner provides the name helpers (split into identifiers, last identifier, enclosing name). They replace every plain `split(".")` and `split("-")` applied to Modelica names in the client (interpreter, display mapping, modifier and expression helpers), the server parser, and the consumers of the payload (Python port of the scanner, `server/scripts/ctrlflow`).
 
 ## Values
 
@@ -81,9 +81,11 @@ enumLiteral = className "." E-IDENT      (enumeration type, then literal: quoted
 | Replaceable short class | `redeclare`: class of the short class; `kindOfClass` | `{ "redeclare": "P.C", "kindOfClass": "model" }` |
 | Enumeration parameter | `value`: `enumLiteral` | `P.Types.Valve.TwoWayModulating`, `P.Types.Valve.'two-way'` |
 | Other parameters | `value`: Boolean, number, or string | `true`, `0.7` |
-| Replaceable record with a binding (`redeclare R rec = localRec`) | `redeclare` and `value` | not produced by the configuration panel today |
+| Record bound to another record (`ctl(dat=dat.ctl)`) | `redeclare` if replaceable: class of the declaration or redeclaration, not the class of the binding target; no `value` | `{ "redeclare": "Buildings.Templates.ZoneEquipment.Components.Data.VAVBoxController" }` |
+| Replaceable record with a binding (`redeclare R rec = localRec`) | `redeclare`; no `value` (see below) | not produced by the configuration panel today |
 
-- **Kind of modification.** The attributes are set from the declaration of the element when the value is written to the stores. They are never inferred from the value.
+- **Kind of modification.** The attributes are set from the declaration of the element when the value is written to the stores. They are never inferred from the value. A single function sets them: `storedValue(option, value)` gives `redeclare` for a replaceable element, with `kindOfClass` for a short class element, and `value` otherwise.
+- **Bound records** (#642). A record has no value under the grammar above. The elements of a bound record are keyed at the binding target (rule 2), and the binding is part of the library class, not of the configuration. `getValue` therefore does not evaluate a binding to a record: a replaceable record evaluates to the class of its declaration or redeclaration (`effectiveClass`), not to the class of the binding target, which may be a subtype, and a record that is not replaceable has no value. In `BaseModel bm(rec=subRec)`, with `replaceable BaseRecord rec` and `Rec subRec`, `bm.rec` has the class `BaseRecord`, not `Rec`. A binding written by a configuration, as `redeclare R rec = localRec`, would need its own attribute: `value` cannot hold a component name, which is not distinguishable from an enumeration literal.
 - **`kindOfClass`** is present if and only if the redeclared element is a class (short class element), and absent for a component. It holds the class prefixes of the replaceable class declaration (the specialized class keyword, MLS §4.7, with its `operator`, `expandable`, `pure` or `impure` prefix), i.e. the prefixes repeated in the redeclaration: `redeclare <kindOfClass> S = P.C`. With it, the payload is sufficient to write the modification without looking up `templates.json`.
 - **Consumers that only need values.** The MBL templates bind a `typ` parameter in every class that can be redeclared (type introspection: Modelica has no `isOfType()`, its type system being structural). Consumers that do not write Modelica, such as the sequence document, read `value` only, through these `typ` parameters (see Mappings).
 
@@ -151,9 +153,9 @@ Every computation of an element's class uses `effectiveClass`: `resolveInstance`
 
 - `config.selections`: values entered by the user. This is the only source of the class modification of an exported configuration class.
 - `config.evaluatedValues`: values derived by the interpreter, same key space. Never written to the class modification. Records derived from a configuration use them: the configuration record holds the evaluated `cfg.*` values as `final` modifications (see [ModelicaExport](https://github.com/AntoineGautier/ModelicaExport), `UserProject.*.Configuration`).
-- `project.selections`, `project.evaluatedValues`: project-level values, keyed `Buildings.Templates.Data.AllSystems-<elementPath>` (rule 1). The project details modal evaluates, displays and saves them with a `ConfigContext` whose root class is `Buildings.Templates.Data.AllSystems` (`projectContext`), as for a configuration: the selections of options that are not displayed, such as the climate zone of the other energy standard, are discarded. Before #649, they were keyed `Buildings.Templates.Data.AllSystems.<name>`, and the parser rewrote `stdEne` in the `enable` expressions of the climate zones as `Buildings.Templates.Data.AllSystems.stdEne` for the legacy evaluator of the modal.
-- **Value objects.** All four stores map each key to `{ value?, redeclare?, kindOfClass? }`: the value objects of the payload without `origin`, which is given by the store. The attributes are set once, when the value is written, by the code that holds the option of the element (`SlideOut` and `EditDetailsModal` for selections, `getEvaluatedValues` for evaluated values). Every reader (interpreter, display mapping, payload builder) takes them from the stores. This supersedes the flat selection schema of #495.
-- **Persistence.** No migration: the local storage key includes the client version, which is bumped on every build.
+- `project.selections`, `project.evaluatedValues`: project-level values, keyed `Buildings.Templates.Data.AllSystems-<elementPath>` (rule 1). The project details modal evaluates, displays and saves them with a `ConfigContext` whose root class is `Buildings.Templates.Data.AllSystems` (`projectContext`), as for a configuration: the selections of options that are not displayed, such as the climate zone of the other energy standard, are discarded. The configuration panel reads the project selections, but the stores of a configuration only hold the keys of its template (`isValidSelection`, `getEvaluatedValues`): a project-level value is stored once, with the project. Before #649, they were keyed `Buildings.Templates.Data.AllSystems.<name>`, and the parser rewrote `stdEne` in the `enable` expressions of the climate zones as `Buildings.Templates.Data.AllSystems.stdEne` for the legacy evaluator of the modal.
+- **Value objects.** All four stores map each key to `{ value?, redeclare?, kindOfClass? }`: the value objects of the payload without `origin`, which is given by the store. The attributes are set once, when the value is written, by the code that holds the option of the element (`SlideOut` and `EditDetailsModal` for selections, `getEvaluatedValues` for evaluated values), with `storedValue`. Every reader (interpreter, display mapping, payload builder) takes them from the stores: the interpreter reads the classes selected for the replaceable elements from `redeclare` (`selectedClasses`), and the value of an element from `value`, or else `redeclare`. The evaluated value of a replaceable element is its class before short classes are followed to the class they alias (`effectiveClass` with `followAliases` false). This supersedes the flat selection schema of #495.
+- **Persistence.** No migration: the local storage key includes the client version (`client/package.json`), so that the stores of another version are ignored. The version is bumped manually, never by the build, and a breaking change of the stores or of the payload requires a minor bump while the version is 0.x (SemVer): 0.2.0 for #649 and #650.
 - **Projects.** Every configuration belongs to exactly one existing project:
   - `ConfigInterface.projectId` (required) is set by `configStore.add()` to the active project id.
   - Queries and bulk removals of the config store (`getConfigsForProject`, `getConfigsForSystemTemplate`, `getActiveConfigs`, `hasSystemTemplateConfigs`, `removeAllForSystemTemplate`) are scoped to a project, the active one by default. Operations by configuration `id` (a UUID) are not scoped.
@@ -203,6 +205,8 @@ The payload is the exchange format between the client and every consumer (sequen
 }
 ```
 
+`buildSequencePayload` (`client/src/utils/sequence-payload.ts`) builds it for the active project and its configurations.
+
 ### Rules
 
 - **Addresses.** A value is addressed by `(project.id, configuration.id, key)`, or `(project.id, key)` for project-level settings. This address is unambiguous across projects, configurations and templates. Keys are unique within a `values` object, so each key holds a single value.
@@ -213,7 +217,7 @@ The payload is the exchange format between the client and every consumer (sequen
   - `value`, `redeclare`, `kindOfClass`: see Values. At least one of `value` and `redeclare` is present. There are no `null` values: an element without a value is absent.
   - `origin` (required): `"user"` for a value entered by the user (`selections`), `"evaluated"` for a value derived by the interpreter (`evaluatedValues`). When both exist, the user value wins. The class modification of an exported configuration class is made of `"user"` values only (see Stores).
   - Further attributes (unit, bounds, description, etc.) may be added; consumers ignore attributes they do not know.
-- **Payload-wide attributes** go in `meta` (versions of ctrl-flow and of the libraries the templates were generated from), never on each value.
+- **Payload-wide attributes** go in `meta` (versions of ctrl-flow and of the libraries the templates were generated from), never on each value. The versions of the libraries are written to `templates.json` (`libraries`) by the parser, from the `version` annotation of the root package of each library.
 - **Consumer options** go in `options`. They are not Modelica values. `deleteInfoBox` replaces `DEL_INFO_BOX`.
 - **Not keys.** The system type and the template of a configuration are fields of the configuration, not keys.
 - **Versioning.** `schemaVersion` is an integer, incremented on any breaking change. Adding optional attributes or fields is not breaking. Consumers reject a payload whose `schemaVersion` they do not support.
@@ -223,17 +227,17 @@ The payload is the exchange format between the client and every consumer (sequen
 
 ### Scope
 
-A sequence document covers one project. The sequence endpoint rejects a payload that does not contain exactly one project, until generating documents for several projects is specified.
+A sequence document covers one project. The sequence endpoint rejects a payload that does not contain exactly one project, until generating documents for several projects is specified, and a payload whose `schemaVersion` is not supported (HTTP 400, `checkPayload`). The pipeline checks the same (`sequence_payload.py`, on top of `ctrlflow.payload`, which checks the schema version for any consumer).
 
 ### Aggregation
 
 Toggles evaluate over the values of a project, gathered across its configurations:
 
 - **System type** (e.g. `VAV` → `Buildings.Templates.ZoneEquipment`): the set of `template`s of the configurations with that `systemType`.
-- **Key pattern** (see Mappings): the union of the `value`s of the matching keys in all configurations. Both origins are used, as on `main`.
+- **Key pattern** (see Mappings): the union of the `value`s of the matching keys in all configurations. Both origins are used, as on `main`. A `redeclare` is not read (see Mappings).
 - **Project-level setting**: the `value` in `project.values`.
 
-This reproduces the merge done by the client on `main`. Merging now happens in the mogrifier, where toggle expressions covering several templates configured differently will be added later.
+This reproduces the merge done by the client before #650. Merging now happens in the mogrifier (`sequence_payload.project_selections`, then `aggregate_patterns`), where toggle expressions covering several templates configured differently will be added later.
 
 ### Mappings
 
@@ -245,7 +249,7 @@ selector     = className | [ className "." ] "{" alternatives "}"
 alternatives = className { "|" className }
 ```
 
-A pattern is shorthand for the set of keys obtained by expanding the alternatives, e.g. `P.{A|B}-c.p` stands for `P.A-c.p` and `P.B-c.p`. Each expanded `rootClass` is a class where `elementPath` is declared (a template, or `Buildings.Templates.Data.AllSystems`), never an enclosing package. `{`, `|` and `}` cannot occur in a class name (no quoted class identifiers), so the expansion is unambiguous (`keys.py`). Keys are then matched by equality. A test checks that every expanded key is the key under which the client stores the value of the element, with the default selections (`client/tests/sequence/mappings.test.ts`).
+A pattern is shorthand for the set of keys obtained by expanding the alternatives, e.g. `P.{A|B}-c.p` stands for `P.A-c.p` and `P.B-c.p`. Each expanded `rootClass` is a class where `elementPath` is declared (a template, or `Buildings.Templates.Data.AllSystems`), never an enclosing package. `{`, `|` and `}` cannot occur in a class name (no quoted class identifiers), so the expansion is unambiguous (`ctrlflow.keys`). Keys are then matched by equality. A test checks that every expanded key is the key under which the client stores the value of the element, with the default selections (`client/tests/sequence/mappings.test.ts`).
 
 The mogrifier evaluates a toggle against the union of the values of all keys of the pattern. A condition on a subset of templates is expressed by the alternatives, or by a new mapping entry.
 
@@ -253,7 +257,7 @@ The `Current G36 Decisions` mappings are rewritten so that the generated documen
 
 - Each pattern lists the templates whose values are merged today.
 - Project-level settings use the keys of rule 1.
-- The five entries that read the class of a replaceable component (#650) (`PREHEAT`, `REHEAT`, `COOL`, `OA`, `TERM_HT`) read its `typ` parameter instead, and their value rows (`Modelica Path` column) use the enumeration literals, which match the classes one to one (`Coils.WaterBasedCooling` → `Types.Coil.WaterBasedCooling`). The mogrifier then reads `value` only.
+- The five entries that read the class of a replaceable component (`PREHEAT`, `REHEAT`, `COOL`, `OA`, `TERM_HT`) read its `typ` parameter instead, and their value rows (`Modelica Path` column) use the enumeration literals, which match the classes one to one (`Coils.WaterBasedCooling` → `Types.Coil.WaterBasedCooling`). The mogrifier then reads `value` only, and the mappings test checks that every mapped element is not replaceable.
 
 | Short ID | `main` | New |
 |---|---|---|
@@ -266,10 +270,20 @@ The `Current G36 Decisions` mappings are rewritten so that the generated documen
 
 The documents generated before and after the refactoring are compared by golden tests:
 
-- `client/tests/sequence/golden-payload.test.ts` builds the payloads of 52 projects through the same code path as the UI (display mapping, `getConfigValuesToSave`, `buildSequencePayload`). There is one single-configuration project per template with default values, one per choice of each option displayed by default, and projects combining several templates, several configurations of the same template, and other project settings. Cases are defined by instance paths and values, not by keys.
+- `client/tests/sequence/golden-payload.test.ts` builds the payloads of 52 projects through the same code path as the UI (display mapping of the project details modal and of the configuration panel, `storedValue`, `getConfigValuesToSave`, `buildSequencePayload`). `meta` is fixed, so that the payloads do not change with the versions. There is one single-configuration project per template with default values, one per choice of each option displayed by default, and projects combining several templates, several configurations of the same template, and other project settings. Cases are defined by instance paths and values, not by keys.
 - `server/scripts/sequence-doc/tests/test_golden.py` generates the document of each payload and compares its text to the expected text.
 
-Both are stored in `server/scripts/sequence-doc/tests/static/golden` and are regenerated with `UPDATE_GOLDEN=1`. The payload format changes the payloads, which are then regenerated. The expected text must not change.
+Both are stored in `server/scripts/sequence-doc/tests/static/golden` and are regenerated with `UPDATE_GOLDEN=1`. The payload format changes the payloads, which are then regenerated. The expected text must not change. In the payloads of #650, flattened to the format of #649, the only changes are the project-level values, which are no longer repeated in the configurations, and the evaluated values of `dat.ctl`, `cfg.typCtl` and `cfg.nFan*`, which were only evaluated through the binding `ctl(dat=dat.ctl)` (#642) and are read by no mapping.
+
+## Python package
+
+`server/scripts/ctrlflow` is the Python package shared by the consumers of the payload: the sequence document today, DXF and XLS editing in the future. It is installed with `npm run install-python-deps` (`pip install -e`) and imported as `ctrlflow`.
+
+- `ctrlflow.names`: port of the name scanner (see Parsing).
+- `ctrlflow.keys`: `parse_key`, and the key patterns of mappings files (`expand_pattern`, `is_pattern`).
+- `ctrlflow.payload`: `SCHEMA_VERSION`, `PayloadError`, `check_schema_version`.
+
+How the values are gathered is left to each consumer: the sequence document takes the union of the values of a project across its configurations (`sequence_payload.py`), which an XLS editor of the values of each configuration must not do.
 
 ## Prerequisites
 
@@ -279,7 +293,7 @@ Verified on 2026-10-08 with a probe package (quoted components and parameters co
 - **The server parser** preserves them in option paths (`…Template.'c-d'`), modifier keys (`…Template.'c-d'.'a.b'`), enumeration literals and values (`…Types.Valve.'13\'H'`), `enable` expressions (`'with-dash'`), `if` expressions and record bindings (`'rec-1'`).
 - **To be implemented:**
   - The parser accepts a quoted class without error (`…Classes.'Q'`). It must reject it.
-  - `templates.json` does not record the kind of a class definition: options of class definitions only have `definition: true`. The parser derives it from modelica-json's `class_prefixes` (`elementType` in `_constructElement`), but drops `expandable`. Class definition options get a `kindOfClass` field (class prefixes without `partial`), from which the client sets the `kindOfClass` attribute of values.
+  - `templates.json` does not record the kind of a class definition: options of class definitions only have `definition: true`. The parser derives it from modelica-json's `class_prefixes` (`elementType` in `_constructElement`), but drops `expandable`. Class definition options get a `kindOfClass` field (class prefixes without `partial`), from which the client sets the `kindOfClass` attribute of values. Done in #650: enumeration literals, which are options with `definition: true`, have no `kindOfClass`.
   - Six plain `split(".")` sites in the parser apply to element paths, so they would mis-split a component identifier containing `.`. They must use the scanner. The probe showed no symptom: `parser.ts:99` (inherited element lookup), `parser.ts:270`, `parser.ts:506` (`baseType`), `modification.ts:162`, `template.ts:173` (tree list), `schedule.ts:178`. The other seven sites only apply to class names, which are never quoted.
 
 Issues found by the probe, unrelated to quoted identifiers:

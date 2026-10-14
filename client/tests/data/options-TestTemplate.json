@@ -75,6 +75,7 @@
     "name": "Top-level (whole building) system parameters",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "class",
     "options": [
       "Buildings.Templates.Data.AllSystems.projectSetting"
     ],
@@ -109,6 +110,7 @@
     "value": "TestPackage.Types.Container",
     "visible": true,
     "replaceable": false,
+    "kindOfClass": "type",
     "options": [
       "TestPackage.Types.Container.Hand",
       "TestPackage.Types.Container.Bowl",
@@ -184,6 +186,7 @@
     "value": "TestPackage.Types.IceCream",
     "visible": true,
     "replaceable": false,
+    "kindOfClass": "type",
     "options": [
       "TestPackage.Types.IceCream.Chocolate",
       "TestPackage.Types.IceCream.Vanilla",
@@ -240,6 +243,7 @@
     "name": "Interface for Test Components",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Interface.PartialComponent.container",
       "TestPackage.Interface.PartialComponent.icecream"
@@ -262,6 +266,7 @@
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Component.FirstComponent.component_param",
       "TestPackage.Component.FirstComponent.datAll",
@@ -463,6 +468,7 @@
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Component.SecondComponent.component_param",
       "TestPackage.Component.SecondComponent.is_another_param",
@@ -539,6 +545,7 @@
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Component.ThirdComponent.component_param",
       "TestPackage.Component.ThirdComponent.selectable_component",
@@ -575,6 +582,7 @@
     "name": "Fourth Component",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Component.FourthComponent.replaceable_param",
       "TestPackage.Interface.PartialComponent.container",
@@ -752,6 +760,7 @@
     "name": "Controller",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "record",
     "options": [
       "TestPackage.Component.Data.TestTemplateController.typSecRel"
     ],
@@ -782,6 +791,7 @@
     "name": "Record for TestTemplate Interface Class",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "record",
     "options": [
       "TestPackage.Template.Data.PartialTemplate.ctl",
       "TestPackage.Template.Data.PartialTemplate.partialData"
@@ -808,6 +818,7 @@
       }
     },
     "replaceable": false,
+    "kindOfClass": "record",
     "options": [
       "TestPackage.Template.Data.TestTemplate.record_parameter",
       "TestPackage.Template.Data.TestTemplate.nested_bool",
@@ -1247,6 +1258,7 @@
     "name": "Record to Test Local Var references",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "record",
     "options": [
       "TestPackage.Template.LocalVars.local_var"
     ],
@@ -1414,6 +1426,7 @@
     "choiceModifiers": {},
     "constrainingModifiers": {},
     "replaceable": true,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Component.FirstComponent",
       "TestPackage.Component.SecondComponent"
@@ -1581,6 +1594,7 @@
     "name": "Test Extend Interface",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Interface.NestedExtendInterface.nested_final_bool",
       "TestPackage.Interface.NestedExtendInterface.nested_hidden_group_bool",
@@ -1607,6 +1621,7 @@
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Interface.ExtendInterface.interface_param",
       "TestPackage.Interface.ExtendInterface.interface_modified_bool",
@@ -1653,6 +1668,7 @@
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Template.TestTemplate.first",
       "TestPackage.Template.TestTemplate.inner_outer_param",
@@ -1724,6 +1740,7 @@
     "name": "Fifth Component",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Component.FifthComponent.replaceable_param",
       "TestPackage.Interface.PartialComponent.container",

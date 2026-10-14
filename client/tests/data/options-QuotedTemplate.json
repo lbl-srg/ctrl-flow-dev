@@ -70,6 +70,7 @@
       "value": "QuotedPackage.Types.Valve",
       "visible": true,
       "replaceable": false,
+      "kindOfClass": "type",
       "options": [
         "QuotedPackage.Types.Valve.'two-way'",
         "QuotedPackage.Types.Valve.'three.way'",
@@ -155,6 +156,7 @@
       "name": "Interface with quoted parameters",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "QuotedPackage.Component.Partial.'a.b'",
         "QuotedPackage.Component.Partial.'val-1'",
@@ -172,6 +174,7 @@
       "name": "First component",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "QuotedPackage.Component.Partial.'a.b'",
         "QuotedPackage.Component.Partial.'val-1'",
@@ -211,6 +214,7 @@
         }
       },
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "QuotedPackage.Component.Second.'only-second'",
         "QuotedPackage.Component.Partial.'a.b'",
@@ -322,6 +326,7 @@
       "name": "Template with quoted identifiers",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "model",
       "options": [
         "QuotedPackage.Template.QuotedTemplate.'rep.1'",
         "QuotedPackage.Template.QuotedTemplate.'c-d'",
@@ -357,6 +362,7 @@
       "name": "Top-level (whole building) system parameters",
       "visible": false,
       "replaceable": false,
+      "kindOfClass": "class",
       "options": [
         "Buildings.Templates.Data.AllSystems.projectSetting"
       ],

@@ -9,8 +9,9 @@ from docx.text.paragraph import Paragraph
 from docx.table import Table
 import logging
 import utils
-import keys
-from typing import Dict, List
+from ctrlflow import keys
+from sequence_payload import Selections
+from typing import Dict
 
 P_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p'
 BOOKMARK_TAGS = ['{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bookmarkEnd', "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bookmarkStart"]
@@ -20,9 +21,6 @@ ANNOTATION_STYLE = 'Toggle'
 
 OP_LIST = ['AND', 'OR', 'YES', 'NO', 'EQUALS', 'NOT_EQUALS', 'ANY', 'DELETE']
 TABLE_OP_LIST = ['TABLE', 'ROW', 'COLUMN']
-# Type hints
-Selections = Dict[str, List]
-
 elements_to_delete = []
 _run_style_name_cache = {}
 _paragraph_style_name_cache = {}
@@ -246,15 +244,15 @@ def create_control_structures(doc):
 
     return control_structures, run_op_lookup
 
-def remove_info_and_instr_boxes(doc, selections: Selections):
-    ''' Removes info and instruction boxes
+def remove_info_and_instr_boxes(doc, delete_info_box: bool):
+    ''' Removes instruction boxes, and info boxes if `delete_info_box`
     '''
     info_box_styles = ['Info. box', 'InfoboxList', 'InfoTableTitle']
     instr_box_style = 'Instr. box'
 
     for para in doc.paragraphs:
         para_style_name = get_paragraph_style_name(para)
-        if utils.reduce_to_boolean(selections['DEL_INFO_BOX']) and para_style_name in info_box_styles:
+        if delete_info_box and para_style_name in info_box_styles:
             remove_node(para)
         if para_style_name == instr_box_style:
             remove_node(para)
@@ -572,9 +570,10 @@ def aggregate_patterns(name_map: Dict, selections: Selections) -> Selections:
         aggregated[long_name] = values
     return aggregated
 
-def mogrify_doc(doc: Document, name_map: Dict, selections: Selections) -> Document:
-    ''' Applies selections to the provided document. This mutates the provided
-        document
+def mogrify_doc(doc: Document, name_map: Dict, selections: Selections,
+                delete_info_box: bool = False) -> Document:
+    ''' Applies the values of a project (payload.project_selections) to the
+        provided document. This mutates the provided document
     '''
     selections = aggregate_patterns(name_map, selections)
     initialize_remove_list()
@@ -582,7 +581,7 @@ def mogrify_doc(doc: Document, name_map: Dict, selections: Selections) -> Docume
     control_structure, run_op_lookup = create_control_structures(doc)
 
     # Remove info and Instruction Boxes - updates remove_list internally
-    remove_info_and_instr_boxes(doc, selections)
+    remove_info_and_instr_boxes(doc, delete_info_box)
 
     # apply all paragraph and table selections
     apply_selections(control_structure, name_map, run_op_lookup, selections)

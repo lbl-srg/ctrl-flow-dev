@@ -1,5 +1,5 @@
 # Installs Pandoc, TexLive, and make4ht on a Ubuntu Linux distribution
-FROM ubuntu:22.04 AS ubuntu-pandoc
+FROM ubuntu:26.04 AS ubuntu-pandoc
 
 # Installs Node 16.16.0 LTS with NVM
 # FROM ubuntu-pandoc as ubuntu-pandoc-node
@@ -23,8 +23,14 @@ COPY bin/ bin/
 COPY package*.json ./
 
 # Install python dependencies
+# The system Python is externally managed (PEP 668): the dependencies are
+# installed in a virtual environment, first on PATH so that `python3` is the
+# one of the environment, also when the server runs the sequence document
 RUN apt-get update --assume-yes && apt-get upgrade --assume-yes
-RUN apt-get --assume-yes install pip
+RUN apt-get --assume-yes install python3-venv
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:${PATH}"
+COPY scripts/ctrlflow scripts/ctrlflow
 COPY scripts/sequence-doc scripts/sequence-doc
 RUN npm run install-python-deps
 
