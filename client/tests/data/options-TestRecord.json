@@ -84,7 +84,7 @@
     "type": "TestRecord.Mod",
     "visible": false,
     "modifiers": {
-      "TestRecord.Mod.rec": {
+      "rec": {
         "final": false,
         "redeclare": "TestRecord.Rec"
       }
@@ -111,7 +111,7 @@
     "visible": false,
     "enable": true,
     "modifiers": {
-      "TestRecord.Mod1.localRec.p": {
+      "p": {
         "expression": 1,
         "final": false
       }
@@ -128,7 +128,7 @@
     "type": "TestRecord.Mod1",
     "visible": false,
     "modifiers": {
-      "TestRecord.Mod1.rec": {
+      "rec": {
         "expression": "localRec",
         "final": false,
         "redeclare": "TestRecord.Rec",
@@ -157,7 +157,7 @@
     "visible": false,
     "enable": true,
     "modifiers": {
-      "TestRecord.Nested.localRecFirst.p": {
+      "p": {
         "expression": -1,
         "final": false
       }
@@ -178,7 +178,7 @@
     "visible": false,
     "enable": true,
     "modifiers": {
-      "TestRecord.Nested.localRec.p": {
+      "p": {
         "expression": 3,
         "final": false
       }
@@ -198,7 +198,7 @@
     "tab": "",
     "visible": false,
     "modifiers": {
-      "TestRecord.Nested.mod.rec": {
+      "rec": {
         "expression": "localRec",
         "final": false,
         "recordBinding": true
@@ -250,11 +250,11 @@
     "type": "TestRecord.NestedExtended",
     "visible": false,
     "modifiers": {
-      "TestRecord.NestedExtended.localRec.p": {
+      "localRec.p": {
         "expression": 4,
         "final": false
       },
-      "TestRecord.NestedExtended.localRecFirst.p": {
+      "localRecFirst.p": {
         "expression": -2,
         "final": false
       }
@@ -314,7 +314,7 @@
     "tab": "",
     "visible": false,
     "modifiers": {
-      "TestRecord.mod2.localRec": {
+      "localRec": {
         "expression": "mod1.localRec",
         "final": false,
         "recordBinding": true
@@ -336,7 +336,7 @@
     "tab": "",
     "visible": false,
     "modifiers": {
-      "TestRecord.mod3.rec": {
+      "rec": {
         "expression": {
           "operator": "function_call",
           "operands": [
@@ -403,7 +403,7 @@
     "tab": "",
     "visible": false,
     "modifiers": {
-      "TestRecord.nesExt1.mod1.localRec.p": {
+      "mod1.localRec.p": {
         "expression": -3,
         "final": false
       }
@@ -443,7 +443,7 @@
     "tab": "",
     "visible": false,
     "modifiers": {
-      "TestRecord.bm.rec": {
+      "rec": {
         "expression": "subRec",
         "final": false,
         "recordBinding": true
