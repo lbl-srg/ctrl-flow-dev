@@ -158,6 +158,8 @@ node app.js -f /dependencies/modelica-buildings/Buildings/Templates/AirHandlersF
 # json outputs into the 'out' folder
 ```
 
+The image sets a UTF-8 locale. Elsewhere, run modelica-json <2.0.0 with one, e.g. `LANG=C.UTF-8 LC_ALL=C.UTF-8 node app.js …`: otherwise its Java parser writes every non-ASCII character of a string as `?` (Modelica files are stored in UTF-8, MLS 3.7 §13.4, #657).
+
 # References
 
 - [Modelica University](https://modelica.university/) - collection of resources for Modelica
