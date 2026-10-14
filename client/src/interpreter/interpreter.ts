@@ -672,25 +672,11 @@ const addToModObject = (
   mods: {
     [key: string]: Modifier;
   },
-  options?: { [key: string]: OptionInterface },
-  childOptionPaths?: string[],
-  optionModelicaPath?: string, // The modelica path of the option whose modifiers we're processing
 ) => {
-  Object.entries(newMods).forEach(([k, mod]) => {
-    // k is a Modelica path like "TestRecord.NestedExtended.localRec.p"
-    // We need to convert it to an instance path relative to baseInstancePath.
-    //
-    // If optionModelicaPath is provided, strip it from k to get the relative instance path.
-    // e.g., k = "TestRecord.NestedExtended.localRec.p", optionModelicaPath = "TestRecord.NestedExtended"
-    //       -> relativeInstancePath = "localRec.p"
-    let relativeInstancePath: string;
-    if (optionModelicaPath && k.startsWith(optionModelicaPath + ".")) {
-      relativeInstancePath = k.slice(optionModelicaPath.length + 1);
-    } else {
-      // Fallback: use last segment
-      relativeInstancePath = lastIdent(k);
-    }
-
+  // The keys of the modifiers of an option are the paths of the modified
+  // elements relative to the option (docs/linkage-schema.md, "Options"),
+  // e.g. "localRec.p" in the modifiers of TestRecord.NestedExtended
+  Object.entries(newMods).forEach(([relativeInstancePath, mod]) => {
     // Build the modifier key by appending the relative instance path to the base instance path
     const modKey = [baseInstancePath, relativeInstancePath]
       .filter((segment) => segment !== "")
@@ -786,15 +772,7 @@ const buildModsHelper = (
         ? o.constrainingModifiers
         : o.modifiers;
     if (oMods) {
-      addToModObject(
-        oMods,
-        newBase,
-        option.definition,
-        mods,
-        options,
-        childOptions,
-        o.modelicaPath,
-      );
+      addToModObject(oMods, newBase, option.definition, mods);
     }
   });
 
@@ -804,15 +782,7 @@ const buildModsHelper = (
     if (option.choiceModifiers) {
       const choiceMods = option.choiceModifiers[redeclaredType];
       if (choiceMods) {
-        addToModObject(
-          choiceMods,
-          newBase,
-          option.definition,
-          mods,
-          options,
-          childOptions,
-          redeclaredType,
-        );
+        addToModObject(choiceMods, newBase, option.definition, mods);
       }
     }
   }
@@ -850,9 +820,6 @@ const buildModsHelper = (
             newBase,
             typeOption.definition,
             mods,
-            options,
-            typeOption.options,
-            typeOption.modelicaPath,
           );
         }
 

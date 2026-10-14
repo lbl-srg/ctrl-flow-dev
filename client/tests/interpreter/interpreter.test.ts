@@ -1963,3 +1963,59 @@ describe("Project settings", () => {
     });
   });
 });
+
+describe("Choice modifiers", () => {
+  const testTemplateOptions: {
+    [key: string]: OptionInterface;
+  } = require("../data/options-TestTemplate.json");
+  const testTemplatePath = "TestPackage.Template.TestTemplate";
+  const testTemplate = {
+    modelicaPath: testTemplatePath,
+    name: "Test Template",
+    systemTypes: [],
+    pathModifiers: {},
+  } as TemplateInterface;
+  const fourth = "TestPackage.Component.FourthComponent";
+  const nested = "selectable_component.replaceable_param.component_param";
+
+  it("Applies the nested modifiers of the selected choice at their instance path", () => {
+    // choice(redeclare replaceable FourthComponent selectable_component(
+    //   redeclare final SecondComponent replaceable_param)): every parameter
+    // of replaceable_param is final (#416, #656)
+    const option =
+      testTemplateOptions[`${testTemplatePath}.selectable_component`];
+    const context = new ConfigContext(
+      testTemplate,
+      {} as ConfigInterface,
+      testTemplateOptions,
+      {
+        [selectionKey(testTemplatePath, "selectable_component")]: storedValue(
+          option,
+          fourth,
+        ),
+      },
+    );
+    expect(
+      context.mods["selectable_component.replaceable_param"],
+    ).toMatchObject({
+      redeclare: "TestPackage.Component.SecondComponent",
+      final: true,
+    });
+    expect(context.mods[nested]).toMatchObject({
+      final: true,
+      modificationDepth: 2,
+    });
+    expect(
+      context.mods["selectable_component.component_param"],
+    ).toBeUndefined();
+  });
+
+  it("Does not apply the modifiers of a choice that is not selected", () => {
+    const context = new ConfigContext(
+      testTemplate,
+      {} as ConfigInterface,
+      testTemplateOptions,
+    );
+    expect(context.mods[nested]).toBeUndefined();
+  });
+});

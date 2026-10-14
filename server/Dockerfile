@@ -1,6 +1,14 @@
 # Installs Pandoc, TexLive, and make4ht on a Ubuntu Linux distribution
 FROM ubuntu:26.04 AS ubuntu-pandoc
 
+# Workaround: modelica-json <2.0.0 writes the output of its Java parser in the
+# encoding of the locale, so without a UTF-8 locale every non-ASCII character
+# of a string becomes "?" (Modelica files are UTF-8, MLS 3.7 §13.4). Version
+# 2.0.0 has no Java dependency but cannot be used yet
+# (lbl-srg/modelica-json#327). Remove when upgrading, if the test
+# "keeps non-ASCII characters without a UTF-8 locale" passes (#657).
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+
 # Installs Node 16.16.0 LTS with NVM
 # FROM ubuntu-pandoc as ubuntu-pandoc-node
 RUN apt-get --assume-yes update && apt-get --assume-yes install curl bash

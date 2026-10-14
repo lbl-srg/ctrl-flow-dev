@@ -51,6 +51,17 @@ The section removed by an annotation depends on the style of the paragraph that 
 - Information box (`Info. box`, `InfoboxList`, `InfoTableTitle`): the paragraph only.
 - Any other style: the paragraph only, and any table that directly follows it.
 
+### Heading Numbering
+
+**Headings SHALL be numbered by the automatic numbering of their style, never by typed numbers.** The script removes sections but does not edit the text of the headings that remain: Word computes the numbers of the headings when it opens the generated document, so the numbering stays continuous after a removed section. A typed number such as `3.2.5.4.2 Parallel Fan Start/Stop` is kept as is, which leaves a gap when `3.2.5.4.1` is removed.
+
+- Each `Heading N` style used in the document references a multilevel list (`w:numPr` in the style, with the list level of the heading). Word does this with Define New Multilevel List: link each level to its heading style.
+- A document that is an excerpt starts its numbering where the excerpt starts. For instance, the headings of `DOD_20260828` start at section 3.2.3: the level of `Heading 3` has the number format `3.2.%3` and starts at 3, the level of `Heading 4` the format `3.2.%3.%4`, and so on.
+- The heading text starts with the annotation, if any, then the title: `[EQUALS VAV RH] VAV Box with Reheat`.
+- Do not skip a heading level: a `Heading 5` directly under a `Heading 3` gets a number with a level that has no heading, e.g. `3.2.5.1.1` without `3.2.5.1`.
+
+The numbers are not in the text of the paragraphs: the expected texts of `test_golden.py` and other plain-text conversions show headings without numbers.
+
 ### Units
 
 `[UNITS [<SI>] [<IP>]]` is replaced by `<SI>` or `<IP>` depending on the unit system of the project (`UNITS`), e.g. `[UNITS [12 Pa] [0.05 in.]]`. SI comes first. The whole annotation, including both alternatives, has the `Toggle` style and is within one paragraph. The replacement takes the format of the first run of the annotation, so formatting within the alternatives is lost.
@@ -117,7 +128,7 @@ The source document and the mappings file are in `server/scripts/sequence-doc/sr
 - Write the `Modelica Parameter` column with selection keys or key patterns of elements that hold a value (see Mappings).
 - Run the tests:
   - `client/tests/sequence/mappings.test.ts` checks that every key of the mappings is the key under which ctrl-flow stores the value of the element, and that the element is not replaceable: otherwise the key has no value in the payload, and the toggle treats the value as missing.
-  - `server/scripts/sequence-doc/tests/test_section_scope.py` checks that every toggle has a valid format and uses short IDs of the mappings, and that the sections of system types read the keys of their templates only (see Sections of System Types). Add the templates of a new version to `SECTIONS`.
+  - `server/scripts/sequence-doc/tests/test_section_scope.py` checks that every toggle has a valid format and uses short IDs of the mappings, that every heading is numbered by a list (see Heading Numbering), and that the sections of system types read the keys of their templates only (see Sections of System Types). Add the templates of a new version to `SECTIONS`. Typed heading numbers cannot be told apart from a title that starts with a number, e.g. `1.5 minutes`: check them in Word.
   - `server/scripts/sequence-doc/tests/test_golden.py` compares the generated documents to the expected texts. If the changes of the document are intended, regenerate the expected texts with `UPDATE_GOLDEN=1` and review their diff.
 
 Always update both the mappings and source file.

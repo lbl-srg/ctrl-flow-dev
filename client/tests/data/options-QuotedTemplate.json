@@ -208,7 +208,7 @@
       "name": "Second component",
       "visible": false,
       "modifiers": {
-        "QuotedPackage.Component.Second.'val-1'": {
+        "'val-1'": {
           "expression": "QuotedPackage.Types.Valve.'13\\'H'",
           "final": false
         }
@@ -237,11 +237,11 @@
       "visible": false,
       "enable": true,
       "modifiers": {
-        "QuotedPackage.Template.QuotedTemplate.'c-d'.'a.b'": {
+        "'a.b'": {
           "expression": false,
           "final": false
         },
-        "QuotedPackage.Template.QuotedTemplate.'c-d'.'val-1'": {
+        "'val-1'": {
           "expression": "QuotedPackage.Types.Valve.'three.way'",
           "final": false
         }
