@@ -134,10 +134,10 @@ The modification object is used throughout the parser where it attempts to do co
 
 ### Linkage Schema Representation
 
-The template class 'flattens' all modifiers that have an assigned `modelicaPath` (instance path) into the following shape:
+The template class 'flattens' all modifiers of an option into the following shape, keyed by the path of the modified element relative to the option (`flattenModifiers`, see Options in [linkage-schema.md](../../../docs/linkage-schema.md)):
 
 ```typescript
-{[key: modelicaPath]: {expression?: Literal | Expression, final: boolean, redeclare?: string, recordBinding?: boolean}}
+{[relativePath: string]: {expression?: Literal | Expression, final: boolean, redeclare?: string, recordBinding?: boolean}}
 ```
 
 `expression` is undefined if the modifier has no binding, e.g. a redeclaration.
@@ -157,7 +157,7 @@ It creates the following dictionary of modifiers on the option `Buildings.Templa
 {
     "modelicaPath": "Buildings.Templates.AirHandlersFans.VAVMultiZone.pAirSup_rel",
     "modifiers": {
-        "Buildings.Templates.AirHandlersFans.VAVMultiZone.pAirSup_rel.have_sen": {
+        "have_sen": {
           "expression": true,
           "final": true
         }

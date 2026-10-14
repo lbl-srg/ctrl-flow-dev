@@ -302,6 +302,56 @@ function unpackRedeclaration(props: ModificationProps) {
 }
 
 /**
+ * Declaration of the component or short class of an argument of a class
+ * modification, if it is a (re)declaration
+ */
+function argumentDeclaration(argument: mj.WrappedMod | mj.RedeclareMod) {
+  const replaceable =
+    "element_redeclaration" in argument
+      ? argument.element_redeclaration.element_replaceable ??
+        argument.element_redeclaration
+      : argument.element_modification_or_replaceable.element_replaceable;
+  return {
+    component:
+      replaceable?.component_clause1?.component_declaration1.declaration,
+    shortClass: replaceable?.short_class_definition?.short_class_specifier,
+  };
+}
+
+/**
+ * Name of the element modified by an argument of a class modification
+ */
+function argumentName(argument: mj.WrappedMod | mj.RedeclareMod): string {
+  const { component, shortClass } = argumentDeclaration(argument);
+  return (
+    component?.identifier ??
+    shortClass?.identifier ??
+    (argument as mj.WrappedMod).element_modification_or_replaceable
+      .element_modification.name
+  );
+}
+
+/**
+ * True if an argument of a class modification has a class modification
+ * itself, as written in the source: `val(typ=…)`, `redeclare X val(typ=…)`
+ * or `redeclare package M = N(p=…)`
+ */
+function hasClassModification(
+  argument: mj.WrappedMod | mj.RedeclareMod,
+): boolean {
+  const { component, shortClass } = argumentDeclaration(argument);
+  const modification =
+    "element_redeclaration" in argument
+      ? component?.modification
+      : argument.element_modification_or_replaceable.element_modification
+          ?.modification ?? component?.modification;
+  return (
+    (!!modification && "class_modification" in modification) ||
+    !!shortClass?.value?.class_modification
+  );
+}
+
+/**
  * Unpacks a modification definition, recursively extracting
  * a mod and its child options
  */
@@ -460,12 +510,20 @@ function unpackModblock(props: ModificationProps) {
           const nestedBasePath = [parentPath, componentName]
             .filter((s) => s)
             .join(".");
+          // A modification written nested in the choice, as `val(typ=…)` in
+          // `coiHea(val(typ=…))`, is rejected rather than dropped: its
+          // unpacking is not verified (#416). The final modifications
+          // synthesized for a final redeclaration in the choice
+          // (finalizeAllParams) are kept.
+          const nested =
+            classModification.class_modification.find(hasClassModification);
+          if (nested) {
+            throw new Error(
+              `Nested modification of ${argumentName(nested)} in the choice ` +
+                `${value} for ${nestedBasePath} is not supported (#416)`,
+            );
+          }
           mods = getModificationList(classModification, nestedBasePath, value);
-          // TODO: getModificationList should handle redeclares but it is not
-          // correctly unpacking nested modifiers - this is a bug
-          // kludge: remove nested modifiers
-          // See https://github.com/lbl-srg/ctrl-flow-dev/issues/416
-          mods.forEach((m) => (m.mods = []));
         }
       }
     } else if ("class_modification" in mod) {

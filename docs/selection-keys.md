@@ -290,7 +290,7 @@ How the values are gathered is left to each consumer: the sequence document take
 Verified on 2026-10-08 with a probe package (quoted components and parameters containing `.`, `-` and `\'`, quoted enumeration literals, a record binding to a quoted record, modifications and expressions referencing quoted identifiers, and a quoted class used as a component type):
 
 - **modelica-json** preserves quoted identifiers verbatim, quotes and escapes included, in declarations, enumeration literals, modifications, expressions and class names.
-- **The server parser** preserves them in option paths (`…Template.'c-d'`), modifier keys (`…Template.'c-d'.'a.b'`), enumeration literals and values (`…Types.Valve.'13\'H'`), `enable` expressions (`'with-dash'`), `if` expressions and record bindings (`'rec-1'`).
+- **The server parser** preserves them in option paths (`…Template.'c-d'`), modifier keys (`'a.b'` in the option `…Template.'c-d'`), enumeration literals and values (`…Types.Valve.'13\'H'`), `enable` expressions (`'with-dash'`), `if` expressions and record bindings (`'rec-1'`).
 - **To be implemented:**
   - The parser accepts a quoted class without error (`…Classes.'Q'`). It must reject it.
   - `templates.json` does not record the kind of a class definition: options of class definitions only have `definition: true`. The parser derives it from modelica-json's `class_prefixes` (`elementType` in `_constructElement`), but drops `expandable`. Class definition options get a `kindOfClass` field (class prefixes without `partial`), from which the client sets the `kindOfClass` attribute of values. Done in #650: enumeration literals, which are options with `definition: true`, have no `kindOfClass`.

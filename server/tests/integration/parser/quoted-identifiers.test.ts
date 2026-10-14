@@ -77,8 +77,8 @@ describe("Quoted identifiers", () => {
 
   it("parses modifiers and expressions with quoted names", () => {
     expect(options[`${T}.'c-d'`].modifiers).toEqual({
-      [`${T}.'c-d'.'a.b'`]: { expression: false, final: false },
-      [`${T}.'c-d'.'val-1'`]: {
+      "'a.b'": { expression: false, final: false },
+      "'val-1'": {
         expression: `${VALVE}.'three.way'`,
         final: false,
       },
