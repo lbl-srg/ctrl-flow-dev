@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import EditDetailsModal from "../modal/EditDetailsModal";
 import OnboardingModal from "../modal/OnboardingModal";
-import { useState, Fragment } from "react";
+import { Fragment } from "react";
 
 import PageHeader from "../PageHeader";
 
@@ -9,19 +8,10 @@ import "../../styles/steps/landing.scss";
 
 // step 0
 function Landing() {
-  const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
 
   return (
     <Fragment>
-      <EditDetailsModal
-        close={() => setModalOpen(false)}
-        isOpen={modalOpen}
-        modalTitle="Project Configuration"
-        submitText="Configure Project"
-        afterSubmit={() => navigate("/systems")}
-      ></EditDetailsModal>
-
       <OnboardingModal />
 
       <PageHeader headerText="" showLogo={true} />
@@ -80,7 +70,7 @@ function Landing() {
         <div className='container'>
           <div className="row justify-content-center">
             <div className="col-xs-12">
-              <button onClick={() => setModalOpen(true)} className="outline">
+              <button onClick={() => navigate("/systems")} className="outline">
                 <i className="icon-plus-squared-alt large" />
                 Configure Project
               </button>
