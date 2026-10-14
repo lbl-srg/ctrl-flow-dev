@@ -428,7 +428,7 @@
 [Heading 5] The adjustment shall be capable of being limited in software.
 [Info. box] These are absolute limits imposed by programming, which are in addition to the range limits (e.g., ±4°F) of the thermostat adjustment device.
 [Heading 6] As a default, the active occupied cooling setpoint shall be limited between 72°F and 80°F
-[Heading 6] As a default, the active occupied heating setpoint shall be limited between 65°F and 72°F
+[Heading 6] As a default, the active occupied heating setpoint shall be limited between 65°F and 72°F.
 [Heading 5] The active heating and cooling setpoints shall be independently adjustable, respecting the limits and anti-overlap logic described in Sections 3.3.2.3.a and 3.3.2.5.b. If zone thermostat provides only a single set-point adjustment, then the adjustment shall move both the active heating and cooling setpoints upward or downward by the same amount, within the limits described in Section 3.3.2.5.b.
 [Heading 5] The adjustment shall only affect occupied setpoints in Occupied Mode, Warmup Mode, and Cooldown Mode and shall have no impact on setpoints in all other modes.
 [Heading 5] At the onset of demand limiting, the local set-point adjustment value shall be frozen. Further adjustment of the setpoint by local controls shall be suspended for the duration of the demand-limit event.

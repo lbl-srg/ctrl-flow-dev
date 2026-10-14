@@ -32,7 +32,7 @@ const allElementsEqual = (arr: any[]) =>
   !!arr.reduce((a: any, b: any) => (Object.is(a, b) ? a : NaN));
 
 interface Modifier {
-  expression?: Expression | string;
+  expression?: Literal | Expression;
   final: boolean;
   fromClassDefinition: boolean;
   redeclare?: string; // the redeclared type path, undefined if not a redeclare
@@ -661,7 +661,7 @@ export const evaluate = (
 const addToModObject = (
   newMods: {
     [key: string]: {
-      expression?: Expression | string;
+      expression?: Literal | Expression;
       final: boolean;
       redeclare?: string;
       recordBinding?: boolean;

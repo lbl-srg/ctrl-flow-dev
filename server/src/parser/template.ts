@@ -72,7 +72,7 @@ export interface Option {
   treeList?: string[]; // Only defined if (option.definition)
   modifiers: {
     [key: string]: {
-      expression: Expression;
+      expression?: Literal | Expression;
       final: boolean;
       redeclare?: string;
       recordBinding?: boolean;
@@ -100,7 +100,7 @@ export interface ScheduleOption extends Option {
 
 export interface Mods {
   [key: string]: {
-    expression: Expression;
+    expression?: Literal | Expression;
     final: boolean;
     redeclare?: string;
     recordBinding?: boolean;
@@ -118,7 +118,7 @@ export function flattenModifiers(
   modList: (Modification | undefined | null)[] | undefined,
   mods: {
     [key: string]: {
-      expression: Expression;
+      expression?: Literal | Expression;
       final: boolean;
       redeclare?: string;
       recordBinding?: boolean;
