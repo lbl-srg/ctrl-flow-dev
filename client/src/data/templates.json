@@ -4,18 +4,6 @@
   },
   "templates": [
     {
-      "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly",
-      "scheduleOptionPaths": [],
-      "systemTypes": [
-        "Buildings.Templates.ZoneEquipment"
-      ],
-      "pathModifiers": {
-        "ctl.coiHea": "coiHea",
-        "ctl.datAll": "datAll"
-      },
-      "name": "VAV terminal unit cooling only"
-    },
-    {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxFanParallelConstant",
       "scheduleOptionPaths": [],
       "systemTypes": [
@@ -38,6 +26,18 @@
         "ctl.datAll": "datAll"
       },
       "name": "Series fan-powered terminal unit - Constant volume fan"
+    },
+    {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly",
+      "scheduleOptionPaths": [],
+      "systemTypes": [
+        "Buildings.Templates.ZoneEquipment"
+      ],
+      "pathModifiers": {
+        "ctl.coiHea": "coiHea",
+        "ctl.datAll": "datAll"
+      },
+      "name": "VAV terminal unit cooling only"
     },
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxReheat",
@@ -12434,73 +12434,18 @@
       ]
     },
     {
-      "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly",
-      "type": "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly",
-      "name": "VAV terminal unit cooling only",
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxFanParallelConstant",
+      "type": "Buildings.Templates.ZoneEquipment.VAVBoxFanParallelConstant",
+      "name": "Parallel fan-powered terminal unit - Constant volume fan",
       "visible": false,
       "modifiers": {
         "typ": {
-          "expression": "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxCoolingOnly",
-          "final": true
-        },
-        "coiHea": {
-          "final": true,
-          "redeclare": "Buildings.Templates.Components.Coils.None"
-        },
-        "coiHea.typ": {
-          "final": true
-        },
-        "coiHea.typVal": {
-          "final": true
-        },
-        "coiHea.have_sou": {
-          "final": true
-        },
-        "coiHea.have_weaBus": {
-          "final": true
-        },
-        "coiHea.dat": {
-          "final": true
-        },
-        "coiHea.mAir_flow_nominal": {
-          "final": true
-        },
-        "coiHea.dpAir_nominal": {
-          "final": true
-        },
-        "coiHea.Q_flow_nominal": {
-          "final": true
-        },
-        "coiHea.tau": {
-          "final": true
-        },
-        "coiHea.energyDynamics": {
-          "final": true
-        },
-        "coiHea.allowFlowReversalAir": {
-          "final": true
-        },
-        "coiHea.allowFlowReversalLiq": {
-          "final": true
-        },
-        "coiHea.port_aSou": {
-          "final": true
-        },
-        "coiHea.port_bSou": {
-          "final": true
-        },
-        "coiHea.busWea": {
-          "final": true
-        },
-        "coiHea.bus": {
-          "final": true
-        },
-        "coiHea.datVal": {
+          "expression": "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxFanParallelConstant",
           "final": true
         },
         "ctl": {
           "final": false,
-          "redeclare": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxCoolingOnly"
+          "redeclare": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat"
         }
       },
       "replaceable": false,
@@ -12541,7 +12486,7 @@
       "definition": true,
       "shortExclType": false,
       "treeList": [
-        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly",
+        "Buildings.Templates.ZoneEquipment.VAVBoxFanParallelConstant",
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox",
         "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal"
       ]
@@ -13241,6 +13186,21 @@
         "Buildings.Templates.ZoneEquipment.Data.VAVBox",
         "Buildings.Templates.ZoneEquipment.Data.PartialAirTerminal"
       ]
+    },
+    {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat.have_reqNeeHea",
+      "type": "Boolean",
+      "value": false,
+      "name": "Set to true if the controller generates a 'Need Heat' request",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": true,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
     },
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_occSen",
@@ -24757,136 +24717,6 @@
       ]
     },
     {
-      "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxCoolingOnly",
-      "type": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxCoolingOnly",
-      "name": "Guideline 36 controller for VAV terminal unit cooling only",
-      "visible": false,
-      "modifiers": {
-        "typ": {
-          "expression": "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly",
-          "final": true
-        }
-      },
-      "replaceable": false,
-      "kindOfClass": "block",
-      "options": [
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_occSen",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_relHumSen",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_reqNeeCoo",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_winSen",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_hotWatCoi",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VAirCooSet_flow_max",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VAirSet_flow_min",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VAirHeaSet_flow_max",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VAirHeaSet_flow_min",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.dTAirDisHea_max",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VOutMinOcc_flow",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VOutMinAre_flow",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VOutAre_flow",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VOutOcc_flow",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.effAirDisHea",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.effAirDisCoo",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.ctlReh",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.ctlCoo",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.TZonSet",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.zonSta",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.cooDowWarUpTim",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.setAdj",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.cooSetAdj",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.heaSetAdj",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.uCooDemLimLev",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.uHeaDemLimLev",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox.have_CO2Sen",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox.stdVen",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox.coiHea",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController.typ",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController.dat",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController.datAll",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController.bus"
-      ],
-      "definition": true,
-      "shortExclType": false,
-      "treeList": [
-        "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxCoolingOnly",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox",
-        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController"
-      ]
-    },
-    {
-      "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxFanParallelConstant",
-      "type": "Buildings.Templates.ZoneEquipment.VAVBoxFanParallelConstant",
-      "name": "Parallel fan-powered terminal unit - Constant volume fan",
-      "visible": false,
-      "modifiers": {
-        "typ": {
-          "expression": "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxFanParallelConstant",
-          "final": true
-        },
-        "ctl": {
-          "final": false,
-          "redeclare": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat"
-        }
-      },
-      "replaceable": false,
-      "kindOfClass": "model",
-      "options": [
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea",
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.damVAV",
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.ctl",
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.TAirDis",
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.VAirDis_flow",
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datDamVAV",
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.typ",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.cfg",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.id",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souChiWat",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souHeaWat",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.dat",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.mAir_flow_nominal",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.mAirPri_flow_nominal",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.mChiWat_flow_nominal",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.mHeaWat_flow_nominal",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.QChiWat_flow_nominal",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.QHeaWat_flow_nominal",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.energyDynamics",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.allowFlowReversalAir",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.allowFlowReversalLiq",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.show_T",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.port_Sup",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.port_SupCol",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.port_SupHot",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.port_Dis",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.port_Ret",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.port_aHeaWat",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.port_bHeaWat",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.bus"
-      ],
-      "definition": true,
-      "shortExclType": false,
-      "treeList": [
-        "Buildings.Templates.ZoneEquipment.VAVBoxFanParallelConstant",
-        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox",
-        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal"
-      ]
-    },
-    {
-      "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat.have_reqNeeHea",
-      "type": "Boolean",
-      "value": false,
-      "name": "Set to true if the controller generates a 'Need Heat' request",
-      "group": "Configuration",
-      "tab": "",
-      "visible": true,
-      "enable": true,
-      "modifiers": {},
-      "replaceable": false,
-      "options": [],
-      "definition": false,
-      "shortExclType": false
-    },
-    {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat",
       "type": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat",
       "name": "Guideline 36 controller",
@@ -25000,6 +24830,176 @@
         "Buildings.Templates.ZoneEquipment.VAVBoxFanSeriesConstant",
         "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox",
         "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly",
+      "type": "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly",
+      "name": "VAV terminal unit cooling only",
+      "visible": false,
+      "modifiers": {
+        "typ": {
+          "expression": "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxCoolingOnly",
+          "final": true
+        },
+        "coiHea": {
+          "final": true,
+          "redeclare": "Buildings.Templates.Components.Coils.None"
+        },
+        "coiHea.typ": {
+          "final": true
+        },
+        "coiHea.typVal": {
+          "final": true
+        },
+        "coiHea.have_sou": {
+          "final": true
+        },
+        "coiHea.have_weaBus": {
+          "final": true
+        },
+        "coiHea.dat": {
+          "final": true
+        },
+        "coiHea.mAir_flow_nominal": {
+          "final": true
+        },
+        "coiHea.dpAir_nominal": {
+          "final": true
+        },
+        "coiHea.Q_flow_nominal": {
+          "final": true
+        },
+        "coiHea.tau": {
+          "final": true
+        },
+        "coiHea.energyDynamics": {
+          "final": true
+        },
+        "coiHea.allowFlowReversalAir": {
+          "final": true
+        },
+        "coiHea.allowFlowReversalLiq": {
+          "final": true
+        },
+        "coiHea.port_aSou": {
+          "final": true
+        },
+        "coiHea.port_bSou": {
+          "final": true
+        },
+        "coiHea.busWea": {
+          "final": true
+        },
+        "coiHea.bus": {
+          "final": true
+        },
+        "coiHea.datVal": {
+          "final": true
+        },
+        "ctl": {
+          "final": false,
+          "redeclare": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxCoolingOnly"
+        }
+      },
+      "replaceable": false,
+      "kindOfClass": "model",
+      "options": [
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea",
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.damVAV",
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.ctl",
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.TAirDis",
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.VAirDis_flow",
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datDamVAV",
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.datCoiHea",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.typ",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.cfg",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.id",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souChiWat",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.have_souHeaWat",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.dat",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.mAir_flow_nominal",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.mAirPri_flow_nominal",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.mChiWat_flow_nominal",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.mHeaWat_flow_nominal",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.QChiWat_flow_nominal",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.QHeaWat_flow_nominal",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.energyDynamics",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.allowFlowReversalAir",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.allowFlowReversalLiq",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.show_T",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.port_Sup",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.port_SupCol",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.port_SupHot",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.port_Dis",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.port_Ret",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.port_aHeaWat",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.port_bHeaWat",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal.bus"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly",
+        "Buildings.Templates.ZoneEquipment.Interfaces.VAVBox",
+        "Buildings.Templates.ZoneEquipment.Interfaces.PartialAirTerminal"
+      ]
+    },
+    {
+      "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxCoolingOnly",
+      "type": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxCoolingOnly",
+      "name": "Guideline 36 controller for VAV terminal unit cooling only",
+      "visible": false,
+      "modifiers": {
+        "typ": {
+          "expression": "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly",
+          "final": true
+        }
+      },
+      "replaceable": false,
+      "kindOfClass": "block",
+      "options": [
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_occSen",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_relHumSen",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_reqNeeCoo",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_winSen",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_hotWatCoi",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VAirCooSet_flow_max",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VAirSet_flow_min",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VAirHeaSet_flow_max",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VAirHeaSet_flow_min",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.dTAirDisHea_max",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VOutMinOcc_flow",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VOutMinAre_flow",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VOutAre_flow",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.VOutOcc_flow",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.effAirDisHea",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.effAirDisCoo",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.ctlReh",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.ctlCoo",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.TZonSet",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.zonSta",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.cooDowWarUpTim",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.setAdj",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.cooSetAdj",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.heaSetAdj",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.uCooDemLimLev",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.uHeaDemLimLev",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox.have_CO2Sen",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox.stdVen",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox.coiHea",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController.typ",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController.dat",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController.datAll",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController.bus"
+      ],
+      "definition": true,
+      "shortExclType": false,
+      "treeList": [
+        "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxCoolingOnly",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox",
+        "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialController"
       ]
     },
     {
