@@ -7,7 +7,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { createModelicaJson } from "../../../scripts/generate-modelica-json";
 import { prependToModelicaJsonPath } from "../../../src/parser/loader";
-import { loadPackage, getOptions } from "../../../src/parser";
+import { loadPackage, getOptions, getTemplates } from "../../../src/parser";
 import { Option } from "../../../src/parser/template";
 import { fullTempDirPath } from "./utils";
 
@@ -24,6 +24,15 @@ describe("Non-ASCII characters", () => {
     options = Object.fromEntries(
       getOptions().options.map((o) => [o.modelicaPath, o]),
     );
+  });
+
+  it("finds the template declared in the file of the root package", () => {
+    expect(
+      getTemplates().map(({ modelicaPath, systemTypes }) => [
+        modelicaPath,
+        systemTypes,
+      ]),
+    ).toEqual([[T, ["UnicodePackage"]]]);
   });
 
   it("keeps non-ASCII characters in descriptions and annotations", () => {
