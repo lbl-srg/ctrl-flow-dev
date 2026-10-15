@@ -112,6 +112,14 @@ export function enclosingName(name: string, count = 1): string {
 }
 
 /**
+ * Name of the element `ident` of `name`: "a.b" and "c" give "a.b.c", and ""
+ * and "c" give "c"
+ */
+export function memberName(name: string, ident: string): string {
+  return name ? `${name}.${ident}` : ident;
+}
+
+/**
  * True if `name` is a class name without leading ".": its identifiers are
  * not quoted (docs/selection-keys.md, "No quoted class identifiers")
  */
