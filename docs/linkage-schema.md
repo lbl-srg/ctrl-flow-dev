@@ -58,7 +58,7 @@ Most of the linkage schema data types use this path (using the keyname `modelica
 
 ## Read-only Types
 
-`templates.json` holds the templates, the system types and the options, and the versions of the libraries they are generated from (`libraries`, e.g. `{ "Buildings": "14.0.0" }`: the `version` annotation of the root package). The versions are reported in the payload (`meta.libraries`).
+`templates.json` holds the templates, the system types and the options, and the versions of the libraries they are generated from (`libraries`, e.g. `{ "Buildings": "14.0.0" }`: the `version` annotation of the root package). The versions are reported in the payload (`meta.libraries`). The templates and the system types follow the order of the library ([template-order.md](template-order.md)).
 
 ### SystemTypes
 

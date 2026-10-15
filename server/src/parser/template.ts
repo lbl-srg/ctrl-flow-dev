@@ -13,16 +13,27 @@ import { Expression, Literal } from "./expression";
 import { Modification } from "./modification";
 import { buildParameterTable, Table } from "./schedule";
 import { enclosingName } from "./names";
+import { TEMPLATE_LIST, PACKAGE_LIST } from "./loader";
 
 const templateStore = new Map<string, Template>();
 const systemTypeStore = new Map<string, SystemTypeN>();
 
+/** Templates, in the order of the library (docs/template-order.md) */
 export function getTemplates() {
-  return [...templateStore.values()];
+  return TEMPLATE_LIST.map((className) => {
+    const template = templateStore.get(className);
+    if (!template) {
+      throw new Error(`Template ${className} is not loaded`);
+    }
+    return template;
+  });
 }
 
+/** System types, in the order of the library (docs/template-order.md) */
 export function getSystemTypes() {
-  return [...systemTypeStore.values()];
+  return PACKAGE_LIST.filter((className) =>
+    systemTypeStore.has(className),
+  ).map((className) => systemTypeStore.get(className) as SystemTypeN);
 }
 
 type Options = { [key: string]: Option };

@@ -6,7 +6,7 @@ import * as path from "path";
 import { createModelicaJson } from "../../../scripts/generate-modelica-json";
 import { prependToModelicaJsonPath } from "../../../src/parser/loader";
 import { loadPackage, getOptions, getTemplates } from "../../../src/parser";
-import { Option } from "../../../src/parser/template";
+import { Option, SystemTemplateN } from "../../../src/parser/template";
 import { fullTempDirPath } from "./utils";
 
 const tempDirPath = "/tmp/test-linkage-widget/";
@@ -15,6 +15,7 @@ const C = "QuotedPackage.Component";
 const VALVE = "QuotedPackage.Types.Valve";
 
 let options: { [key: string]: Option };
+let template: SystemTemplateN | undefined;
 
 describe("Quoted identifiers", () => {
   beforeAll(() => {
@@ -29,6 +30,7 @@ describe("Quoted identifiers", () => {
     options = Object.fromEntries(
       getOptions().options.map((o) => [o.modelicaPath, o]),
     );
+    template = getTemplates().find((t) => t.modelicaPath === T);
   });
 
   it("keeps quoted identifiers whole in option paths", () => {
@@ -96,7 +98,6 @@ describe("Quoted identifiers", () => {
 
   afterAll(() => {
     // Generate options-QuotedTemplate.json for client tests
-    const template = getTemplates().find((t) => t.modelicaPath === T);
     const outputPath = path.resolve(
       __dirname,
       "../../../../client/tests/data/options-QuotedTemplate.json",
