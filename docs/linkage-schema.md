@@ -58,7 +58,7 @@ Most of the linkage schema data types use this path (using the keyname `modelica
 
 ## Read-only Types
 
-`templates.json` holds the templates, the system types and the options, and the versions of the libraries they are generated from (`libraries`, e.g. `{ "Buildings": "14.0.0" }`: the `version` annotation of the root package). The versions are reported in the payload (`meta.libraries`).
+`templates.json` holds the templates, the system types and the options, and the versions of the libraries they are generated from (`libraries`, e.g. `{ "Buildings": "14.0.0" }`: the `version` annotation of the root package). The versions are reported in the payload (`meta.libraries`). The templates and the system types follow the order of the library ([template-order.md](template-order.md)).
 
 ### SystemTypes
 
@@ -119,6 +119,10 @@ An option represents a 'node' of info from the template that _could_ be rendered
 `kindOfClass`: for a class definition, its class prefixes without `partial` (e.g. "model", "expandable connector"), as repeated in a redeclaration. Absent for components and enumeration literals.
 ```
 
+The keys of `modifiers`, `constrainingModifiers` and of each entry of `choiceModifiers` are the paths of the modified elements relative to the option, as written in Modelica (MLS 7.2): `typVal` in the modifiers of the component `Buildings.Templates.ZoneEquipment.Interfaces.VAVBox.coiHea`, `coiHea.typVal` in the modifiers of the class `Buildings.Templates.ZoneEquipment.Interfaces.VAVBox`. A key never repeats the path of its option, and the modification of the option itself is its `value`, not a modifier. The interpreter appends the key to the instance path of the option (#656).
+
+A choice whose modification is written nested, as `val(typ=…)` in `choice(redeclare Coil coiHea(val(typ=…)))`, is rejected by the parser (#416). The `final` modifications of the elements of a component redeclared `final` in a choice are kept, e.g. `replaceable_param.component_param` for `choice(redeclare FourthComponent selectable_component(redeclare final SecondComponent replaceable_param))`.
+
 ```typescript
 export interface OptionInterface {
   modelicaPath: string;
@@ -130,7 +134,7 @@ export interface OptionInterface {
   visible?: boolean;
   options?: string[];
   enable?: Expression;
-  modifiers: { [key: string]: { expression: Expression | Literal; final: boolean } };
+  modifiers: { [relativePath: string]: { expression?: Expression | Literal; final: boolean } };
   choiceModifiers?: { [key: string]: Modifiers };
   constrainingModifiers?: Modifiers;
   definition: boolean;

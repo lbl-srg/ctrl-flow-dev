@@ -9,6 +9,7 @@
 
 import {
   findPackageEntryPoints,
+  getRootPackage,
   getTopLevelPackageNames,
   loader,
   TEMPLATE_LIST,
@@ -738,6 +739,11 @@ export class LongClass extends Element {
     }
 
     this.description = specifier.description_string;
+    // Set before the elements are constructed: a template declared in this
+    // class looks up its system type in it (Template._extractSystemTypes)
+    this.entryPoint = [...TEMPLATE_LIST, ...PACKAGE_LIST].includes(
+      this.modelicaPath,
+    );
 
     const processSection = (list: any[], isProtected: boolean): Element[] =>
       (list ?? [])
@@ -765,7 +771,7 @@ export class LongClass extends Element {
         .filter((e): e is Element => e !== undefined)
         .filter((e) => e.elementType !== "extends_clause");
 
-    const rootPackage = PACKAGE_LIST[0];
+    const rootPackage = getRootPackage();
     this.elementList = [
       // Treat `element_list` as a synthetic public section
       { public_element_list: specifier.composition?.element_list ?? [], protected_element_list: [] },
@@ -784,11 +790,8 @@ export class LongClass extends Element {
     );
     this.deadEnd = this.getLinkageKeywordValue() === false;
 
-    if ([...TEMPLATE_LIST, ...PACKAGE_LIST].includes(this.modelicaPath)) {
-      this.entryPoint = true;
-      if (TEMPLATE_LIST.includes(this.modelicaPath)) {
-        new Template(this);
-      }
+    if (TEMPLATE_LIST.includes(this.modelicaPath)) {
+      new Template(this);
     }
   }
 
