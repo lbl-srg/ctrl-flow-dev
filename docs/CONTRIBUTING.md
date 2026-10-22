@@ -1,5 +1,9 @@
 # Contributing
 
+## Rules
+
+Every change follows [RULES.md](../RULES.md): specification first, no change to the Modelica core without the approval of the maintainers, no string operations on Modelica names or keys, no fallbacks or ignored errors. Read it before starting work.
+
 ## Formatting
 
 Make sure the [prettier](https://prettier.io/) extension is installed and configured to format on save. If using VS Code, the [`.vscode`](../.vscode) folder and settings is already included with the repo.
@@ -25,4 +29,6 @@ e.g. dk/14-input-onblur
 - Opening draft PRs early is encouraged. This gives the work visibility, and a place to document discussion around the change
 - Get a separate set of eyes for review (if possible)
 - In the description make sure each functional change is listed. There shouldn't be any surprises in the diffs
+- Reference the issue and the specification, and list the tests that verify each acceptance criterion
+- Complete the review checklist of the [pull request template](../.github/pull_request_template.md), which repeats section 10 of [RULES.md](../RULES.md)
 - DO squash on merge

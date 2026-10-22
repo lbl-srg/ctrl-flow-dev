@@ -92,6 +92,8 @@ Source documents and mappings carry logic. Today these are the sequence document
 
 ## 10. Review checklist
 
+The [pull request template](.github/pull_request_template.md) repeats this checklist, so that every PR includes it. Update it together with this file.
+
 - [ ] The specification exists and is approved; the PR references it and the issue.
 - [ ] The Modelica core is unchanged, or the change is approved by the maintainers.
 - [ ] No string operation on names or keys.
