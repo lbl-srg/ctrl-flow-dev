@@ -2,14 +2,14 @@
 Values of a project for the sequence document (docs/selection-keys.md,
 "Sequence document").
 
-A sequence document covers one project. Toggles evaluate over the values of
-the project, gathered across its configurations ("Aggregation").
+A sequence document covers one project. Toggles are evaluated on each of its
+configurations ("Evaluation").
 '''
-from typing import Dict, List
+from typing import Any, Dict, List
 from ctrlflow.payload import PayloadError, check_schema_version
 
-# Values of a project, by key or system type
-Selections = Dict[str, List]
+# Values by key or system type: each one has a single value
+Values = Dict[str, Any]
 
 
 def check_payload(payload: Dict) -> None:
@@ -23,32 +23,35 @@ def check_payload(payload: Dict) -> None:
             f'A sequence document covers exactly one project, got {len(projects)}')
 
 
-def project_selections(payload: Dict) -> Selections:
-    ''' Values of the project of the payload, as read by the toggles:
-        - a system type gives the templates of its configurations;
-        - a key gives the distinct values it takes in the configurations,
-          or the value of the project setting.
-        Only `value` is read: a redeclaration is read through the `typ`
+def read_values(values: Dict) -> Values:
+    ''' Only `value` is read: a redeclaration is read through the `typ`
         parameter of the redeclared class.
     '''
+    return {key: attributes['value'] for key, attributes in values.items() if 'value' in attributes}
+
+
+def project_values(payload: Dict) -> Values:
+    ''' Project settings of the payload '''
     check_payload(payload)
-    project = payload['projects'][0]
-    selections: Selections = {}
+    return read_values(payload['projects'][0]['values'])
 
-    def add(key, value):
-        values = selections.setdefault(key, [])
-        if value not in values:
-            values.append(value)
 
-    for configuration in project['configurations']:
-        add(configuration['systemType'], configuration['template'])
-        for key, attributes in configuration['values'].items():
-            if 'value' in attributes:
-                add(key, attributes['value'])
-    for key, attributes in project['values'].items():
-        if 'value' in attributes:
-            add(key, attributes['value'])
-    return selections
+def configuration_values(payload: Dict) -> List[Values]:
+    ''' Values of each configuration of the project of the payload, as read by
+        the toggles: the values of the configuration, the project settings, and
+        for its system type, its template. A project without configurations
+        gives the project settings alone.
+    '''
+    project = project_values(payload)
+    configurations = payload['projects'][0]['configurations']
+    return [
+        {
+            configuration['systemType']: configuration['template'],
+            **read_values(configuration['values']),
+            **project,
+        }
+        for configuration in configurations
+    ] or [project]
 
 
 def delete_info_box(payload: Dict) -> bool:

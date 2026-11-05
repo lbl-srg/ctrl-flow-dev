@@ -394,8 +394,14 @@
 [FigureCaption] Figure 5.16.2.3 SAT loop mapping with return-fan control with airflow tracking.
 [Heading 3] Minimum Outdoor Airflow Setpoints
 [Heading 4] Outdoor Airflow Setpoint for California Title 24 Ventilation
+[Heading 5] See Section 3.2.1.4 for zone outdoor air rate, Zone-Des-OA-min.
+[Heading 5] See Section 1.1.4.2.b for setpoint, DesMinOA.
+[Heading 5] Effective outdoor air absolute minimum and design minimum setpoints are recalculated continuously based on the mode of the zones being served.
+[Heading 6] DesMinOA* is the sum of Zone-Des-OA-min for all zones in all Zone Groups that are in Occupied Mode but shall be no larger than the design minimum outdoor airflow DesMinOA.
 [Heading 3] Minimum Outdoor Air Control with a Single Common Damper for Minimum Outdoor Air and Economizer Functions and Airflow Measurement
 [Heading 4] Outdoor Airflow Setpoint for California Title 24 Ventilation
+[Heading 5] See Section 3.16.3.2 for calculation of current setpoint DesMinOA*.
+[Heading 5] The minimum outdoor air setpoint MinOAsp shall be equal to DesMinOA*.
 [Heading 4] Minimum Outdoor Air Control Loop
 [Heading 5] Minimum outdoor air control loop is enabled when the supply fan is proven on and the AHU is in Occupied Mode, and disabled and output set to zero otherwise.
 [Heading 5] For units with return fans:

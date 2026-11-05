@@ -372,6 +372,9 @@
 [Heading 6] Shall be equal to Voz as calculated in Section 3.2.1.3.h below if Vmin in Section 1.1.2 is “AUTO” and the associated air handler has been supplying 100% outdoor air (outdoor air damper fully open; return air damper fully closed) for 10 minutes;
 [Heading 6] Else shall be equal to 1.5 * Voz as calculated in Section 3.2.1.3.h below if Vmin in Section 1.1.2 is “AUTO” and the associated air handler is not supplying 100% outdoor air;
 [Heading 6] Else shall be equal to Vmin as entered in Section 1.1.2.
+[Heading 6] Shall be equal to Vmin as entered in Section 1.1.2.
+[Heading 5] The occupied minimum airflow Vmin* shall be equal to Vmin.
+[Heading 5] The required zone outdoor airflow Voz shall be calculated as Voz = (Vbz-A*+Vbz-P*)/Ez.
 [Heading 5] The occupied minimum airflow Vmin* shall be equal to Vmin except as noted in Section 3.2.1.3.h.
 [Heading 5] The required zone outdoor airflow Voz shall be calculated as Voz = (Vbz-A* + Vbz-P*)/Ez, where the normal values of Vbz-A* and Vbz-P* are modified if any of the following conditions are met, in order from higher to lower priority:
 [Heading 6] If the zone is in any mode other than Occupied Mode: Vbz-P* = 0, Vbz-A* = 0, and Vmin* = 0.

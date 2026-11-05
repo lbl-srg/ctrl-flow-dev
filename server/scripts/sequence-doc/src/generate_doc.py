@@ -8,7 +8,7 @@ from docx import Document
 import os
 import csv
 from mogrifier import mogrify_doc
-from sequence_payload import project_selections, delete_info_box
+from sequence_payload import configuration_values, delete_info_box, project_values
 
 
 DEFAULT_DOC_VERSION = 'Current G36 Decisions'
@@ -62,7 +62,8 @@ def generate_doc(payload, version) -> Document:
 
         This is separated from main for easier testing
     '''
-    selections = project_selections(payload)
+    project = project_values(payload)
+    configurations = configuration_values(payload)
     local_file_prefix = get_local_path_prefix(version)
 
     # load source document starting point
@@ -73,7 +74,7 @@ def generate_doc(payload, version) -> Document:
     short_code_path = local_file_prefix / MAPPING_FILE_PATH
     name_map = generate_name_map(short_code_path)
 
-    return mogrify_doc(document, name_map, selections, delete_info_box(payload))
+    return mogrify_doc(document, name_map, project, configurations, delete_info_box(payload))
 
 def main():
     '''
