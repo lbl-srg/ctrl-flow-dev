@@ -56,6 +56,17 @@ SECTIONS = {
     },
 }
 
+# System types of the mappings of each version
+SYSTEM_TYPES = {
+    'Current G36 Decisions': {
+        'Buildings.Templates.AirHandlersFans',
+        'Buildings.Templates.ZoneEquipment',
+    },
+    'DOD_20260828': {
+        'Buildings.Templates.ZoneEquipment',
+    },
+}
+
 SYSTEM_TYPE_RE = re.compile(r'\[(?:EQUALS|ANY) (\w+)((?: \w+)+)\]')
 UNITS_RE = re.compile(r'\[UNITS \[(.+)] \[(.+)]]')
 
@@ -169,10 +180,7 @@ def test_toggles_are_valid():
 
 
 def test_system_types_of_the_mappings():
-    assert system_types() == {
-        'Buildings.Templates.AirHandlersFans',
-        'Buildings.Templates.ZoneEquipment',
-    }
+    assert system_types() == SYSTEM_TYPES[DEFAULT_DOC_VERSION]
 
 
 def test_and_reads_one_system_type():
