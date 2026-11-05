@@ -229,15 +229,15 @@ The payload is the exchange format between the client and every consumer (sequen
 
 A sequence document covers one project. The sequence endpoint rejects a payload that does not contain exactly one project, until generating documents for several projects is specified, and a payload whose `schemaVersion` is not supported (HTTP 400, `checkPayload`). The pipeline checks the same (`sequence_payload.py`, on top of `ctrlflow.payload`, which checks the schema version for any consumer).
 
-### Aggregation
+### Evaluation
 
-Toggles evaluate over the values of a project, gathered across its configurations:
+A toggle is evaluated on each configuration of the project, and a section is kept if its toggle is true on at least one configuration, see "Evaluation" in [sequence-doc.md](sequence-doc.md). The values of a configuration are (`sequence_payload.configuration_values`):
 
-- **System type** (e.g. `VAV` → `Buildings.Templates.ZoneEquipment`): the set of `template`s of the configurations with that `systemType`.
-- **Key pattern** (see Mappings): the union of the `value`s of the matching keys in all configurations. Both origins are used, as on `main`. A `redeclare` is not read (see Mappings).
-- **Project-level setting**: the `value` in `project.values`.
+- **System type** (e.g. `VAV` → `Buildings.Templates.ZoneEquipment`): the `template` of the configuration, if it has that `systemType`.
+- **Key pattern** (see Mappings): the `value` of the key of the template of the configuration. Both origins are used, as on `main`. A `redeclare` is not read (see Mappings).
+- **Project-level setting**: the `value` in `project.values`, which is read on every configuration.
 
-This reproduces the merge done by the client before #650. Merging now happens in the mogrifier (`sequence_payload.project_selections`, then `aggregate_patterns`). Which templates a toggle reads is set by the mappings: a section of a single system type uses short IDs of its template, and a section shared by several system types a key pattern or a combination of short IDs (see "Sections of System Types" in [sequence-doc.md](sequence-doc.md), #654).
+Before #666, values were merged across the configurations, which lost the values that belong to the same configuration. Which templates a toggle reads is set by the mappings: a section of a single system type uses short IDs of its template, and a section shared by several system types a key pattern or a combination of short IDs (see "Sections of System Types" in [sequence-doc.md](sequence-doc.md), #654).
 
 ### Mappings
 
@@ -251,11 +251,11 @@ alternatives = className { "|" className }
 
 A pattern is shorthand for the set of keys obtained by expanding the alternatives, e.g. `P.{A|B}-c.p` stands for `P.A-c.p` and `P.B-c.p`. Each expanded `rootClass` is a class where `elementPath` is declared (a template, or `Buildings.Templates.Data.AllSystems`), never an enclosing package. `{`, `|` and `}` cannot occur in a class name (no quoted class identifiers), so the expansion is unambiguous (`ctrlflow.keys`). Keys are then matched by equality. A test checks that every expanded key is the key under which the client stores the value of the element, with the default selections (`client/tests/sequence/mappings.test.ts`).
 
-The mogrifier evaluates a toggle against the union of the values of all keys of the pattern. A condition on a subset of templates is expressed by the alternatives, or by a new mapping entry.
+On a configuration, a toggle reads the key of the pattern whose `rootClass` is the template of the configuration. The alternatives of a pattern are templates of one system type (`server/scripts/sequence-doc/tests/test_section_scope.py`). A condition on a subset of templates is expressed by the alternatives, or by a new mapping entry.
 
 The `Current G36 Decisions` mappings are rewritten so that the generated document is unchanged:
 
-- Each pattern lists the templates whose values are merged today.
+- Each pattern lists the templates whose values were merged at the time.
 - Project-level settings use the keys of rule 1.
 - The five entries that read the class of a replaceable component (`PREHEAT`, `REHEAT`, `COOL`, `OA`, `TERM_HT`) read its `typ` parameter instead, and their value rows (`Modelica Path` column) use the enumeration literals, which match the classes one to one (`Coils.WaterBasedCooling` → `Types.Coil.WaterBasedCooling`). The mogrifier then reads `value` only, and the mappings test checks that every mapped element is not replaceable.
 
@@ -283,7 +283,7 @@ Both are stored in `server/scripts/sequence-doc/tests/static/golden` and are reg
 - `ctrlflow.keys`: `parse_key`, and the key patterns of mappings files (`expand_pattern`, `is_pattern`).
 - `ctrlflow.payload`: `SCHEMA_VERSION`, `PayloadError`, `check_schema_version`.
 
-How the values are gathered is left to each consumer: the sequence document takes the union of the values of a project across its configurations (`sequence_payload.py`), which an XLS editor of the values of each configuration must not do.
+How the values are read is left to each consumer: the sequence document evaluates its toggles on each configuration of a project, and keeps a section if one configuration needs it (`sequence_payload.py`, `toggles.py`).
 
 ## Prerequisites
 
@@ -311,7 +311,7 @@ Issues found by the probe, unrelated to quoted identifiers:
 
 ## Known limitations
 
-- **Configurations of the same template.** The sequence document has one section per system type: the values of the configurations of the same template are merged, and a section is kept if any configuration of that type needs it (see "Sections of System Types" in [sequence-doc.md](sequence-doc.md)).
+- **Configurations of the same template.** The sequence document has one section per system type: a section is kept if any configuration of that type needs it (see "Evaluation" and "Sections of System Types" in [sequence-doc.md](sequence-doc.md)).
 
 - **Replaceable short classes.** Before #620, short-class choices were written under one key (`…ShortClass-ShortClass`) and read under another (`…ShortClass-.FirstComponent`). The choice is now written and read at the short class element (rule 4, `T-ShortClass`). The parameters of the selected class are still displayed and keyed under the class name (`T-ShortClass.container`) rather than under the instance, and selecting another class does not change how the instance resolves. No template in `templates.json` uses a replaceable short class in the configuration panel. The display and resolution of short class instances are tracked separately.
 - **Spellings of quoted identifiers.** A source that spells a quoted identifier with and without a redundant escape (`'a\?'` and `'a?'`, `'a\"'` and `'a"'`) is not supported: ctrl-flow keeps identifiers as written, like Dymola and OCT, which reject such a source, although MLS §2.3.1 makes both spellings the same identifier.
