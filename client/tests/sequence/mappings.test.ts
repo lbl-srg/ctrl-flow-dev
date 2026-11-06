@@ -25,7 +25,7 @@ import { ALL_SYSTEMS, parseSelectionKey } from "../../src/utils/selection-key";
 
 const MAPPINGS = path.resolve(
   __dirname,
-  "../../../server/scripts/sequence-doc/src/version/Current G36 Decisions/Guideline 36-2021 (mappings).csv",
+  "../../../server/scripts/sequence-doc/src/version/DOD_20260828/mappings.csv",
 );
 
 const store = new RootStore();
@@ -94,7 +94,7 @@ const patterns = rows
 describe("Sequence document mappings", () => {
   it("has key patterns", () => {
     expect(patterns).toContain(
-      "Buildings.Templates.ZoneEquipment.{VAVBoxCoolingOnly|VAVBoxReheat}-ctl.have_occSen",
+      "Buildings.Templates.ZoneEquipment.{VAVBoxCoolingOnly|VAVBoxReheat|VAVBoxFanParallelConstant|VAVBoxFanSeriesConstant}-ctl.have_occSen",
     );
     expect(expandPattern("P.{A|B}-c.p")).toEqual(["P.A-c.p", "P.B-c.p"]);
   });
