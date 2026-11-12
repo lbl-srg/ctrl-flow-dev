@@ -374,12 +374,15 @@
 [Heading 7] Zero if the zone has an occupancy sensor and is unpopulated and is permitted to be in occupied-standby mode per Section 1.1.1.2.b.3.
 [Info. box] The term “populated” is used instead of “occupied” to mean that a zone occupancy sensor senses the presence of people, because the term “occupied” is used elsewhere to mean “scheduled to be occupied.”
 [Heading 7] Zone-Des-OA-min otherwise.
+[Heading 6] Zone-Abs-OA-min shall be equal to Zone-Des-OA-min.
 [Heading 6] Zone-Des-OA-min is equal to the following, in order from highest to lowest priority:
 [Heading 7] Zero if the zone has an occupancy sensor, is unpopulated, and is permitted to be in occupied-standby mode per Section 1.1.1.2.b.3.
 [Heading 7] The larger of Varea-min and Vocc-min otherwise.
+[Heading 6] Zone-Des-OA-min shall be equal to the larger of Varea-min and Vocc-min.
 [Heading 5] Vmin
 [Heading 6] Shall be equal to Zone-Abs-OA-min if Vmin in Section 1.1.2 is “AUTO”;
 [Heading 6] Else shall be equal to Vmin as entered in Section 1.1.2.
+[Heading 5] The occupied minimum airflow Vmin* shall be equal to Vmin.
 [Heading 5] The occupied minimum airflow Vmin* shall be equal to Vmin except as noted below, in order from highest to lowest priority:
 [Heading 6] If the zone has an occupancy sensor and is permitted to be in occupied-standby mode per Section 1.1.1.2.b.3, Vmin* shall be equal to zero when the room is unpopulated.
 [Heading 3] Time-Averaged Ventilation

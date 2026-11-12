@@ -8,19 +8,18 @@ from docx import Document
 from docx.text.paragraph import Paragraph
 from docx.table import Table
 import logging
+import toggles
 import utils
-from ctrlflow import keys
-from sequence_payload import Selections
-from typing import Dict
+from sequence_payload import Values
+from typing import Dict, List
 
 P_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p'
 BOOKMARK_TAGS = ['{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bookmarkEnd', "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bookmarkStart"]
 SECTION_TAG = ["{http://schemas.openxmlformats.org/wordprocessingml/2006/main}sectPr"]
 TABLE_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tbl'
 ANNOTATION_STYLE = 'Toggle'
+UNITS_SHORT_NAME = 'UNITS'
 
-OP_LIST = ['AND', 'OR', 'YES', 'NO', 'EQUALS', 'NOT_EQUALS', 'ANY', 'DELETE']
-TABLE_OP_LIST = ['TABLE', 'ROW', 'COLUMN']
 elements_to_delete = []
 _run_style_name_cache = {}
 _paragraph_style_name_cache = {}
@@ -257,247 +256,29 @@ def remove_info_and_instr_boxes(doc, delete_info_box: bool):
         if para_style_name == instr_box_style:
             remove_node(para)
 
-def evaluate_annotation(op, name_map, selections: Selections):
+def apply_selections(control_structure, name_map, run_op_lookup, configurations: List[Values]):
     '''
-        Determines the operation and decides if the operation requires us to delete (return True).
-        This is a recursive funtion if the operation is an AND or OR.
-        Tables use this function as well after their table operation logic is determined.
-        return True means delete
-        return False means keep
-
-        Example toggles:
-        + `[YES have_CO2Sen]` – Keep this section if a CO2 sensor is present. Otherwise remove.
-        + `[NO have_CO2Sen]` – Keep this section if a CO2 sensor is not present. Otherwise remove.
-        + `[EQUALS buiPreCon ReliefFan]` – Keep this section if the type of building pressure control system is an actuated relief damper, with relief fan(s). Otherwise remove.
-        + `[NOT_EQUALS buiPreCon RelifFan]`  Keep this section if the type of building pressure control system is *not* an actuated relief damper, with relief fans(s). Otherwise remove.
-        + `[ANY buiPreCon ReturnFanMeasuredAir ReturnFanCalculatedAir]` – Keep this section if the type of building pressure control system is a return fan, tracking measured supply and return airflow or a return fan, tracking calculated supply and return airflow. Otherwise remove.
-        + `[AND [any toggle] [any toggle]]` - Keep this section if both nested toggles would keep the section. The nested toggles can be any of these toggles including AND or OR. Otherwise remove.
-        + `[OR [any toggle] [any toggle]]` - Keep this section if one of the nested toggles would keep the section. The nested toggles can be any of these toggles including AND or OR. Otherwise remove.
-        + `[DELETE]` - Remove this section.
-    '''
-    if op['op'] == 'YES':
-        # 1: map short name to long name
-        tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
-        if len(tokens) == 2:
-            short_name = tokens[1]
-        else:
-            logging.error('Invalid operation: %s, deleting', op['text'])
-            return True
-
-        if short_name not in name_map:
-            logging.error('%s not found, deleting', short_name)
-            return True
-
-        long_name = name_map[short_name]
-
-        # 2: check if relevant selection is available
-        if long_name not in selections:
-            logging.info('Path "%s" not found in store, deleting', long_name)
-            return True
-        # 3: apply the operation type
-        elif not utils.reduce_to_boolean(selections[long_name]):
-            return True
-
-    if op['op'] == 'NO':
-        tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
-        if len(tokens) == 2:
-            short_name = tokens[1]
-        else:
-            logging.error('Invalid operation: %s, deleting', op['text'])
-            return True
-
-        if short_name not in name_map:
-            logging.error('%s not found, deleting', short_name)
-            return True
-
-        long_name = name_map[short_name]
-
-        if long_name not in selections:
-            logging.info('Path "%s" not found in store, deleting', long_name)
-            return True
-        elif utils.reduce_to_boolean(selections[long_name]):
-            return True
-
-    if op['op'] == 'EQUALS':
-        tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
-        if len(tokens) == 3:
-            short_name = tokens[1]
-            short_compare = tokens[2]
-        else:
-            logging.error('Invalid operation: %s, deleting', op['text'])
-            return True
-
-        if short_name not in name_map:
-            logging.error('%s not found, deleting', short_name)
-            return True
-
-        if short_compare not in name_map:
-            logging.error('%s not found, deleting', short_compare)
-            return True
-
-        long_name = name_map[short_name]
-        long_compare = name_map[short_compare]
-
-        if long_name not in selections:
-            logging.info('Path "%s" not found in store, deleting', long_name)
-            return True
-        elif long_compare not in selections[long_name]:
-            return True
-
-    if op['op'] == 'NOT_EQUALS':
-        tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
-        if len(tokens) == 3:
-            short_name = tokens[1]
-            short_compare = tokens[2]
-        else:
-            logging.error('Invalid operation: %s, deleting', op['text'])
-            return True
-
-        if short_name not in name_map:
-            logging.error('%s not found, deleting', short_name)
-            return True
-
-        if short_compare not in name_map:
-            logging.error('%s not found, keeping', short_compare)
-            return False
-
-        long_name = name_map[short_name]
-        long_compare = name_map[short_compare]
-
-        if long_name not in selections:
-            logging.info('Path "%s" not found in store, keeping', long_name)
-            return False
-        elif long_compare in selections[long_name]:
-            return True
-
-    if op['op'] == 'ANY':
-        tokens = [token for token in re.split(r'\W+', op['text']) if token]
-        if len(tokens) >= 3:
-            short_name = tokens[1]
-            short_compare = tokens[2:]
-        else:
-            logging.error('Invalid operation: %s, deleting', op['text'])
-            return True
-
-        if short_name not in name_map:
-            logging.error('%s not found, deleting', short_name)
-            return True
-
-        long_name = name_map[short_name]
-        long_compare = map(lambda name: name_map[name], short_compare)
-
-        if long_name not in selections:
-            logging.info('Path "%s" not found in store, deleting', long_name)
-            return True
-        elif not utils.common_member(selections[long_name], long_compare):
-            return True
-
-    if op['op'] == 'DELETE':
-        return True
-
-    if op['op'] == 'AND':
-        match = re.match(r'\[AND \[(.+)] \[(.+)]]', op['text'])
-        if not match:
-            logging.error('Invalid format for tag:  %s, deleting', op['text'])
-            return True
-
-        condition_one = condition_two = False
-        group_one_tokens = re.split(r'\W+', match.group(1))
-        group_one_op = group_one_tokens[0]
-        group_two_tokens = re.split(r'\W+', match.group(2))
-        group_two_op = group_two_tokens[0]
-
-        if group_one_op in OP_LIST:
-            nested_op = {**op, 'text': f'[{match.group(1)}]', 'op': group_one_op}
-            condition_one = evaluate_annotation(nested_op, name_map, selections)
-        else:
-            logging.error('Invalid operation: %s, deleting', group_one_op)
-            return True
-
-        if group_two_op in OP_LIST:
-            nested_op = {**op, 'text': f'[{match.group(2)}]', 'op': group_two_op}
-            condition_two = evaluate_annotation(nested_op, name_map, selections)
-        else:
-            logging.error('Invalid operation: %s, deleting', group_two_op)
-            return True
-
-        return condition_one or condition_two
-
-    if op['op'] == 'OR':
-        match = re.match(r'\[OR \[(.+)] \[(.+)]]', op['text'])
-        if not match:
-            logging.error('Invalid format for tag:  %s, deleting', op['text'])
-            return True
-
-        condition_one = condition_two = False
-        group_one_tokens = re.split(r'\W+', match.group(1))
-        group_one_op = group_one_tokens[0]
-        group_two_tokens = re.split(r'\W+', match.group(2))
-        group_two_op = group_two_tokens[0]
-
-        if group_one_op in OP_LIST:
-            nested_op = {**op, 'text': f'[{match.group(1)}]', 'op': group_one_op}
-            condition_one = evaluate_annotation(nested_op, name_map, selections)
-        else:
-            logging.error('Invalid operation: %s, deleting', group_one_op)
-            return True
-
-        if group_two_op in OP_LIST:
-            nested_op = {**op, 'text': f'[{match.group(2)}]', 'op': group_two_op}
-            condition_two = evaluate_annotation(nested_op, name_map, selections)
-        else:
-            logging.error('Invalid operation: %s, deleting', group_two_op)
-            return True
-
-        return condition_one and condition_two
-
-    return False
-
-def apply_selections(control_structure, name_map, run_op_lookup, selections: Selections):
-    '''
-        Determines how to handle toggles, section vs table
-
-        Example section toggles:
-        + `[YES have_CO2Sen]` – Keep this section if a CO2 sensor is present. Otherwise remove.
-        + `[NO have_CO2Sen]` – Keep this section if a CO2 sensor is not present. Otherwise remove.
-        + `[EQUALS buiPreCon ReliefFan]` – Keep this section if the type of building pressure control system is an actuated relief damper, with relief fan(s). Otherwise remove.
-        + `[NOT_EQUALS buiPreCon RelifFan]` - Keep this section if the type of building pressure control system is *not* an actuated relief damper, with relief fans(s). Otherwise remove.
-        + `[ANY buiPreCon ReturnFanMeasuredAir ReturnFanCalculatedAir]` – Keep this section if the type of building pressure control system is a return fan, tracking measured supply and return airflow or a return fan, tracking calculated supply and return airflow. Otherwise remove.
-        + `[AND [any toggle] [any toggle]]` - Keep this section if both nested toggles would keep the section. The nested toggles can be any of these toggles including AND or OR.  Otherwise remove.
-        + `[OR [any toggle] [any toggle]]` - Keep this section if one of the nested toggles would keep the section. The nested toggles can be any of these toggles including AND or OR.  Otherwise remove.
-        + `[DELETE]` - Remove this section.
-
-        Example table toggles:
-        + `[TABLE YES have_CO2Sen]` - Keep the whole table if a CO2 sensor is present. Otherwise remove.
-        + `[ROW YES have_CO2Sen]` - Keep this row if a CO2 sensor is present. Otherwise remove.
-        + `[COLUMN YES have_CO2Sen]` - Keep this column if a CO2 sensor is present. Otherwise remove.
-        + `[COLUMN AND [any toggle] [any toggle]]` - Keep this column if both nested toggles would keep the column. Otherwise remove.
+        Removes what the toggles do not keep (see toggles.py): the section of
+        a toggle, or the part of a table of a table toggle.
     '''
     for op in control_structure:
-        if op['op'] in OP_LIST:
-            if evaluate_annotation(op, name_map, selections):
-                remove_section(op['paragraph'], run_op_lookup)
+        if op['op'] == UNITS_SHORT_NAME:
+            continue
 
-        if op['op'] in TABLE_OP_LIST:
-            text_op = op['text'].replace(f"{op['op']} ", "")
-            tokens = utils.remove_empty_strings(re.split(r'\W+', text_op))
-            next_op = tokens[0]
-
-            if next_op in OP_LIST:
-                table_op = {**op, 'text': text_op, 'op': next_op}
-                if evaluate_annotation(table_op, name_map, selections):
-                    edit_table(op)
+        toggle = toggles.parse(op['text'], name_map)
+        if not toggles.keeps(toggle, configurations):
+            if op['op'] in toggles.TABLE_OP_LIST:
+                edit_table(op)
             else:
-                logging.error('Invlaid format for tag: %s', op['text'])
-
+                remove_section(op['paragraph'], run_op_lookup)
 
     # return not necessary - just reinforcing that control_structure is what is modified
     return control_structure
 
-def convert_units(control_structure, name_map, selections: Selections):
+def convert_units(control_structure, name_map, project: Values):
     ''' Based on unit selection, goes through doc to update
     '''
-    short_name = "UNITS"
+    short_name = UNITS_SHORT_NAME
     si_short_name = "SI"
     ip_short_name = "IP"
 
@@ -515,7 +296,7 @@ def convert_units(control_structure, name_map, selections: Selections):
     si_long_name = name_map[si_short_name]
     ip_long_name = name_map[ip_short_name]
 
-    if long_name not in selections:
+    if long_name not in project:
         logging.info('Path "%s" not found in store', long_name)
         return
 
@@ -525,7 +306,7 @@ def convert_units(control_structure, name_map, selections: Selections):
             if not match:
                 logging.error('Invalid format for tag:  %s', op['text'])
                 continue
-            unit_selection = selections[long_name][0]
+            unit_selection = project[long_name]
             if unit_selection == si_long_name:
                 # TODO: use this as an approach for 'writes' to the docx
                 op['runs'][0].text = match.group(1)
@@ -552,30 +333,12 @@ def remove_toggles(doc):
                         if get_run_style_name(run) == ANNOTATION_STYLE:
                             remove_node(run)
 
-def aggregate_patterns(name_map: Dict, selections: Selections) -> Selections:
-    ''' Adds the values of each key pattern of the mappings to the selections:
-        the union of the values of its keys (docs/selection-keys.md,
-        "Mappings"). A pattern none of whose keys has a value is not added.
-    '''
-    aggregated = dict(selections)  # Works on a copy, so the payload is left unchanged.
-    for long_name in name_map.values():
-        if long_name in selections or not keys.is_pattern(long_name):
-            continue
-        pattern_keys = [k for k in keys.expand_pattern(long_name) if k in selections]
-        if not pattern_keys:
-            continue
-        values = []
-        for key in pattern_keys:
-            values += [v for v in selections[key] if v not in values]
-        aggregated[long_name] = values
-    return aggregated
-
-def mogrify_doc(doc: Document, name_map: Dict, selections: Selections,
+def mogrify_doc(doc: Document, name_map: Dict, project: Values, configurations: List[Values],
                 delete_info_box: bool = False) -> Document:
-    ''' Applies the values of a project (payload.project_selections) to the
-        provided document. This mutates the provided document
+    ''' Applies the values of a project (sequence_payload.project_values and
+        configuration_values) to the provided document. This mutates the
+        provided document
     '''
-    selections = aggregate_patterns(name_map, selections)
     initialize_remove_list()
     # walk through source_doc to find each conditional point in the doc
     control_structure, run_op_lookup = create_control_structures(doc)
@@ -584,10 +347,10 @@ def mogrify_doc(doc: Document, name_map: Dict, selections: Selections,
     remove_info_and_instr_boxes(doc, delete_info_box)
 
     # apply all paragraph and table selections
-    apply_selections(control_structure, name_map, run_op_lookup, selections)
+    apply_selections(control_structure, name_map, run_op_lookup, configurations)
 
     # convert units
-    convert_units(control_structure, name_map, selections)
+    convert_units(control_structure, name_map, project)
 
     # remove toggle text
     remove_toggles(doc)

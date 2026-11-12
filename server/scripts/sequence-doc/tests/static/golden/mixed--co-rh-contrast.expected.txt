@@ -380,6 +380,7 @@
 [Heading 6] Else shall be equal to Vmin as entered in Section 1.1.2.
 [Heading 5] The occupied minimum airflow Vmin* shall be equal to Vmin except as noted in Section 3.2.1.3.h.
 [Heading 5] The required zone outdoor airflow Voz shall be calculated as Voz = (Vbz-A* + Vbz-P*)/Ez, where the normal values of Vbz-A* and Vbz-P* are modified if any of the following conditions are met, in order from higher to lower priority:
+[Heading 6] If the zone is in any mode other than Occupied Mode: Vbz-P* = 0, Vbz-A* = 0, and Vmin* = 0.
 [Heading 6] If the zone is in any mode other than Occupied Mode, and for zones that have window switches and the window is open: Vbz-P* = 0, Vbz-A* = 0, and Vmin* = 0.
 [Heading 6] If the zone has an occupancy sensor, is unpopulated, and occupied-standby mode is permitted: Vbz-P* = 0, Vbz-A* = 0, and Vmin* = 0.
 [Heading 6] Else, if the zone has an occupancy sensor, is unpopulated, but occupied-standby mode is not permitted: Vbz-P* = 0 and Vmin* = Vmin.
