@@ -24,6 +24,8 @@ The annotation is enclosed in square brackets `[]`
 
 The annotation text and ONLY the annotation text (which includes the brackets) has a style applied: `Toggle`. This style is used as an identifier by the sequence document generation script to find annotations.
 
+An annotation is a continuous stretch of text with the `Toggle` style within one paragraph: text with another style ends it. A Word comment anchored on an annotation, e.g. on a short ID, does not split it. A section removed by an annotation is removed with the comments anchored in it.
+
 ### Example Annotations:
 
         + `[YES CO2]` – Keep this section if a configuration has a CO2 sensor. Otherwise remove.
