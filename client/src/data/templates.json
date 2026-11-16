@@ -1,6 +1,6 @@
 {
   "libraries": {
-    "Buildings": "14.0.0"
+    "Buildings": "15.0.0"
   },
   "templates": [
     {
@@ -241,6 +241,7 @@
       "replaceable": false,
       "options": [
         "Buildings.Templates.Components.Actuators.Valve.typ",
+        "Buildings.Templates.Components.Actuators.Valve.l",
         "Buildings.Templates.Components.Actuators.Valve.is_twoWay",
         "Buildings.Templates.Components.Actuators.Valve.is_thrWay",
         "Buildings.Templates.Components.Actuators.Valve.is_actTwo",
@@ -389,6 +390,20 @@
       "treeList": [
         "Buildings.Templates.Components.Types.Valve"
       ]
+    },
+    {
+      "modelicaPath": "Buildings.Templates.Components.Actuators.Valve.l",
+      "type": "Real",
+      "name": "Valve leakage, l=Kv(y=0)/Kv(y=1)",
+      "group": "Configuration",
+      "tab": "",
+      "visible": true,
+      "enable": false,
+      "modifiers": {},
+      "replaceable": false,
+      "options": [],
+      "definition": false,
+      "shortExclType": false
     },
     {
       "modelicaPath": "Buildings.Templates.Components.Actuators.Valve.is_twoWay",
@@ -794,13 +809,7 @@
               {
                 "operator": "if",
                 "operands": [
-                  {
-                    "operator": "==",
-                    "operands": [
-                      "typ",
-                      "Buildings.Templates.Components.Types.Valve.TwoWayModulating"
-                    ]
-                  },
+                  "is_twoWay",
                   {
                     "operator": "!=",
                     "operands": [
@@ -930,12 +939,12 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "realTrue": {
-          "expression": 1,
-          "final": true
-        },
         "realFalse": {
           "expression": 0,
+          "final": true
+        },
+        "realTrue": {
+          "expression": 1,
           "final": true
         }
       },
@@ -1062,12 +1071,12 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "t": {
-          "expression": 0.99,
-          "final": false
-        },
         "h": {
           "expression": 0.005,
+          "final": false
+        },
+        "t": {
+          "expression": 0.99,
           "final": false
         }
       },
@@ -1183,12 +1192,12 @@
       "tab": "",
       "visible": false,
       "modifiers": {
-        "t": {
-          "expression": 0.01,
-          "final": false
-        },
         "h": {
           "expression": 0.005,
+          "final": false
+        },
+        "t": {
+          "expression": 0.01,
           "final": false
         }
       },
@@ -1308,20 +1317,12 @@
           "final": true,
           "redeclare": "Buildings.Fluid.Interfaces.PartialTwoPort.Medium"
         },
-        "m_flow_nominal": {
-          "expression": "m_flow_nominal",
-          "final": true
-        },
-        "dp_nominal": {
-          "expression": "dpFixed_nominal",
-          "final": true
-        },
         "allowFlowReversal": {
           "expression": "allowFlowReversal",
           "final": true
         },
-        "show_T": {
-          "expression": "show_T",
+        "dp_nominal": {
+          "expression": "dpFixed_nominal",
           "final": true
         },
         "from_dp": {
@@ -1330,6 +1331,14 @@
         },
         "linearized": {
           "expression": "linearized",
+          "final": true
+        },
+        "m_flow_nominal": {
+          "expression": "m_flow_nominal",
+          "final": true
+        },
+        "show_T": {
+          "expression": "show_T",
           "final": true
         }
       },
@@ -2171,6 +2180,7 @@
       "kindOfClass": "model",
       "options": [
         "Buildings.Templates.Components.Actuators.Valve.typ",
+        "Buildings.Templates.Components.Actuators.Valve.l",
         "Buildings.Templates.Components.Actuators.Valve.is_twoWay",
         "Buildings.Templates.Components.Actuators.Valve.is_thrWay",
         "Buildings.Templates.Components.Actuators.Valve.is_actTwo",
@@ -13190,7 +13200,7 @@
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxReheat.have_reqNeeHea",
       "type": "Boolean",
-      "value": false,
+      "value": true,
       "name": "Set to true if the controller generates a 'Need Heat' request",
       "group": "Configuration",
       "tab": "",
@@ -13235,7 +13245,7 @@
     {
       "modelicaPath": "Buildings.Templates.ZoneEquipment.Components.Interfaces.ControllerG36VAVBox.have_reqNeeCoo",
       "type": "Boolean",
-      "value": false,
+      "value": true,
       "name": "Set to true if the controller generates a 'Need Cool' request",
       "group": "Configuration",
       "tab": "",
@@ -14531,7 +14541,7 @@
       "value": 120,
       "name": "Sample period of component, set to the same value as the trim and respond that process static pressure reset",
       "group": "",
-      "tab": "Time-based suppresion",
+      "tab": "Time-based suppression",
       "visible": true,
       "enable": true,
       "modifiers": {},
@@ -14546,7 +14556,7 @@
       "value": 540,
       "name": "Gain factor to calculate suppression time based on the change of the setpoint, seconds per Kelvin",
       "group": "",
-      "tab": "Time-based suppresion",
+      "tab": "Time-based suppression",
       "visible": true,
       "enable": true,
       "modifiers": {},
@@ -14561,7 +14571,7 @@
       "value": 1800,
       "name": "Maximum suppression time",
       "group": "",
-      "tab": "Time-based suppresion",
+      "tab": "Time-based suppression",
       "visible": true,
       "enable": true,
       "modifiers": {},
@@ -16151,7 +16161,7 @@
       "value": 120,
       "name": "Sample period of component, set to the same value as the trim and respond that process static pressure reset",
       "group": "",
-      "tab": "Time-based suppresion",
+      "tab": "Time-based suppression",
       "visible": true,
       "enable": true,
       "modifiers": {},
@@ -16166,7 +16176,7 @@
       "value": 540,
       "name": "Gain factor to calculate suppression time based on the change of the setpoint, seconds per Kelvin",
       "group": "",
-      "tab": "Time-based suppresion",
+      "tab": "Time-based suppression",
       "visible": true,
       "enable": true,
       "modifiers": {},
@@ -16181,7 +16191,7 @@
       "value": 1800,
       "name": "Maximum suppression time",
       "group": "",
-      "tab": "Time-based suppresion",
+      "tab": "Time-based suppression",
       "visible": true,
       "enable": true,
       "modifiers": {},
@@ -21131,7 +21141,7 @@
     {
       "modelicaPath": "Buildings.Controls.OBC.ASHRAE.G36.TerminalUnits.CoolingOnly.Controller.timSup",
       "type": "Buildings.Controls.OBC.ASHRAE.G36.Generic.TimeSuppression",
-      "name": "Specify suppresion time due to the setpoint change and check if it has passed the suppresion period",
+      "name": "Specify suppression time due to the setpoint change and check if it has passed the suppression period",
       "group": "",
       "tab": "",
       "visible": false,

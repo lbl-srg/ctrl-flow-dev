@@ -17,6 +17,9 @@ P_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p'
 BOOKMARK_TAGS = ['{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bookmarkEnd', "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bookmarkStart"]
 SECTION_TAG = ["{http://schemas.openxmlformats.org/wordprocessingml/2006/main}sectPr"]
 TABLE_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tbl'
+W_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+RUN_PROPERTIES_TAG = f'{{{W_NS}}}rPr'
+COMMENT_REFERENCE_TAG = f'{{{W_NS}}}commentReference'
 ANNOTATION_STYLE = 'Toggle'
 UNITS_SHORT_NAME = 'UNITS'
 
@@ -161,26 +164,40 @@ def get_column(table: Table, table_cell):
             if cell.text == table_cell.text:
                 return column
 
+def is_comment_reference(run):
+    ''' True if the run only holds the reference mark of a comment, which is
+        not text of the document (docs/sequence-doc.md, "Annotations")
+    '''
+    content = [child for child in run.element if child.tag != RUN_PROPERTIES_TAG]
+    return len(content) == 1 and content[0].tag == COMMENT_REFERENCE_TAG
+
 def create_control_structures(doc):
     ''' Sets up the control structure for Sections and Tables
     '''
     control_structures = []
     run_op_lookup = {}
 
+    def close(annotation):
+        ''' Adds an annotation once its last run is read '''
+        if annotation:
+            annotation['text'] = annotation['text'].strip()
+            if annotation['text']:
+                control_structures.append(annotation)
+
     current = None
 
     ## Sections
     for para in doc.paragraphs:
         for run in para.runs:
+            if is_comment_reference(run):
+                continue
             run_style_name = get_run_style_name(run)
             if (
                 (current and run_style_name != ANNOTATION_STYLE)
                 or
                 (current and para is not current['paragraph'])
             ):
-                current['text'] = current['text'].strip()
-                if current['text']:
-                    control_structures.append(current)
+                close(current)
                 current = None
 
             if not current and run_style_name == ANNOTATION_STYLE:
@@ -195,6 +212,8 @@ def create_control_structures(doc):
                 run_op_lookup[run.element] = current
                 current['runs'].append(run)
                 current['text'] += run.text
+    close(current)
+    current = None
 
     ## Tables
     for table in doc.tables:
@@ -202,15 +221,15 @@ def create_control_structures(doc):
             for cell in row.cells:
                 for para in cell.paragraphs:
                     for run in para.runs:
+                        if is_comment_reference(run):
+                            continue
                         run_style_name = get_run_style_name(run)
                         if (
                             (current and run_style_name != ANNOTATION_STYLE)
                             or
                             (current and para is not current['paragraph'])
                         ):
-                            current['text'] = current['text'].strip()
-                            if current['text']:
-                                control_structures.append(current)
+                            close(current)
                             current = None
 
                         if not current and run_style_name == ANNOTATION_STYLE:
@@ -229,6 +248,7 @@ def create_control_structures(doc):
                             run.op = current
                             current['runs'].append(run)
                             current['text'] += run.text
+    close(current)
 
     for op in control_structures:
         tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
