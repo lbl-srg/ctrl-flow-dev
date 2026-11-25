@@ -1,16 +1,6 @@
 # Installs Pandoc, TexLive, and make4ht on a Ubuntu Linux distribution
-FROM ubuntu:26.04 AS ubuntu-pandoc
+FROM ubuntu:26.04
 
-# Workaround: modelica-json <2.0.0 writes the output of its Java parser in the
-# encoding of the locale, so without a UTF-8 locale every non-ASCII character
-# of a string becomes "?" (Modelica files are UTF-8, MLS 3.7 §13.4). Version
-# 2.0.0 has no Java dependency but cannot be used yet
-# (lbl-srg/modelica-json#327). Remove when upgrading, if the test
-# "keeps non-ASCII characters without a UTF-8 locale" passes (#657).
-ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
-
-# Installs Node 16.16.0 LTS with NVM
-# FROM ubuntu-pandoc as ubuntu-pandoc-node
 RUN apt-get --assume-yes update && apt-get --assume-yes install curl bash
 ENV NVM_DIR=/usr/local/nvm
 ENV NODE_VERSION=20.18.1
@@ -24,7 +14,7 @@ RUN node --version
 RUN npm --version
 
 # Prepares Modelica dependency scripts
-RUN apt-get update && apt-get -y install default-jdk
+RUN apt-get update
 RUN mkdir dependencies
 WORKDIR /server
 COPY bin/ bin/
@@ -50,9 +40,6 @@ ENV MODELICAPATH=/dependencies/ModelicaStandardLibrary:/dependencies/modelica-bu
 RUN mkdir template-json
 RUN node modelica-json/app.js --input modelica-buildings/Buildings/Templates --output json --directory template-json --exclude '**.(Validation|Examples)'
 
-# Adds Modelica dependencies to the resulting image
-# FROM alpine-node-modelica as ubuntu-pandoc-node-modelica
-# COPY --from=alpine-node-modelica /dependencies /dependencies
 WORKDIR /server
 
 # Copy the rest of the server app
@@ -70,16 +57,6 @@ RUN npm run parseTemplateJSON
 
 RUN npm run build
 RUN npx webpack
-
-# Workaround: webpack sets __dirname to the output bundle directory (/server/dist),
-# so modelica-json's jar lookup resolves to /server/java/moParser.jar instead of
-# /dependencies/modelica-json/java/moParser.jar.
-# TODO: Fix jar resolution upstream in modelica-json. modelicaToJSON.js resolves
-# moParser.jar via path.join(__dirname, '..', 'java', 'moParser.jar'), which breaks
-# when the code is bundled by webpack. The fix would be to support an env var
-# to explicitly set the modelica-json root directory,
-# falling back to the current __dirname-relative resolution as a default.
-RUN ln -s /dependencies/modelica-json/java /server/java
 
 ARG PORT
 
