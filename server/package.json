@@ -23,7 +23,7 @@
     "@types/jest": "^29.5.14",
     "@types/marked": "^3.0.3",
     "@types/morgan": "^1.9.3",
-    "@types/node": "^20.9.4",
+    "@types/node": "^24.19.3",
     "@types/supertest": "^2.0.11",
     "@types/tmp": "^0.2.3",
     "@types/underscore": "^1.11.4",

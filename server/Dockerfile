@@ -3,7 +3,7 @@ FROM ubuntu:26.04
 
 RUN apt-get --assume-yes update && apt-get --assume-yes install curl bash
 ENV NVM_DIR=/usr/local/nvm
-ENV NODE_VERSION=20.18.1
+ENV NODE_VERSION=24.22.3
 RUN mkdir $NVM_DIR
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
