@@ -3,7 +3,7 @@ set -x
 
 MODELICA_BUILDINGS_COMMIT=b0774846b2c09ee674bca84a4f0a19c1ddc5f4e1
 MODELICA_STANDARD_TAG=v4.1.0 # This should be driven by 'uses' annotation from Buildings/package.mo
-MODELICA_JSON_COMMIT=9c7e7d99e4899492211fa90a1a3ee95fbf587316
+MODELICA_JSON_COMMIT=cf2a99d010593c8a6f7257c16f737ea967599f07
 
 # Shallow-fetch modelica-buildings at a specific commit
 cd ../dependencies

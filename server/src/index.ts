@@ -66,12 +66,11 @@ app.post("/api/modelicatojson", async (req, res) => {
   let response: any;
 
   try {
-    const jsons = parser.getJsons(
-      [modelicaFile.name],
-      format,
-      tempDirPath,
+    const jsons = parser.getJsons([modelicaFile.name], {
+      outputFormat: format,
+      directory: tempDirPath,
       prettyPrint,
-    );
+    });
     response = jsons[0];
   } catch (error) {
     // TODO: put in a proper error response
