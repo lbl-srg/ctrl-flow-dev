@@ -48,7 +48,7 @@ RUN npm run install-modelica-deps
 WORKDIR /dependencies
 ENV MODELICAPATH=/dependencies/ModelicaStandardLibrary:/dependencies/modelica-buildings
 RUN mkdir template-json
-RUN node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json -d template-json
+RUN node modelica-json/app.js --input modelica-buildings/Buildings/Templates --output json --directory template-json --exclude '**.(Validation|Examples)'
 
 # Adds Modelica dependencies to the resulting image
 # FROM alpine-node-modelica as ubuntu-pandoc-node-modelica

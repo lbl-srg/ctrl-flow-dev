@@ -140,25 +140,7 @@ The above listing of parameters and sub `Record`s when rendered should become:
 
 For standalone use refer to the [modelica-json readme](https://lbl-srg.github.io/modelica-json/).
 
-The tool can also be used in the container (make sure docker is installed). As an example, here's how to convert the VAVMultiZone modelica template getting converted to modelica-json:
-
-```
-# starting from the root of this repo
-cd server
-npm i # make sure server dependencies are installed
-npm run docker:start
-
-# get an interactive shell in the running container
-npm run docker:shell
-
-# now in the container:
-cd /dependencies/modelica-json
-node app.js -f /dependencies/modelica-buildings/Buildings/Templates/AirHandlersFans/VAVMultiZone.mo -o json -d out
-
-# json outputs into the 'out' folder
-```
-
-The image sets a UTF-8 locale. Elsewhere, run modelica-json <2.0.0 with one, e.g. `LANG=C.UTF-8 LC_ALL=C.UTF-8 node app.js …`: otherwise its Java parser writes every non-ASCII character of a string as `?` (Modelica files are stored in UTF-8, MLS 3.7 §13.4, #657).
+The tool can also be used in the container (make sure docker is installed).
 
 # References
 

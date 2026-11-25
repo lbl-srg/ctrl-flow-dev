@@ -18,7 +18,7 @@ export function createModelicaJson(
   env: NodeJS.ProcessEnv = process.env,
 ) {
   execSync(
-    `node ${config.MODELICA_DEPENDENCIES}/modelica-json/app.js -f ${sourcePath} -o json -d ${outputPath}`,
+    `node ${config.MODELICA_DEPENDENCIES}/modelica-json/app.js -i ${sourcePath} -o json -d ${outputPath}`,
     { env },
   );
 }
