@@ -8,29 +8,60 @@ from docx import Document
 from docx.text.paragraph import Paragraph
 from docx.table import Table
 import logging
+import toggles
 import utils
+from sequence_payload import Values
 from typing import Dict, List
-
-logging.getLogger().setLevel(logging.DEBUG)
 
 P_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p'
 BOOKMARK_TAGS = ['{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bookmarkEnd', "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bookmarkStart"]
 SECTION_TAG = ["{http://schemas.openxmlformats.org/wordprocessingml/2006/main}sectPr"]
 TABLE_TAG = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tbl'
+W_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+RUN_PROPERTIES_TAG = f'{{{W_NS}}}rPr'
+COMMENT_REFERENCE_TAG = f'{{{W_NS}}}commentReference'
 ANNOTATION_STYLE = 'Toggle'
-
-OP_LIST = ['AND', 'OR', 'YES', 'NO', 'EQUALS', 'NOT_EQUALS', 'ANY', 'DELETE']
-TABLE_OP_LIST = ['TABLE', 'ROW', 'COLUMN']
-# Type hints
-Selections = Dict[str, List]
+UNITS_SHORT_NAME = 'UNITS'
 
 elements_to_delete = []
+_run_style_name_cache = {}
+_paragraph_style_name_cache = {}
 
 def initialize_remove_list():
-    ''' Resets global remove list to an empty array
+    ''' Resets global remove list and style name caches for a fresh doc
     '''
     global elements_to_delete
     elements_to_delete = []
+    _run_style_name_cache.clear()
+    _paragraph_style_name_cache.clear()
+
+def get_run_style_name(run):
+    ''' Cached lookup of a run's character style name.
+        python-docx re-walks the whole style tree on every call to
+        Styles.default()/get_by_id() with no internal caching, so calling
+        run.style.name for every run in the document (most of which fall
+        back to the default style) made style resolution the dominant cost.
+        The style id -> name mapping can't change while we process a doc,
+        so cache it here keyed by (part, style id).
+    '''
+    key = (run.part, run.element.style)
+    try:
+        return _run_style_name_cache[key]
+    except KeyError:
+        name = run.style.name
+        _run_style_name_cache[key] = name
+        return name
+
+def get_paragraph_style_name(paragraph):
+    ''' Cached lookup of a paragraph's style name, see get_run_style_name
+    '''
+    key = (paragraph.part, paragraph._p.style)
+    try:
+        return _paragraph_style_name_cache[key]
+    except KeyError:
+        name = paragraph.style.name
+        _paragraph_style_name_cache[key] = name
+        return name
 
 def remove_node(node):
     ''' Controls access to a global list for nodes to be deleted
@@ -50,7 +81,7 @@ def remove_element(element):
 def get_heading_level(paragraph):
     ''' Gets heading level of paragraph
     '''
-    style = paragraph.style.name
+    style = get_paragraph_style_name(paragraph)
     match = re.match(r'Heading (\d+)', style)
 
     if not match:
@@ -68,7 +99,7 @@ def remove_info_box(paragraph, run_op_lookup: Dict):
     for sib_el in paragraph._element.itersiblings(P_TAG):
         sib_p = Paragraph(sib_el, paragraph._parent)
         sib_level = get_heading_level(sib_p)
-        
+
         if (sib_level == 0):
             for run in sib_p.runs:
                 if run.element in run_op_lookup and run_op_lookup[run.element]['op'] in ('VENT', 'ENERGY'):
@@ -77,15 +108,15 @@ def remove_info_box(paragraph, run_op_lookup: Dict):
         else:
             # reached end of info box, stop
             return
-                
+
         remove_node(sib_p)
 
 def remove_section(paragraph: Paragraph, run_op_lookup: Dict):
     ''' Removes a section of text and its siblings
     '''
-    style = paragraph.style.name
+    style = get_paragraph_style_name(paragraph)
     level = get_heading_level(paragraph)
-    
+
     if style in ('Info. box', 'InfoboxList', 'InfoTableTitle'):
         return remove_info_box(paragraph, run_op_lookup)
 
@@ -133,28 +164,43 @@ def get_column(table: Table, table_cell):
             if cell.text == table_cell.text:
                 return column
 
+def is_comment_reference(run):
+    ''' True if the run only holds the reference mark of a comment, which is
+        not text of the document (docs/sequence-doc.md, "Annotations")
+    '''
+    content = [child for child in run.element if child.tag != RUN_PROPERTIES_TAG]
+    return len(content) == 1 and content[0].tag == COMMENT_REFERENCE_TAG
+
 def create_control_structures(doc):
     ''' Sets up the control structure for Sections and Tables
     '''
     control_structures = []
     run_op_lookup = {}
 
+    def close(annotation):
+        ''' Adds an annotation once its last run is read '''
+        if annotation:
+            annotation['text'] = annotation['text'].strip()
+            if annotation['text']:
+                control_structures.append(annotation)
+
     current = None
 
     ## Sections
     for para in doc.paragraphs:
         for run in para.runs:
+            if is_comment_reference(run):
+                continue
+            run_style_name = get_run_style_name(run)
             if (
-                (current and run.style.name != ANNOTATION_STYLE)
+                (current and run_style_name != ANNOTATION_STYLE)
                 or
                 (current and para is not current['paragraph'])
             ):
-                current['text'] = current['text'].strip()
-                if current['text']:
-                    control_structures.append(current)
+                close(current)
                 current = None
-                
-            if not current and run.style.name == ANNOTATION_STYLE:
+
+            if not current and run_style_name == ANNOTATION_STYLE:
                 current = {
                     'paragraph': para,
                     'text': '',
@@ -162,10 +208,12 @@ def create_control_structures(doc):
                 }
                 run_op_lookup[run.element] = current
 
-            if current and run.style.name == ANNOTATION_STYLE:
+            if current and run_style_name == ANNOTATION_STYLE:
                 run_op_lookup[run.element] = current
                 current['runs'].append(run)
                 current['text'] += run.text
+    close(current)
+    current = None
 
     ## Tables
     for table in doc.tables:
@@ -173,17 +221,18 @@ def create_control_structures(doc):
             for cell in row.cells:
                 for para in cell.paragraphs:
                     for run in para.runs:
+                        if is_comment_reference(run):
+                            continue
+                        run_style_name = get_run_style_name(run)
                         if (
-                            (current and run.style.name != ANNOTATION_STYLE)
+                            (current and run_style_name != ANNOTATION_STYLE)
                             or
                             (current and para is not current['paragraph'])
                         ):
-                            current['text'] = current['text'].strip()
-                            if current['text']:
-                                control_structures.append(current)
+                            close(current)
                             current = None
 
-                        if not current and run.style.name == ANNOTATION_STYLE:
+                        if not current and run_style_name == ANNOTATION_STYLE:
                             current = {
                                 'paragraph': para,
                                 'text': '',
@@ -195,10 +244,11 @@ def create_control_structures(doc):
                             }
                             run.op = current
 
-                        if current and run.style.name == ANNOTATION_STYLE:
+                        if current and run_style_name == ANNOTATION_STYLE:
                             run.op = current
                             current['runs'].append(run)
                             current['text'] += run.text
+    close(current)
 
     for op in control_structures:
         tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
@@ -213,259 +263,42 @@ def create_control_structures(doc):
 
     return control_structures, run_op_lookup
 
-def remove_info_and_instr_boxes(doc, selections: Selections):
-    ''' Removes info and instruction boxes
+def remove_info_and_instr_boxes(doc, delete_info_box: bool):
+    ''' Removes instruction boxes, and info boxes if `delete_info_box`
     '''
     info_box_styles = ['Info. box', 'InfoboxList', 'InfoTableTitle']
     instr_box_style = 'Instr. box'
 
     for para in doc.paragraphs:
-        if utils.reduce_to_boolean(selections['DEL_INFO_BOX']) and para.style.name in info_box_styles:
+        para_style_name = get_paragraph_style_name(para)
+        if delete_info_box and para_style_name in info_box_styles:
             remove_node(para)
-        if para.style.name == instr_box_style:
+        if para_style_name == instr_box_style:
             remove_node(para)
 
-def evaluate_annotation(op, name_map, selections: Selections):
+def apply_selections(control_structure, name_map, run_op_lookup, configurations: List[Values]):
     '''
-        Determines the operation and decides if the operation requires us to delete (return True).
-        This is a recursive funtion if the operation is an AND or OR.
-        Tables use this function as well after their table operation logic is determined.
-        return True means delete
-        return False means keep
-
-        Example toggles:
-        + `[YES have_CO2Sen]` – Keep this section if a CO2 sensor is present. Otherwise remove.
-        + `[NO have_CO2Sen]` – Keep this section if a CO2 sensor is not present. Otherwise remove.
-        + `[EQUALS buiPreCon ReliefFan]` – Keep this section if the type of building pressure control system is an actuated relief damper, with relief fan(s). Otherwise remove.
-        + `[NOT_EQUALS buiPreCon RelifFan]`  Keep this section if the type of building pressure control system is *not* an actuated relief damper, with relief fans(s). Otherwise remove.
-        + `[ANY buiPreCon ReturnFanMeasuredAir ReturnFanCalculatedAir]` – Keep this section if the type of building pressure control system is a return fan, tracking measured supply and return airflow or a return fan, tracking calculated supply and return airflow. Otherwise remove.
-        + `[AND [any toggle] [any toggle]]` - Keep this section if both nested toggles would keep the section. The nested toggles can be any of these toggles including AND or OR. Otherwise remove.
-        + `[OR [any toggle] [any toggle]]` - Keep this section if one of the nested toggles would keep the section. The nested toggles can be any of these toggles including AND or OR. Otherwise remove.
-        + `[DELETE]` - Remove this section.
-    '''
-    if op['op'] == 'YES':
-        # 1: map short name to long name
-        tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
-        if len(tokens) == 2:
-            short_name = tokens[1]
-        else:
-            logging.error('Invalid operation: %s, deleting', op['text'])
-            return True
-
-        if short_name not in name_map:
-            logging.error('%s not found, deleting', short_name)
-            return True
-            
-        long_name = name_map[short_name]
-
-        # 2: check if relevant selection is available
-        if long_name not in selections:
-            logging.error('Path "%s" not found in store, deleting', long_name)
-            return True
-        # 3: apply the operation type
-        elif not utils.reduce_to_boolean(selections[long_name]):
-            return True
-            
-    if op['op'] == 'NO':
-        tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
-        if len(tokens) == 2:
-            short_name = tokens[1]
-        else:
-            logging.error('Invalid operation: %s, deleting', op['text'])
-            return True
-
-        if short_name not in name_map:
-            logging.error('%s not found, deleting', short_name)
-            return True
-            
-        long_name = name_map[short_name]
-
-        if long_name not in selections:
-            logging.error('Path "%s" not found in store, deleting', long_name)
-            return True
-        elif utils.reduce_to_boolean(selections[long_name]):
-            return True
-
-    if op['op'] == 'EQUALS':
-        tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
-        if len(tokens) == 3:
-            short_name = tokens[1]
-            short_compare = tokens[2]
-        else:
-            logging.error('Invalid operation: %s, deleting', op['text'])
-            return True
-        
-        if short_name not in name_map:
-            logging.error('%s not found, deleting', short_name)
-            return True
-
-        if short_compare not in name_map:
-            logging.error('%s not found, deleting', short_compare)
-            return True
-
-        long_name = name_map[short_name]
-        long_compare = name_map[short_compare]
-                
-        if long_name not in selections:
-            logging.error('Path "%s" not found in store, deleting', long_name)
-            return True
-        elif long_compare not in selections[long_name]:
-            return True
-
-    if op['op'] == 'NOT_EQUALS':
-        tokens = utils.remove_empty_strings(re.split(r'\W+', op['text']))
-        if len(tokens) == 3:
-            short_name = tokens[1]
-            short_compare = tokens[2]
-        else:
-            logging.error('Invalid operation: %s, deleting', op['text'])
-            return True
-        
-        if short_name not in name_map:
-            logging.error('%s not found, deleting', short_name)
-            return True
-
-        if short_compare not in name_map:
-            logging.error('%s not found, keeping', short_compare)
-            return False
-
-        long_name = name_map[short_name]
-        long_compare = name_map[short_compare]
-                
-        if long_name not in selections:
-            logging.error('Path "%s" not found in store, keeping', long_name)
-            return False
-        elif long_compare in selections[long_name]:
-            return True
-            
-    if op['op'] == 'ANY':
-        tokens = [token for token in re.split(r'\W+', op['text']) if token]
-        if len(tokens) >= 3:
-            short_name = tokens[1]
-            short_compare = tokens[2:]
-        else:
-            logging.error('Invalid operation: %s, deleting', op['text'])
-            return True
-
-        if short_name not in name_map:
-            logging.error('%s not found, deleting', short_name)
-            return True
-            
-        long_name = name_map[short_name]
-        long_compare = map(lambda name: name_map[name], short_compare)
-                
-        if long_name not in selections:
-            logging.error('Path "%s" not found in store, deleting', long_name)
-            return True
-        elif not utils.common_member(selections[long_name], long_compare):
-            return True
-            
-    if op['op'] == 'DELETE':
-        return True
-
-    if op['op'] == 'AND':
-        match = re.match(r'\[AND \[(.+)] \[(.+)]]', op['text'])
-        if not match:
-            logging.error('Invalid format for tag:  %s, deleting', op['text'])
-            return True
-
-        condition_one = condition_two = False
-        group_one_tokens = re.split(r'\W+', match.group(1))
-        group_one_op = group_one_tokens[0]
-        group_two_tokens = re.split(r'\W+', match.group(2))
-        group_two_op = group_two_tokens[0]
-
-        if group_one_op in OP_LIST:
-            nested_op = {**op, 'text': f'[{match.group(1)}]', 'op': group_one_op}
-            condition_one = evaluate_annotation(nested_op, name_map, selections)
-        else:
-            logging.error('Invalid operation: %s, deleting', group_one_op)
-            return True
-
-        if group_two_op in OP_LIST:
-            nested_op = {**op, 'text': f'[{match.group(2)}]', 'op': group_two_op}
-            condition_two = evaluate_annotation(nested_op, name_map, selections)
-        else:
-            logging.error('Invalid operation: %s, deleting', group_two_op)
-            return True
-
-        return condition_one or condition_two
-
-    if op['op'] == 'OR':
-        match = re.match(r'\[OR \[(.+)] \[(.+)]]', op['text'])
-        if not match:
-            logging.error('Invalid format for tag:  %s, deleting', op['text'])
-            return True
-
-        condition_one = condition_two = False
-        group_one_tokens = re.split(r'\W+', match.group(1))
-        group_one_op = group_one_tokens[0]
-        group_two_tokens = re.split(r'\W+', match.group(2))
-        group_two_op = group_two_tokens[0]
-
-        if group_one_op in OP_LIST:
-            nested_op = {**op, 'text': f'[{match.group(1)}]', 'op': group_one_op}
-            condition_one = evaluate_annotation(nested_op, name_map, selections)
-        else:
-            logging.error('Invalid operation: %s, deleting', group_one_op)
-            return True
-
-        if group_two_op in OP_LIST:
-            nested_op = {**op, 'text': f'[{match.group(2)}]', 'op': group_two_op}
-            condition_two = evaluate_annotation(nested_op, name_map, selections)
-        else:
-            logging.error('Invalid operation: %s, deleting', group_two_op)
-            return True
-
-        return condition_one and condition_two
-
-    return False
-
-def apply_selections(control_structure, name_map, run_op_lookup, selections: Selections):
-    ''' 
-        Determines how to handle toggles, section vs table
-
-        Example section toggles:
-        + `[YES have_CO2Sen]` – Keep this section if a CO2 sensor is present. Otherwise remove.
-        + `[NO have_CO2Sen]` – Keep this section if a CO2 sensor is not present. Otherwise remove.
-        + `[EQUALS buiPreCon ReliefFan]` – Keep this section if the type of building pressure control system is an actuated relief damper, with relief fan(s). Otherwise remove.
-        + `[NOT_EQUALS buiPreCon RelifFan]` - Keep this section if the type of building pressure control system is *not* an actuated relief damper, with relief fans(s). Otherwise remove.
-        + `[ANY buiPreCon ReturnFanMeasuredAir ReturnFanCalculatedAir]` – Keep this section if the type of building pressure control system is a return fan, tracking measured supply and return airflow or a return fan, tracking calculated supply and return airflow. Otherwise remove.
-        + `[AND [any toggle] [any toggle]]` - Keep this section if both nested toggles would keep the section. The nested toggles can be any of these toggles including AND or OR.  Otherwise remove.
-        + `[OR [any toggle] [any toggle]]` - Keep this section if one of the nested toggles would keep the section. The nested toggles can be any of these toggles including AND or OR.  Otherwise remove.
-        + `[DELETE]` - Remove this section.
-
-        Example table toggles:
-        + `[TABLE YES have_CO2Sen]` - Keep the whole table if a CO2 sensor is present. Otherwise remove.
-        + `[ROW YES have_CO2Sen]` - Keep this row if a CO2 sensor is present. Otherwise remove.
-        + `[COLUMN YES have_CO2Sen]` - Keep this column if a CO2 sensor is present. Otherwise remove.
-        + `[COLUMN AND [any toggle] [any toggle]]` - Keep this column if both nested toggles would keep the column. Otherwise remove.
+        Removes what the toggles do not keep (see toggles.py): the section of
+        a toggle, or the part of a table of a table toggle.
     '''
     for op in control_structure:
-        if op['op'] in OP_LIST:
-            if evaluate_annotation(op, name_map, selections):
-                remove_section(op['paragraph'], run_op_lookup)
+        if op['op'] == UNITS_SHORT_NAME:
+            continue
 
-        if op['op'] in TABLE_OP_LIST:
-            text_op = op['text'].replace(f"{op['op']} ", "")
-            tokens = utils.remove_empty_strings(re.split(r'\W+', text_op))
-            next_op = tokens[0]
-
-            if next_op in OP_LIST:
-                table_op = {**op, 'text': text_op, 'op': next_op}
-                if evaluate_annotation(table_op, name_map, selections):
-                    edit_table(op)
+        toggle = toggles.parse(op['text'], name_map)
+        if not toggles.keeps(toggle, configurations):
+            if op['op'] in toggles.TABLE_OP_LIST:
+                edit_table(op)
             else:
-                logging.error('Invlaid format for tag: %s', op['text'])
-
+                remove_section(op['paragraph'], run_op_lookup)
 
     # return not necessary - just reinforcing that control_structure is what is modified
     return control_structure
 
-def convert_units(control_structure, name_map, selections: Selections):
+def convert_units(control_structure, name_map, project: Values):
     ''' Based on unit selection, goes through doc to update
     '''
-    short_name = "UNITS"
+    short_name = UNITS_SHORT_NAME
     si_short_name = "SI"
     ip_short_name = "IP"
 
@@ -483,8 +316,8 @@ def convert_units(control_structure, name_map, selections: Selections):
     si_long_name = name_map[si_short_name]
     ip_long_name = name_map[ip_short_name]
 
-    if long_name not in selections:
-        logging.error('Path "%s" not found in store', long_name)
+    if long_name not in project:
+        logging.info('Path "%s" not found in store', long_name)
         return
 
     for op in control_structure:
@@ -493,9 +326,9 @@ def convert_units(control_structure, name_map, selections: Selections):
             if not match:
                 logging.error('Invalid format for tag:  %s', op['text'])
                 continue
-            unit_selection = selections[long_name][0]
+            unit_selection = project[long_name]
             if unit_selection == si_long_name:
-                # TODO: use this as an approach for 'writes' to the docx 
+                # TODO: use this as an approach for 'writes' to the docx
                 op['runs'][0].text = match.group(1)
                 op['runs'][0].style = None
             elif unit_selection == ip_long_name:
@@ -509,7 +342,7 @@ def remove_toggles(doc):
     '''
     for para in doc.paragraphs:
         for run in para.runs:
-            if run.style.name == ANNOTATION_STYLE:
+            if get_run_style_name(run) == ANNOTATION_STYLE:
                 remove_node(run)
 
     for table in doc.tables:
@@ -517,25 +350,27 @@ def remove_toggles(doc):
             for cell in row.cells:
                 for para in cell.paragraphs:
                     for run in para.runs:
-                        if run.style.name == ANNOTATION_STYLE:
+                        if get_run_style_name(run) == ANNOTATION_STYLE:
                             remove_node(run)
 
-def mogrify_doc(doc: Document, name_map: Dict, selections: Selections) -> Document:
-    ''' Applies selections to the provided document. This mutates the provided
-        document
+def mogrify_doc(doc: Document, name_map: Dict, project: Values, configurations: List[Values],
+                delete_info_box: bool = False) -> Document:
+    ''' Applies the values of a project (sequence_payload.project_values and
+        configuration_values) to the provided document. This mutates the
+        provided document
     '''
     initialize_remove_list()
     # walk through source_doc to find each conditional point in the doc
     control_structure, run_op_lookup = create_control_structures(doc)
 
     # Remove info and Instruction Boxes - updates remove_list internally
-    remove_info_and_instr_boxes(doc, selections)
+    remove_info_and_instr_boxes(doc, delete_info_box)
 
     # apply all paragraph and table selections
-    apply_selections(control_structure, name_map, run_op_lookup, selections)
+    apply_selections(control_structure, name_map, run_op_lookup, configurations)
 
     # convert units
-    convert_units(control_structure, name_map, selections)
+    convert_units(control_structure, name_map, project)
 
     # remove toggle text
     remove_toggles(doc)

@@ -19,6 +19,7 @@
     "type": "TestRecord.Rec",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "record",
     "options": [
       "TestRecord.Rec.p"
     ],
@@ -50,6 +51,7 @@
     "type": "TestRecord.BaseModel",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestRecord.BaseModel.rec"
     ],
@@ -82,12 +84,13 @@
     "type": "TestRecord.Mod",
     "visible": false,
     "modifiers": {
-      "TestRecord.Mod.rec": {
+      "rec": {
         "final": false,
         "redeclare": "TestRecord.Rec"
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestRecord.Mod.localRec",
       "TestRecord.BaseModel.rec"
@@ -108,7 +111,7 @@
     "visible": false,
     "enable": true,
     "modifiers": {
-      "TestRecord.Mod1.localRec.p": {
+      "p": {
         "expression": 1,
         "final": false
       }
@@ -125,7 +128,7 @@
     "type": "TestRecord.Mod1",
     "visible": false,
     "modifiers": {
-      "TestRecord.Mod1.rec": {
+      "rec": {
         "expression": "localRec",
         "final": false,
         "redeclare": "TestRecord.Rec",
@@ -133,6 +136,7 @@
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestRecord.Mod1.localRec",
       "TestRecord.BaseModel.rec"
@@ -153,7 +157,7 @@
     "visible": false,
     "enable": true,
     "modifiers": {
-      "TestRecord.Nested.localRecFirst.p": {
+      "p": {
         "expression": -1,
         "final": false
       }
@@ -174,7 +178,7 @@
     "visible": false,
     "enable": true,
     "modifiers": {
-      "TestRecord.Nested.localRec.p": {
+      "p": {
         "expression": 3,
         "final": false
       }
@@ -193,16 +197,18 @@
     "group": "",
     "tab": "",
     "visible": false,
-    "enable": false,
     "modifiers": {
-      "TestRecord.Nested.mod.rec": {
+      "rec": {
         "expression": "localRec",
         "final": false,
         "recordBinding": true
       }
     },
     "replaceable": false,
-    "options": [],
+    "options": [
+      "TestRecord.Mod.localRec",
+      "TestRecord.BaseModel.rec"
+    ],
     "definition": false,
     "shortExclType": false
   },
@@ -211,6 +217,7 @@
     "type": "TestRecord.Nested",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestRecord.Nested.localRecFirst",
       "TestRecord.Nested.localRec",
@@ -229,10 +236,12 @@
     "group": "",
     "tab": "",
     "visible": false,
-    "enable": false,
     "modifiers": {},
     "replaceable": false,
-    "options": [],
+    "options": [
+      "TestRecord.Mod1.localRec",
+      "TestRecord.BaseModel.rec"
+    ],
     "definition": false,
     "shortExclType": false
   },
@@ -241,16 +250,17 @@
     "type": "TestRecord.NestedExtended",
     "visible": false,
     "modifiers": {
-      "TestRecord.NestedExtended.localRec.p": {
+      "localRec.p": {
         "expression": 4,
         "final": false
       },
-      "TestRecord.NestedExtended.localRecFirst.p": {
+      "localRecFirst.p": {
         "expression": -2,
         "final": false
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestRecord.NestedExtended.mod1",
       "TestRecord.Nested.localRecFirst",
@@ -271,10 +281,12 @@
     "group": "",
     "tab": "",
     "visible": false,
-    "enable": false,
     "modifiers": {},
     "replaceable": false,
-    "options": [],
+    "options": [
+      "TestRecord.Mod.localRec",
+      "TestRecord.BaseModel.rec"
+    ],
     "definition": false,
     "shortExclType": false
   },
@@ -285,10 +297,12 @@
     "group": "",
     "tab": "",
     "visible": false,
-    "enable": false,
     "modifiers": {},
     "replaceable": false,
-    "options": [],
+    "options": [
+      "TestRecord.Mod1.localRec",
+      "TestRecord.BaseModel.rec"
+    ],
     "definition": false,
     "shortExclType": false
   },
@@ -299,16 +313,18 @@
     "group": "",
     "tab": "",
     "visible": false,
-    "enable": false,
     "modifiers": {
-      "TestRecord.mod2.localRec": {
+      "localRec": {
         "expression": "mod1.localRec",
         "final": false,
         "recordBinding": true
       }
     },
     "replaceable": false,
-    "options": [],
+    "options": [
+      "TestRecord.Mod.localRec",
+      "TestRecord.BaseModel.rec"
+    ],
     "definition": false,
     "shortExclType": false
   },
@@ -319,9 +335,8 @@
     "group": "",
     "tab": "",
     "visible": false,
-    "enable": false,
     "modifiers": {
-      "TestRecord.mod3.rec": {
+      "rec": {
         "expression": {
           "operator": "function_call",
           "operands": [
@@ -338,7 +353,10 @@
       }
     },
     "replaceable": false,
-    "options": [],
+    "options": [
+      "TestRecord.Mod.localRec",
+      "TestRecord.BaseModel.rec"
+    ],
     "definition": false,
     "shortExclType": false
   },
@@ -349,10 +367,13 @@
     "group": "",
     "tab": "",
     "visible": false,
-    "enable": false,
     "modifiers": {},
     "replaceable": false,
-    "options": [],
+    "options": [
+      "TestRecord.Nested.localRecFirst",
+      "TestRecord.Nested.localRec",
+      "TestRecord.Nested.mod"
+    ],
     "definition": false,
     "shortExclType": false
   },
@@ -363,10 +384,14 @@
     "group": "",
     "tab": "",
     "visible": false,
-    "enable": false,
     "modifiers": {},
     "replaceable": false,
-    "options": [],
+    "options": [
+      "TestRecord.NestedExtended.mod1",
+      "TestRecord.Nested.localRecFirst",
+      "TestRecord.Nested.localRec",
+      "TestRecord.Nested.mod"
+    ],
     "definition": false,
     "shortExclType": false
   },
@@ -377,15 +402,57 @@
     "group": "",
     "tab": "",
     "visible": false,
-    "enable": false,
     "modifiers": {
-      "TestRecord.nesExt1.mod1.localRec.p": {
+      "mod1.localRec.p": {
         "expression": -3,
         "final": false
       }
     },
     "replaceable": false,
-    "options": [],
+    "options": [
+      "TestRecord.NestedExtended.mod1",
+      "TestRecord.Nested.localRecFirst",
+      "TestRecord.Nested.localRec",
+      "TestRecord.Nested.mod"
+    ],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.subRec": {
+    "modelicaPath": "TestRecord.subRec",
+    "type": "TestRecord.Rec",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": true,
+    "modifiers": {},
+    "enable": true,
+    "choiceModifiers": {},
+    "replaceable": true,
+    "options": [
+      "TestRecord.Rec"
+    ],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestRecord.bm": {
+    "modelicaPath": "TestRecord.bm",
+    "type": "TestRecord.BaseModel",
+    "name": "",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "modifiers": {
+      "rec": {
+        "expression": "subRec",
+        "final": false,
+        "recordBinding": true
+      }
+    },
+    "replaceable": false,
+    "options": [
+      "TestRecord.BaseModel.rec"
+    ],
     "definition": false,
     "shortExclType": false
   },
@@ -394,6 +461,7 @@
     "type": "TestRecord",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestRecord.Rec",
       "TestRecord.BaseModel",
@@ -407,7 +475,9 @@
       "TestRecord.mod3",
       "TestRecord.nes",
       "TestRecord.nesExt",
-      "TestRecord.nesExt1"
+      "TestRecord.nesExt1",
+      "TestRecord.subRec",
+      "TestRecord.bm"
     ],
     "definition": true,
     "shortExclType": false,

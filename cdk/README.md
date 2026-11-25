@@ -25,7 +25,7 @@ export API_ARN=$(jq -r .LblCdkStack${LBL_STAGE}.LbLALBArn cdk.out/cdk-outputs.js
 aws elbv2 modify-load-balancer-attributes --load-balancer-arn $API_ARN --attributes Key=idle_timeout.timeout_seconds,Value=300
 
 # Export the LbLApiUrl and client url for cors for use in the client build
-export REACT_APP_API=$(jq -r .LblCdkStack${LBL_STAGE}.LbLApiUrl cdk.out/cdk-outputs.json)/api
+export VITE_API=$(jq -r .LblCdkStack${LBL_STAGE}.LbLApiUrl cdk.out/cdk-outputs.json)/api
 
 # Copy the templates.json file out of the server docker image
 # and into /client/src/templates.json

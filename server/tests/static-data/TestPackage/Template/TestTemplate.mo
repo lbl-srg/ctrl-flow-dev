@@ -114,6 +114,13 @@ model TestTemplate "Test Template"
     "Test Integer"
     annotation (Dialog(enable=false));
 
+  // disable condition: explicit disable on a composite component.
+  // Its child inputs must stay populated (only the display is disabled,
+  // for the whole subtree)
+  TestPackage.Component.FirstComponent disabled_component
+    "Disabled composite component"
+    annotation (Dialog(enable=false));
+
   // disable condition: 'connectorSizing=true'
   parameter Integer connector_param
     "Connector Param"
@@ -129,6 +136,14 @@ model TestTemplate "Test Template"
   parameter Integer linkage_keyword_false
     "Param to test linkage keyword override to false"
     annotation (Dialog(enable=true), __ctrlFlow(enable=false));
+
+  // Hard parse skip (#601): the declared type must never be loaded or parsed.
+  // The Dialog group/tab must still be extracted: even disabled, the entry
+  // anchors the ordering of the parameter dialog.
+  TestPackage.Component.DeadEndComponent dead_end_component
+    "Dead-end component"
+    annotation (Dialog(group="Skipped Group", tab="Skipped Tab", enable=true),
+      __ctrlFlow(enable=false));
 
   parameter TestPackage.Types.IceCream typ = TestPackage.Types.IceCream.Chocolate
     "Test Enum"
@@ -159,7 +174,8 @@ model TestTemplate "Test Template"
 
   // redclare modifier params
   TestPackage.Component.FourthComponent redeclare_param_01(
-      redeclare final TestPackage.Component.SecondComponent replaceable_param
+      redeclare final TestPackage.Component.SecondComponent replaceable_param(
+        component_param="From final redeclare")
     )
     "First Param to test component redeclares"
     annotation(Dialog(enable=true));

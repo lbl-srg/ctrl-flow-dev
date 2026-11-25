@@ -43,8 +43,8 @@ describe("Path Expansion", () => {
     const { options } = getOptions();
     const optionPath =
       "TestPackage.Template.TestTemplate.selectable_component_with_relative_paths";
-    // Modifier paths are now instance-based, not type-based
-    const modPath = `${optionPath}.container`;
+    // Keys are relative to the option
+    const modPath = "container";
     const shortModOption = options.find((o) => o.modelicaPath === optionPath);
 
     const mods = shortModOption?.modifiers;
@@ -61,8 +61,8 @@ describe("Path Expansion", () => {
     const shortPathComponent = options.find(
       (o) => o.modelicaPath === optionPath,
     );
-    // Modifier paths are now instance-based, not type-based
-    const mod = shortPathComponent?.modifiers[`${optionPath}.replaceable_param`];
+    // Keys are relative to the option
+    const mod = shortPathComponent?.modifiers["replaceable_param"];
     expect(mod).toBeDefined();
     if (mod) {
       // For redeclare modifications: 'redeclare' stores the type, 'expression' is only set if there's a binding (=)

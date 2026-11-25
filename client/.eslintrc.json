@@ -1,7 +1,8 @@
 {
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
+    "node": true
   },
   "extends": [
     "eslint:recommended",
@@ -27,5 +28,14 @@
     "react": {
       "version": "detect"
     }
-  }
+  },
+  "overrides": [
+    {
+      "files": ["tests/**/*.{js,ts,tsx}"],
+      "env": {
+        "jest": true,
+        "node": true
+      }
+    }
+  ]
 }

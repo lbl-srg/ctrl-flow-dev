@@ -12,21 +12,28 @@ import * as parser from "./parser";
 import { Expression, Literal } from "./expression";
 import { Modification } from "./modification";
 import { buildParameterTable, Table } from "./schedule";
+import { enclosingName } from "./names";
+import { TEMPLATE_LIST, PACKAGE_LIST } from "./loader";
 
 const templateStore = new Map<string, Template>();
 const systemTypeStore = new Map<string, SystemTypeN>();
 
+/** Templates, in the order of the library (docs/template-order.md) */
 export function getTemplates() {
-  return [...templateStore.values()];
+  return TEMPLATE_LIST.map((className) => {
+    const template = templateStore.get(className);
+    if (!template) {
+      throw new Error(`Template ${className} is not loaded`);
+    }
+    return template;
+  });
 }
 
+/** System types, in the order of the library (docs/template-order.md) */
 export function getSystemTypes() {
-  return [...systemTypeStore.values()];
-}
-
-export function getProject(): Project {
-  const { modelicaPath } = parser.getProject() as parser.TemplateInput;
-  return { modelicaPath };
+  return PACKAGE_LIST.filter((className) =>
+    systemTypeStore.has(className),
+  ).map((className) => systemTypeStore.get(className) as SystemTypeN);
 }
 
 type Options = { [key: string]: Option };
@@ -49,7 +56,7 @@ export function getOptions(): {
 
   // append project options
   const projectOptions: { [key: string]: Option } = {};
-  Object.entries(parser.createProjectInputs()).map(
+  Object.entries(parser.getProjectInputs()).map(
     ([key, input]) => (projectOptions[key] = _mapInputToOption(input)),
   );
   allConfigOptions = { ...allConfigOptions, ...projectOptions };
@@ -69,27 +76,33 @@ export interface Option {
   group?: Literal | string;
   tab?: string;
   value?: any;
+  /** Never synthesized to `false` (see parser Element.enable): undefined for
+   * non-selectable composite groups; a defined value evaluating to false
+   * disables the whole subtree of an instance of this option. */
   enable?: any;
   treeList?: string[]; // Only defined if (option.definition)
   modifiers: {
     [key: string]: {
-      expression: Expression;
+      expression?: Literal | Expression;
       final: boolean;
       redeclare?: string;
       recordBinding?: boolean;
     };
   };
   choiceModifiers?: { [key: string]: Mods };
+  /** Modifiers of the constraining clause of a replaceable element: only
+   * these apply to a redeclaration (MLS 7.3.2). Undefined if there is no
+   * constraining clause. */
+  constrainingModifiers?: Mods;
   replaceable: boolean;
   elementType: string;
   definition: boolean;
   shortExclType: boolean; // Short class definition excluding `type` definition
+  /** Class prefixes of a class definition without `partial`, as "model":
+   * undefined for components and enumeration literals */
+  kindOfClass?: string;
   /** True if value is a binding to a record type component */
   recordBinding?: boolean;
-}
-
-export interface Project {
-  modelicaPath: string;
 }
 
 export interface ScheduleOption extends Option {
@@ -98,7 +111,7 @@ export interface ScheduleOption extends Option {
 
 export interface Mods {
   [key: string]: {
-    expression: Expression;
+    expression?: Literal | Expression;
     final: boolean;
     redeclare?: string;
     recordBinding?: boolean;
@@ -106,44 +119,55 @@ export interface Mods {
 }
 
 /**
- * Maps the nested modifier structure into a flat dictionary
+ * Maps the nested modifier structure of an option into a flat dictionary,
+ * keyed by the path of the modified element relative to the option, as
+ * written in Modelica (MLS 7.2): `typVal` in the modifiers of the component
+ * `VAVBox.coiHea`, `coiHea.typVal` in the modifiers of the class `VAVBox`.
  *
  * For redeclare modifications:
  * - 'redeclare' is the redeclared type path (string), undefined if not a redeclare
  * - 'expression' is the binding value if there's an assignment (=), otherwise undefined
+ *
+ * Throws if a modification is not written in the option.
  */
 export function flattenModifiers(
   modList: (Modification | undefined | null)[] | undefined,
-  mods: {
-    [key: string]: {
-      expression: Expression;
-      final: boolean;
-      redeclare?: string;
-      recordBinding?: boolean;
-    };
-  } = {},
+  optionPath: string,
+  mods: Mods = {},
 ) {
   if (!modList) {
     return mods; // PUNCH-OUT!
   }
 
-  modList
-    .filter((m) => m !== undefined || m !== null)
-    .map((mod) => {
-      // Include modifiers with defined value, OR redeclare modifiers
-      if (mod?.value !== undefined || mod?.redeclare) {
-        mods[mod.modelicaPath] = {
-          expression: mod.value,
-          final: mod.final,
-          ...(mod.redeclare && { redeclare: mod.redeclare }),
-          ...(mod.recordBinding && { recordBinding: true }),
-        };
+  modList.forEach((mod) => {
+    if (!mod) {
+      return;
+    }
+    // Include modifiers with a defined value, a redeclare, or a `final`
+    // flag (a `final` redeclare synthesizes unbound entries for every
+    // parameter of the redeclared type; those must survive with no value
+    // so downstream still sees them as locked)
+    if (
+      mod.modelicaPath !== optionPath &&
+      (mod.value !== undefined || mod.redeclare || mod.final)
+    ) {
+      if (!mod.modelicaPath.startsWith(`${optionPath}.`)) {
+        throw new Error(
+          `Modification ${mod.modelicaPath} is not written in ${optionPath}`,
+        );
       }
+      mods[mod.modelicaPath.slice(optionPath.length + 1)] = {
+        expression: mod.value,
+        final: mod.final,
+        ...(mod.redeclare && { redeclare: mod.redeclare }),
+        ...(mod.recordBinding && { recordBinding: true }),
+      };
+    }
 
-      if (mod?.mods) {
-        flattenModifiers(mod.mods, mods);
-      }
-    });
+    if (mod.mods) {
+      flattenModifiers(mod.mods, optionPath, mods);
+    }
+  });
 
   return mods;
 }
@@ -164,7 +188,7 @@ export function _getTreeList(option: Option) {
       treeElement = o;
     } else {
       // remove the trailing '*.<instanceName>' to retrieve the class name from the instance path
-      treeElement = o.split(".").slice(0, -1).join(".");
+      treeElement = enclosingName(o);
     }
     if (!treeList.includes(treeElement)) {
       treeList.push(treeElement);
@@ -191,9 +215,14 @@ export function _mapInputToOption(input: parser.TemplateInput): Option {
   }
 
   if (input.modifiers) {
-    const flattenedMods = flattenModifiers(input.modifiers);
-    delete flattenedMods[input.modelicaPath]; // don't include 'default path'
-    option.modifiers = flattenedMods;
+    option.modifiers = flattenModifiers(input.modifiers, input.modelicaPath);
+  }
+
+  if (input.constrainingModifiers) {
+    option.constrainingModifiers = flattenModifiers(
+      input.constrainingModifiers,
+      input.modelicaPath,
+    );
   }
 
   if (input.choiceModifiers) {
@@ -201,7 +230,7 @@ export function _mapInputToOption(input: parser.TemplateInput): Option {
     const flattenedChoiceMods: { [key: string]: Mods } = {};
 
     Object.entries(input.choiceModifiers).map(([key, modList]) => {
-      flattenedChoiceMods[key] = flattenModifiers(modList);
+      flattenedChoiceMods[key] = flattenModifiers(modList, input.modelicaPath);
     });
     option.choiceModifiers = flattenedChoiceMods;
   }
@@ -260,13 +289,10 @@ export class Template {
   }
 
   _extractSystemTypes(element: parser.Element) {
-    const path = element.modelicaPath.split(".");
-    path.pop();
-
     // Fix for https://github.com/lbl-srg/ctrl-flow-dev/issues/422
     // Currently the UI does not support nested system types.
     // Therefore, we only add the Modelica class name of the containing package.
-    const type = parser.findElement(path.join("."));
+    const type = parser.findElement(enclosingName(element.modelicaPath));
     if (type && type.entryPoint) {
       if (!type.description) {
         console.error(

@@ -1,18 +1,19 @@
+/* npm modules */
+@use "flexboxgrid";
+@use "@picocss/pico/scss/pico";
+
+@use "./vars";
+// themeing pico
+@use "./pico-theme";
+
+@use "./typography";
+@use "./buttons";
+@use "./forms";
+@use "./utils";
+
 @import-normalize; /* bring in normalize.css styles */
 /* fonts */
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap");
-/* npm modules */
-@import "~flexboxgrid";
-@import "~@picocss/pico/scss/pico";
-
-@import "./vars";
-// themeing pico
-@import "./pico-theme";
-
-@import "./typography";
-@import "./buttons";
-@import "./forms";
-@import "./utils";
 
 html,
 body,

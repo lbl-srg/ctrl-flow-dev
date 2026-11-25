@@ -62,6 +62,7 @@ import {
 } from "./parser";
 import { Modification } from "./modification";
 import { Expression, Literal } from "./expression";
+import { firstIdent } from "./names";
 
 // --- Header definitions ---
 
@@ -175,7 +176,7 @@ function applyModifiers(
     // Plain literal — if it's a string reference in the mod map, substitute
     if (typeof value === "string") {
       // Check top-level name (e.g. "typ") and dotted first segment (e.g. "cfg" in "cfg.typCoiCoo")
-      const topName = value.split(".")[0];
+      const topName = firstIdent(value);
       if (modMap.has(value)) {
         return modMap.get(value)!;
       }
@@ -720,6 +721,9 @@ function nextInTypeChain(current: Element): Element | undefined {
   if (current instanceof ShortClass) {
     const aliasedType = current.type;
     if (
+      // Hard parse skip (#601): a dead-ended alias holds a raw, deliberately
+      // unresolved type that must not be looked up (and thereby loaded)
+      !current.deadEnd &&
       aliasedType &&
       aliasedType !== current.modelicaPath &&
       !MLS_PREDEFINED_TYPES.includes(aliasedType)

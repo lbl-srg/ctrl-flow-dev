@@ -271,6 +271,32 @@ describe("Expected elements are extracted", () => {
     expect(replaceableInput.enable).toBeTruthy();
   });
 
+  it("Dialog(enable=false) keeps child inputs (#599)", () => {
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.elementList[0] as parser.LongClass;
+    const inputs = template.getInputs();
+
+    const disabled =
+      inputs["TestPackage.Template.TestTemplate.disabled_component"];
+    expect(disabled.enable).toBe(false);
+    // child inputs are NOT severed: hiding the subtree is a client concern
+    expect(disabled.inputs?.length).toBe(4);
+  });
+
+  it("'enable' is never synthesized to false", () => {
+    const file = parser.getFile(testModelicaFile) as parser.File;
+    const template = file.elementList[0] as parser.LongClass;
+    const inputs = template.getInputs();
+
+    // a plain composite group leaves 'enable' undefined so that a false value
+    // unambiguously marks a disabled subtree
+    const plainGroup = inputs["TestPackage.Template.TestTemplate.third"];
+    expect(plainGroup.enable).toBeUndefined();
+    // scalars still default to true
+    const scalar = inputs["TestPackage.Template.TestTemplate.test_real"];
+    expect(scalar.enable).toBe(true);
+  });
+
   it("Linkage Keyword overrides enable logic", () => {
     const file = parser.getFile(testModelicaFile) as parser.File;
     const template = file.elementList[0] as parser.LongClass;
@@ -316,10 +342,47 @@ describe("Multiple extends clauses (regression #507)", () => {
     expect(element.mods).toBeUndefined();
   });
 
+  it("a fully qualified name yields a single lookup candidate (#600)", () => {
+    // "TestPackage" is a top-level loaded package, so no scope-prefixed
+    // candidates (e.g. "TestPackage.Template.TestPackage.Component...")
+    // may be generated for names rooted in it.
+    const qualified = parser.typeStore._generatePaths(
+      "TestPackage.Component.FirstComponent",
+      "TestPackage.Template.TestTemplate",
+    );
+    expect(qualified).toEqual(["TestPackage.Component.FirstComponent"]);
+
+    // Relative names still get the enclosing-scope candidate sweep.
+    const relative = parser.typeStore._generatePaths(
+      "FirstComponent",
+      "TestPackage.Component",
+    );
+    expect(relative).toEqual([
+      "TestPackage.Component.FirstComponent",
+      "TestPackage.FirstComponent",
+      "FirstComponent",
+    ]);
+  });
+
+  it("a failed load attempt is not retried (#600)", () => {
+    const loaderSpy = jest.spyOn(loader, "loader");
+    const bogusPath = "TestPackage.DoesNotExist";
+
+    parser.typeStore.get(bogusPath);
+    parser.typeStore.get(bogusPath);
+
+    const bogusLoads = loaderSpy.mock.calls.filter(
+      (args) => args[0] === bogusPath,
+    );
+    expect(bogusLoads.length).toBe(1);
+
+    loaderSpy.mockRestore();
+  });
+
   it("a shared base class is loaded from disk only once across multiple subclasses", () => {
     // NestedExtendInterface is extended by both ExtendInterface and MultipleExtendsInterface.
     // Loading both should trigger exactly one disk read for NestedExtendInterface.
-    parser.typeStore._store.clear();
+    parser.typeStore.clear();
     initializeTestModelicaJson();
 
     const loaderSpy = jest.spyOn(loader, "loader");

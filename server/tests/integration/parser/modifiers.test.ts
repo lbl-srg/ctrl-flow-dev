@@ -1,4 +1,4 @@
-import { initializeTestModelicaJson } from "./utils";
+import { fullTempDirPath, initializeTestModelicaJson } from "./utils";
 import {
   getTemplates,
   Option,
@@ -8,6 +8,9 @@ import {
 import { findElement } from "../../../src/parser/parser";
 import { loadPackage, Template } from "../../../src/parser/";
 import * as parser from "../../../src/parser/parser";
+import { Modification } from "../../../src/parser/modification";
+import { createModelicaJson } from "../../../scripts/generate-modelica-json";
+import { prependToModelicaJsonPath } from "../../../src/parser/loader";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -52,10 +55,9 @@ describe("Modifications", () => {
       [key: string]: parser.TemplateInput;
     };
     const input = inputs[path];
-    const mod = flattenModifiers(input.modifiers);
-    // Modifier paths are now instance-based, not type-based
-    const modPath = `${path}.interface_param`;
-    expect(mod[modPath].expression).toEqual(
+    const mod = flattenModifiers(input.modifiers, path);
+    // Keys are the paths of the modified elements relative to the option
+    expect(mod["interface_param"].expression).toEqual(
       "\"Updated Value\"",
     );
   });
@@ -68,10 +70,9 @@ describe("Modifications", () => {
       [key: string]: parser.TemplateInput;
     };
     const input = inputs[childPath];
-    const mod = flattenModifiers(input.modifiers);
-    expect(mod[childPath].expression).toEqual(
-      "\"Interface Param\"",
-    );
+    // The modification of the option itself is its value, not a modifier
+    expect(input.value).toEqual('"Interface Param"');
+    expect(flattenModifiers(input.modifiers, childPath)).toEqual({});
   });
 
   it("Modifier paths are correctly expanded", () => {
@@ -80,19 +81,17 @@ describe("Modifications", () => {
       [key: string]: parser.TemplateInput;
     };
     const datInput = inputs[`${templatePath}.dat`];
-    const datMods = flattenModifiers(datInput.modifiers);
+    const datMods = flattenModifiers(datInput.modifiers, `${templatePath}.dat`);
 
-    // Modifier paths are instance-based: templatePath.dat.fieldName
-    expect(
-      "TestPackage.Template.TestTemplate.dat.container_selectable_component" in
-        datMods,
-    ).toBeTruthy();
+    // Keys are relative to the option: dat.fieldName in the template
+    expect("container_selectable_component" in datMods).toBeTruthy();
 
     const templateInput = inputs[templatePath];
-    const templateMods = flattenModifiers(templateInput.modifiers);
-    // Modifier paths are now instance-based, not type-based
-    const nestedParamPath = `${templatePath}.nested_interface_param`;
-    expect(nestedParamPath in templateMods).toBeTruthy();
+    const templateMods = flattenModifiers(
+      templateInput.modifiers,
+      templatePath,
+    );
+    expect("nested_interface_param" in templateMods).toBeTruthy();
   });
 
   /**
@@ -100,8 +99,7 @@ describe("Modifications", () => {
    */
   it("Finds 'constrainby' modifiers", () => {
     const path = "TestPackage.Template.TestTemplate.selectable_component";
-    // Modifier paths are now instance-based, not type-based
-    const modPath = `${path}.container`;
+    const modPath = "container";
     const expected = "TestPackage.Types.Container.Cone";
     const option = tOptions[path];
     const mods = option.modifiers;
@@ -112,8 +110,7 @@ describe("Modifications", () => {
 
   it("Creates redeclare modifiers", () => {
     const path = "TestPackage.Template.TestTemplate.redeclare_param_01";
-    // Modifier paths are now instance-based, not type-based
-    const modPath = `${path}.replaceable_param`;
+    const modPath = "replaceable_param";
     const option = tOptions[path];
     const mod = option.modifiers[modPath];
 
@@ -125,6 +122,41 @@ describe("Modifications", () => {
   });
 
   /**
+   * Regression test: `redeclare final Type comp(field=value)` locks `comp`
+   * to its redeclared type, so nothing downstream can override `field`
+   * either — it must be treated as final even though only the redeclare
+   * itself (not `field`) carries the `final` keyword in the Modelica source.
+   */
+  it("Propagates 'final' from a redeclare onto its own inline bindings", () => {
+    const path = "TestPackage.Template.TestTemplate.redeclare_param_01";
+    const nestedModPath = "replaceable_param.component_param";
+    const option = tOptions[path];
+    const mod = option.modifiers[nestedModPath];
+
+    expect(mod).toBeDefined();
+    expect(mod.expression).toEqual('"From final redeclare"');
+    expect(mod.final).toBeTruthy();
+  });
+
+  /**
+   * Regression test: `redeclare final Type comp(...)` must lock down every
+   * parameter of `Type`, not just the ones bound inline in the redeclare
+   * clause — `is_another_param` has no binding in the redeclare clause but
+   * still belongs to the redeclared `SecondComponent` type, so it must be
+   * final too.
+   */
+  it("Propagates 'final' from a redeclare onto every parameter of the redeclared type", () => {
+    const path = "TestPackage.Template.TestTemplate.redeclare_param_01";
+    const unboundModPath = "replaceable_param.is_another_param";
+    const option = tOptions[path];
+    const mod = option.modifiers[unboundModPath];
+
+    expect(mod).toBeDefined();
+    expect(mod.final).toBeTruthy();
+    expect(mod.expression).toBeUndefined();
+  });
+
+  /**
    * Regression test for https://github.com/lbl-srg/ctrl-flow-dev/issues/418
    * Element-level modifiers on a replaceable must be captured alongside
    * constraining-clause modifiers.
@@ -132,8 +164,8 @@ describe("Modifications", () => {
   it("Includes element-level modifiers on replaceable (not just constraining-clause mods)", () => {
     const path =
       "TestPackage.Template.TestTemplate.selectable_component_with_element_mods";
-    const constrainingModPath = `${path}.container`; // from constraining clause
-    const elementModPath = `${path}.icecream`; // from element itself
+    const constrainingModPath = "container"; // from constraining clause
+    const elementModPath = "icecream"; // from element itself
     const option = tOptions[path];
     const mods = option.modifiers;
 
@@ -151,12 +183,69 @@ describe("Modifications", () => {
     expect(mods[elementModPath].final).toBe(true);
   });
 
+  it("Keeps the constraining-clause modifiers apart for redeclarations", () => {
+    // Only the constraining-clause modifiers apply to a redeclaration
+    // (MLS 7.3.2), including those overridden by the declaration
+    const path =
+      "TestPackage.Template.TestTemplate.selectable_component_with_element_mods";
+    const mods = tOptions[path].constrainingModifiers ?? {};
+
+    expect(Object.keys(mods).sort()).toEqual(["container", "icecream"]);
+    expect(mods["container"].final).toBe(true);
+    expect(mods["icecream"].expression).toEqual("third.icecream");
+    expect(mods["icecream"].final).toBe(false);
+    // No constraining clause
+    expect(
+      tOptions["TestPackage.Component.FourthComponent.replaceable_param"]
+        .constrainingModifiers,
+    ).toBeUndefined();
+  });
+
   it("Doesn't have a modifier that matches the option path (the 'default mod')", () => {
     const path = "TestPackage.Template.TestTemplate.typ";
     const option = tOptions[path];
-    const mod = option.modifiers[path];
 
-    expect(mod).toBeUndefined();
+    expect(option.modifiers[""]).toBeUndefined();
+  });
+
+  it("Keys modifiers by the path relative to their option", () => {
+    // No key repeats the path of its option (docs/linkage-schema.md, "Options")
+    Object.values(tOptions).forEach((option) => {
+      const keys = [
+        ...Object.keys(option.modifiers ?? {}),
+        ...Object.keys(option.constrainingModifiers ?? {}),
+        ...Object.values(option.choiceModifiers ?? {}).flatMap((mods) =>
+          Object.keys(mods),
+        ),
+      ];
+      keys.forEach((key) => {
+        expect(key).not.toEqual("");
+        expect(key.startsWith(`${option.modelicaPath}.`)).toBe(false);
+      });
+    });
+  });
+
+  it("Rejects a modification that is not written in the option", () => {
+    const mod = new Modification("TestPackage.Other", "p", 1);
+    expect(() => flattenModifiers([mod], templatePath)).toThrow(
+      `Modification TestPackage.Other.p is not written in ${templatePath}`,
+    );
+  });
+
+  it("Keeps the final modifications of a final redeclaration in a choice", () => {
+    // choice(redeclare replaceable FourthComponent selectable_component(
+    //   redeclare final SecondComponent replaceable_param)): every parameter
+    // of SecondComponent is final (#416)
+    const path = "TestPackage.Template.TestTemplate.selectable_component";
+    const mods =
+      tOptions[path].choiceModifiers?.["TestPackage.Component.FourthComponent"];
+
+    expect(mods?.["replaceable_param"]).toEqual({
+      final: true,
+      redeclare: "TestPackage.Component.SecondComponent",
+    });
+    expect(mods?.["replaceable_param.component_param"]?.final).toBe(true);
+    expect(mods?.["replaceable_param.is_another_param"]?.final).toBe(true);
   });
 
   afterAll(() => {
@@ -224,12 +313,12 @@ describe("Record Binding Modifications", () => {
 
   it("Includes recordBinding in flattened modifiers", () => {
     const element = findElement("TestRecord.Mod1") as parser.LongClass;
-    const flatMods = flattenModifiers(element.mods);
+    const flatMods = flattenModifiers(element.mods, "TestRecord.Mod1");
 
     // redeclare with binding is a single modifier with both
     // redeclare (the type) and expression (the binding), with recordBinding=true
-    // Modifier paths are instance-based: Mod1 extends BaseModel, so rec is at Mod1.rec
-    const redeclarePath = "TestRecord.Mod1.rec";
+    // Keys are relative to the option: Mod1 extends BaseModel, so rec is at Mod1.rec
+    const redeclarePath = "rec";
     expect(flatMods[redeclarePath]).toBeDefined();
     expect(flatMods[redeclarePath].redeclare).toBe("TestRecord.Rec");
     expect(flatMods[redeclarePath].recordBinding).toBe(true);
@@ -255,5 +344,19 @@ describe("Record Binding Modifications", () => {
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, JSON.stringify(options, null, 2));
     console.log(`Generated: ${outputPath}`);
+  });
+});
+
+describe("Nested modifications of a choice", () => {
+  it("rejects a modification written nested in a choice (#416)", () => {
+    createModelicaJson(
+      "tests/static-data/NestedChoicePackage",
+      "/tmp/test-linkage-widget/",
+    );
+    prependToModelicaJsonPath([fullTempDirPath]);
+    expect(() => loadPackage("NestedChoicePackage")).toThrow(
+      "Nested modification of val in the choice NestedChoicePackage.OtherCoil " +
+        "for NestedChoicePackage.Template.coi is not supported (#416)",
+    );
   });
 });

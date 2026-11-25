@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "ctrlFlow": "golden",
+    "libraries": {
+      "Buildings": "golden"
+    }
+  },
+  "options": {
+    "deleteInfoBox": false
+  },
+  "projects": [
+    {
+      "id": "VAVBoxCoolingOnly--ctl.have_CO2Sen=true",
+      "description": "VAVBoxCoolingOnly--ctl.have_CO2Sen=true",
+      "values": {
+        "Buildings.Templates.Data.AllSystems-ashCliZon": {
+          "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.ASHRAEClimateZone.Zone_4A",
+          "origin": "user"
+        },
+        "Buildings.Templates.Data.AllSystems-stdEne": {
+          "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
+          "origin": "user"
+        },
+        "Buildings.Templates.Data.AllSystems-stdVen": {
+          "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1",
+          "origin": "user"
+        },
+        "Buildings.Templates.Data.AllSystems-sysUni": {
+          "value": "Buildings.Templates.Types.Units.IP",
+          "origin": "user"
+        }
+      },
+      "configurations": [
+        {
+          "id": "VAVBoxCoolingOnly--ctl.have_CO2Sen=true-1",
+          "description": "VAV terminal unit cooling only 1",
+          "quantity": 1,
+          "systemType": "Buildings.Templates.ZoneEquipment",
+          "template": "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly",
+          "values": {
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-QChiWat_flow_nominal": {
+              "value": 0,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-QHeaWat_flow_nominal": {
+              "value": 0,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-cfg": {
+              "redeclare": "Buildings.Templates.ZoneEquipment.Configuration.VAVBox",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-cfg.have_souChiWat": {
+              "value": false,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-cfg.have_souHeaWat": {
+              "value": false,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-cfg.stdVen": {
+              "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-cfg.typ": {
+              "value": "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxCoolingOnly",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-cfg.typCoiHea": {
+              "value": "Buildings.Templates.Components.Types.Coil.None",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-cfg.typDamVAV": {
+              "value": "Buildings.Templates.Components.Types.Damper.Modulating",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-cfg.typValCoiHea": {
+              "value": "Buildings.Templates.Components.Types.Valve.None",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-coiHea": {
+              "redeclare": "Buildings.Templates.Components.Coils.None",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-coiHea.Q_flow_nominal": {
+              "value": "-1*abs(cap_nominal)",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-coiHea.dpAir_nominal": {
+              "value": 0,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-coiHea.have_sou": {
+              "value": false,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-coiHea.have_weaBus": {
+              "value": false,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-coiHea.mAir_flow_nominal": {
+              "value": "ctl.VAirHeaSet_flow_max*1.2",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-coiHea.typ": {
+              "value": "Buildings.Templates.Components.Types.Coil.None",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-coiHea.typVal": {
+              "value": "Buildings.Templates.Components.Types.Valve.None",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-ctl": {
+              "redeclare": "Buildings.Templates.ZoneEquipment.Components.Controls.G36VAVBoxCoolingOnly",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-ctl.VAirHeaSet_flow_min": {
+              "value": 0,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-ctl.dTAirDisHea_max": {
+              "value": 11,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-ctl.dat": {
+              "redeclare": "Buildings.Templates.ZoneEquipment.Components.Data.VAVBoxController",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-ctl.effAirDisCoo": {
+              "value": 1,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-ctl.effAirDisHea": {
+              "value": 0.8,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-ctl.have_CO2Sen": {
+              "value": true,
+              "origin": "user"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-ctl.have_hotWatCoi": {
+              "value": false,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-ctl.have_occSen": {
+              "value": false,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-ctl.have_winSen": {
+              "value": false,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-ctl.stdVen": {
+              "value": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-ctl.typ": {
+              "value": "Buildings.Templates.ZoneEquipment.Types.Controller.G36VAVBoxCoolingOnly",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-damVAV.typ": {
+              "value": "Buildings.Templates.Components.Types.Damper.Modulating",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-dat": {
+              "redeclare": "Buildings.Templates.ZoneEquipment.Data.VAVBox",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-dat.coiHea.mAir_flow_nominal": {
+              "value": "ctl.VAirHeaSet_flow_max*1.2",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-dat.ctl.VAirHeaSet_flow_min": {
+              "value": 0,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-dat.ctl.dTAirDisHea_max": {
+              "value": 11,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-dat.ctl.effAirDisCoo": {
+              "value": 1,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-dat.ctl.effAirDisHea": {
+              "value": 0.8,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-dat.id": {
+              "value": "",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-dat.mAir_flow_nominal": {
+              "value": "max(ctl.VAirHeaSet_flow_max,ctl.VAirCooSet_flow_max)*1.2",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-datCoiHea.Q_flow_nominal": {
+              "value": "-1*abs(cap_nominal)",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-datCoiHea.dpAir_nominal": {
+              "value": 0,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-datCoiHea.mAir_flow_nominal": {
+              "value": "ctl.VAirHeaSet_flow_max*1.2",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-datCoiHea.typ": {
+              "value": "Buildings.Templates.Components.Types.Coil.None",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-have_souChiWat": {
+              "value": false,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-have_souHeaWat": {
+              "value": false,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-id": {
+              "value": "",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-mAirPri_flow_nominal": {
+              "value": "max(ctl.VAirHeaSet_flow_max,ctl.VAirCooSet_flow_max)*1.2",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-mAir_flow_nominal": {
+              "value": "max(ctl.VAirHeaSet_flow_max,ctl.VAirCooSet_flow_max)*1.2",
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-mChiWat_flow_nominal": {
+              "value": 0,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-mHeaWat_flow_nominal": {
+              "value": 0,
+              "origin": "evaluated"
+            },
+            "Buildings.Templates.ZoneEquipment.VAVBoxCoolingOnly-typ": {
+              "value": "Buildings.Templates.ZoneEquipment.Types.Configuration.VAVBoxCoolingOnly",
+              "origin": "evaluated"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

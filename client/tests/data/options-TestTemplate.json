@@ -8,7 +8,7 @@
     "visible": false,
     "enable": true,
     "modifiers": {
-      "TestPackage.Template.TestTemplate.first.component_param": {
+      "component_param": {
         "expression": "\"First Component Template Override\"",
         "final": false
       }
@@ -75,6 +75,7 @@
     "name": "Top-level (whole building) system parameters",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "class",
     "options": [
       "Buildings.Templates.Data.AllSystems.projectSetting"
     ],
@@ -109,6 +110,7 @@
     "value": "TestPackage.Types.Container",
     "visible": true,
     "replaceable": false,
+    "kindOfClass": "type",
     "options": [
       "TestPackage.Types.Container.Hand",
       "TestPackage.Types.Container.Bowl",
@@ -184,6 +186,7 @@
     "value": "TestPackage.Types.IceCream",
     "visible": true,
     "replaceable": false,
+    "kindOfClass": "type",
     "options": [
       "TestPackage.Types.IceCream.Chocolate",
       "TestPackage.Types.IceCream.Vanilla",
@@ -240,6 +243,7 @@
     "name": "Interface for Test Components",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Interface.PartialComponent.container",
       "TestPackage.Interface.PartialComponent.icecream"
@@ -256,12 +260,13 @@
     "name": "First Component",
     "visible": false,
     "modifiers": {
-      "TestPackage.Component.FirstComponent.container": {
+      "container": {
         "expression": "TestPackage.Types.Container.Hand",
         "final": false
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Component.FirstComponent.component_param",
       "TestPackage.Component.FirstComponent.datAll",
@@ -298,11 +303,11 @@
     "tab": "",
     "visible": true,
     "modifiers": {
-      "TestPackage.Template.TestTemplate.selectable_component.container": {
+      "container": {
         "expression": "TestPackage.Types.Container.Cone",
         "final": true
       },
-      "TestPackage.Template.TestTemplate.selectable_component.icecream": {
+      "icecream": {
         "expression": {
           "operator": "if_elseif",
           "operands": [
@@ -346,10 +351,71 @@
     "enable": true,
     "choiceModifiers": {
       "TestPackage.Component.FourthComponent": {
-        "TestPackage.Template.TestTemplate.selectable_component.replaceable_param": {
+        "replaceable_param": {
           "final": true,
           "redeclare": "TestPackage.Component.SecondComponent"
+        },
+        "replaceable_param.component_param": {
+          "final": true
+        },
+        "replaceable_param.is_another_param": {
+          "final": true
+        },
+        "replaceable_param.inner_outer_param": {
+          "final": true
+        },
+        "replaceable_param.container": {
+          "final": true
+        },
+        "replaceable_param.icecream": {
+          "final": true
         }
+      }
+    },
+    "constrainingModifiers": {
+      "container": {
+        "expression": "TestPackage.Types.Container.Cone",
+        "final": true
+      },
+      "icecream": {
+        "expression": {
+          "operator": "if_elseif",
+          "operands": [
+            {
+              "operator": "if",
+              "operands": [
+                {
+                  "operator": "!=",
+                  "operands": [
+                    "first.icecream",
+                    "TestPackage.Types.IceCream.Chocolate"
+                  ]
+                },
+                "first.icecream"
+              ]
+            },
+            {
+              "operator": "else_if",
+              "operands": [
+                {
+                  "operator": "!=",
+                  "operands": [
+                    "third.icecream",
+                    "TestPackage.Types.IceCream.Chocolate"
+                  ]
+                },
+                "third.icecream"
+              ]
+            },
+            {
+              "operator": "else",
+              "operands": [
+                "TestPackage.Types.IceCream.Chocolate"
+              ]
+            }
+          ]
+        },
+        "final": true
       }
     },
     "replaceable": true,
@@ -411,12 +477,13 @@
     "name": "Second Component",
     "visible": false,
     "modifiers": {
-      "TestPackage.Component.SecondComponent.container": {
+      "container": {
         "expression": "TestPackage.Types.Container.Bowl",
         "final": false
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Component.SecondComponent.component_param",
       "TestPackage.Component.SecondComponent.is_another_param",
@@ -454,7 +521,6 @@
     "tab": "",
     "visible": false,
     "modifiers": {},
-    "enable": false,
     "choiceModifiers": {},
     "replaceable": true,
     "options": [
@@ -488,12 +554,13 @@
     "name": "Third Component",
     "visible": false,
     "modifiers": {
-      "TestPackage.Component.ThirdComponent.container": {
+      "container": {
         "expression": "TestPackage.Types.Container.Cone",
         "final": false
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Component.ThirdComponent.component_param",
       "TestPackage.Component.ThirdComponent.selectable_component",
@@ -516,7 +583,6 @@
     "tab": "",
     "visible": true,
     "modifiers": {},
-    "enable": false,
     "choiceModifiers": {},
     "replaceable": true,
     "options": [
@@ -531,6 +597,7 @@
     "name": "Fourth Component",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Component.FourthComponent.replaceable_param",
       "TestPackage.Interface.PartialComponent.container",
@@ -550,15 +617,20 @@
     "group": "",
     "tab": "",
     "visible": false,
-    "enable": false,
     "modifiers": {
-      "TestPackage.Template.TestTemplate.third.component_param": {
+      "component_param": {
         "expression": "\"Third Component Template Override\"",
         "final": false
       }
     },
     "replaceable": false,
-    "options": [],
+    "options": [
+      "TestPackage.Component.ThirdComponent.component_param",
+      "TestPackage.Component.ThirdComponent.selectable_component",
+      "TestPackage.Component.ThirdComponent.container_from_outer",
+      "TestPackage.Interface.PartialComponent.container",
+      "TestPackage.Interface.PartialComponent.icecream"
+    ],
     "definition": false,
     "shortExclType": false
   },
@@ -571,7 +643,7 @@
     "visible": false,
     "enable": true,
     "modifiers": {
-      "TestPackage.Template.TestTemplate.dat.container_selectable_component": {
+      "container_selectable_component": {
         "expression": "selectable_component.container",
         "final": true
       }
@@ -651,7 +723,7 @@
       ]
     },
     "modifiers": {
-      "TestPackage.Template.Data.TestTemplate.flag_enabled.start": {
+      "start": {
         "expression": true,
         "final": false
       }
@@ -669,7 +741,7 @@
     "tab": "",
     "visible": true,
     "modifiers": {
-      "TestPackage.Template.Data.PartialTemplate.ctl.typSecRel": {
+      "typSecRel": {
         "expression": "typSecRel",
         "final": true
       }
@@ -703,6 +775,7 @@
     "name": "Controller",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "record",
     "options": [
       "TestPackage.Component.Data.TestTemplateController.typSecRel"
     ],
@@ -733,6 +806,7 @@
     "name": "Record for TestTemplate Interface Class",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "record",
     "options": [
       "TestPackage.Template.Data.PartialTemplate.ctl",
       "TestPackage.Template.Data.PartialTemplate.partialData"
@@ -749,16 +823,17 @@
     "name": "Test Record",
     "visible": false,
     "modifiers": {
-      "TestPackage.Template.Data.TestTemplate.ctl": {
+      "ctl": {
         "final": false,
         "redeclare": "TestPackage.Component.Data.TestTemplateController"
       },
-      "TestPackage.Template.Data.TestTemplate.ctl.typSecRel": {
+      "ctl.typSecRel": {
         "expression": "typSecRel",
         "final": true
       }
     },
     "replaceable": false,
+    "kindOfClass": "record",
     "options": [
       "TestPackage.Template.Data.TestTemplate.record_parameter",
       "TestPackage.Template.Data.TestTemplate.nested_bool",
@@ -945,6 +1020,25 @@
     "definition": false,
     "shortExclType": false
   },
+  "TestPackage.Template.TestTemplate.disabled_component": {
+    "modelicaPath": "TestPackage.Template.TestTemplate.disabled_component",
+    "type": "TestPackage.Component.FirstComponent",
+    "name": "Disabled composite component",
+    "group": "",
+    "tab": "",
+    "visible": false,
+    "enable": false,
+    "modifiers": {},
+    "replaceable": false,
+    "options": [
+      "TestPackage.Component.FirstComponent.component_param",
+      "TestPackage.Component.FirstComponent.datAll",
+      "TestPackage.Interface.PartialComponent.container",
+      "TestPackage.Interface.PartialComponent.icecream"
+    ],
+    "definition": false,
+    "shortExclType": false
+  },
   "TestPackage.Template.TestTemplate.connector_param": {
     "modelicaPath": "TestPackage.Template.TestTemplate.connector_param",
     "type": "Integer",
@@ -980,6 +1074,20 @@
     "group": "",
     "tab": "",
     "visible": true,
+    "enable": false,
+    "modifiers": {},
+    "replaceable": false,
+    "options": [],
+    "definition": false,
+    "shortExclType": false
+  },
+  "TestPackage.Template.TestTemplate.dead_end_component": {
+    "modelicaPath": "TestPackage.Template.TestTemplate.dead_end_component",
+    "type": "TestPackage.Component.DeadEndComponent",
+    "name": "Dead-end component",
+    "group": "Skipped Group",
+    "tab": "Skipped Tab",
+    "visible": false,
     "enable": false,
     "modifiers": {},
     "replaceable": false,
@@ -1048,9 +1156,25 @@
     "visible": false,
     "enable": true,
     "modifiers": {
-      "TestPackage.Template.TestTemplate.redeclare_param_01.replaceable_param": {
+      "replaceable_param": {
         "final": true,
         "redeclare": "TestPackage.Component.SecondComponent"
+      },
+      "replaceable_param.component_param": {
+        "expression": "\"From final redeclare\"",
+        "final": true
+      },
+      "replaceable_param.is_another_param": {
+        "final": true
+      },
+      "replaceable_param.inner_outer_param": {
+        "final": true
+      },
+      "replaceable_param.container": {
+        "final": true
+      },
+      "replaceable_param.icecream": {
+        "final": true
       }
     },
     "replaceable": false,
@@ -1071,7 +1195,7 @@
     "visible": false,
     "enable": true,
     "modifiers": {
-      "TestPackage.Template.TestTemplate.redeclare_param_02.replaceable_param": {
+      "replaceable_param": {
         "final": false,
         "redeclare": "TestPackage.Component.ThirdComponent"
       }
@@ -1092,15 +1216,18 @@
     "group": "",
     "tab": "",
     "visible": false,
-    "enable": false,
     "modifiers": {
-      "TestPackage.Template.TestTemplate.short_path_component.replaceable_param": {
+      "replaceable_param": {
         "final": false,
         "redeclare": "TestPackage.Component.FifthComponent"
       }
     },
     "replaceable": false,
-    "options": [],
+    "options": [
+      "TestPackage.Component.FourthComponent.replaceable_param",
+      "TestPackage.Interface.PartialComponent.container",
+      "TestPackage.Interface.PartialComponent.icecream"
+    ],
     "definition": false,
     "shortExclType": false
   },
@@ -1113,7 +1240,7 @@
     "visible": false,
     "enable": true,
     "modifiers": {
-      "TestPackage.Template.TestTemplate.test_record.local_var": {
+      "local_var": {
         "expression": "\"Modified Value\"",
         "final": false
       }
@@ -1146,6 +1273,7 @@
     "name": "Record to Test Local Var references",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "record",
     "options": [
       "TestPackage.Template.LocalVars.local_var"
     ],
@@ -1163,17 +1291,27 @@
     "tab": "",
     "visible": true,
     "modifiers": {
-      "TestPackage.Template.TestTemplate.selectable_component_with_element_mods.container": {
+      "container": {
         "expression": "TestPackage.Types.Container.Cone",
         "final": true
       },
-      "TestPackage.Template.TestTemplate.selectable_component_with_element_mods.icecream": {
+      "icecream": {
         "expression": "first.icecream",
         "final": true
       }
     },
     "enable": true,
     "choiceModifiers": {},
+    "constrainingModifiers": {
+      "container": {
+        "expression": "TestPackage.Types.Container.Cone",
+        "final": true
+      },
+      "icecream": {
+        "expression": "third.icecream",
+        "final": false
+      }
+    },
     "replaceable": true,
     "options": [
       "TestPackage.Component.SecondComponent",
@@ -1190,11 +1328,11 @@
     "tab": "",
     "visible": true,
     "modifiers": {
-      "TestPackage.Template.TestTemplate.selectable_component_with_relative_paths.container": {
+      "container": {
         "expression": "Types.Container.Cone",
         "final": true
       },
-      "TestPackage.Template.TestTemplate.selectable_component_with_relative_paths.icecream": {
+      "icecream": {
         "expression": {
           "operator": "if_elseif",
           "operands": [
@@ -1237,6 +1375,52 @@
     },
     "enable": true,
     "choiceModifiers": {},
+    "constrainingModifiers": {
+      "container": {
+        "expression": "Types.Container.Cone",
+        "final": true
+      },
+      "icecream": {
+        "expression": {
+          "operator": "if_elseif",
+          "operands": [
+            {
+              "operator": "if",
+              "operands": [
+                {
+                  "operator": "!=",
+                  "operands": [
+                    "first.icecream",
+                    "TestPackage.Types.IceCream.Chocolate"
+                  ]
+                },
+                "first.icecream"
+              ]
+            },
+            {
+              "operator": "else_if",
+              "operands": [
+                {
+                  "operator": "!=",
+                  "operands": [
+                    "third.icecream",
+                    "TestPackage.Types.IceCream.Chocolate"
+                  ]
+                },
+                "third.icecream"
+              ]
+            },
+            {
+              "operator": "else",
+              "operands": [
+                "TestPackage.Types.IceCream.Chocolate"
+              ]
+            }
+          ]
+        },
+        "final": true
+      }
+    },
     "replaceable": true,
     "options": [
       "TestPackage.Component.SecondComponent",
@@ -1255,7 +1439,9 @@
     "modifiers": {},
     "enable": true,
     "choiceModifiers": {},
+    "constrainingModifiers": {},
     "replaceable": true,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Component.FirstComponent",
       "TestPackage.Component.SecondComponent"
@@ -1274,10 +1460,12 @@
     "group": "",
     "tab": "",
     "visible": true,
-    "enable": false,
     "modifiers": {},
     "replaceable": false,
-    "options": [],
+    "options": [
+      "TestPackage.Component.FirstComponent",
+      "TestPackage.Component.SecondComponent"
+    ],
     "definition": false,
     "shortExclType": false
   },
@@ -1421,6 +1609,7 @@
     "name": "Test Extend Interface",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Interface.NestedExtendInterface.nested_final_bool",
       "TestPackage.Interface.NestedExtendInterface.nested_hidden_group_bool",
@@ -1441,12 +1630,13 @@
     "name": "Test Extend Interface",
     "visible": false,
     "modifiers": {
-      "TestPackage.Interface.ExtendInterface.nested_interface_param": {
+      "nested_interface_param": {
         "expression": "\"Extend mod of nested param\"",
         "final": false
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Interface.ExtendInterface.interface_param",
       "TestPackage.Interface.ExtendInterface.interface_modified_bool",
@@ -1471,28 +1661,29 @@
     "name": "Test Template",
     "visible": false,
     "modifiers": {
-      "TestPackage.Template.TestTemplate.interface_param": {
+      "interface_param": {
         "expression": "\"Updated Value\"",
         "final": false
       },
-      "TestPackage.Template.TestTemplate.interface_modified_bool": {
+      "interface_modified_bool": {
         "expression": false,
         "final": false
       },
-      "TestPackage.Template.TestTemplate.nested_final_bool": {
+      "nested_final_bool": {
         "expression": true,
         "final": true
       },
-      "TestPackage.Template.TestTemplate.nested_hidden_group_bool": {
+      "nested_hidden_group_bool": {
         "expression": true,
         "final": true
       },
-      "TestPackage.Template.TestTemplate.nested_interface_param": {
+      "nested_interface_param": {
         "expression": "\"Template mod of the nested param\"",
         "final": false
       }
     },
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Template.TestTemplate.first",
       "TestPackage.Template.TestTemplate.inner_outer_param",
@@ -1508,8 +1699,11 @@
       "TestPackage.Template.TestTemplate.test_string_initialized",
       "TestPackage.Template.TestTemplate.test_real",
       "TestPackage.Template.TestTemplate.test_int",
+      "TestPackage.Template.TestTemplate.disabled_component",
       "TestPackage.Template.TestTemplate.connector_param",
       "TestPackage.Template.TestTemplate.connector_param_false",
+      "TestPackage.Template.TestTemplate.linkage_keyword_false",
+      "TestPackage.Template.TestTemplate.dead_end_component",
       "TestPackage.Template.TestTemplate.typ",
       "TestPackage.Template.TestTemplate.typ_limited",
       "TestPackage.Template.TestTemplate.final_group_member_bool",
@@ -1547,7 +1741,6 @@
     "tab": "",
     "visible": true,
     "modifiers": {},
-    "enable": false,
     "choiceModifiers": {},
     "replaceable": true,
     "options": [
@@ -1562,6 +1755,7 @@
     "name": "Fifth Component",
     "visible": false,
     "replaceable": false,
+    "kindOfClass": "model",
     "options": [
       "TestPackage.Component.FifthComponent.replaceable_param",
       "TestPackage.Interface.PartialComponent.container",

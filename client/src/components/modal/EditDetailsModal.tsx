@@ -4,17 +4,28 @@ import { useStores } from "../../data";
 import { observer } from "mobx-react";
 import { ChangeEvent, SyntheticEvent, useState } from "react";
 import { ProjectDetailInterface } from "../../data/project";
-import { OptionInterface } from "../../data/template";
-import { FlatConfigOption } from "../steps/Configs/SlideOut";
+import {
+  FlatConfigOption,
+  FlatConfigOptionGroup,
+  mapToDisplayOptions,
+} from "../../interpreter/display-option";
+import { projectContext } from "../../interpreter/interpreter";
+import { getConfigValuesToSave } from "../../interpreter/config-values";
 import OptionSelect from "../steps/Configs/OptionSelect";
 import { useDebouncedCallback } from "use-debounce";
-import { removeEmpty } from "../../utils/utils";
-import { SystemTypeInterface, TemplateInterface } from "../../data/template";
-import {
-  applyValueModifiers,
-  applyVisibilityModifiers,
-  ConfigValues,
-} from "../../utils/modifier-helpers";
+import { ALL_SYSTEMS, selectionKey } from "../../utils/selection-key";
+import { ConfigValues, storedValue } from "../../utils/modifier-helpers";
+
+// Climate zones are not displayed as "Not specified": only the zones of the
+// selected energy standard are displayed
+const ZONE_KEYS = ["ashCliZon", "tit24CliZon"].map((name) =>
+  selectionKey(ALL_SYSTEMS, name),
+);
+
+const flatten = (
+  items: (FlatConfigOptionGroup | FlatConfigOption)[],
+): FlatConfigOption[] =>
+  items.flatMap((item) => ("groupName" in item ? flatten(item.items) : item));
 
 interface EditDetailsModalProps extends ModalInterface {
   afterSubmit?: () => void;
@@ -34,7 +45,6 @@ const EditDetailsModal = observer(
   }: EditDetailsModalProps) => {
     const { configStore, projectStore, templateStore } = useStores();
     const details = projectStore.getProjectDetails();
-    const projectOptions = templateStore.getOptionsForProject();
     const allOptions = templateStore.getAllOptions();
     const [formInputs, setFormInputs] = useState({
       name: details?.name || "",
@@ -47,116 +57,18 @@ const EditDetailsModal = observer(
       projectStore.getProjectSelections(),
     );
 
-    const evaluatedValues = getEvaluatedValues(projectOptions);
-    const displayedOptions = getDisplayOptions(projectOptions, "root");
-
-    function getEvaluatedValues(options: OptionInterface[]): ConfigValues {
-      let evaluatedValues: ConfigValues = {};
-
-      options.forEach((option) => {
-        const selectionPath = option.modelicaPath;
-
-        evaluatedValues = {
-          ...evaluatedValues,
-          [selectionPath]: applyValueModifiers(
-            option?.value,
-            "",
-            selectionPath,
-            selectedValues,
-            {},
-            {},
-            allOptions,
-          ),
-        };
-
-        if (option.childOptions?.length) {
-          evaluatedValues = {
-            ...evaluatedValues,
-            ...getEvaluatedValues(option.childOptions),
-          };
-        }
-      });
-
-      return evaluatedValues;
-    }
-
-    function getDisplayOptions(
-      options: OptionInterface[],
-      parentModelicaPath: string,
-    ): FlatConfigOption[] {
-      const removeNotSpecifiedList = [
-        "Buildings.Templates.Data.AllSystems.ashCliZon",
-        "Buildings.Templates.Data.AllSystems.tit24CliZon",
-      ];
-      let displayOptions: FlatConfigOption[] = [];
-
-      options.forEach((option) => {
-        const selectionPath = option.modelicaPath;
-        const isVisible = applyVisibilityModifiers(
-          option,
-          "",
-          selectedValues,
-          {},
-          {},
-          allOptions,
-        );
-
-        if (isVisible && option.childOptions?.length) {
-          const modifiedChildOptions = removeNotSpecifiedList.includes(
-            option.modelicaPath,
-          )
-            ? option.childOptions.filter((opt) => opt.name !== "Not specified")
-            : option.childOptions;
-
-          displayOptions = [
-            ...displayOptions,
-            {
-              parentModelicaPath,
-              modelicaPath: option.modelicaPath,
-              name: option.name,
-              choices: modifiedChildOptions || [],
-              value:
-                selectedValues[selectionPath] || evaluatedValues[selectionPath],
-              scope: "",
-              selectionType: "Normal",
-            },
-          ];
-
-          const selectedValue = selectedValues[selectionPath];
-          const evaluatedValue = evaluatedValues[selectionPath];
-          // Only string values (Modelica paths) can be used for option lookup
-          if (typeof selectedValue === "string") {
-            const selectedOption = allOptions[selectedValue] as OptionInterface;
-
-            if (selectedOption) {
-              displayOptions = [
-                ...displayOptions,
-                ...getDisplayOptions([selectedOption], option.modelicaPath),
-              ];
+    const context = projectContext(allOptions, selectedValues);
+    const displayedOptions = flatten(mapToDisplayOptions(context)).map(
+      (option) =>
+        ZONE_KEYS.includes(option.selectionKey)
+          ? {
+              ...option,
+              choices: option.choices?.filter(
+                (choice) => choice.name !== "Not specified",
+              ),
             }
-            // Only string values (Modelica paths) can be used for option lookup
-          } else if (typeof evaluatedValue === "string") {
-            const evaluatedOption = allOptions[
-              evaluatedValue
-            ] as OptionInterface;
-
-            if (evaluatedOption) {
-              displayOptions = [
-                ...displayOptions,
-                ...getDisplayOptions([evaluatedOption], option.modelicaPath),
-              ];
-            }
-          }
-        } else if (option.childOptions?.length) {
-          displayOptions = [
-            ...displayOptions,
-            ...getDisplayOptions(option.childOptions, option.modelicaPath),
-          ];
-        }
-      });
-
-      return displayOptions;
-    }
+          : option,
+    );
 
     const updateTextInput = useDebouncedCallback(
       (
@@ -182,79 +94,45 @@ const EditDetailsModal = observer(
     }
 
     function updateSelectedOption(
-      parentModelicaPath: string,
-      scope: string,
-      choice: string | null,
+      option: FlatConfigOption,
+      choice: string | boolean | null,
     ) {
       setSelectedValues((prevState: any) => {
-        const selectionPath = parentModelicaPath;
-
         if (choice == null) {
-          delete prevState[selectionPath];
+          delete prevState[option.selectionKey];
           return prevState;
         }
 
+        // The attributes of the value are set from the declaration
         return {
           ...prevState,
-          [selectionPath]: choice,
+          [option.selectionKey]: storedValue(
+            allOptions[option.modelicaPath],
+            choice,
+          ),
         };
       });
-    }
-
-    // TODO: There needs to be a cleaner way to delete the zone that is not associated to the energy standard
-    // This was done due to time and was a bug found last min.
-    function adjustProjectSelections() {
-      const projectSelectedItems = selectedValues;
-      const energyStandard =
-        projectSelectedItems["Buildings.Templates.Data.AllSystems.stdEne"];
-
-      if (
-        energyStandard ===
-          "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1" &&
-        projectSelectedItems["Buildings.Templates.Data.AllSystems.tit24CliZon"]
-      ) {
-        delete projectSelectedItems[
-          "Buildings.Templates.Data.AllSystems.tit24CliZon"
-        ];
-      }
-
-      if (
-        energyStandard ===
-          "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24" &&
-        projectSelectedItems["Buildings.Templates.Data.AllSystems.ashCliZon"]
-      ) {
-        delete projectSelectedItems[
-          "Buildings.Templates.Data.AllSystems.ashCliZon"
-        ];
-      }
-
-      return projectSelectedItems;
     }
 
     function save(ev: SyntheticEvent) {
       ev.preventDefault();
       ev.stopPropagation();
+      // The selections of options that are not displayed, as the zone of
+      // another energy standard, are discarded
+      const { selections, evaluatedValues } = getConfigValuesToSave(
+        context,
+        selectedValues,
+      );
       const newProjectDetails: ProjectDetailInterface = {
         ...formInputs,
-        selections: adjustProjectSelections(),
-        evaluatedValues: removeEmpty(evaluatedValues),
+        selections,
+        evaluatedValues,
       };
       projectStore.setProjectDetails(newProjectDetails);
       // This removes all configs when saving project details.
       // The reason for this is we don't want the user to use saved configs with
       // changed project details as it will cause issues with evaluated values.
-      templateStore.systemTypes.forEach((systemType: SystemTypeInterface) => {
-        const templates = templateStore.getTemplatesForSystem(
-          systemType.modelicaPath,
-        );
-
-        templates.forEach((option: TemplateInterface) => {
-          configStore.removeAllForSystemTemplate(
-            systemType.modelicaPath,
-            option.modelicaPath,
-          );
-        });
-      });
+      configStore.removeAllForProject(projectStore.activeProjectId);
       if (afterSubmit) afterSubmit();
     }
 

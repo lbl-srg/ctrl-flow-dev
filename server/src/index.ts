@@ -13,6 +13,7 @@ import { name, version } from "../package.json";
 import config from "./config";
 import * as parser from "../../dependencies/modelica-json/lib/parser";
 import {
+  checkPayload,
   writeControlSequenceDocument,
   SequenceData,
 } from "./sequence";
@@ -90,6 +91,12 @@ app.post("/api/sequence", async (req, res) => {
   const origin: string = req.headers.origin || '';
   if (allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  const payloadError = checkPayload(sequenceData);
+  if (payloadError) {
+    res.status(400).send(payloadError);
+    return;
   }
 
   try {

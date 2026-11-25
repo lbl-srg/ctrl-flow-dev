@@ -1,5 +1,13 @@
 # Installs Pandoc, TexLive, and make4ht on a Ubuntu Linux distribution
-FROM ubuntu:22.04 AS ubuntu-pandoc
+FROM ubuntu:26.04 AS ubuntu-pandoc
+
+# Workaround: modelica-json <2.0.0 writes the output of its Java parser in the
+# encoding of the locale, so without a UTF-8 locale every non-ASCII character
+# of a string becomes "?" (Modelica files are UTF-8, MLS 3.7 §13.4). Version
+# 2.0.0 has no Java dependency but cannot be used yet
+# (lbl-srg/modelica-json#327). Remove when upgrading, if the test
+# "keeps non-ASCII characters without a UTF-8 locale" passes (#657).
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 # Installs Node 16.16.0 LTS with NVM
 # FROM ubuntu-pandoc as ubuntu-pandoc-node
@@ -23,8 +31,14 @@ COPY bin/ bin/
 COPY package*.json ./
 
 # Install python dependencies
+# The system Python is externally managed (PEP 668): the dependencies are
+# installed in a virtual environment, first on PATH so that `python3` is the
+# one of the environment, also when the server runs the sequence document
 RUN apt-get update --assume-yes && apt-get upgrade --assume-yes
-RUN apt-get --assume-yes install pip
+RUN apt-get --assume-yes install python3-venv
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:${PATH}"
+COPY scripts/ctrlflow scripts/ctrlflow
 COPY scripts/sequence-doc scripts/sequence-doc
 RUN npm run install-python-deps
 
@@ -42,7 +56,14 @@ RUN node modelica-json/app.js -f modelica-buildings/Buildings/Templates -o json 
 WORKDIR /server
 
 # Copy the rest of the server app
-RUN npm i
+# Network calls to the npm registry occasionally get reset inside Docker's
+# build network (ECONNRESET/"network aborted"). Increase npm's retry count
+# and backoff timeouts so transient blips don't fail the whole image build.
+RUN npm i \
+  --fetch-retries=5 \
+  --fetch-retry-factor=2 \
+  --fetch-retry-mintimeout=20000 \
+  --fetch-retry-maxtimeout=120000
 COPY . .
 
 RUN npm run parseTemplateJSON

@@ -5,34 +5,21 @@ import { useStores } from "../../../data";
 import { OptionInterface } from "../../../data/template";
 import Modal from "../../modal/Modal";
 import OptionSelect from "./OptionSelect";
-import { mapToDisplayOptions as mapConfigContextToDisplayOptions } from "../../../interpreter/display-option";
+import {
+  FlatConfigOption,
+  FlatConfigOptionGroup,
+  mapToDisplayOptions as mapConfigContextToDisplayOptions,
+} from "../../../interpreter/display-option";
 import { ConfigContext } from "../../../interpreter/interpreter";
-import { ConfigValues } from "../../../utils/modifier-helpers";
-import { removeEmpty } from "../../../utils/utils";
+import { getConfigValuesToSave } from "../../../interpreter/config-values";
+import { ConfigValues, storedValue } from "../../../utils/modifier-helpers";
 
 import "../../../styles/components/config-slide-out.scss";
 
-export interface FlatConfigOptionGroup {
-  groupName: string;
-  selectionPath: string;
-  items: (FlatConfigOptionGroup | FlatConfigOption)[];
-  /** Set for groups created from Dialog tab/group annotations, which are
-   * rendered without the frame of composition groups. Only tabs indent
-   * their content: a Dialog group may be nested under a tab but never
-   * under another Dialog group. */
-  dialog?: "tab" | "group";
-}
-
-export interface FlatConfigOption {
-  parentModelicaPath: string;
-  modelicaPath: string;
-  name: string;
-  choices?: OptionInterface[];
-  booleanChoices?: string[];
-  value: any;
-  scope: string;
-  selectionType: string;
-}
+export type {
+  FlatConfigOption,
+  FlatConfigOptionGroup,
+} from "../../../interpreter/display-option";
 
 export interface FlatConfigOptionChoice {
   modelicaPath: string;
@@ -83,22 +70,24 @@ const SlideOut = ({
   // );
 
   function updateSelectedConfigOption(
-    parentModelicaPath: string,
-    scope: string,
-    choice: string | null,
+    option: FlatConfigOption,
+    choice: string | boolean | null,
   ) {
     // startLoading();
     setSelectedValues((prevState: any) => {
-      const selectionPath = `${parentModelicaPath}-${scope}`;
 
       if (choice === null) {
-        delete prevState[selectionPath];
+        delete prevState[option.selectionKey];
         return prevState;
       }
 
+      // The attributes of the value are set from the declaration
       return {
         ...prevState,
-        [selectionPath]: choice,
+        [option.selectionKey]: storedValue(
+          allOptions[option.modelicaPath],
+          choice,
+        ),
       };
     });
   }
@@ -107,15 +96,12 @@ const SlideOut = ({
     event.preventDefault();
     event.stopPropagation();
 
-    const validSelections: ConfigValues = {};
-    Object.entries(selectedValues).map(([key, value]) => {
-      if (context.isValidSelection(key)) {
-        validSelections[key] = value;
-      }
-    });
-    const evaluatedValues = context.getEvaluatedValues();
-    configStore.setSelections(config.id, validSelections);
-    configStore.setEvaluatedValues(config.id, removeEmpty(evaluatedValues));
+    const { selections, evaluatedValues } = getConfigValuesToSave(
+      context,
+      selectedValues,
+    );
+    configStore.setSelections(config.id, selections);
+    configStore.setEvaluatedValues(config.id, evaluatedValues);
 
     close();
   }

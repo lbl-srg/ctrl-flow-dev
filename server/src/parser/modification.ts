@@ -1,6 +1,7 @@
 import { typeStore, isInputGroup, LongClass, Element } from "./parser";
 import { Literal } from "./expression";
 import * as mj from "./mj-types";
+import { lastIdent } from "./names";
 
 /**
  * Modifications are places where there is an assignment, e.g.
@@ -121,6 +122,53 @@ export function createModification(
  * - `redeclare NewType myParam = someValue` -> redeclare="NewType", value="someValue"
  * - `redeclare package Medium = NewMedium` -> redeclare="NewMedium", value=undefined
  */
+/**
+ * A `final` redeclare locks the component to its redeclared type: nothing
+ * downstream can touch it again, so any bindings written inline in that same
+ * redeclare clause are just as unmodifiable even when they don't repeat the
+ * `final` keyword themselves (Buildings authors are inconsistent about this).
+ */
+function markModsFinal(mods: Modification[]): void {
+  mods.forEach((m) => {
+    m.final = true;
+    if (m.mods.length) {
+      markModsFinal(m.mods);
+    }
+  });
+}
+
+/**
+ * A `final` redeclare locks down every parameter of the redeclared type, not
+ * just the ones bound inline in the redeclare clause: marks the already
+ * present child mods final, then synthesizes an unbound `final` Modification
+ * for every other own/inherited parameter of `element` so those can't be
+ * modified downstream either.
+ */
+function finalizeAllParams(
+  element: Element | undefined,
+  childBasePath: string,
+  childMods: Modification[],
+): void {
+  markModsFinal(childMods);
+
+  const boundNames = new Set(childMods.map((m) => m.name));
+  const getChildElements = (element as { getChildElements?: () => Element[] })
+    ?.getChildElements;
+  const allParams =
+    typeof getChildElements === "function"
+      ? getChildElements.call(element)
+      : [];
+
+  allParams.forEach((el) => {
+    const paramName = lastIdent(el.modelicaPath);
+    if (!boundNames.has(paramName)) {
+      childMods.push(
+        new Modification(childBasePath, paramName, undefined, [], true),
+      );
+    }
+  });
+}
+
 function unpackRedeclaration(props: ModificationProps) {
   let { basePath, definition, baseType } = props;
   let redeclaration = (definition as mj.RedeclareMod).element_redeclaration;
@@ -184,6 +232,14 @@ function unpackRedeclaration(props: ModificationProps) {
       }
     }
 
+    if (final) {
+      finalizeAllParams(
+        element,
+        [basePath, name].filter((s) => s).join("."),
+        childMods,
+      );
+    }
+
     // The redeclared type is stored under 'redeclare' property
     const redeclaredType = element.type;
 
@@ -226,6 +282,14 @@ function unpackRedeclaration(props: ModificationProps) {
       );
     }
 
+    if (final) {
+      finalizeAllParams(
+        aliasedType,
+        [basePath, name].filter((s) => s).join("."),
+        childMods,
+      );
+    }
+
     return new Modification(
       basePath,
       name,
@@ -235,6 +299,56 @@ function unpackRedeclaration(props: ModificationProps) {
       redeclaredType, // the aliased type goes in redeclare
     );
   }
+}
+
+/**
+ * Declaration of the component or short class of an argument of a class
+ * modification, if it is a (re)declaration
+ */
+function argumentDeclaration(argument: mj.WrappedMod | mj.RedeclareMod) {
+  const replaceable =
+    "element_redeclaration" in argument
+      ? argument.element_redeclaration.element_replaceable ??
+        argument.element_redeclaration
+      : argument.element_modification_or_replaceable.element_replaceable;
+  return {
+    component:
+      replaceable?.component_clause1?.component_declaration1.declaration,
+    shortClass: replaceable?.short_class_definition?.short_class_specifier,
+  };
+}
+
+/**
+ * Name of the element modified by an argument of a class modification
+ */
+function argumentName(argument: mj.WrappedMod | mj.RedeclareMod): string {
+  const { component, shortClass } = argumentDeclaration(argument);
+  return (
+    component?.identifier ??
+    shortClass?.identifier ??
+    (argument as mj.WrappedMod).element_modification_or_replaceable
+      .element_modification.name
+  );
+}
+
+/**
+ * True if an argument of a class modification has a class modification
+ * itself, as written in the source: `val(typ=…)`, `redeclare X val(typ=…)`
+ * or `redeclare package M = N(p=…)`
+ */
+function hasClassModification(
+  argument: mj.WrappedMod | mj.RedeclareMod,
+): boolean {
+  const { component, shortClass } = argumentDeclaration(argument);
+  const modification =
+    "element_redeclaration" in argument
+      ? component?.modification
+      : argument.element_modification_or_replaceable.element_modification
+          ?.modification ?? component?.modification;
+  return (
+    (!!modification && "class_modification" in modification) ||
+    !!shortClass?.value?.class_modification
+  );
 }
 
 /**
@@ -349,17 +463,36 @@ function unpackModblock(props: ModificationProps) {
                 ?.name;
         const constrainingClause = replaceable.constraining_clause;
         const replaceableType = typeStore.get(typeSpecifier, basePath);
-        value = replaceableType?.modelicaPath; // modelicaPath is the replaceable type
+        if (!replaceableType) {
+          // PUNCH-OUT! The choice references a class that cannot be resolved
+          // (e.g. the media selectors of upstream Buildings.Fluid: classes
+          // aliased by short classes get no modelica-json output). Drop the
+          // choice instead of emitting a value-less choice modification that
+          // initializeReplaceable would reject as malformed.
+          console.log(
+            `Unable to find choice type: ${basePath}\t${typeSpecifier}`,
+          );
+          return;
+        }
+        value = replaceableType.modelicaPath; // modelicaPath is the replaceable type
         // get selection mods
-        const classModification = (
+        const rawModification =
           "component_clause1" in replaceable
             ? (clause as mj.ComponentClause1).component_declaration1.declaration
                 ?.modification
             : (clause as mj.ShortClassDefinition).short_class_specifier.value
-                ?.class_modification
+                ?.class_modification;
+        // Component redeclarations carry a ClassMod object while short class
+        // redeclarations carry the bare class_modification array — normalize
+        // so getModificationList always receives a ClassMod.
+        const classModification = (
+          Array.isArray(rawModification)
+            ? { class_modification: rawModification }
+            : rawModification
         ) as mj.ClassMod;
-        // Additional modifiers can be attached to choice
-        if (classModification) {
+        // Additional modifiers can be attached to choice (a direct binding —
+        // redeclare X id = value — carries none)
+        if (classModification?.class_modification) {
           // Extract the actual component name from the redeclaration
           // (e.g., "selectable_component" from "redeclare ... selectable_component(...)")
           const componentName =
@@ -377,12 +510,20 @@ function unpackModblock(props: ModificationProps) {
           const nestedBasePath = [parentPath, componentName]
             .filter((s) => s)
             .join(".");
+          // A modification written nested in the choice, as `val(typ=…)` in
+          // `coiHea(val(typ=…))`, is rejected rather than dropped: its
+          // unpacking is not verified (#416). The final modifications
+          // synthesized for a final redeclaration in the choice
+          // (finalizeAllParams) are kept.
+          const nested =
+            classModification.class_modification.find(hasClassModification);
+          if (nested) {
+            throw new Error(
+              `Nested modification of ${argumentName(nested)} in the choice ` +
+                `${value} for ${nestedBasePath} is not supported (#416)`,
+            );
+          }
           mods = getModificationList(classModification, nestedBasePath, value);
-          // TODO: getModificationList should handle redeclares but it is not
-          // correctly unpacking nested modifiers - this is a bug
-          // kludge: remove nested modifiers
-          // See https://github.com/lbl-srg/ctrl-flow-dev/issues/416
-          mods.forEach((m) => (m.mods = []));
         }
       }
     } else if ("class_modification" in mod) {

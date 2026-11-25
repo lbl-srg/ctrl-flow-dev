@@ -1,9 +1,9 @@
 #!/bin/sh
 set -x
 
-MODELICA_BUILDINGS_COMMIT=b399379315641da39b231033b0660100fd6489a5
-MODELICA_STANDARD_TAG=v4.0.0 # This should be driven by 'uses' annotation from Buildings/package.mo
-MODELICA_JSON_COMMIT=81d90dac01cce41cbb80f7b0171c673dbcd7788a
+MODELICA_BUILDINGS_COMMIT=b0774846b2c09ee674bca84a4f0a19c1ddc5f4e1
+MODELICA_STANDARD_TAG=v4.1.0 # This should be driven by 'uses' annotation from Buildings/package.mo
+MODELICA_JSON_COMMIT=9c7e7d99e4899492211fa90a1a3ee95fbf587316
 
 # Shallow-fetch modelica-buildings at a specific commit
 cd ../dependencies

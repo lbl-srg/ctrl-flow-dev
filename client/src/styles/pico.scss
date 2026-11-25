@@ -1,4 +1,4 @@
-@import "./pico-theme";
+@use "./pico-theme";
 
 // override pico vartiables below,
 // complete list found at https://github.com/picocss/pico/tree/master/scss/themes/default
@@ -14,7 +14,7 @@
   --modal-overlay-background-color: #{rgba(mix($grey-900, $grey-800), 0.9)};
 
 
-@import "~@picocss/pico/scss/pico"; // html
+@use "@picocss/pico/scss/pico"; // html
 
 dialog article {
   position: relative;

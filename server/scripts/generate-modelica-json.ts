@@ -10,9 +10,15 @@ import config from "../src/config";
  *
  * @param sourcePath
  * @param outputPath
+ * @param env environment of the conversion, e.g. to set the locale
  */
-export function createModelicaJson(sourcePath: string, outputPath: string) {
+export function createModelicaJson(
+  sourcePath: string,
+  outputPath: string,
+  env: NodeJS.ProcessEnv = process.env,
+) {
   execSync(
     `node ${config.MODELICA_DEPENDENCIES}/modelica-json/app.js -f ${sourcePath} -o json -d ${outputPath}`,
+    { env },
   );
 }
