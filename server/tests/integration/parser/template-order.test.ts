@@ -24,7 +24,7 @@ import {
 function convert(packageName: string) {
   const outputPath = fs.mkdtempSync(path.join(os.tmpdir(), "template-order-"));
   createModelicaJson(`tests/static-data/${packageName}`, outputPath);
-  prependToModelicaJsonPath([path.join(outputPath, "json/tests/static-data")]);
+  prependToModelicaJsonPath([path.join(outputPath, "json")]);
 }
 
 describe("Order of the library", () => {

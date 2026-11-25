@@ -1,4 +1,4 @@
-import { fullTempDirPath, initializeTestModelicaJson } from "./utils";
+import { initializeTestModelicaJson, testModelicaJsonPath } from "./utils";
 import {
   getTemplates,
   Option,
@@ -353,7 +353,7 @@ describe("Nested modifications of a choice", () => {
       "tests/static-data/NestedChoicePackage",
       "/tmp/test-linkage-widget/",
     );
-    prependToModelicaJsonPath([fullTempDirPath]);
+    prependToModelicaJsonPath(testModelicaJsonPath);
     expect(() => loadPackage("NestedChoicePackage")).toThrow(
       "Nested modification of val in the choice NestedChoicePackage.OtherCoil " +
         "for NestedChoicePackage.Template.coi is not supported (#416)",

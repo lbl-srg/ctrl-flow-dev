@@ -9,11 +9,22 @@ const testPackagePath = "tests/static-data/TestPackage";
 const buildingsPackage = "tests/static-data/Buildings";
 const tempDirPath = "/tmp/test-linkage-widget/";
 
-export const fullTempDirPath = `${tempDirPath}json/tests/static-data/`;
+export const fullTempDirPath = `${tempDirPath}json/`;
+
+// modelica-json writes each class at the path of its full name: the stub of
+// Buildings is converted into its own directory so that it is not mixed with
+// the classes of the MBL used by the test packages, and it is searched first
+const stubDirPath = "/tmp/test-linkage-widget-stub/";
+
+export const testModelicaJsonPath = [`${stubDirPath}json/`, fullTempDirPath];
+
+export function createStubModelicaJson() {
+  createModelicaJson(buildingsPackage, stubDirPath);
+}
 
 export function createTestModelicaJson() {
   createModelicaJson(testPackagePath, tempDirPath);
-  createModelicaJson(buildingsPackage, tempDirPath);
+  createStubModelicaJson();
 }
 
 /**
@@ -22,7 +33,7 @@ export function createTestModelicaJson() {
  */
 export function initializeTestModelicaJson() {
   createTestModelicaJson();
-  prependToModelicaJsonPath([fullTempDirPath]);
+  prependToModelicaJsonPath(testModelicaJsonPath);
 }
 
 type SimpleOption = {

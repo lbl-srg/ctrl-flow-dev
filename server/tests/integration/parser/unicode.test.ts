@@ -45,12 +45,7 @@ describe("Non-ASCII characters", () => {
     expect(options[`${T}.lab`].value).toEqual('"Pompe n°1"');
   });
 
-  // modelica-json <2.0.0 writes the output of its Java parser in the encoding
-  // of the locale (#657). Version 2.0.0 has no Java dependency but cannot be
-  // used yet (lbl-srg/modelica-json#327). If this test passes after the
-  // upgrade, replace `it.failing` with `it` and remove the locale workaround
-  // of server/Dockerfile.
-  it.failing("keeps non-ASCII characters without a UTF-8 locale", () => {
+  it("keeps non-ASCII characters without a UTF-8 locale", () => {
     const outputPath = "/tmp/test-linkage-widget-ascii/";
     fs.rmSync(outputPath, { recursive: true, force: true });
     createModelicaJson("tests/static-data/UnicodePackage", outputPath, {
@@ -59,10 +54,7 @@ describe("Non-ASCII characters", () => {
       LC_ALL: "C",
     });
     const json = fs.readFileSync(
-      path.join(
-        outputPath,
-        "json/tests/static-data/UnicodePackage/package.json",
-      ),
+      path.join(outputPath, "json/UnicodePackage/package.json"),
       "utf8",
     );
     expect(json).toContain("Local CHW ∆p sensor");

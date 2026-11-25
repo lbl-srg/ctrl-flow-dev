@@ -7,7 +7,7 @@ import { createModelicaJson } from "../../../scripts/generate-modelica-json";
 import { prependToModelicaJsonPath } from "../../../src/parser/loader";
 import { loadPackage, getOptions, getTemplates } from "../../../src/parser";
 import { Option, SystemTemplateN } from "../../../src/parser/template";
-import { fullTempDirPath } from "./utils";
+import { createStubModelicaJson, testModelicaJsonPath } from "./utils";
 
 const tempDirPath = "/tmp/test-linkage-widget/";
 const T = "QuotedPackage.Template.QuotedTemplate";
@@ -24,8 +24,8 @@ describe("Quoted identifiers", () => {
     // The project settings of the outer datAll come from the stub of
     // Buildings.Templates.Data.AllSystems, not from the MBL: the options do
     // not depend on whether another suite converted the stub first
-    createModelicaJson("tests/static-data/Buildings", tempDirPath);
-    prependToModelicaJsonPath([fullTempDirPath]);
+    createStubModelicaJson();
+    prependToModelicaJsonPath(testModelicaJsonPath);
     loadPackage("QuotedPackage");
     options = Object.fromEntries(
       getOptions().options.map((o) => [o.modelicaPath, o]),
